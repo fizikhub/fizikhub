@@ -46,7 +46,7 @@ export async function updateSession(request: NextRequest) {
         if (!error && supabaseUser) {
             user = supabaseUser
         }
-    } catch (e) {
+    } catch {
         // Ignore auth errors, treat as logged out
     }
 

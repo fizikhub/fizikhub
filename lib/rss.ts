@@ -8,13 +8,6 @@ export interface ScienceNewsItem {
     source: string;
 }
 
-const FEEDS = [
-    { url: 'https://phys.org/rss-feed/', source: 'Phys.org' },
-    { url: 'https://www.sciencedaily.com/rss/top_news.xml', source: 'ScienceDaily' },
-    { url: 'https://www.duvaR.com.tr/rss', source: 'Duvar' },
-];
-
-// Curated list of reliable science feeds
 const SCIENCE_FEEDS = [
     { url: 'https://p.feedblitz.com/f3.io/8987d605481711204856627054238722', source: 'ScienceDaily' },
     { url: 'https://phys.org/rss-feed/physics-news/', source: 'Phys.org' },

@@ -8,12 +8,15 @@ import { useEffect, useState } from "react";
 
 // Check if device prefers reduced motion
 export function usePrefersReducedMotion(): boolean {
-    const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+    const [prefersReducedMotion, setPrefersReducedMotion] = useState(() => {
+        if (typeof window !== "undefined") {
+            return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        }
+        return false;
+    });
 
     useEffect(() => {
         const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-        setPrefersReducedMotion(mediaQuery.matches);
-
         const handler = (e: MediaQueryListEvent) => setPrefersReducedMotion(e.matches);
         mediaQuery.addEventListener("change", handler);
         return () => mediaQuery.removeEventListener("change", handler);
@@ -24,12 +27,15 @@ export function usePrefersReducedMotion(): boolean {
 
 // Check if device is mobile (based on viewport width)
 export function useIsMobile(): boolean {
-    const [isMobile, setIsMobile] = useState(false);
+    const [isMobile, setIsMobile] = useState(() => {
+        if (typeof window !== "undefined") {
+            return window.innerWidth < 768;
+        }
+        return false;
+    });
 
     useEffect(() => {
         const checkMobile = () => setIsMobile(window.innerWidth < 768);
-        checkMobile();
-
         window.addEventListener("resize", checkMobile);
         return () => window.removeEventListener("resize", checkMobile);
     }, []);
@@ -39,19 +45,17 @@ export function useIsMobile(): boolean {
 
 // Check if device has low-end hardware (rough heuristic)
 export function useIsLowEndDevice(): boolean {
-    const [isLowEnd, setIsLowEnd] = useState(false);
+    const [isLowEnd] = useState(() => {
+        if (typeof window !== "undefined" && typeof navigator !== "undefined") {
+            const cores = navigator.hardwareConcurrency || 4;
+            const memory = (navigator as any).deviceMemory || 4;
+            return cores < 4 || memory < 4;
+        }
+        return false;
+    });
 
     useEffect(() => {
-        // Check hardware concurrency (CPU cores)
-        const cores = navigator.hardwareConcurrency || 4;
-        // Check device memory if available
-        const memory = (navigator as any).deviceMemory || 4;
-
-        // Low-end: less than 4 cores or less than 4GB RAM
-        // Use requestAnimationFrame to avoid "synchronous update in effect" warning
-        requestAnimationFrame(() => {
-            setIsLowEnd(cores < 4 || memory < 4);
-        });
+        // State is already initialized correctly on mount, no need to check again unless we expect it to change (which it shouldn't for cores/memory)
     }, []);
 
     return isLowEnd;

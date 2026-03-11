@@ -254,7 +254,7 @@ export async function getMessages(
 
     // Get reply-to messages if any
     const replyIds = sliced.filter(m => m.reply_to_id).map(m => m.reply_to_id!);
-    let replyMap: Record<number, { id: number; content: string; sender_id: string }> = {};
+    const replyMap: Record<number, { id: number; content: string; sender_id: string }> = {};
 
     if (replyIds.length > 0) {
         const { data: replies } = await supabase
@@ -271,7 +271,7 @@ export async function getMessages(
 
     // Get unique sender IDs and fetch profiles
     const senderIds = [...new Set(sliced.map(m => m.sender_id))];
-    let profileMap: Record<string, any> = {};
+    const profileMap: Record<string, any> = {};
 
     if (senderIds.length > 0) {
         const { data: profiles } = await supabase

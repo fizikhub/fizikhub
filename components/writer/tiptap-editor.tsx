@@ -160,12 +160,13 @@ export function TiptapEditor({ content, onChange }: TiptapEditorProps) {
             },
         },
         onUpdate: ({ editor }) => {
-            // Debounce: only call getMarkdown() after 500ms of inactivity
+            // Sadece HTML'i veya JSON'u state'te tutuyoruz, ağır Markdown dönüşümünü burada YAPIYORUZ ama debounce süresini artırıyoruz
+            // ve onChange'i sadece gerekli olduğunda çağırıyoruz. Daha iyi bir yöntem: onBlur anında dönüştürmek ama mevcut yapıyı bozmamak için debounce'u 1.5 saniyeye çıkardık.
             if (debounceTimer.current) clearTimeout(debounceTimer.current);
             debounceTimer.current = setTimeout(() => {
                 const markdown = (editor.storage as any).markdown.getMarkdown();
                 onChange(markdown);
-            }, 500);
+            }, 1500); // 500ms -> 1500ms (daha az CPU kullanımı)
         },
         immediatelyRender: false,
     });
@@ -254,6 +255,40 @@ export function TiptapEditor({ content, onChange }: TiptapEditorProps) {
         }
     };
 
+    // Memoize Toolbar Buttons to prevent excessive re-rendering during typing
+    const TextFormattingToolbar = useMemo(() => {
+        if (!editor) return null;
+        return (
+            <div className="flex items-center gap-0.5 mr-2">
+                <Button type="button" variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={() => editor.chain().focus().toggleBold().run()} disabled={!editor.can().chain().focus().toggleBold().run()} data-state={editor.isActive('bold') ? 'on' : 'off'}><Bold className="w-4 h-4" /></Button>
+                <Button type="button" variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={() => editor.chain().focus().toggleItalic().run()} disabled={!editor.can().chain().focus().toggleItalic().run()} data-state={editor.isActive('italic') ? 'on' : 'off'}><Italic className="w-4 h-4" /></Button>
+                <Button type="button" variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={() => editor.chain().focus().toggleUnderline().run()} disabled={!editor.can().chain().focus().toggleUnderline().run()} data-state={editor.isActive('underline') ? 'on' : 'off'}><UnderlineIcon className="w-4 h-4" /></Button>
+            </div>
+        );
+    }, [editor, editor?.state.selection, editor?.isActive('bold'), editor?.isActive('italic'), editor?.isActive('underline')]);
+
+    const HeadingsToolbar = useMemo(() => {
+        if (!editor) return null;
+        return (
+             <div className="flex items-center gap-0.5 mr-2">
+                <Button type="button" variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()} data-state={editor.isActive('heading', { level: 1 }) ? 'on' : 'off'}><Heading1 className="w-4 h-4" /></Button>
+                <Button type="button" variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()} data-state={editor.isActive('heading', { level: 2 }) ? 'on' : 'off'}><Heading2 className="w-4 h-4" /></Button>
+                <Button type="button" variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()} data-state={editor.isActive('heading', { level: 3 }) ? 'on' : 'off'}><Heading3 className="w-4 h-4" /></Button>
+            </div>
+        );
+    }, [editor, editor?.state.selection, editor?.isActive('heading')]);
+    
+    const ListsToolbar = useMemo(() => {
+         if (!editor) return null;
+         return (
+            <div className="flex items-center gap-0.5 mr-2">
+                <Button type="button" variant="ghost" size="icon" className="h-8 w-8" onClick={() => editor.chain().focus().toggleBulletList().run()} data-state={editor.isActive('bulletList') ? 'on' : 'off'}><List className="w-4 h-4" /></Button>
+                <Button type="button" variant="ghost" size="icon" className="h-8 w-8" onClick={() => editor.chain().focus().toggleOrderedList().run()} data-state={editor.isActive('orderedList') ? 'on' : 'off'}><ListOrdered className="w-4 h-4" /></Button>
+                <Button type="button" variant="ghost" size="icon" className="h-8 w-8" onClick={() => editor.chain().focus().toggleBlockquote().run()} data-state={editor.isActive('blockquote') ? 'on' : 'off'}><Quote className="w-4 h-4" /></Button>
+            </div>
+         );
+    }, [editor, editor?.state.selection, editor?.isActive('bulletList'), editor?.isActive('orderedList'), editor?.isActive('blockquote')]);
+
     if (!editor) {
         return null;
     }
@@ -263,29 +298,17 @@ export function TiptapEditor({ content, onChange }: TiptapEditorProps) {
             {/* Main Toolbar */}
             <div className="border-b bg-muted/30 p-2 flex flex-wrap gap-1 sticky top-0 z-10 backdrop-blur-xl items-center">
                 {/* Text Formatting */}
-                <div className="flex items-center gap-0.5 mr-2">
-                    <Button type="button" variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={() => editor.chain().focus().toggleBold().run()} disabled={!editor.can().chain().focus().toggleBold().run()} data-state={editor.isActive('bold') ? 'on' : 'off'}><Bold className="w-4 h-4" /></Button>
-                    <Button type="button" variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={() => editor.chain().focus().toggleItalic().run()} disabled={!editor.can().chain().focus().toggleItalic().run()} data-state={editor.isActive('italic') ? 'on' : 'off'}><Italic className="w-4 h-4" /></Button>
-                    <Button type="button" variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={() => editor.chain().focus().toggleUnderline().run()} disabled={!editor.can().chain().focus().toggleUnderline().run()} data-state={editor.isActive('underline') ? 'on' : 'off'}><UnderlineIcon className="w-4 h-4" /></Button>
-                </div>
+                {TextFormattingToolbar}
 
                 <div className="w-px h-6 bg-border mx-1" />
 
                 {/* Headings */}
-                <div className="flex items-center gap-0.5 mr-2">
-                    <Button type="button" variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()} data-state={editor.isActive('heading', { level: 1 }) ? 'on' : 'off'}><Heading1 className="w-4 h-4" /></Button>
-                    <Button type="button" variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()} data-state={editor.isActive('heading', { level: 2 }) ? 'on' : 'off'}><Heading2 className="w-4 h-4" /></Button>
-                    <Button type="button" variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()} data-state={editor.isActive('heading', { level: 3 }) ? 'on' : 'off'}><Heading3 className="w-4 h-4" /></Button>
-                </div>
+                {HeadingsToolbar}
 
                 <div className="w-px h-6 bg-border mx-1" />
 
                 {/* Lists */}
-                <div className="flex items-center gap-0.5 mr-2">
-                    <Button type="button" variant="ghost" size="icon" className="h-8 w-8" onClick={() => editor.chain().focus().toggleBulletList().run()} data-state={editor.isActive('bulletList') ? 'on' : 'off'}><List className="w-4 h-4" /></Button>
-                    <Button type="button" variant="ghost" size="icon" className="h-8 w-8" onClick={() => editor.chain().focus().toggleOrderedList().run()} data-state={editor.isActive('orderedList') ? 'on' : 'off'}><ListOrdered className="w-4 h-4" /></Button>
-                    <Button type="button" variant="ghost" size="icon" className="h-8 w-8" onClick={() => editor.chain().focus().toggleBlockquote().run()} data-state={editor.isActive('blockquote') ? 'on' : 'off'}><Quote className="w-4 h-4" /></Button>
-                </div>
+                {ListsToolbar}
 
                 <div className="w-px h-6 bg-border mx-1" />
 

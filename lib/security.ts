@@ -45,13 +45,13 @@ export function validateImageFile(file: File): string | null {
     }
 
     // Check MIME type
-    if (!ALLOWED_IMAGE_TYPES.includes(file.type as any)) {
+    if (!ALLOWED_IMAGE_TYPES.includes(file.type as typeof ALLOWED_IMAGE_TYPES[number])) {
         return `Geçersiz dosya tipi: ${file.type}. Sadece JPEG, PNG, GIF, WebP ve AVIF desteklenir.`;
     }
 
     // Check extension
     const ext = file.name.split('.').pop()?.toLowerCase();
-    if (!ext || !ALLOWED_IMAGE_EXTENSIONS.includes(ext as any)) {
+    if (!ext || !ALLOWED_IMAGE_EXTENSIONS.includes(ext as typeof ALLOWED_IMAGE_EXTENSIONS[number])) {
         return `Geçersiz dosya uzantısı. Sadece ${ALLOWED_IMAGE_EXTENSIONS.join(', ')} desteklenir.`;
     }
 
