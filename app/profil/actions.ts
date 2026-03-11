@@ -98,15 +98,9 @@ export async function updateProfile(formData: {
     if (formData.location !== undefined) updateData.location = formData.location;
     if (formData.onboarding_completed !== undefined) updateData.onboarding_completed = formData.onboarding_completed;
 
-    // Add updated_at timestamp
-    const finalUpdateData = {
-        ...updateData,
-        updated_at: new Date().toISOString()
-    };
-
     const { error: updateError } = await supabase
         .from('profiles')
-        .update(finalUpdateData)
+        .update(updateData)
         .eq('id', user.id);
 
     if (updateError) {
