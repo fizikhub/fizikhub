@@ -6,7 +6,7 @@ import {
     Magnet,
     Atom,
     Dna,
-    Lightbulb, // Import Lightbulb for Optics
+    Lightbulb,
     Orbit,
     Combine
 } from "lucide-react";
@@ -40,7 +40,7 @@ export const simulations: Simulation[] = [
         title: "Atış Hareketi",
         description: "Bir cismin yerçekimi altındaki hareketini, hız, açı ve yükseklik parametreleriyle inceleyin.",
         icon: Target,
-        color: "#FF6B6B", // Soft Vibrant Red
+        color: "#E8590C",
         formula: "R = v²sin(2θ)/g",
         difficulty: "Kolay",
         tags: ["Mekanik", "Kinematik", "Vektörler"]
@@ -51,7 +51,7 @@ export const simulations: Simulation[] = [
         title: "Optik Laboratuvarı",
         description: "Işığın kırılma (Snell Yasası) ve tam yansıma olaylarını interaktif olarak keşfedin.",
         icon: Lightbulb,
-        color: "#38BDF8", // Sky Blue
+        color: "#0C8CE9",
         formula: "n₁sinθ₁ = n₂sinθ₂",
         difficulty: "Orta",
         tags: ["Optik", "Kırılma", "Yansıma"]
@@ -62,7 +62,7 @@ export const simulations: Simulation[] = [
         title: "Basit Sarkaç",
         description: "Sarkaç periyodunun ip uzunluğu ve yerçekimi ivmesiyle ilişkisini gözlemleyin.",
         icon: Activity,
-        color: "#FCD34D", // Soft Amber
+        color: "#D97706",
         formula: "T = 2π√(L/g)",
         difficulty: "Kolay",
         tags: ["Harmonik Hareket", "Mekanik"]
@@ -73,7 +73,7 @@ export const simulations: Simulation[] = [
         title: "Yay-Kütle Sistemi",
         description: "Hooke yasası, potansiyel enerji ve kinetik enerji dönüşümlerini keşfedin.",
         icon: Zap,
-        color: "#60A5FA", // Soft Blue
+        color: "#2563EB",
         formula: "F = -kx",
         difficulty: "Orta",
         tags: ["Enerji", "Harmonik Hareket"],
@@ -120,7 +120,7 @@ Yay sarkacının periyodu (tam bir salınım için geçen süre), kütleye ve ya
         title: "Dalga Girişimi",
         description: "Çift yarık deneyi ve dalgaların süperpozisyon ilkesini görselleştirin.",
         icon: Sparkles,
-        color: "#4ADE80", // Soft Green
+        color: "#16A34A",
         formula: "y = A sin(kx - ωt)",
         difficulty: "Zor",
         tags: ["Dalgalar", "Optik"]
@@ -131,7 +131,7 @@ Yay sarkacının periyodu (tam bir salınım için geçen süre), kütleye ve ya
         title: "Güneş Sistemi",
         description: "Gezegenlerin yörünge hareketlerini ve kütleçekim kuvvetini 3 boyutlu inceleyin.",
         icon: Atom,
-        color: "#A78BFA", // Soft Purple
+        color: "#7C3AED",
         formula: "F = G(m₁m₂)/r²",
         difficulty: "Orta",
         tags: ["Astronomi", "Kütleçekim"]
@@ -142,7 +142,7 @@ Yay sarkacının periyodu (tam bir salınım için geçen süre), kütleye ve ya
         title: "Elektrik Alan ve Konumları",
         description: "Noktasal elektrik yüklerinin etrafında oluşan alan çizgilerini ve dipol yapısını inceleyin.",
         icon: Orbit,
-        color: "#4ADE80", // Soft Green
+        color: "#0891B2",
         formula: "E = k·q/r²",
         difficulty: "Orta",
         tags: ["Elektromanyetizma", "Alan Çizgileri"]
@@ -153,7 +153,7 @@ Yay sarkacının periyodu (tam bir salınım için geçen süre), kütleye ve ya
         title: "Parçacık Çarpışmaları (1D)",
         description: "Farklı kütle ve hızlara sahip cisimlerin esnek ve inelastik çarpışmalarını inceleyin.",
         icon: Combine,
-        color: "#F87171", // Soft Red
+        color: "#DC2626",
         formula: "P_i = P_f",
         difficulty: "Orta",
         tags: ["Mekanik", "Momentum", "Enerji"]
