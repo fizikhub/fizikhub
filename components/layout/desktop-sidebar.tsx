@@ -40,7 +40,7 @@ export function DesktopSidebar() {
 
     return (
         <>
-            <aside className="hidden md:flex flex-col fixed top-0 left-0 h-[100dvh] w-[80px] lg:w-[260px] bg-white dark:bg-[#18181b] border-r-[3px] border-black z-50 transition-all duration-300">
+            <aside className="hidden md:flex flex-col fixed top-0 left-0 h-[100dvh] w-[80px] lg:w-[260px] bg-white dark:bg-background border-r-[3px] border-black z-50 transition-all duration-300">
                 {/* 1. Logo Area */}
                 <div className="h-[64px] flex items-center justify-center lg:justify-start lg:px-6 border-b-[3px] border-black shrink-0 relative overflow-hidden">
                     <ViewTransitionLink href="/" className="hover:scale-105 transition-transform origin-left z-10">
