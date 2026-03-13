@@ -187,7 +187,7 @@ export default async function Home() {
 
           {/* Sidebar Column */}
           <div className="hidden xl:block xl:col-span-5 relative">
-            <FeedSidebar />
+            <FeedSidebar suggestedUsers={suggestedUsers} />
           </div>
         </div>
       </div>

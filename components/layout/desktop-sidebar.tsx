@@ -29,13 +29,34 @@ export function DesktopSidebar() {
     const [factOpen, setFactOpen] = useState(false);
     const [searchOpen, setSearchOpen] = useState(false);
     const [user, setUser] = useState<SupabaseUser | null>(null);
+    const [userProfile, setUserProfile] = useState<{ full_name?: string, username?: string, avatar_url?: string } | null>(null);
     const [supabase] = useState(() => createClient());
 
     useEffect(() => {
+        let isMounted = true;
+        
+        const fetchProfile = async (userId: string) => {
+            const { data } = await supabase.from('profiles').select('full_name, username, avatar_url').eq('id', userId).single();
+            if (isMounted && data) {
+                setUserProfile(data);
+            }
+        };
+
         const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-            setUser(session?.user ?? null);
+            const currentUser = session?.user ?? null;
+            if (isMounted) setUser(currentUser);
+            
+            if (currentUser) {
+                fetchProfile(currentUser.id);
+            } else {
+                if (isMounted) setUserProfile(null);
+            }
         });
-        return () => subscription.unsubscribe();
+        
+        return () => {
+            isMounted = false;
+            subscription.unsubscribe();
+        };
     }, [supabase]);
 
     return (
@@ -126,18 +147,18 @@ export function DesktopSidebar() {
                         <ViewTransitionLink href="/profil" className="block w-full outline-none">
                             <div className="relative z-10 flex items-center justify-center lg:justify-start gap-3 p-2 lg:p-3 rounded-xl border-[3px] border-transparent hover:border-black hover:bg-neutral-100 dark:hover:bg-[#27272a] hover:shadow-[4px_4px_0px_0px_#000] dark:hover:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all group cursor-pointer w-full">
                                 <div className="w-10 h-10 rounded-[8px] border-[3px] border-black bg-[#FACC15] flex items-center justify-center shrink-0 overflow-hidden shadow-[2px_2px_0px_0px_#000]">
-                                     {user.user_metadata?.avatar_url ? (
-                                        <img src={user.user_metadata.avatar_url} alt="Profile" className="w-full h-full object-cover" />
+                                     {userProfile?.avatar_url || user.user_metadata?.avatar_url ? (
+                                        <img src={userProfile?.avatar_url || user.user_metadata?.avatar_url} alt="Profile" className="w-full h-full object-cover" />
                                      ) : (
                                          <User className="w-5 h-5 text-black stroke-[3px]" />
                                      )}
                                 </div>
                                 <div className="hidden lg:flex flex-col overflow-hidden">
                                     <span className="font-bold text-[13px] uppercase truncate text-black dark:text-white leading-tight">
-                                        {user.user_metadata?.full_name || user.user_metadata?.username || "Profilim"}
+                                        {userProfile?.full_name || user.user_metadata?.full_name || userProfile?.username || user.user_metadata?.username || "Profilim"}
                                     </span>
                                     <span className="text-[10px] font-black text-neutral-400 dark:text-zinc-500 uppercase truncate">
-                                        @{user.user_metadata?.username || "kullanici"}
+                                        @{userProfile?.username || user.user_metadata?.username || "kullanici"}
                                     </span>
                                 </div>
                             </div>
