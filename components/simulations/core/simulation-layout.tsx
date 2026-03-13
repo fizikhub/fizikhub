@@ -29,7 +29,7 @@ export function SimulationLayout({
     const [isFullscreen, setIsFullscreen] = useState(false);
 
     return (
-        <div className="flex flex-col h-[100dvh] bg-[#0a0a0a] text-zinc-50 font-[family-name:var(--font-sans)] overflow-hidden">
+        <div className="flex flex-col min-h-[100dvh] lg:h-[100dvh] bg-[#0a0a0a] text-zinc-50 font-[family-name:var(--font-sans)] lg:overflow-hidden">
 
             {/* ────────── HEADER ────────── */}
             {!isFullscreen && (
@@ -60,11 +60,11 @@ export function SimulationLayout({
             )}
 
             {/* ────────── MAIN STAGE ────────── */}
-            <main className="flex-1 flex flex-col lg:flex-row relative overflow-hidden">
+            <main className="flex-1 flex flex-col lg:flex-row relative lg:overflow-hidden">
                 {/* Visual / Canvas Area */}
                 <section className={cn(
-                    "relative flex-1 flex items-center justify-center transition-all",
-                    isFullscreen ? "fixed inset-0 z-[100] p-0 bg-black" : "min-h-[45vh] lg:min-h-full p-2 sm:p-3"
+                    "relative flex items-center justify-center transition-all",
+                    isFullscreen ? "fixed inset-0 z-[100] p-0 bg-black" : "h-[50vh] sm:h-[55vh] lg:flex-1 lg:h-auto lg:min-h-full p-2 sm:p-3 shrink-0"
                 )}>
                     {/* The Canvas Frame */}
                     <div className={cn(
@@ -89,7 +89,7 @@ export function SimulationLayout({
 
                 {/* ────────── INTERACTION PANEL ────────── */}
                 {!isFullscreen && (
-                    <aside className="h-[50vh] lg:h-full lg:w-[400px] xl:w-[420px] flex flex-col bg-[#0a0a0a] border-t-[3px] lg:border-t-0 lg:border-l-[3px] border-black z-40 relative shrink-0">
+                    <aside className="flex-1 lg:h-full lg:w-[400px] xl:w-[420px] flex flex-col bg-[#0a0a0a] border-t-[3px] lg:border-t-0 lg:border-l-[3px] border-black z-40 relative shrink-0 pb-20 lg:pb-0">
                         {/* Tab Buttons */}
                         <div className="flex items-center gap-1 p-1.5 sm:p-2 bg-[#111] shrink-0 border-b-[3px] border-black">
                             <TabButton
