@@ -79,7 +79,7 @@ export function Navbar() {
                 - Height: h-14 (56px) - Optimized for Mobile
                 - Style: Dark Glass Neo-Brutalist
             */}
-            <header className="fixed top-0 left-0 right-0 z-50 h-[53px] sm:h-16" role="banner">
+            <header className="fixed top-0 left-0 right-0 z-50 h-[53px] sm:h-16 md:hidden" role="banner">
                 <div
                     className={cn(
                         "h-full",
@@ -125,7 +125,7 @@ export function Navbar() {
                     {/* RIGHT: COMPACT CONTROLS */}
                     <div className="relative z-50 flex items-center gap-2">
 
-                        {/* Desktop Links */}
+                        {/* Desktop Links (Will be hidden anyway since parent is md:hidden, but kept for structural purity) */}
                         <nav className="hidden md:flex items-center gap-2 mr-6" aria-label="Ana navigasyon">
                             {navItems.map((item) => (
                                 <ViewTransitionLink
@@ -171,7 +171,7 @@ export function Navbar() {
                 </div>
             </header >
 
-            <div className="h-[53px] sm:h-[64px]" />
+            <div className="h-[53px] sm:h-[64px] md:hidden" />
             <CommandPalette isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
             <PhysicsFactModal open={isFactOpen} onOpenChange={setIsFactOpen} />
         </>

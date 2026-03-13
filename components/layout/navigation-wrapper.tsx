@@ -19,7 +19,10 @@ const GlobalAdminNotification = dynamic(
     { ssr: false }
 );
 
-
+const DesktopSidebar = dynamic(
+    () => import("@/components/layout/desktop-sidebar").then(mod => mod.DesktopSidebar),
+    { ssr: false }
+);
 
 
 
@@ -44,11 +47,15 @@ export function NavigationWrapper({ children }: { children: React.ReactNode }) {
 
     return (
         <>
-
             <GlobalAdminNotification />
             <Navbar />
-            {children}
-            <Footer />
+            <DesktopSidebar />
+            
+            <div className="md:pl-[80px] lg:pl-[260px] flex flex-col min-h-[100dvh] w-full transition-all duration-300">
+                {children}
+                <Footer />
+            </div>
+            
             <BottomNav />
             <HubGPTButton />
         </>
