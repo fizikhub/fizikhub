@@ -21,6 +21,7 @@ const lora = Lora({
   subsets: ["latin"],
   variable: "--font-serif",
   display: "swap",
+  preload: false,
   fallback: ['Georgia', 'serif'],
 });
 

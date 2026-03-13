@@ -117,7 +117,7 @@ export function Navbar() {
 
                     {/* LEFT: BRAND */}
                     <div className="relative z-50 flex-shrink-0 pt-0.5 hover:scale-105 transition-transform duration-300">
-                        <ViewTransitionLink href="/">
+                        <ViewTransitionLink href="/" aria-label="Ana Sayfa">
                             <DankLogo />
                         </ViewTransitionLink>
                     </div>

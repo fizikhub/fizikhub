@@ -77,10 +77,7 @@ export function BottomNav() {
                 isAtBottom ? "h-[70px] bg-black/60" : "h-[50px] bg-white/80 dark:bg-[#121212]/80",
                 "backdrop-blur-xl border-t border-black/10 dark:border-white/10 flex items-center justify-around px-2 pb-safe relative shadow-[0_-4px_16px_rgba(0,0,0,0.05)]"
             )}>
-                {/* Noise Texture */}
-                <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05] pointer-events-none z-0 mix-blend-overlay"
-                    style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 200 200\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noiseFilter\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.65\' numOctaves=\'3\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noiseFilter)\'/%3E%3C/svg%3E")' }}
-                />
+
 
                 <AnimatePresence mode="wait">
                     {!isAtBottom ? (
@@ -137,19 +134,6 @@ export function BottomNav() {
                                         "
                                     >
                                         <Plus className="w-5 h-5 text-black stroke-[3px] group-hover:rotate-90 group-hover:scale-110 transition-transform duration-300 relative z-10" />
-
-                                        {/* Shimmer Effect */}
-                                        <m.div
-                                            className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/40 to-transparent z-0 pointer-events-none"
-                                            initial={{ x: "-100%" }}
-                                            animate={{ x: "100%" }}
-                                            transition={{
-                                                repeat: Infinity,
-                                                duration: 2.5,
-                                                repeatDelay: 4,
-                                                ease: "easeInOut"
-                                            }}
-                                        />
                                     </m.div>
                                 </ViewTransitionLink>
                             </div>
