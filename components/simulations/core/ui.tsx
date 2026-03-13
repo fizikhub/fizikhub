@@ -4,7 +4,9 @@ import React from "react";
 import { m as motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
-// --- Custom Physics Slider ---
+// ─────────────────────────────────────────────────────────────
+//  NEO-BRUTALIST: PHYSICS SLIDER
+// ─────────────────────────────────────────────────────────────
 interface PhysicsSliderProps {
     label: string;
     value: number;
@@ -13,7 +15,7 @@ interface PhysicsSliderProps {
     step?: number;
     unit?: string;
     onChange: (val: number) => void;
-    color?: string; // used for accent
+    color?: string;
 }
 
 export function PhysicsSlider({
@@ -24,29 +26,30 @@ export function PhysicsSlider({
     step = 1,
     unit = "",
     onChange,
-    color = "#38BDF8"
+    color = "#FACC15"
 }: PhysicsSliderProps) {
 
     const percentage = ((value - min) / (max - min)) * 100;
 
     return (
         <div className="flex flex-col gap-2 w-full group">
-            <div className="flex justify-between items-center px-1">
-                <span className="text-xs font-bold text-zinc-400 tracking-wider uppercase group-hover:text-zinc-200 transition-colors">
+            <div className="flex justify-between items-center">
+                <span className="text-[11px] font-black text-zinc-400 tracking-wider uppercase group-hover:text-white transition-colors">
                     {label}
                 </span>
-                <div className="font-mono text-xs font-black px-2 py-1 rounded bg-black/50 border border-white/10 text-white min-w-[4rem] text-center shadow-inner tracking-tighter">
-                    {value.toFixed(step % 1 !== 0 ? 2 : 0)} <span className="text-zinc-500">{unit}</span>
+                <div
+                    className="font-mono text-xs font-black px-2.5 py-1 border-[2px] border-black bg-white text-black min-w-[4.5rem] text-center shadow-[2px_2px_0px_0px_#000] rounded-md"
+                >
+                    {value.toFixed(step % 1 !== 0 ? 2 : 0)} <span className="text-zinc-500 font-bold">{unit}</span>
                 </div>
             </div>
 
-            <div className="relative h-2 rounded-full bg-black border border-white/5 overflow-visible flex items-center shadow-inner">
+            <div className="relative h-3 rounded-md bg-zinc-900 border-[2px] border-black overflow-visible flex items-center shadow-[inset_0_2px_4px_rgba(0,0,0,0.4)]">
                 <div
-                    className="absolute left-0 top-0 bottom-0 rounded-full"
+                    className="absolute left-0 top-0 bottom-0 rounded-sm"
                     style={{
                         width: `${percentage}%`,
                         backgroundColor: color,
-                        boxShadow: `0 0 10px ${color}80`
                     }}
                 />
 
@@ -63,8 +66,8 @@ export function PhysicsSlider({
 
                 {/* Custom Thumb */}
                 <motion.div
-                    className="absolute w-4 h-4 rounded-full bg-white shadow-[0_0_10px_rgba(255,255,255,0.5)] border-2 border-zinc-900 pointer-events-none"
-                    style={{ left: `calc(${percentage}% - 8px)` }}
+                    className="absolute w-5 h-5 bg-white border-[2px] border-black shadow-[2px_2px_0px_0px_#000] pointer-events-none rounded-md"
+                    style={{ left: `calc(${percentage}% - 10px)` }}
                     layout
                 />
             </div>
@@ -72,7 +75,9 @@ export function PhysicsSlider({
     );
 }
 
-// --- Custom Physics Toggle ---
+// ─────────────────────────────────────────────────────────────
+//  NEO-BRUTALIST: PHYSICS TOGGLE
+// ─────────────────────────────────────────────────────────────
 interface PhysicsToggleProps {
     label: string;
     checked: boolean;
@@ -80,19 +85,20 @@ interface PhysicsToggleProps {
     color?: string;
 }
 
-export function PhysicsToggle({ label, checked, onChange, color = "#38BDF8" }: PhysicsToggleProps) {
+export function PhysicsToggle({ label, checked, onChange, color = "#FACC15" }: PhysicsToggleProps) {
     return (
-        <div className="flex items-center justify-between w-full p-2 sm:p-3 rounded-xl bg-black/20 border border-white/5 hover:border-white/10 transition-colors cursor-pointer group" onClick={() => onChange(!checked)}>
-            <span className="text-xs font-bold text-zinc-400 tracking-wider uppercase group-hover:text-zinc-200 transition-colors">
+        <div
+            className="flex items-center justify-between w-full p-3 rounded-lg bg-zinc-900 border-[2px] border-black shadow-[2px_2px_0px_0px_rgba(255,255,255,0.05)] hover:shadow-[3px_3px_0px_0px_rgba(255,255,255,0.08)] transition-all cursor-pointer group"
+            onClick={() => onChange(!checked)}
+        >
+            <span className="text-[11px] font-black text-zinc-400 tracking-wider uppercase group-hover:text-white transition-colors">
                 {label}
             </span>
 
-            <button
-                role="switch"
-                aria-checked={checked}
+            <div
                 className={cn(
-                    "relative inline-flex h-5 w-9 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950",
-                    checked ? "bg-white/20" : "bg-zinc-800"
+                    "relative inline-flex h-6 w-11 shrink-0 items-center rounded-md border-[2px] border-black transition-colors shadow-[2px_2px_0px_0px_#000]",
+                    checked ? "" : "bg-zinc-800"
                 )}
                 style={{ backgroundColor: checked ? color : undefined }}
             >
@@ -100,11 +106,11 @@ export function PhysicsToggle({ label, checked, onChange, color = "#38BDF8" }: P
                     layout
                     transition={{ type: "spring", stiffness: 500, damping: 30 }}
                     className={cn(
-                        "pointer-events-none block h-4 w-4 rounded-full bg-white shadow-lg ring-0 transition-transform",
-                        checked ? "translate-x-4" : "translate-x-0"
+                        "pointer-events-none block h-4 w-4 bg-white border-[1.5px] border-black rounded-sm shadow-sm",
+                        checked ? "translate-x-[22px]" : "translate-x-[2px]"
                     )}
                 />
-            </button>
+            </div>
         </div>
     );
 }

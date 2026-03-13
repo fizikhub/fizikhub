@@ -19,7 +19,7 @@ type TabType = "controls" | "theory" | "missions";
 
 export function SimulationLayout({
     title,
-    color = "#38BDF8",
+    color = "#FACC15",
     children,
     controlsArea,
     theoryArea,
@@ -29,41 +29,49 @@ export function SimulationLayout({
     const [isFullscreen, setIsFullscreen] = useState(false);
 
     return (
-        <div className="flex flex-col h-[100dvh] bg-[#09090b] text-zinc-50 font-[family-name:var(--font-outfit)] overflow-hidden">
+        <div className="flex flex-col h-[100dvh] bg-[#0a0a0a] text-zinc-50 font-[family-name:var(--font-sans)] overflow-hidden">
 
-            {/* Header / Topbar */}
+            {/* ────────── HEADER ────────── */}
             {!isFullscreen && (
-                <header
-                    className="relative z-50 flex items-center justify-between px-4 py-3 sm:py-4 border-b border-white/5"
-                    style={{ backgroundColor: `${color}15` }}
-                >
-                    <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent pointer-events-none" />
+                <header className="relative z-50 flex items-center justify-between px-3 sm:px-5 py-3 border-b-[3px] border-black bg-[#0a0a0a] shrink-0">
+                    {/* Noise Background */}
+                    <div className="absolute inset-0 opacity-[0.04] pointer-events-none mix-blend-multiply"
+                        style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 250 250' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }}
+                    />
 
-                    <div className="flex items-center gap-4 relative z-10 w-full max-w-screen-2xl mx-auto">
+                    <div className="flex items-center gap-3 relative z-10 w-full">
                         <ViewTransitionLink href="/simulasyonlar">
-                            <button className="flex items-center justify-center w-10 h-10 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 backdrop-blur-md transition-all active:scale-95">
-                                <ArrowLeft className="w-5 h-5 text-white" />
+                            <button className="flex items-center justify-center w-10 h-10 sm:w-11 sm:h-11 bg-white text-black border-[3px] border-black shadow-[3px_3px_0px_0px_#000] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] active:shadow-none active:translate-x-[2px] active:translate-y-[2px] transition-all rounded-lg">
+                                <ArrowLeft className="w-5 h-5 stroke-[3px]" />
                             </button>
                         </ViewTransitionLink>
 
-                        <h1 className="text-xl sm:text-2xl font-black text-white italic tracking-tighter drop-shadow-md">
-                            {title}
-                        </h1>
+                        <div className="flex items-center gap-2 overflow-hidden">
+                            <div
+                                className="w-3 h-8 sm:h-9 rounded-sm shrink-0"
+                                style={{ backgroundColor: color }}
+                            />
+                            <h1 className="text-lg sm:text-xl font-black text-white uppercase tracking-tight truncate">
+                                {title}
+                            </h1>
+                        </div>
                     </div>
                 </header>
             )}
 
-            {/* Main Stage */}
-            <main className="flex-1 flex flex-col lg:flex-row relative">
-                {/* Visual Area */}
+            {/* ────────── MAIN STAGE ────────── */}
+            <main className="flex-1 flex flex-col lg:flex-row relative overflow-hidden">
+                {/* Visual / Canvas Area */}
                 <section className={cn(
-                    "relative flex-1 flex items-center justify-center p-2 sm:p-4 bg-[url('/noise.png')] bg-repeat shadow-inner transition-all",
-                    isFullscreen ? "fixed inset-0 z-[100] p-0 bg-black" : "min-h-[50vh] lg:min-h-full"
+                    "relative flex-1 flex items-center justify-center transition-all",
+                    isFullscreen ? "fixed inset-0 z-[100] p-0 bg-black" : "min-h-[45vh] lg:min-h-full p-2 sm:p-3"
                 )}>
                     {/* The Canvas Frame */}
                     <div className={cn(
-                        "relative w-full h-full overflow-hidden flex items-center justify-center bg-black backdrop-blur-3xl transition-all duration-500",
-                        isFullscreen ? "rounded-none border-none shadow-none" : "rounded-3xl border border-white/5 shadow-2xl"
+                        "relative w-full h-full overflow-hidden flex items-center justify-center bg-black transition-all",
+                        isFullscreen
+                            ? "rounded-none border-none"
+                            : "rounded-xl border-[3px] border-black shadow-[4px_4px_0px_0px_rgba(255,255,255,0.05)]"
                     )}>
                         {children}
 
@@ -71,20 +79,19 @@ export function SimulationLayout({
                         <button
                             onClick={() => setIsFullscreen(!isFullscreen)}
                             className={cn(
-                                "absolute z-50 w-10 h-10 rounded-xl bg-black/50 border border-white/10 backdrop-blur text-white flex items-center justify-center hover:bg-white/20 transition-all active:scale-90",
-                                isFullscreen ? "top-4 right-4 bg-white/10 hover:bg-white/30" : "top-4 right-4"
+                                "absolute z-50 top-3 right-3 w-9 h-9 sm:w-10 sm:h-10 bg-white text-black border-[2px] border-black shadow-[2px_2px_0px_0px_#000] hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all flex items-center justify-center rounded-md",
                             )}
                         >
-                            {isFullscreen ? <Minimize2 className="w-5 h-5" /> : <Maximize2 className="w-5 h-5" />}
+                            {isFullscreen ? <Minimize2 className="w-4 h-4 stroke-[2.5px]" /> : <Maximize2 className="w-4 h-4 stroke-[2.5px]" />}
                         </button>
                     </div>
                 </section>
 
-                {/* Interaction Panel */}
+                {/* ────────── INTERACTION PANEL ────────── */}
                 {!isFullscreen && (
-                    <aside className="h-[45vh] lg:h-full lg:w-[420px] flex flex-col bg-zinc-950/80 backdrop-blur-xl border-t lg:border-t-0 lg:border-l border-white/5 z-40 relative shadow-[-10px_0_30px_rgba(0,0,0,0.5)]">
-                        {/* Tabs Header */}
-                        <div className="flex items-center p-2 gap-1 bg-black/60 shrink-0 overflow-x-auto overflow-y-hidden hide-scrollbar border-b border-white/5">
+                    <aside className="h-[50vh] lg:h-full lg:w-[400px] xl:w-[420px] flex flex-col bg-[#0a0a0a] border-t-[3px] lg:border-t-0 lg:border-l-[3px] border-black z-40 relative shrink-0">
+                        {/* Tab Buttons */}
+                        <div className="flex items-center gap-1 p-1.5 sm:p-2 bg-[#111] shrink-0 border-b-[3px] border-black">
                             <TabButton
                                 isActive={activeTab === "controls"}
                                 onClick={() => setActiveTab("controls")}
@@ -108,17 +115,21 @@ export function SimulationLayout({
                             />
                         </div>
 
-                        {/* Tab Content */}
-                        <div className="flex-1 overflow-y-auto p-4 sm:p-6 custom-scrollbar relative">
+                        {/* Tab Content (scrollable) */}
+                        <div className="flex-1 overflow-y-auto p-3 sm:p-5 relative">
+                            {/* Noise texture */}
+                            <div className="absolute inset-0 opacity-[0.03] pointer-events-none mix-blend-multiply"
+                                style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 250 250' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }}
+                            />
                             <AnimatePresence mode="wait">
                                 {activeTab === "controls" && (
                                     <motion.div
                                         key="controls"
-                                        initial={{ opacity: 0, x: -10 }}
-                                        animate={{ opacity: 1, x: 0 }}
-                                        exit={{ opacity: 0, x: 10 }}
-                                        transition={{ duration: 0.2 }}
-                                        className="h-full flex flex-col gap-6"
+                                        initial={{ opacity: 0, y: 8 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: -8 }}
+                                        transition={{ duration: 0.15 }}
+                                        className="relative z-10 flex flex-col gap-5"
                                     >
                                         {controlsArea || <Placeholder text="Kontrol paneli entegre edilmedi." />}
                                     </motion.div>
@@ -126,11 +137,11 @@ export function SimulationLayout({
                                 {activeTab === "theory" && (
                                     <motion.div
                                         key="theory"
-                                        initial={{ opacity: 0, x: -10 }}
-                                        animate={{ opacity: 1, x: 0 }}
-                                        exit={{ opacity: 0, x: 10 }}
-                                        transition={{ duration: 0.2 }}
-                                        className="h-full text-zinc-300 max-w-none text-sm leading-relaxed"
+                                        initial={{ opacity: 0, y: 8 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: -8 }}
+                                        transition={{ duration: 0.15 }}
+                                        className="relative z-10 text-zinc-300 max-w-none text-sm leading-relaxed"
                                     >
                                         {theoryArea ? theoryArea : <Placeholder text="Teori içeriği bulunamadı." />}
                                     </motion.div>
@@ -138,11 +149,11 @@ export function SimulationLayout({
                                 {activeTab === "missions" && (
                                     <motion.div
                                         key="missions"
-                                        initial={{ opacity: 0, x: -10 }}
-                                        animate={{ opacity: 1, x: 0 }}
-                                        exit={{ opacity: 0, x: 10 }}
-                                        transition={{ duration: 0.2 }}
-                                        className="h-full"
+                                        initial={{ opacity: 0, y: 8 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: -8 }}
+                                        transition={{ duration: 0.15 }}
+                                        className="relative z-10"
                                     >
                                         {missionsArea || <Placeholder text="Pedagojik görevler aktif değil." />}
                                     </motion.div>
@@ -161,21 +172,14 @@ function TabButton({ isActive, onClick, icon, label, color }: { isActive: boolea
         <button
             onClick={onClick}
             className={cn(
-                "relative flex-1 flex items-center justify-center gap-2 px-3 py-3 rounded-lg text-xs font-bold transition-all duration-300 z-10 tracking-widest overflow-hidden",
-                isActive ? "text-white" : "text-zinc-500 hover:text-zinc-300 hover:bg-white/5"
+                "relative flex-1 flex items-center justify-center gap-1.5 px-2 py-2.5 sm:py-3 text-[10px] sm:text-xs font-black transition-all duration-200 tracking-widest uppercase rounded-lg border-[2px]",
+                isActive
+                    ? "bg-white text-black border-black shadow-[3px_3px_0px_0px_#000] -translate-x-[1px] -translate-y-[1px]"
+                    : "border-transparent text-zinc-500 hover:text-white hover:bg-white/5"
             )}
         >
-            {isActive && (
-                <motion.div
-                    layoutId="activeTabBadge"
-                    className="absolute inset-0 rounded-lg pointer-events-none"
-                    style={{ backgroundColor: `${color}30` }} // 30 hex alpha
-                    initial={false}
-                    transition={{ type: "spring", stiffness: 400, damping: 30 }}
-                />
-            )}
             <span className="relative z-10">{icon}</span>
-            <span className="relative z-10">{label}</span>
+            <span className="relative z-10 hidden sm:inline">{label}</span>
         </button>
     );
 }
@@ -183,8 +187,8 @@ function TabButton({ isActive, onClick, icon, label, color }: { isActive: boolea
 function Placeholder({ text }: { text: string }) {
     return (
         <div className="h-full flex flex-col items-center justify-center text-zinc-600 space-y-4 py-12">
-            <div className="w-16 h-16 rounded-full border border-dashed border-zinc-700 bg-zinc-900/50 flex items-center justify-center" />
-            <p className="text-sm font-medium tracking-wide uppercase">{text}</p>
+            <div className="w-14 h-14 border-[3px] border-dashed border-zinc-700 bg-zinc-900/50 flex items-center justify-center rounded-lg" />
+            <p className="text-xs font-black tracking-widest uppercase">{text}</p>
         </div>
     );
 }
