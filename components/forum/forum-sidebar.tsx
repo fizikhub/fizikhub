@@ -22,10 +22,10 @@ export function ForumSidebar() {
     const MenuItem = ({ href, active, icon: Icon, label }: { href: string; active: boolean; icon: any; label: string }) => (
         <Link prefetch={false} href={href} className="block group">
             <div className={cn(
-                "flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 border-2 border-transparent",
+                "flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 border-[2.5px]",
                 active
-                    ? "bg-primary text-primary-foreground border-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] translate-x-[-2px] translate-y-[-2px] font-bold"
-                    : "text-muted-foreground hover:text-foreground hover:border-foreground hover:bg-background hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:translate-x-[-2px] hover:translate-y-[-2px]",
+                    ? "bg-[#FFBD2E] text-black border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_0px_rgba(255,255,255,0.3)] translate-x-[-2px] translate-y-[-2px] font-bold"
+                    : "text-muted-foreground border-transparent hover:text-foreground hover:border-black dark:hover:border-zinc-600 hover:bg-muted/50 hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[3px_3px_0px_0px_rgba(255,255,255,0.2)] hover:translate-x-[-2px] hover:translate-y-[-2px]",
                 isCybernetic && "rounded-none border-transparent hover:border-cyan-500 hover:shadow-[0_0_10px_rgba(0,255,255,0.2)] hover:bg-cyan-950/30 hover:translate-x-0 hover:translate-y-0",
                 isCybernetic && active && "bg-cyan-950/30 text-cyan-400 border-cyan-400 border-l-4 shadow-none translate-x-0 translate-y-0",
                 isPink && active && "bg-pink-500 text-white border-pink-700 shadow-[4px_4px_0px_0px_rgba(199,21,133,0.4)]"
@@ -39,7 +39,7 @@ export function ForumSidebar() {
     return (
         <div className={cn(
             "space-y-6 sticky top-24",
-            isCybernetic ? "cyber-card border-cyan-500/20 shadow-none p-5 !rounded-none bg-black/40" : "bg-card border-2 border-border rounded-xl p-5 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]"
+            isCybernetic ? "cyber-card border-cyan-500/20 shadow-none p-5 !rounded-none bg-black/40" : "bg-card border-[2.5px] border-black dark:border-zinc-700 rounded-xl p-5 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.15)]"
         )}>
             <div>
                 <h3 className={cn(

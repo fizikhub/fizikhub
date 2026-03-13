@@ -93,36 +93,39 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
             layout
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.2 }}
+            transition={{ duration: 0.25, ease: [0.25, 0.46, 0.45, 0.94] }}
             className="w-full h-full"
         >
             <ViewTransitionLink
                 href={`/forum/${question.id}`}
                 className={cn(
-                    "relative flex flex-col w-full h-full overflow-hidden transition-all duration-200 cursor-pointer group rounded-[8px]",
-                    // CONTAINER STYLE (MATCHING TERM CARD)
-                    "bg-white dark:bg-[#27272a]",
-                    "border-[3px] border-black",
-                    "shadow-[4px_4px_0px_0px_#000]",
-                    "hover:shadow-[2px_2px_0px_0px_#000] hover:translate-x-[2px] hover:translate-y-[2px]"
+                    "relative flex flex-col w-full h-full overflow-hidden transition-all duration-200 cursor-pointer group rounded-[10px]",
+                    // CONTAINER STYLE
+                    "bg-white dark:bg-[#1e1e21]",
+                    "border-[3px] border-black dark:border-zinc-700",
+                    "shadow-[4px_4px_0px_0px_#000] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.15)]",
+                    "hover:shadow-[2px_2px_0px_0px_#000] dark:hover:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.1)] hover:translate-x-[2px] hover:translate-y-[2px]"
                 )}
             >
-                {/* NOISE TEXTURE (If desired, consistent with Term) */}
+                {/* NOISE TEXTURE */}
                 <div className="absolute inset-0 opacity-[0.03] pointer-events-none mix-blend-multiply z-0"
                     style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 250 250' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }}
                 />
 
+                {/* Hover accent line on left */}
+                <div className="absolute left-0 top-0 bottom-0 w-[4px] bg-[#FFBD2E] opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20 rounded-l-[10px]" />
+
                 {/* 1. Header Bar (Yellow Theme) */}
-                <div className="flex items-center justify-between px-4 py-3 border-b-[3px] border-black bg-[#FFBD2E] z-10 relative">
-                    <span className="font-black text-xs uppercase tracking-widest text-black">
+                <div className="flex items-center justify-between px-4 py-2.5 border-b-[3px] border-black dark:border-zinc-700 bg-gradient-to-r from-[#FFBD2E] to-[#FFD466] z-10 relative">
+                    <span className="font-black text-[11px] uppercase tracking-[0.15em] text-black">
                         {question.category || "GENEL"}
                     </span>
                     <div className="flex items-center gap-2">
-                        <span className="text-[10px] font-bold text-black opacity-60 uppercase tracking-widest">
+                        <span className="text-[10px] font-bold text-black/50 uppercase tracking-widest">
                             {formatDistanceToNow(new Date(question.created_at), { addSuffix: true, locale: tr })}
                         </span>
                         {badgeLabel && (
-                            <div className="bg-black text-[#FFBD2E] px-2 py-0.5 rounded-[4px] text-[10px] font-bold uppercase">
+                            <div className="bg-black text-[#FFBD2E] px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider">
                                 {badgeLabel}
                             </div>
                         )}
@@ -130,18 +133,18 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
                 </div>
 
                 {/* 2. Main Body */}
-                <div className="flex-1 p-3 sm:p-5 flex flex-col gap-3 z-10 relative">
+                <div className="flex-1 p-4 sm:p-5 flex flex-col gap-2.5 z-10 relative">
 
-                    {/* Title (Big like TermCard) */}
-                    <h3 className="font-[family-name:var(--font-outfit)] text-xl sm:text-3xl font-black text-black dark:text-zinc-50 leading-none uppercase tracking-tighter mb-1 group-hover:text-[#FFBD2E] transition-colors line-clamp-2">
+                    {/* Title */}
+                    <h3 className="font-[family-name:var(--font-outfit)] text-lg sm:text-2xl font-black text-black dark:text-zinc-50 leading-tight uppercase tracking-tight group-hover:text-[#FFBD2E] transition-colors duration-200 line-clamp-2">
                         {question.title}
                     </h3>
 
                     {/* Content Snippet */}
                     <div className="relative">
                         <p className={cn(
-                            "font-[family-name:var(--font-inter)] text-sm font-semibold text-neutral-700 dark:text-zinc-300 leading-relaxed font-mono-accent",
-                            !isExpanded && "line-clamp-5"
+                            "font-[family-name:var(--font-inter)] text-[13px] sm:text-sm font-medium text-neutral-600 dark:text-zinc-400 leading-relaxed",
+                            !isExpanded && "line-clamp-4"
                         )}>
                             {cleanContent}
                             {!isExpanded && question.content?.length > 160 && "..."}
@@ -155,11 +158,11 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
                         {question.content?.length > 160 && !isExpanded && (
                             <button
                                 onClick={(e) => {
-                                    e.preventDefault(); // Prevent link nav
+                                    e.preventDefault();
                                     e.stopPropagation();
                                     setIsExpanded(true);
                                 }}
-                                className="mt-2 text-xs font-black uppercase tracking-wider text-[#FFBD2E] hover:underline bg-black px-2 py-1 rounded-sm"
+                                className="mt-3 text-[10px] font-black uppercase tracking-widest text-[#FFBD2E] bg-black hover:bg-zinc-800 px-3 py-1.5 rounded-md transition-colors border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,0.3)]"
                             >
                                 Devamını Oku
                             </button>
@@ -172,19 +175,19 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
                                     e.stopPropagation();
                                     setIsExpanded(false);
                                 }}
-                                className="mt-2 text-xs font-black uppercase tracking-wider text-neutral-500 hover:text-black dark:hover:text-white transition-colors"
+                                className="mt-3 text-[10px] font-black uppercase tracking-widest text-neutral-400 hover:text-black dark:hover:text-white transition-colors"
                             >
-                                Küçült
+                                ▲ Küçült
                             </button>
                         )}
                     </div>
                 </div>
 
-                {/* 3. Footer (Term Style) */}
-                <div className="mt-auto px-5 py-3 border-t-[3px] border-black bg-neutral-50 dark:bg-[#18181b] flex items-center justify-between z-10 relative">
+                {/* 3. Footer */}
+                <div className="mt-auto px-4 sm:px-5 py-2.5 border-t-[3px] border-black dark:border-zinc-700 bg-neutral-50 dark:bg-[#161618] flex items-center justify-between z-10 relative">
 
                     {/* Author (Left) */}
-                    <div className="flex items-center gap-2 z-20">
+                    <div className="flex items-center gap-2.5 z-20">
                         <button
                             onClick={(e) => {
                                 e.preventDefault();
@@ -193,15 +196,15 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
                             }}
                             className="flex items-center gap-2 group/author cursor-pointer"
                         >
-                            <div className="w-6 h-6 rounded-full border-2 border-black overflow-hidden bg-white shadow-[1px_1px_0px_0px_#000]">
+                            <div className="w-7 h-7 rounded-full border-[2px] border-black dark:border-zinc-600 overflow-hidden bg-white shadow-[1px_1px_0px_0px_#000] dark:shadow-[1px_1px_0px_0px_rgba(255,255,255,0.1)]">
                                 <OptimizedAvatar
                                     src={question.profiles?.avatar_url}
                                     alt={question.profiles?.username || "?"}
-                                    size={24}
+                                    size={28}
                                     className="w-full h-full"
                                 />
                             </div>
-                            <span className="text-[10px] font-black uppercase text-black dark:text-zinc-400 group-hover/author:text-[#FFBD2E] transition-colors">
+                            <span className="text-[11px] font-black uppercase tracking-wider text-neutral-500 dark:text-zinc-500 group-hover/author:text-[#FFBD2E] transition-colors">
                                 {question.full_name || question.profiles?.username}
                             </span>
                         </button>
@@ -211,25 +214,26 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
                     <div className="flex items-center gap-3">
 
                         {/* Vote Pod */}
-                        <div className="flex items-center gap-1 border-2 border-black bg-white dark:bg-black rounded-md overflow-hidden shadow-[2px_2px_0px_0px_#000]" onClick={(e) => e.stopPropagation()}>
+                        <div className="flex items-center border-[2px] border-black dark:border-zinc-600 bg-white dark:bg-[#1e1e21] rounded-lg overflow-hidden shadow-[2px_2px_0px_0px_#000] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.1)]" onClick={(e) => e.stopPropagation()}>
                             <button
                                 onClick={(e) => handleVote(e, 1)}
-                                className={cn("px-1.5 py-0.5 hover:bg-green-100 dark:hover:bg-green-900/40 transition-colors border-r border-black", voteState === 1 && "bg-green-100 dark:bg-green-900")}>
-                                <ChevronUp className={cn("w-3.5 h-3.5 stroke-[3px]", voteState === 1 ? "text-green-600" : "text-black dark:text-zinc-400")} />
+                                className={cn("px-2 py-1 hover:bg-green-50 dark:hover:bg-green-900/30 transition-colors border-r-[2px] border-black dark:border-zinc-600", voteState === 1 && "bg-green-100 dark:bg-green-900/50")}>
+                                <ChevronUp className={cn("w-3.5 h-3.5 stroke-[3px]", voteState === 1 ? "text-green-500" : "text-black dark:text-zinc-400")} />
                             </button>
-                            <span className={cn("px-1 min-w-[16px] text-center text-[10px] font-black", votes > 0 ? "text-green-600" : (votes < 0 ? "text-red-500" : "text-black dark:text-zinc-300"))}>
+                            <span className={cn("px-2 min-w-[20px] text-center text-[11px] font-black tabular-nums", votes > 0 ? "text-green-500" : (votes < 0 ? "text-red-500" : "text-neutral-400 dark:text-zinc-500"))}>
                                 {votes}
                             </span>
                             <button
                                 onClick={(e) => handleVote(e, -1)}
-                                className={cn("px-1.5 py-0.5 hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors border-l border-black", voteState === -1 && "bg-red-100 dark:bg-red-900")}>
-                                <ChevronDown className={cn("w-3.5 h-3.5 stroke-[3px]", voteState === -1 ? "text-red-600" : "text-black dark:text-zinc-400")} />
+                                className={cn("px-2 py-1 hover:bg-red-50 dark:hover:bg-red-900/30 transition-colors border-l-[2px] border-black dark:border-zinc-600", voteState === -1 && "bg-red-100 dark:bg-red-900/50")}>
+                                <ChevronDown className={cn("w-3.5 h-3.5 stroke-[3px]", voteState === -1 ? "text-red-500" : "text-black dark:text-zinc-400")} />
                             </button>
                         </div>
 
-                        <div className="flex items-center gap-1.5 text-zinc-600 dark:text-zinc-400 group-hover:text-black dark:group-hover:text-white transition-colors">
+                        {/* Comment count */}
+                        <div className="flex items-center gap-1.5 text-neutral-400 dark:text-zinc-500 group-hover:text-neutral-600 dark:group-hover:text-zinc-300 transition-colors">
                             <MessageCircle className="w-4 h-4" />
-                            <span className="text-xs font-bold">{answerCount}</span>
+                            <span className="text-[11px] font-black tabular-nums">{answerCount}</span>
                         </div>
                     </div>
                 </div>

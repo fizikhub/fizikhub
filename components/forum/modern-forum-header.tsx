@@ -353,10 +353,10 @@ export function ModernForumHeader() {
             </div>
 
             {/* FILTERS BAR - REFINED & CLEAN */}
-            <div className="flex flex-col md:flex-row gap-3 sm:gap-4 items-center justify-between sticky top-[60px] z-30 py-2 sm:py-4 bg-background/95 backdrop-blur-md transition-all">
+            <div className="flex flex-col md:flex-row gap-3 sm:gap-4 items-center justify-between sticky top-[60px] z-30 py-3 sm:py-4 bg-background/95 backdrop-blur-md transition-all">
                 {/* Categories */}
-                <div className="w-full md:w-auto overflow-x-auto scrollbar-hide py-2">
-                    <div className="flex gap-2 sm:gap-3 min-w-max px-1">
+                <div className="w-full md:w-auto overflow-x-auto scrollbar-hide py-1">
+                    <div className="flex gap-2 sm:gap-2.5 min-w-max px-1">
                         {categories.map((category) => {
                             const isActive = currentCategory === category;
                             return (
@@ -364,10 +364,10 @@ export function ModernForumHeader() {
                                     key={category}
                                     onClick={() => handleCategoryChange(category)}
                                     className={cn(
-                                        "px-4 py-2 text-xs font-black capitalize tracking-wide border-2 transition-all duration-200 rounded-full",
+                                        "px-4 py-2 text-[11px] sm:text-xs font-black uppercase tracking-wider border-[2.5px] transition-all duration-200 rounded-full relative",
                                         isActive
-                                            ? "bg-neo-pink text-white border-black shadow-[2px_2px_0px_0px_#000] translate-x-[-1px] translate-y-[-1px]"
-                                            : "bg-white text-black border-black hover:bg-gray-100 hover:shadow-[2px_2px_0px_0px_#000] hover:translate-x-[-1px] hover:translate-y-[-1px]"
+                                            ? "bg-[#FFBD2E] text-black border-black shadow-[3px_3px_0px_0px_#000] translate-x-[-1px] translate-y-[-1px]"
+                                            : "bg-card text-foreground border-black dark:border-zinc-600 hover:border-black hover:bg-[#FFBD2E]/10 hover:shadow-[2px_2px_0px_0px_#000] dark:hover:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.3)] hover:translate-x-[-1px] hover:translate-y-[-1px]"
                                     )}
                                 >
                                     {category}
@@ -378,14 +378,14 @@ export function ModernForumHeader() {
                 </div>
 
                 {/* Sort */}
-                <div className="flex items-center gap-2 bg-white p-1 rounded-xl border-2 border-black w-full md:w-auto shadow-[2px_2px_0px_0px_#000]">
+                <div className="flex items-center gap-1 bg-card p-1 rounded-xl border-[2.5px] border-black dark:border-zinc-600 w-full md:w-auto shadow-[2px_2px_0px_0px_#000] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.2)]">
                     <button
                         onClick={() => handleSortChange("newest")}
                         className={cn(
-                            "flex-1 md:flex-none px-4 py-1.5 text-[10px] sm:text-xs font-black uppercase transition-all rounded-lg border-2 border-transparent",
+                            "flex-1 md:flex-none px-4 py-1.5 text-[10px] sm:text-xs font-black uppercase transition-all rounded-lg border-2",
                             currentSort === 'newest'
-                                ? "bg-neo-blue text-black border-black"
-                                : "text-gray-500 hover:text-black hover:bg-gray-100"
+                                ? "bg-[#FFBD2E] text-black border-black shadow-[1px_1px_0px_0px_#000]"
+                                : "text-muted-foreground border-transparent hover:text-foreground hover:bg-muted"
                         )}
                     >
                         En Yeniler
@@ -393,10 +393,10 @@ export function ModernForumHeader() {
                     <button
                         onClick={() => handleSortChange("popular")}
                         className={cn(
-                            "flex-1 md:flex-none px-4 py-1.5 text-[10px] sm:text-xs font-black uppercase transition-all rounded-lg border-2 border-transparent",
+                            "flex-1 md:flex-none px-4 py-1.5 text-[10px] sm:text-xs font-black uppercase transition-all rounded-lg border-2",
                             currentSort === 'popular'
-                                ? "bg-neo-blue text-black border-black"
-                                : "text-gray-500 hover:text-black hover:bg-gray-100"
+                                ? "bg-[#FFBD2E] text-black border-black shadow-[1px_1px_0px_0px_#000]"
+                                : "text-muted-foreground border-transparent hover:text-foreground hover:bg-muted"
                         )}
                     >
                         Popüler

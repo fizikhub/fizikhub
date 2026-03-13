@@ -151,16 +151,16 @@ export default async function ForumPage({ searchParams }: ForumPageProps) {
                         {/* Main Content */}
                         <div className="space-y-6 min-w-0 order-2 lg:order-1">
                             {!questions || questions.length === 0 ? (
-                                <div className="flex flex-col items-center justify-center py-24 px-4 text-center border border-dashed border-border rounded-3xl bg-muted/5">
-                                    <div className="w-16 h-16 rounded-full bg-muted/50 flex items-center justify-center mb-4">
-                                        <Ghost className="w-8 h-8 text-muted-foreground" />
+                                <div className="flex flex-col items-center justify-center py-20 px-6 text-center border-[3px] border-dashed border-black/30 dark:border-zinc-600 rounded-[10px] bg-card">
+                                    <div className="w-16 h-16 rounded-xl bg-[#FFBD2E]/20 border-[2.5px] border-black dark:border-zinc-600 flex items-center justify-center mb-5 shadow-[3px_3px_0px_0px_#000] dark:shadow-[3px_3px_0px_0px_rgba(255,255,255,0.1)]">
+                                        <Ghost className="w-8 h-8 text-black dark:text-zinc-300" />
                                     </div>
-                                    <h3 className="text-xl font-bold text-foreground mb-2">
+                                    <h3 className="text-lg font-black uppercase tracking-tight text-foreground mb-2">
                                         {searchQuery
                                             ? `"${searchQuery}" için sonuç bulunamadı`
                                             : "Henüz soru sorulmamış"}
                                     </h3>
-                                    <p className="text-muted-foreground text-sm max-w-sm">
+                                    <p className="text-sm font-medium text-muted-foreground max-w-sm leading-relaxed">
                                         {searchQuery
                                             ? "Farklı anahtar kelimelerle aramayı deneyebilirsin."
                                             : "Bu kategori sessiz görünüyor. İlk soruyu sen sorarak tartışmayı başlatabilirsin!"}
