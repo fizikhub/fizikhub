@@ -61,10 +61,10 @@ export default function Error({
                             Bu sorunu ya çözmeye çalışıyoruz ya da hiç farkında bile değiliz.
                         </p>
 
-                        {/* DEBUGGING INFO */}
+                        {/* DEBUGGING INFO — Production'da detay gizlenir */}
                         <div className="mt-8 p-4 bg-red-950/30 border border-red-500/20 rounded-lg text-xs font-mono text-red-200 overflow-auto max-h-40 text-left">
                             <p className="font-bold border-b border-red-500/20 pb-1 mb-2">HATA DETAYI (Bunu geliştiriciye ilet):</p>
-                            <p>{error.message || "Bilinmeyen Hata"}</p>
+                            <p>{process.env.NODE_ENV === 'development' ? (error.message || "Bilinmeyen Hata") : "Beklenmeyen bir hata oluştu."}</p>
                             {error.digest && <p className="mt-1 text-red-400">Digest: {error.digest}</p>}
                         </div>
                     </div>

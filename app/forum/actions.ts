@@ -102,6 +102,20 @@ export async function createQuestion(formData: { title: string; content: string;
         return { success: false, error: "Soru sormak için giriş yapmalısınız." };
     }
 
+    // Input validation
+    if (!formData.title || formData.title.trim().length === 0) {
+        return { success: false, error: "Başlık boş olamaz." };
+    }
+    if (formData.title.length > 300) {
+        return { success: false, error: "Başlık en fazla 300 karakter olabilir." };
+    }
+    if (!formData.content || formData.content.trim().length === 0) {
+        return { success: false, error: "İçerik boş olamaz." };
+    }
+    if (formData.content.length > 20000) {
+        return { success: false, error: "İçerik en fazla 20.000 karakter olabilir." };
+    }
+
     // Moderation check
     const modResult = checkContent(`${formData.title} ${formData.content}`);
     const { ip, ua } = await getClientMetadata();
@@ -143,6 +157,20 @@ export async function updateQuestion(questionId: number, content: string) {
 
     if (!user) {
         return { success: false, error: "Giriş yapmalısınız." };
+    }
+
+    // Input validation
+    if (!content || content.trim().length === 0) {
+        return { success: false, error: "İçerik boş olamaz." };
+    }
+    if (content.length > 20000) {
+        return { success: false, error: "İçerik en fazla 20.000 karakter olabilir." };
+    }
+
+    // Moderation check on update
+    const modResult = checkContent(content);
+    if (modResult.isFlagged) {
+        return { success: false, error: "İçerik politikasına aykırı içerik tespit edildi." };
     }
 
     // Get question to check ownership
@@ -187,8 +215,15 @@ export async function createAnswer(formData: { content: string; questionId: numb
     const { data: { user }, error: authError } = await supabase.auth.getUser();
 
     if (authError || !user) {
-        console.error("Auth Error:", authError);
-        return { success: false, error: `Oturum hatası: ${authError?.message || "Kullanıcı bulunamadı"}` };
+        return { success: false, error: "Oturum hatası oluştu. Lütfen tekrar giriş yapın." };
+    }
+
+    // Input validation
+    if (!formData.content || formData.content.trim().length === 0) {
+        return { success: false, error: "Cevap içeriği boş olamaz." };
+    }
+    if (formData.content.length > 20000) {
+        return { success: false, error: "Cevap en fazla 20.000 karakter olabilir." };
     }
 
     const { ip, ua } = await getClientMetadata();
@@ -253,6 +288,17 @@ export async function voteQuestion(questionId: number, voteType: 1 | -1) {
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) return { success: false, error: "Giriş yapmalısınız." };
+
+    // Self-vote prevention
+    const { data: questionData } = await supabase
+        .from('questions')
+        .select('author_id')
+        .eq('id', questionId)
+        .single();
+
+    if (questionData?.author_id === user.id) {
+        return { success: false, error: "Kendi sorunuzu oylayamazsınız." };
+    }
 
     // Check existing vote
     const { data: existingVote } = await supabase
@@ -544,6 +590,9 @@ export async function createAnswerComment(formData: {
 
     if (!formData.content || formData.content.trim().length === 0) {
         return { success: false, error: "Yorum içeriği boş olamaz." };
+    }
+    if (formData.content.length > 5000) {
+        return { success: false, error: "Yorum en fazla 5.000 karakter olabilir." };
     }
 
     const { ip, ua } = await getClientMetadata();

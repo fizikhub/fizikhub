@@ -10,7 +10,7 @@ export default function GlobalError({
     reset: () => void;
 }) {
     return (
-        <html>
+        <html lang="tr">
             <body>
                 <Error error={error} reset={reset} />
             </body>

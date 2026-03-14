@@ -74,6 +74,9 @@ export async function sendMessage(
     if (!content.trim()) {
         return { success: false, error: "Mesaj boş olamaz" };
     }
+    if (content.length > 5000) {
+        return { success: false, error: "Mesaj en fazla 5.000 karakter olabilir." };
+    }
 
     const { ip, ua } = await getClientMetadata();
     const modResult = checkContent(content.trim());
@@ -400,6 +403,15 @@ export async function editMessage(messageId: number, newContent: string) {
     if (!newContent.trim()) {
         return { success: false, error: "Mesaj boş olamaz" };
     }
+    if (newContent.length > 5000) {
+        return { success: false, error: "Mesaj en fazla 5.000 karakter olabilir." };
+    }
+
+    // Moderation check on edit
+    const modResult = checkContent(newContent.trim());
+    if (modResult.isFlagged) {
+        return { success: false, error: "İçerik politikasına aykırı içerik tespit edildi." };
+    }
 
     // Verify ownership
     const { data: message } = await supabase
@@ -431,12 +443,19 @@ export async function editMessage(messageId: number, newContent: string) {
 // REACT TO MESSAGE
 // ============================================
 
+const ALLOWED_REACTIONS = ['❤️', '👍', '👎', '😂', '😢', '🔥', '👏', '🎉', '😮', '🤔'];
+
 export async function reactToMessage(messageId: number, reaction: string) {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) {
         return { success: false, error: "Giriş yapmalısınız" };
+    }
+
+    // Emoji whitelist validation
+    if (!ALLOWED_REACTIONS.includes(reaction)) {
+        return { success: false, error: "Geçersiz reaksiyon." };
     }
 
     // Check if already reacted with same emoji

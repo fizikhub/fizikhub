@@ -84,11 +84,12 @@ export async function getArticleBySlug(supabase: SupabaseClient<Database>, slug:
     return null;
 }
 
-export async function getQuestions(supabase: SupabaseClient<Database>) {
+export async function getQuestions(supabase: SupabaseClient<Database>, options?: { limit?: number }) {
     const { data, error } = await supabase
         .from('questions')
         .select('*, author:profiles(*)')
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: false })
+        .limit(options?.limit || 50);
 
     if (error) {
         console.error('Error fetching questions:', error);

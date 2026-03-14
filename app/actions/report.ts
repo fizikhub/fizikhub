@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase-server";
+import { isAdminEmail } from "@/lib/admin";
 
 interface CreateReportParams {
     resourceId: string;
@@ -30,17 +31,13 @@ export async function createReport(params: CreateReportParams) {
         return { success: false, error: "Şikayet oluşturulurken bir hata oluştu." };
     }
 
-    // Notify Admin
-    // We target specific admin emails and the admin role
-    const adminEmails = ['barannnbozkurttb.b@gmail.com', 'barannnnbozkurttb.b@gmail.com'];
-
+    // Notify admins (using centralized admin check)
     const { data: admins } = await supabase
         .from('profiles')
-        .select('id')
-        .or(`role.eq.admin,email.in.("${adminEmails.join('","')}")`);
+        .select('id, role')
+        .eq('role', 'admin');
 
     if (admins && admins.length > 0) {
-        // Import createNotification dynamically to avoid circular dependency if any (though here it's fine)
         const { createNotification } = await import('@/app/notifications/actions');
 
         for (const admin of admins) {
@@ -49,7 +46,7 @@ export async function createReport(params: CreateReportParams) {
                 actorId: user.id,
                 type: 'report',
                 resourceId: params.resourceId,
-                resourceType: 'profile', // Using 'profile' as a fallback or generic type since 'report' isn't a resource type in the list yet
+                resourceType: 'profile',
                 content: `Yeni bir şikayet oluşturdu: ${params.reason}`
             });
         }
@@ -64,10 +61,9 @@ export async function getReports() {
 
     if (!user) return [];
 
-    // Check admin
-    const isAdmin = user.email === 'barannnbozkurttb.b@gmail.com' || user.email === 'barannnnbozkurttb.b@gmail.com';
+    // Centralized admin check
+    const isAdmin = isAdminEmail(user.email);
     if (!isAdmin) {
-        // Double check role
         const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single();
         if (profile?.role !== 'admin') return [];
     }
@@ -96,10 +92,8 @@ export async function updateReportStatus(reportId: number, status: 'pending' | '
         return { success: false, error: "Giriş yapmalısınız." };
     }
 
-    // Admin check - role or email
-    const adminEmails = ['barannnbozkurttb.b@gmail.com', 'barannnnbozkurttb.b@gmail.com'];
-    const isAdmin = adminEmails.includes(user.email?.toLowerCase() || '');
-
+    // Centralized admin check
+    const isAdmin = isAdminEmail(user.email);
     if (!isAdmin) {
         const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single();
         if (profile?.role !== 'admin') {
