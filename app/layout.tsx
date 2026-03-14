@@ -53,11 +53,12 @@ export const metadata: Metadata = {
   verification: { 
     google: process.env.NEXT_PUBLIC_GSC_TOKEN || '', 
   },
-  description: "BİLİMİ Tİ'YE ALIYORUZ AMA CİDDİLİ ŞEKİLDE. Evrenin sırlarını çözmeye çalışanların buluşma noktası.",
+  description: "Fizikhub: Türkiye'nin en aktif bilim, fizik, uzay, kuantum ve evren platformu. Türkçe akademik makaleler, bilimsel forum, sözlük, fizik eğitim materyalleri, TYT/AYT/YKS fizik soru çözümü ve daha fazlası.",
   keywords: [
-    "fizik", "bilim", "uzay", "teknoloji", "fizikhub", "forum", "soru cevap",
-    "TYT Fizik", "AYT Fizik", "YKS Fizik", "Bilimsel Tartışma", "Popüler Bilim", "Fizik Soru Çözümü",
-    "Kuantum Fiziği", "Astrofizik", "Bilim Sözlüğü"
+    "fizik", "bilim", "uzay", "evren", "fizikhub", "forum", "soru cevap", "türkçe fizik",
+    "TYT Fizik", "AYT Fizik", "YKS Fizik", "Bilimsel Makale", "Popüler Bilim", "Fizik Soru Çözümü",
+    "Kuantum Fiziği", "Astrofizik", "Bilim Sözlüğü", "kara delik", "görelilik", "fizik formülleri",
+    "bilim insanları", "einstein", "newton", "modern fizik", "astronomi"
   ],
   authors: [{ name: "Fizikhub Ekibi", url: "https://fizikhub.com" }],
   creator: "Fizikhub",
@@ -71,8 +72,8 @@ export const metadata: Metadata = {
     type: "website",
     locale: "tr_TR",
     url: "https://fizikhub.com",
-    title: "Fizikhub",
-    description: "BİLİMİ Tİ'YE ALIYORUZ AMA CİDDİLİ ŞEKİLDE. Evrenin sırlarını çözmeye çalışanların buluşma noktası.",
+    title: "Fizikhub | Türkiye'nin Fizik & Uzay Platformu",
+    description: "Fizikhub: Türkiye'nin en aktif bilim, fizik, uzay, kuantum ve evren platformu. Türkçe akademik makaleler, bilimsel forum, sözlük ve interaktif bilim eğitim merkezi.",
     siteName: "Fizikhub",
     images: [
       {

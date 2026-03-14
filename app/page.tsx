@@ -32,11 +32,11 @@ import { LatestArticlesSlider } from "@/components/home/latest-articles-slider";
 
 export const metadata: Metadata = {
   title: "Ana Sayfa",
-  description: "BİLİMİ Tİ'YE ALIYORUZ AMA CİDDİLİ ŞEKİLDE. Fizik makaleleri, bilim forumu, sözlük, testler ve interaktif simülasyonlar. Evrenin sırlarını çözmeye çalışanların buluşma noktası.",
-  keywords: ["fizik", "bilim", "uzay", "kuantum", "astrofizik", "TYT fizik", "AYT fizik", "bilim forumu", "fizik soruları", "bilim sözlüğü"],
+  description: "Fizikhub Ana Sayfa: En güncel bilimsel makaleler, fizik forum tartışmaları, interaktif simülasyonlar, fizik terimleri sözlüğü ve çevrimiçi soru testleri. Türkçe fizik öğren ve sorularını çöz.",
+  keywords: ["fizik", "bilim", "uzay", "kuantum", "astrofizik", "TYT fizik", "AYT fizik", "bilim forumu", "fizik soruları", "bilim sözlüğü", "türkçe bilim platformu", "interaktif fizik", "fizik deneyleri"],
   openGraph: {
-    title: "Fizikhub — Bilimi Ti'ye Alıyoruz",
-    description: "Fizik makaleleri, bilim forumu, sözlük, testler ve interaktif simülasyonlar. Türkçe bilim platformu.",
+    title: "Fizikhub — Türkiye'nin Fizik, Uzay ve Bilim Merkezi",
+    description: "Türkçe bilim platformu: Fizik makaleleri, aktif bilim forumu, kavram sözlüğü, eğitim testleri ve interaktif fizik simülasyonları.",
     type: "website",
     url: "https://fizikhub.com",
     images: [{ url: "/og-image.jpg", width: 1200, height: 630, alt: "Fizikhub — Bilimi Ti'ye Alıyoruz" }],
@@ -45,8 +45,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Fizikhub — Bilimi Ti'ye Alıyoruz",
-    description: "Fizik makaleleri, bilim forumu, sözlük, testler ve interaktif simülasyonlar.",
+    title: "Fizikhub — Türkiye'nin Fizik, Uzay ve Bilim Merkezi",
+    description: "En güncel fizik makaleleri, bilim forumu tartışmaları, kuantum sırları ve testler. Keşfetmeye anasayfadan başla.",
     images: ["/og-image.jpg"],
     creator: "@fizikhub",
   },

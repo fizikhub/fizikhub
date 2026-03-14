@@ -16,7 +16,11 @@ import {
 import { toast } from "sonner";
 import { createArticle, updateArticle, uploadArticleImage } from "@/app/yazar/actions";
 import NextImage from "next/image";
-import { TiptapEditor } from "./tiptap-editor";
+import dynamic from "next/dynamic";
+const TiptapEditor = dynamic(() => import("./tiptap-editor").then((mod) => mod.TiptapEditor), {
+    ssr: false,
+    loading: () => <div className="h-64 flex items-center justify-center border-2 border-dashed border-black/20 rounded-lg text-zinc-500 font-bold animate-pulse">Editör yükleniyor...</div>
+});
 import { ImageCropDialog } from "@/components/shared/image-crop-dialog";
 
 interface ArticleEditorProps {
