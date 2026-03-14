@@ -262,8 +262,7 @@ export default async function QuestionPage({ params }: PageProps) {
     ];
 
     return (
-        <div className="min-h-screen bg-background pb-20 relative overflow-x-hidden selection:bg-primary/20 selection:text-primary">
-            {/* ScrollFixer removed to prevent hydration issues */}
+        <div className="min-h-screen bg-background pb-20 relative overflow-x-hidden selection:bg-[#FFBD2E]/20 selection:text-[#FFBD2E]">
             <ReadingProgress />
             <BackgroundWrapper />
             <script
@@ -290,24 +289,24 @@ export default async function QuestionPage({ params }: PageProps) {
                         {/* QUESTION CARD - Neo-Brutalist */}
                         <div className={cn(
                             "relative overflow-hidden transition-all duration-200",
-                            "bg-white dark:bg-[#27272a]",
-                            "border-[3px] border-black rounded-[8px]",
-                            "shadow-[4px_4px_0px_0px_#000]",
-                            "-mx-2 sm:mx-0" // Stretch slightly on mobile to feel chunky
+                            "bg-white dark:bg-[#1e1e21]",
+                            "border-[2.5px] border-black dark:border-zinc-700 rounded-[10px]",
+                            "shadow-[4px_4px_0px_0px_#000] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)]",
+                            "-mx-2 sm:mx-0"
                         )}>
                             {/* Noise Texture */}
-                            <div className="absolute inset-0 opacity-[0.03] pointer-events-none mix-blend-multiply z-0"
+                            <div className="absolute inset-0 opacity-[0.02] dark:opacity-[0.04] pointer-events-none mix-blend-multiply z-0"
                                 style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 250 250' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }}
                             />
 
                             {/* 1. Yellow Neo-Brutalist Header Bar */}
-                            <div className="flex items-center justify-between px-4 py-3 border-b-[3px] border-black bg-[#FFBD2E] z-10 relative">
+                            <div className="flex items-center justify-between px-4 sm:px-5 py-2.5 border-b-[2.5px] border-black dark:border-zinc-700 bg-gradient-to-r from-[#FFBD2E] to-[#FFD466] z-10 relative">
                                 <span className="font-black text-xs sm:text-sm uppercase tracking-widest text-black">
                                     {question.category || "GENEL"}
                                 </span>
                                 <div className="flex items-center gap-2">
                                     {isSolved && (
-                                        <div className="flex items-center gap-1 bg-black text-[#FFBD2E] px-2 py-0.5 rounded-[4px] text-[10px] sm:text-xs font-bold uppercase">
+                                        <div className="flex items-center gap-1 bg-black text-[#FFBD2E] px-2.5 py-1 rounded-full text-[10px] sm:text-xs font-bold uppercase">
                                             <CheckCircle2 className="h-3 w-3" />
                                             Çözüldü
                                         </div>
@@ -319,23 +318,23 @@ export default async function QuestionPage({ params }: PageProps) {
                             <div className="p-4 sm:p-5 pb-0 flex justify-between items-start gap-3 relative z-10">
                                 <div className="flex items-center gap-3">
                                     <Link prefetch={false} href={`/kullanici/${question.profiles?.username}`} className="block group">
-                                        <Avatar className="h-10 w-10 sm:h-12 sm:w-12 border-2 border-black rounded-full overflow-hidden bg-white shadow-[2px_2px_0_0_#000] group-hover:shadow-[1px_1px_0_0_#000] group-hover:translate-x-[1px] group-hover:translate-y-[1px] transition-all">
+                                        <Avatar className="h-10 w-10 sm:h-11 sm:w-11 border-[2px] border-black dark:border-zinc-600 rounded-full overflow-hidden bg-white shadow-[2px_2px_0_0_#000] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.1)] group-hover:shadow-[1px_1px_0_0_#000] group-hover:translate-x-[1px] group-hover:translate-y-[1px] transition-all">
                                             <AvatarImage src={question.profiles?.avatar_url || ""} className="object-cover" />
-                                            <AvatarFallback className="bg-white text-black font-black text-sm sm:text-base">
+                                            <AvatarFallback className="bg-white dark:bg-zinc-800 text-black dark:text-white font-black text-sm">
                                                 {question.profiles?.username?.[0]?.toUpperCase()}
                                             </AvatarFallback>
                                         </Avatar>
                                     </Link>
                                     <div className="flex flex-col leading-tight">
                                         <Link prefetch={false} href={`/kullanici/${question.profiles?.username}`}
-                                            className="font-bold text-base sm:text-lg hover:text-primary transition-colors flex items-center gap-1.5"
+                                            className="font-bold text-base sm:text-lg hover:text-[#FFBD2E] transition-colors flex items-center gap-1.5"
                                         >
                                             @{question.profiles?.username || "Anonim"}
                                             {question.profiles?.is_verified && (
                                                 <BadgeCheck className="h-4 w-4 text-blue-500 fill-blue-500/10" />
                                             )}
                                         </Link>
-                                        <span className="font-black text-xs uppercase text-black dark:text-zinc-400">
+                                        <span className="font-medium text-xs text-neutral-500 dark:text-zinc-500">
                                             {formatDistanceToNow(new Date(question.created_at), { addSuffix: true, locale: tr })}
                                         </span>
                                     </div>
@@ -343,68 +342,54 @@ export default async function QuestionPage({ params }: PageProps) {
 
                                 {/* Top Actions (Menu) */}
                                 {(isAdmin || user?.id === question.author_id) && (
-                                    <div className="bg-white dark:bg-black border-2 border-black rounded-md shadow-[2px_2px_0_0_#000]">
+                                    <div className="bg-white dark:bg-zinc-800 border-[2px] border-black dark:border-zinc-600 rounded-lg shadow-[2px_2px_0_0_#000] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.1)]">
                                         <EditQuestionDialog questionId={question.id} initialContent={question.content} />
                                     </div>
                                 )}
                             </div>
 
                             {/* 3. Content Body */}
-                            <div className="px-4 sm:px-5 py-4 relative z-10">
+                            <div className="px-4 sm:px-6 py-5 relative z-10">
                                 {/* Title */}
-                                <h1 className="font-[family-name:var(--font-outfit)] text-3xl sm:text-4xl font-black text-black dark:text-zinc-50 leading-none uppercase tracking-tighter mb-4">
+                                <h1 className="font-[family-name:var(--font-outfit)] text-2xl sm:text-3xl font-black text-black dark:text-zinc-50 leading-tight tracking-tight mb-5">
                                     {question.title}
                                 </h1>
 
                                 {/* Markdown Content */}
-                                <div className="prose prose-sm sm:prose-base prose-neutral dark:prose-invert max-w-none break-words leading-relaxed font-[family-name:var(--font-inter)] text-neutral-800 dark:text-zinc-300 font-medium">
+                                <div className="prose prose-sm sm:prose-base prose-neutral dark:prose-invert max-w-none break-words leading-[1.8] font-[family-name:var(--font-inter)] text-neutral-700 dark:text-zinc-300">
                                     <MarkdownRenderer content={question.content} />
                                 </div>
 
                                 {/* Edit Timestamp */}
                                 {question.updated_at && new Date(question.updated_at).getTime() > new Date(question.created_at).getTime() + 60000 && (
-                                    <div className="mt-4 flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest text-neutral-500">
+                                    <div className="mt-5 flex items-center gap-1.5 text-[11px] font-medium text-neutral-400 dark:text-zinc-500">
                                         <Edit2 className="h-3 w-3" />
                                         Düzenlendi: {formatDistanceToNow(new Date(question.updated_at), { addSuffix: true, locale: tr })}
                                     </div>
                                 )}
 
                                 {/* Tags & Badges */}
-                                <div className="mt-6 flex flex-wrap gap-2">
-                                    {question.tags?.map((tag: string, index: number) => {
-                                        const colorClass = tagColors[index % tagColors.length];
-                                        return (
-                                            <Badge key={tag} variant="outline" className={cn(
-                                                "h-7 border-[2px] border-black font-black text-[10px] sm:text-xs uppercase shadow-[2px_2px_0_0_#000] rounded-[4px] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0_0_#000] transition-all px-3",
-                                                colorClass
-                                            )}>
-                                                #{tag}
-                                            </Badge>
-                                        );
-                                    })}
-                                </div>
+                                {question.tags && question.tags.length > 0 && (
+                                    <div className="mt-6 flex flex-wrap gap-2">
+                                        {question.tags.map((tag: string, index: number) => {
+                                            const colorClass = tagColors[index % tagColors.length];
+                                            return (
+                                                <Badge key={tag} variant="outline" className={cn(
+                                                    "h-7 border-[2px] border-black dark:border-zinc-600 font-bold text-[10px] sm:text-xs uppercase shadow-[2px_2px_0_0_#000] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.1)] rounded-full hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0_0_#000] transition-all px-3",
+                                                    colorClass
+                                                )}>
+                                                    #{tag}
+                                                </Badge>
+                                            );
+                                        })}
+                                    </div>
+                                )}
                             </div>
 
-                            {/* 4. Stats Divider */}
-                            <div className="px-4 sm:px-5 py-3 flex items-center gap-6 border-b-[3px] border-black text-xs sm:text-sm font-black text-black dark:text-zinc-400 relative z-10 bg-neutral-50 dark:bg-[#18181b]">
-                                <div className="flex items-center gap-1.5 uppercase tracking-wider">
-                                    <span>{question.views?.toLocaleString('tr-TR') || 0}</span>
-                                    <span className="opacity-70">Görünüm</span>
-                                </div>
-                                <div className="flex items-center gap-1.5 uppercase tracking-wider">
-                                    <span>{answers?.length || 0}</span>
-                                    <span className="opacity-70">Cevap</span>
-                                </div>
-                                <div className="flex items-center gap-1.5 uppercase tracking-wider">
-                                    <span>{question.votes || 0}</span>
-                                    <span className="opacity-70">Oy</span>
-                                </div>
-                            </div>
-
-                            {/* 5. Action Bar (Neo-Brutalist) */}
-                            <div className="flex items-center justify-between px-3 sm:px-5 py-3 bg-neutral-100 dark:bg-[#202022] relative z-10">
-                                {/* Left Actions (Vote, Comment, Share) */}
-                                <div className="flex items-center gap-2 sm:gap-3">
+                            {/* 4. Stats & Actions Combined */}
+                            <div className="flex items-center justify-between px-4 sm:px-6 py-3 border-t-[2.5px] border-black dark:border-zinc-700 bg-neutral-50 dark:bg-[#161618] relative z-10">
+                                {/* Left: Stats + Actions */}
+                                <div className="flex items-center gap-3 sm:gap-4">
                                     <VoteButton
                                         questionId={question.id}
                                         initialVotes={question.votes || 0}
@@ -414,23 +399,33 @@ export default async function QuestionPage({ params }: PageProps) {
 
                                     <ReplyButton />
 
-                                    <ReportButton
-                                        contentType="question"
-                                        contentId={question.id}
-                                    />
-
                                     <ShareDrawer
                                         url={`${process.env.NEXT_PUBLIC_APP_URL || 'https://fizikhub.com'}/forum/${question.id}`}
                                         title={question.title}
                                     >
-                                        <Button variant="ghost" size="icon" className="h-10 w-10 border-2 border-black bg-white dark:bg-black rounded-[4px] text-black dark:text-white shadow-[2px_2px_0_0_#000] hover:bg-neo-pink hover:text-white hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all pointer-events-auto">
-                                            <Share2 className="h-4 w-4 stroke-[2.5px]" />
+                                        <Button variant="ghost" size="icon" className="h-9 w-9 border-[2px] border-black dark:border-zinc-600 bg-white dark:bg-zinc-800 rounded-lg text-black dark:text-zinc-300 shadow-[2px_2px_0_0_#000] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.08)] hover:bg-[#FFBD2E] hover:text-black hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0_0_#000] transition-all pointer-events-auto">
+                                            <Share2 className="h-3.5 w-3.5 stroke-[2.5px]" />
                                         </Button>
                                     </ShareDrawer>
+
+                                    <ReportButton
+                                        contentType="question"
+                                        contentId={question.id}
+                                    />
                                 </div>
 
-                                {/* Right Actions (Bookmark) */}
-                                <div className="flex items-center">
+                                {/* Right: Stats + Bookmark */}
+                                <div className="flex items-center gap-4">
+                                    <div className="hidden sm:flex items-center gap-4 text-xs font-bold text-neutral-500 dark:text-zinc-500">
+                                        <div className="flex items-center gap-1">
+                                            <Eye className="h-3.5 w-3.5" />
+                                            <span>{question.views?.toLocaleString('tr-TR') || 0}</span>
+                                        </div>
+                                        <div className="flex items-center gap-1">
+                                            <MessageSquare className="h-3.5 w-3.5" />
+                                            <span>{answers?.length || 0}</span>
+                                        </div>
+                                    </div>
                                     <BookmarkButton
                                         type="question"
                                         itemId={question.id}
@@ -442,11 +437,11 @@ export default async function QuestionPage({ params }: PageProps) {
 
                         {/* Answers Section */}
                         <div className="mt-8 sm:mt-10 max-w-full px-2 sm:px-0">
-                            <div className="flex items-center justify-between px-1 mb-4">
-                                <h3 className="text-xl font-bold flex items-center gap-2">
-                                    <MessageSquare className="h-5 w-5 text-primary" />
+                            <div className="flex items-center justify-between px-1 mb-5">
+                                <h3 className="text-lg sm:text-xl font-black uppercase tracking-tight flex items-center gap-2">
+                                    <MessageSquare className="h-5 w-5 text-[#FFBD2E]" />
                                     Cevaplar
-                                    <span className="text-muted-foreground text-base font-medium ml-1 bg-muted px-2 py-0.5 rounded-full">{answers?.length || 0}</span>
+                                    <span className="text-sm font-bold text-neutral-500 dark:text-zinc-500 bg-neutral-100 dark:bg-zinc-800 px-2.5 py-0.5 rounded-full border border-neutral-200 dark:border-zinc-700">{answers?.length || 0}</span>
                                 </h3>
                             </div>
 
@@ -459,8 +454,7 @@ export default async function QuestionPage({ params }: PageProps) {
                         </div>
 
                         {/* Related Questions */}
-                        <div className="mt-12 pt-8 border-t-2 border-border/40">
-                            <h4 className="font-black text-lg mb-4 opacity-80 uppercase tracking-widest pl-1">Benzer Tartışmalar</h4>
+                        <div className="mt-10 sm:mt-12 px-2 sm:px-0">
                             <RelatedQuestions
                                 currentQuestionId={question.id}
                                 category={question.category || "Genel"}
@@ -470,33 +464,33 @@ export default async function QuestionPage({ params }: PageProps) {
 
                     {/* Stats Sidebar (Desktop) */}
                     <aside className="hidden lg:block space-y-6 w-full sticky top-24 pt-10">
-                        {/* Neo Brutalist Sidebar Segment */}
-                        <div className="bg-white dark:bg-[#27272a] border-[3px] border-black rounded-[8px] p-6 shadow-[4px_4px_0_0_#000]">
-                            <h3 className="font-[family-name:var(--font-outfit)] text-2xl font-black mb-4 flex items-center gap-2 uppercase tracking-tighter">
-                                <Flame className="h-6 w-6 text-black dark:text-white" />
-                                Trendler
+                        {/* Explore Sidebar */}
+                        <div className="bg-white dark:bg-[#1e1e21] border-[2.5px] border-black dark:border-zinc-700 rounded-[10px] p-5 shadow-[4px_4px_0_0_#000] dark:shadow-[4px_4px_0_0_rgba(255,255,255,0.08)]">
+                            <h3 className="font-[family-name:var(--font-outfit)] text-lg font-black mb-4 flex items-center gap-2 uppercase tracking-tight">
+                                <Flame className="h-5 w-5 text-[#FFBD2E]" />
+                                Keşfet
                             </h3>
-                            <div className="space-y-4">
-                                <p className="text-sm text-muted-foreground">
-                                    Fizik dünyasında haftanın en çok konuşulan konularına göz at.
+                            <div className="space-y-3">
+                                <p className="text-xs font-medium text-neutral-500 dark:text-zinc-500 leading-relaxed">
+                                    Fizik dünyasında en çok konuşulan konulara göz at.
                                 </p>
                                 <div className="space-y-2">
-                                    <Button variant="outline" className="w-full justify-start font-black text-xs uppercase border-[3px] border-black hover:bg-[#FFBD2E] hover:text-black h-12 rounded-[4px] shadow-[2px_2px_0_0_#000] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all" asChild>
-                                        <Link prefetch={false} href="/forum?sort=popular">POPÜLER SORULAR</Link>
+                                    <Button variant="outline" className="w-full justify-start font-bold text-xs uppercase border-[2px] border-black dark:border-zinc-600 hover:bg-[#FFBD2E] hover:text-black hover:border-black h-10 rounded-lg shadow-[2px_2px_0_0_#000] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.08)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0_0_#000] transition-all dark:text-zinc-300" asChild>
+                                        <Link prefetch={false} href="/forum?sort=popular">Popüler Sorular</Link>
                                     </Button>
-                                    <Button variant="outline" className="w-full justify-start font-black text-xs uppercase border-[3px] border-black hover:bg-neo-pink hover:text-white h-12 rounded-[4px] shadow-[2px_2px_0_0_#000] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all" asChild>
-                                        <Link prefetch={false} href="/forum?category=Kuantum">#KUANTUM</Link>
+                                    <Button variant="outline" className="w-full justify-start font-bold text-xs uppercase border-[2px] border-black dark:border-zinc-600 hover:bg-neo-pink hover:text-white hover:border-black h-10 rounded-lg shadow-[2px_2px_0_0_#000] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.08)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0_0_#000] transition-all dark:text-zinc-300" asChild>
+                                        <Link prefetch={false} href="/forum?category=Kuantum">#Kuantum</Link>
                                     </Button>
-                                    <Button variant="outline" className="w-full justify-start font-black text-xs uppercase border-[3px] border-black hover:bg-neo-blue hover:text-white h-12 rounded-[4px] shadow-[2px_2px_0_0_#000] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all" asChild>
-                                        <Link prefetch={false} href="/forum?category=Astrofizik">#ASTROFİZİK</Link>
+                                    <Button variant="outline" className="w-full justify-start font-bold text-xs uppercase border-[2px] border-black dark:border-zinc-600 hover:bg-neo-blue hover:text-white hover:border-black h-10 rounded-lg shadow-[2px_2px_0_0_#000] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.08)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0_0_#000] transition-all dark:text-zinc-300" asChild>
+                                        <Link prefetch={false} href="/forum?category=Astrofizik">#Astrofizik</Link>
                                     </Button>
                                 </div>
                             </div>
                         </div>
 
                         {(isAdmin || user?.id === question.author_id) && (
-                            <div className="border-[3px] border-black bg-red-100 rounded-[8px] p-6 shadow-[4px_4px_0_0_#000]">
-                                <h3 className="font-[family-name:var(--font-outfit)] text-xl font-black text-black uppercase tracking-tighter mb-4">Yönetici Paneli</h3>
+                            <div className="border-[2.5px] border-red-400 dark:border-red-500/40 bg-red-50 dark:bg-red-950/20 rounded-[10px] p-5 shadow-[3px_3px_0_0_rgba(239,68,68,0.3)]">
+                                <h3 className="font-black text-sm text-red-700 dark:text-red-400 uppercase tracking-wider mb-3">Yönetim</h3>
                                 <div className="space-y-3">
                                     <DeleteQuestionButton questionId={question.id} authorId={question.author_id} />
                                 </div>

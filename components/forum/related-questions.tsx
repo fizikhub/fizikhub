@@ -29,26 +29,26 @@ export async function RelatedQuestions({ currentQuestionId, category }: RelatedQ
     if (!questions || questions.length === 0) return null;
 
     return (
-        <div className="mt-12 pt-8 border-t-2 border-border/40">
-            <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
-                <span className="text-primary">📚</span>
+        <div className="pt-6 border-t-[2.5px] border-black/10 dark:border-zinc-800">
+            <h3 className="text-base font-black mb-4 flex items-center gap-2 uppercase tracking-tight text-neutral-700 dark:text-zinc-300">
+                <span className="text-[#FFBD2E]">📚</span>
                 Benzer {category} Soruları
             </h3>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 {questions.map((q: any) => (
                     <Link
                         key={q.id}
                         href={`/forum/${q.id}`}
-                        className="group block p-4 bg-card border-2 border-border/60 rounded-xl hover:border-primary/40 hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
+                        className="group block p-4 bg-white dark:bg-[#1e1e21] border-[2px] border-black/20 dark:border-zinc-700 rounded-[10px] hover:border-black dark:hover:border-zinc-500 hover:shadow-[3px_3px_0_0_#000] dark:hover:shadow-[3px_3px_0_0_rgba(255,255,255,0.06)] transition-all duration-200 hover:-translate-y-0.5"
                     >
                         {/* Title */}
-                        <h4 className="font-semibold text-sm line-clamp-2 mb-3 group-hover:text-primary transition-colors">
+                        <h4 className="font-bold text-sm line-clamp-2 mb-3 group-hover:text-[#FFBD2E] transition-colors text-foreground">
                             {q.title}
                         </h4>
 
                         {/* Stats */}
-                        <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                        <div className="flex items-center gap-3 text-xs font-medium text-neutral-400 dark:text-zinc-500">
                             <div className="flex items-center gap-1">
                                 <ChevronUp className="w-3 h-3" />
                                 <span>{q.votes || 0}</span>
