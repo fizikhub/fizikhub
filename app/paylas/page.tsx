@@ -47,6 +47,7 @@ const item: Variants = {
     }
 };
 
+// BENTO BOX STYLE CARDS (Agresif Neo-Brutalizm)
 interface FreshCardProps {
     title: string;
     description: string;
@@ -55,70 +56,95 @@ interface FreshCardProps {
     color: string;
     accentColor: string;
     colSpan?: string;
+    rowSpan?: string;
     showBorderBeam?: boolean;
+    isLarge?: boolean;
+    badge?: string;
 }
 
-function FreshCard({ title, description, href, icon: Icon, color, accentColor, colSpan = "col-span-1", showBorderBeam }: FreshCardProps) {
+function FreshCard({ title, description, href, icon: Icon, color, accentColor, colSpan = "col-span-1", rowSpan = "row-span-1", showBorderBeam, isLarge, badge }: FreshCardProps) {
     return (
         <motion.div
             variants={item}
-            className={cn("relative group h-full perspective-1000", colSpan)}
-            whileHover={{ y: -5, scale: 1.01 }}
+            className={cn("relative group w-full h-full perspective-1000", colSpan, rowSpan)}
+            whileHover={{ y: -6, scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
         >
             <Link prefetch={false} href={href} className="block h-full">
-                <TiltCard className="h-full" rotationFactor={12}>
-                    <div className="
-                        relative h-full 
-                        bg-white 
-                        border-[3px] border-black 
-                        rounded-2xl 
-                        shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] 
-                        group-hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] 
-                        group-hover:-translate-y-1 group-hover:translate-x-1
-                        transition-all duration-300 ease-out
-                        flex flex-col
-                        overflow-hidden
-                    ">
+                <TiltCard className="h-full w-full" rotationFactor={8}>
+                    <div className={cn(
+                        "relative h-full w-full bg-white flex flex-col justify-between overflow-hidden",
+                        "border-[3px] border-black rounded-2xl",
+                        "shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] group-hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]",
+                        "transition-all duration-300 ease-out",
+                        isLarge ? "p-6 md:p-8" : "p-5 md:p-6"
+                    )}>
                         {showBorderBeam && (
                             <BorderBeam
-                                size={300}
+                                size={400}
                                 duration={8}
                                 delay={0}
-                                borderWidth={3}
-                                colorFrom="#FACC15"
-                                colorTo="#FB7185"
+                                borderWidth={4}
+                                colorFrom={accentColor}
+                                colorTo="#000000"
                             />
                         )}
 
-                        {/* Decorative top bar */}
-                        <div className={cn("h-5 w-full border-b-[3px] border-black", color)}></div>
+                        {/* Top Accent Line */}
+                        <div className={cn("absolute top-0 left-0 right-0 h-3 border-b-[3px] border-black", color)} />
 
-                        <div className="px-6 py-6 flex flex-col justify-between h-full">
-                            <div className="flex items-start justify-between mb-4">
+                        {/* Banner & Icon Header */}
+                        <div className="flex items-start justify-between w-full mt-2 mb-4">
+                            <div className="flex flex-col gap-3">
                                 <div className={cn(
-                                    "w-12 h-12 flex items-center justify-center rounded-xl border-[3px] border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]",
-                                    color
+                                    "flex items-center justify-center rounded-2xl border-[3px] border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]",
+                                    color,
+                                    isLarge ? "w-16 h-16 sm:w-20 sm:h-20" : "w-14 h-14"
                                 )}>
-                                    <Icon className="w-6 h-6 text-black stroke-[2.5px]" />
+                                    <Icon className={cn("text-black stroke-[2.5px]", isLarge ? "w-8 h-8 sm:w-10 sm:h-10" : "w-7 h-7")} />
                                 </div>
-                                <div className="
-                                    w-8 h-8 rounded-full border-[2px] border-black flex items-center justify-center
-                                    bg-transparent group-hover:bg-black transition-colors duration-200
-                                ">
-                                    <ArrowRight className="w-4 h-4 text-black group-hover:text-white transition-colors" />
-                                </div>
+                                {badge && (
+                                    <span className="inline-flex items-center self-start px-3 py-1 bg-black text-white text-[10px] sm:text-xs font-black uppercase tracking-widest rounded-full shadow-[2px_2px_0px_0px_#fff] border border-black transform -rotate-2">
+                                        {badge}
+                                    </span>
+                                )}
                             </div>
 
-                            <div>
-                                <h3 className="text-2xl md:text-3xl font-black text-black uppercase mb-1 leading-none tracking-tight">
-                                    <GlitchText text={title} className="block" />
-                                </h3>
-                                <p className="text-zinc-600 font-bold text-xs md:text-sm leading-snug">
-                                    {description}
-                                </p>
+                            <div className={cn(
+                                "flex items-center justify-center rounded-full border-[3px] border-black",
+                                "bg-white group-hover:bg-black transition-colors duration-300",
+                                isLarge ? "w-12 h-12" : "w-10 h-10"
+                            )}>
+                                <ArrowRight className={cn(
+                                    "text-black group-hover:text-white transition-colors duration-300",
+                                    isLarge ? "w-6 h-6" : "w-5 h-5",
+                                    "group-hover:translate-x-1"
+                                )} />
                             </div>
                         </div>
+
+                        {/* Text Content */}
+                        <div className="mt-auto">
+                            <h3 className={cn(
+                                "font-black text-black uppercase mb-1 md:mb-2 leading-[0.9] tracking-tighter",
+                                isLarge ? "text-4xl sm:text-5xl lg:text-6xl" : "text-2xl sm:text-3xl"
+                            )}>
+                                <GlitchText text={title} className="block group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-black group-hover:to-zinc-600 transition-all duration-300" />
+                            </h3>
+                            <p className={cn(
+                                "text-zinc-600 font-bold leading-snug",
+                                isLarge ? "text-sm sm:text-lg max-w-[80%]" : "text-xs sm:text-sm"
+                            )}>
+                                {description}
+                            </p>
+                        </div>
+
+                        {/* Background Abstract Pattern (Visible only on Large Cards) */}
+                        {isLarge && (
+                            <div className="absolute -bottom-10 -right-10 opacity-10 pointer-events-none group-hover:rotate-12 group-hover:scale-110 transition-transform duration-700 ease-in-out">
+                                <Icon className="w-64 h-64 text-black" />
+                            </div>
+                        )}
                     </div>
                 </TiltCard>
             </Link>
@@ -207,84 +233,96 @@ export default function PaylasPage() {
                     </div>
                 </motion.div>
 
-                {/* Grid - Respecting Original Layout but Higher Quality */}
+                {/* ULTRA-PREMIUM BENTO GRID LAYOUT */}
                 <motion.div
                     variants={container}
                     initial="hidden"
                     animate="show"
-                    className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6"
+                    className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 auto-rows-[160px] sm:auto-rows-[180px] md:auto-rows-[200px]"
                 >
-                    {/* 1. Blog - Orange/Yellow (Full Width Mobile - Adjusted to fit Makale's spot) */}
+                    {/* 1. Blog: L-Shape / Double Width & Height (Hero Item) */}
                     <FreshCard
                         title="BLOG"
-                        description="Serbest yazı."
+                        description="Sıra dışı fikirleri, evrensel notları ve teorilerini kağıda (veya internete) dök."
                         href="/makale/yeni?type=blog"
                         icon={FileText}
                         color="bg-[#FACC15]"
                         accentColor="#FACC15"
-                        colSpan="col-span-2 lg:col-span-2"
+                        colSpan="md:col-span-2 lg:col-span-2"
+                        rowSpan="row-span-2"
                         showBorderBeam={true}
+                        isLarge={true}
+                        badge="POPÜLER TERCİH"
                     />
 
-                    {/* 2. Question - Pink */}
+                    {/* 2. Question: Single Block - Very Vibrant */}
                     <FreshCard
                         title="SORU"
-                        description="Topluluğa danış."
+                        description="Kafanı kurcalayan o denklemi topluluğa fırlat."
                         href="/forum?create=true"
                         icon={MessageCircle}
                         color="bg-[#FB7185]"
                         accentColor="#FB7185"
+                        colSpan="md:col-span-1 lg:col-span-2"
                     />
 
-                    {/* 3. Experiment - Green */}
+                    {/* 3. Experiment: Single Block - Vertical Reach */}
                     <FreshCard
                         title="DENEY"
-                        description="Sonuçları aktar."
+                        description="Laboratuvar sonuçlarını simüle et, kanıtları herkese sun."
                         href="/makale/yeni?type=experiment"
                         icon={FlaskConical}
                         color="bg-[#4ADE80]"
                         accentColor="#4ADE80"
+                        colSpan="md:col-span-1 lg:col-span-1"
+                        rowSpan="md:row-span-2 lg:row-span-1"
                     />
 
-                    {/* 4. Book - Blue */}
+                    {/* 4. Book: Wide Block */}
                     <FreshCard
                         title="KİTAP"
-                        description="Kütüphane notları."
+                        description="Okuduğun bilimsel eseri parçalarına ayır ve incele."
                         href="/kitap-inceleme/yeni"
                         icon={Library}
                         color="bg-[#60A5FA]"
                         accentColor="#60A5FA"
+                        colSpan="md:col-span-2 lg:col-span-2"
                     />
 
-                    {/* 5. Term - Purple */}
+                    {/* 5. Term: Wide Block Bottom */}
                     <FreshCard
                         title="TERİM"
-                        description="Sözlüğe katkı sağla."
+                        description="Bilim lügatine ansiklopedik bir kavram bırak."
                         href="/makale/yeni?type=term"
                         icon={BookOpen}
                         color="bg-[#C084FC]"
                         accentColor="#C084FC"
+                        colSpan="md:col-span-1 lg:col-span-1"
                     />
-
 
                 </motion.div>
 
-                {/* Footer / Search Link */}
+                {/* Footer / Terminal Search Bar - Hacker Style */}
                 <motion.div
                     variants={item}
                     initial="hidden"
                     animate="show"
-                    className="mt-6 md:mt-8 pb-8"
+                    className="mt-6 sm:mt-8 md:mt-10 pb-12"
                 >
-                    <Link prefetch={false} href="/ara" className="block group">
-                        <div className="bg-black text-white h-14 md:h-16 rounded-xl flex items-center justify-between px-5 md:px-6 border-[3px] border-black hover:bg-[#1a1a1a] transition-colors shadow-[4px_4px_0px_0px_rgba(0,0,0,0.2)] group-hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,0.4)] transition-all">
-                            <span className="font-bold text-sm md:text-lg flex items-center gap-3">
-                                <div className="animate-pulse bg-green-500 w-2 h-2 rounded-full shadow-[0_0_8px_#22c55e]"></div>
-                                <span className="font-mono text-gray-300">_komut_satiri:</span>
-                                <span className="text-white">Daha fazlasını ara...</span>
+                    <Link prefetch={false} href="/ara" className="block w-full group">
+                        <div className="bg-zinc-950 text-emerald-500 h-16 sm:h-20 rounded-2xl flex items-center justify-between px-4 sm:px-8 border-[4px] border-black hover:bg-black hover:border-emerald-500 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] group-hover:shadow-[0_0_20px_0px_rgba(16,185,129,0.5)] transition-all duration-300 relative overflow-hidden">
+                            {/* Terminal Scanline Effect */}
+                            <div className="absolute inset-0 bg-[linear-gradient(transparent_50%,rgba(0,0,0,0.5)_50%)] bg-[length:100%_4px] opacity-20 pointer-events-none"></div>
+
+                            <span className="font-bold text-sm sm:text-lg md:text-xl flex items-center gap-2 sm:gap-4 md:gap-5 z-10 w-full">
+                                <span className="text-emerald-500 font-mono font-black text-xl sm:text-2xl shrink-0">{`>`}</span>
+                                <span className="font-mono text-emerald-400 font-medium tracking-tight whitespace-nowrap overflow-hidden text-ellipsis">
+                                    <span className="opacity-50">root@fizikhub:~#</span> search_archive
+                                </span>
+                                <span className="w-2.5 sm:w-3.5 h-6 sm:h-7 bg-emerald-500 animate-[pulse_1s_step-end_infinite] shrink-0 inline-block -ml-1 sm:-ml-2"></span>
                             </span>
-                            <div className="bg-[#FACC15] text-black px-3 py-1 rounded-md font-black text-xs md:text-sm border-2 border-black shadow-[2px_2px_0px_0px_#fff]">
-                                ENTER
+                            <div className="bg-emerald-500 text-black px-4 sm:px-6 py-2 rounded font-black text-xs sm:text-sm uppercase tracking-widest border border-emerald-400 shadow-[0_0_10px_rgba(16,185,129,0.5)] flex-shrink-0 z-10 hidden xs:block">
+                                EXECUTE
                             </div>
                         </div>
                     </Link>
