@@ -76,11 +76,13 @@ const getCachedFeedData = unstable_cache(
         .order('created_at', { ascending: false })
         .limit(20),
 
-      // Fetch Suggested Users (e.g., writers or active users)
+      // Fetch Suggested Users (Top writers by reputation)
       supabase
         .from('profiles')
-        .select('id, username, full_name, avatar_url, is_writer, is_verified, bio')
-        .limit(10), // Ideally random or by popularity, for now just first 10
+        .select('id, username, full_name, avatar_url, is_writer, is_verified, bio, reputation')
+        .eq('is_writer', true)
+        .order('reputation', { ascending: false })
+        .limit(10),
 
       // Fetch Active Stories (Admin only for now as per policy)
       supabase

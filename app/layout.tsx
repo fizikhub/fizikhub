@@ -50,7 +50,9 @@ export const metadata: Metadata = {
       'application/rss+xml': '/feed.xml',
     },
   },
-  // verification: { google: 'GERÇEK_TOKEN_BURAYA' },
+  verification: { 
+    google: process.env.NEXT_PUBLIC_GSC_TOKEN || '', 
+  },
   description: "BİLİMİ Tİ'YE ALIYORUZ AMA CİDDİLİ ŞEKİLDE. Evrenin sırlarını çözmeye çalışanların buluşma noktası.",
   keywords: [
     "fizik", "bilim", "uzay", "teknoloji", "fizikhub", "forum", "soru cevap",

@@ -81,5 +81,8 @@ export function validatePasswordStrength(password: string): string | null {
     if (!/[0-9]/.test(password)) {
         return "Şifre en az bir rakam içermelidir.";
     }
+    if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+        return "Şifre en az bir özel karakter (!@#$%^&* vb.) içermelidir.";
+    }
     return null; // Valid
 }
