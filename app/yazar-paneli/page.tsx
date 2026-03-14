@@ -1,5 +1,8 @@
 import { getPendingArticles } from "./actions";
 import { AuthorPanelClient } from "./client-page";
+import Link from "next/link";
+import { BookOpen } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export default async function YazarPaneliPage() {
     const { articles, error } = await getPendingArticles();
@@ -16,11 +19,20 @@ export default async function YazarPaneliPage() {
     return (
         <main className="min-h-screen bg-background pt-24 pb-12">
             <div className="container max-w-5xl mx-auto px-4">
-                <div className="mb-8">
-                    <h1 className="text-4xl font-black mb-2">Yazar Ekibi Paneli</h1>
-                    <p className="text-zinc-400">
-                        İncelenmeyi bekleyen makaleleri onaylayın. 4 yazar onayı alan makaleler otomatik olarak yayınlanır.
-                    </p>
+                <div className="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+                    <div>
+                        <h1 className="text-4xl font-black mb-2">Yazar Ekibi Paneli</h1>
+                        <p className="text-zinc-400">
+                            İncelenmeyi bekleyen makaleleri onaylayın. 4 yazar onayı alan makaleler otomatik olarak yayınlanır.
+                        </p>
+                    </div>
+                    
+                    <Link href="/yazar-paneli/manifesto" className="flex-shrink-0">
+                        <Button className="font-black border-2 border-black dark:border-zinc-800 bg-primary/10 text-primary hover:bg-primary hover:text-white transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.5)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none h-12 px-6">
+                            <BookOpen className="w-5 h-5 mr-2" />
+                            Yazar Manifestosu
+                        </Button>
+                    </Link>
                 </div>
                 
                 <AuthorPanelClient initialArticles={articles || []} />
