@@ -85,7 +85,7 @@ export default async function SimulationPage({ params }: { params: Promise<{ slu
     }
 
     // Cast to any to allow passing new props (simData) to components
-    const SimComponent = Component as any;
+    const SimComponent = Component as React.ComponentType<any>;
 
     // Strip functions to prevent Next.js serialization error
     const { icon, ...serializableSim } = sim;

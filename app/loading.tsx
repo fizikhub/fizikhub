@@ -1,7 +1,7 @@
 export default function Loading() {
     return (
-        <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center bg-background">
-            <div className="relative flex flex-col items-center gap-4">
+        <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center bg-background" role="status" aria-label="Sayfa yükleniyor">
+            <div className="relative flex flex-col items-center gap-4" aria-hidden="true">
                 {/* Atom Animation */}
                 <div className="relative h-16 w-16">
                     <div className="absolute inset-0 animate-spin-slow rounded-full border-2 border-primary/30 border-t-primary" />

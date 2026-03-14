@@ -164,7 +164,7 @@ export function TiptapEditor({ content, onChange }: TiptapEditorProps) {
             // ve onChange'i sadece gerekli olduğunda çağırıyoruz. Daha iyi bir yöntem: onBlur anında dönüştürmek ama mevcut yapıyı bozmamak için debounce'u 1.5 saniyeye çıkardık.
             if (debounceTimer.current) clearTimeout(debounceTimer.current);
             debounceTimer.current = setTimeout(() => {
-                const markdown = (editor.storage as any).markdown.getMarkdown();
+                const markdown = (editor.storage as unknown as { markdown: { getMarkdown: () => string } }).markdown.getMarkdown();
                 onChange(markdown);
             }, 1500); // 500ms -> 1500ms (daha az CPU kullanımı)
         },

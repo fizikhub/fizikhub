@@ -13,7 +13,7 @@ export interface QuestionWithProfile extends Question {
     } | null;
     votes: number;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    answers?: any[]; // Keep as any for now or define Answer structure if needed
+    answers?: Record<string, unknown>[]; // Keep as Record for now or define Answer structure if needed
 }
 
 export function useRealtimeQuestions(initialQuestions: QuestionWithProfile[]) {
@@ -74,7 +74,8 @@ export function useRealtimeQuestions(initialQuestions: QuestionWithProfile[]) {
         return () => {
             supabase.removeChannel(channel);
         };
-    }, [supabase]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     return questions;
 }

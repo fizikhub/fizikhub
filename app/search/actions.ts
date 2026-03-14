@@ -45,7 +45,7 @@ export async function searchGlobal(query: string): Promise<SearchResult[]> {
 
                 // Avoid duplicates if we combine lists, but for now let's prioritize vector results
                 results.push({
-                    type: type as any,
+                    type: type as SearchResult['type'],
                     id: item.id,
                     title: item.title,
                     description: item.content?.substring(0, 100) + '...',

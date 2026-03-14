@@ -148,12 +148,12 @@ export function ArticleHero({ article, readingTime }: ArticleHeroProps) {
             ) : (
                 <>
                     {/* Cover Image - Full Width, Proper Display */}
-                    {(article.cover_url || (article as any).image_url) && (
+                    {(article.cover_url || (article as { image_url?: string }).image_url) && (
                         <div className="w-full mt-4">
                             <div className="container max-w-4xl mx-auto px-4">
                                 <div className="relative w-full aspect-[16/9] rounded-2xl overflow-hidden bg-zinc-800 shadow-lg">
                                     <Image
-                                        src={article.cover_url || (article as any).image_url}
+                                        src={article.cover_url || (article as { image_url?: string }).image_url || ''}
                                         alt={article.title}
                                         fill
                                         className="object-cover"

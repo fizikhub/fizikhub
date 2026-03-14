@@ -18,7 +18,7 @@ export async function verifyAdmin() {
         return { isAdmin: false, user: null, supabase, error: "Giriş yapmalısınız." } as const;
     }
 
-    const isEmailAdmin = ADMIN_EMAILS.includes(user.email?.toLowerCase() as any);
+    const isEmailAdmin = ADMIN_EMAILS.includes(user.email?.toLowerCase() as typeof ADMIN_EMAILS[number]);
 
     if (isEmailAdmin) {
         return { isAdmin: true, user, supabase, error: null } as const;
@@ -44,7 +44,7 @@ export async function verifyAdmin() {
  */
 export function isAdminEmail(email: string | null | undefined): boolean {
     if (!email) return false;
-    return ADMIN_EMAILS.includes(email.toLowerCase() as any);
+    return ADMIN_EMAILS.includes(email.toLowerCase() as typeof ADMIN_EMAILS[number]);
 }
 
 export { ADMIN_EMAILS };

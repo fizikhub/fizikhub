@@ -109,7 +109,7 @@ export function StoryEditor() {
             const { data: { user } } = await supabase.auth.getUser();
             if (user) {
                 const data = await getStoryGroups(user.id);
-                setGroups(data as any || []);
+                setGroups((data as unknown as never[]) || []);
             }
         } catch (error) {
             console.error(error);
@@ -597,7 +597,7 @@ function StoryManager({ groups, onUpdate }: { groups: StoryGroup[], onUpdate: ()
         setIsLoadingStories(true);
         try {
             const data = await getStoriesByGroup(group.id);
-            setStories(data as any || []);
+            setStories((data as unknown as never[]) || []);
         } finally {
             setIsLoadingStories(false);
         }

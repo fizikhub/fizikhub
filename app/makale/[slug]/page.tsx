@@ -184,7 +184,7 @@ export default async function ArticlePage({ params }: PageProps) {
         description: (article.content || "").substring(0, 160) + "...",
         image: article.cover_url || 'https://fizikhub.com/og-image.png',
         datePublished: article.created_at,
-        dateModified: (article as any).updated_at || article.created_at,
+        dateModified: (article as { updated_at?: string }).updated_at || article.created_at,
         author: {
             '@type': 'Person',
             name: article.author?.full_name || article.author?.username || 'Fizikhub Ekibi',

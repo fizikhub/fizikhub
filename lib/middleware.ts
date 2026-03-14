@@ -51,7 +51,7 @@ export async function updateSession(request: NextRequest) {
     }
 
     // Protected routes — use centralized admin emails
-    if (request.nextUrl.pathname.startsWith('/admin') && !ADMIN_EMAILS.includes(user?.email?.toLowerCase() as any)) {
+    if (request.nextUrl.pathname.startsWith('/admin') && !(ADMIN_EMAILS as readonly string[]).includes(user?.email?.toLowerCase() ?? "")) {
         // Also check role from profile if email doesn't match
         if (user) {
             const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single();

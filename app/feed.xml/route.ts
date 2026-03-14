@@ -46,7 +46,7 @@ export async function GET() {
         : new Date().toUTCString();
 
     const rssItems = (articles || []).map((article) => {
-        const author = (article as any).profiles;
+        const author = (article as { profiles?: { username?: string, full_name?: string } }).profiles;
         const authorName = author?.full_name || author?.username || 'Fizikhub';
 
         // Determine URL prefix based on category

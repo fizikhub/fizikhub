@@ -302,9 +302,10 @@ export function ShareInputCard({ user: initialUser }: ShareInputCardProps) {
                                             const Comp = item.href ? Link : 'button';
                                             const props = item.href ? { href: item.href } : { onClick: item.action };
                                             return (
+                                                // @ts-expect-error Dynamic component props (Link vs button)
                                                 <Comp
                                                     key={idx}
-                                                    {...props as any}
+                                                    {...(props as Record<string, unknown>)}
                                                     className="w-full flex items-center gap-3 p-2.5 hover:bg-zinc-800/80 transition-colors group rounded-lg"
                                                 >
                                                     <div className={`w-9 h-9 ${item.color} flex items-center justify-center text-black rounded-lg group-hover:scale-105 transition-transform`}>

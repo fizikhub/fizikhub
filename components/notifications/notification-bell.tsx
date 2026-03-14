@@ -64,11 +64,11 @@ export function NotificationBell({ className }: { className?: string }) {
                 // console.log('[NotificationBell] Fetched:', { notificationCount: data?.length || 0, unreadCount: count });
             }
 
-            setNotifications(data as any);
+            setNotifications((data || []) as unknown as Notification[]);
             setUnreadCount(count);
 
             // Check for special admin notification
-            const hasAdminNotification = data?.some((n: any) =>
+            const hasAdminNotification = (data || []).some((n: any) =>
                 !n.is_read && n.content === "hazreti yüce müce admin soruna cevap verdi"
             );
 

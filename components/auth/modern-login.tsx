@@ -33,7 +33,7 @@ export function ModernLogin() {
         script.defer = true;
         document.body.appendChild(script);
 
-        (window as any).onTurnstileSuccess = (token: string) => {
+        window.onTurnstileSuccess = (token: string) => {
             setTurnstileToken(token);
         };
 
@@ -41,7 +41,7 @@ export function ModernLogin() {
             if (document.body.contains(script)) {
                 document.body.removeChild(script);
             }
-            delete (window as any).onTurnstileSuccess;
+            delete window.onTurnstileSuccess;
         };
     }, []);
 

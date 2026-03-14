@@ -31,7 +31,7 @@ function TrackerContent() {
             };
 
             if (typeof window !== "undefined" && 'requestIdleCallback' in window) {
-                (window as any).requestIdleCallback(runLog, { timeout: 2000 });
+                window.requestIdleCallback(runLog, { timeout: 2000 });
             } else {
                 runLog();
             }

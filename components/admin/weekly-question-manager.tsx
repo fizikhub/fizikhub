@@ -52,7 +52,7 @@ export function WeeklyQuestionManager({ currentPick }: WeeklyQuestionManagerProp
             .limit(5);
 
         if (data) {
-            setSearchResults(data as any);
+            setSearchResults((data as unknown as Question[]) || []);
         }
         setLoading(false);
     };

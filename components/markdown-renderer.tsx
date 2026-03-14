@@ -6,6 +6,7 @@ import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
 import rehypeHighlight from "rehype-highlight";
 import rehypeRaw from "rehype-raw";
+import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
 import { cn } from "@/lib/utils";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { ZoomIn } from "lucide-react";
@@ -20,12 +21,14 @@ function loadMarkdownCSS() {
     katexLink.rel = 'stylesheet';
     katexLink.href = 'https://cdn.jsdelivr.net/npm/katex@0.16.25/dist/katex.min.css';
     katexLink.crossOrigin = 'anonymous';
+    katexLink.integrity = 'sha384-WcoG4HRXMzYzfCgiyfrySxx90XSl2rxY5mnVY5TwtWE6KLrArNKn0T/mOgNL0Mmi';
     document.head.appendChild(katexLink);
     // Inject highlight.js CSS
     const hlLink = document.createElement('link');
     hlLink.rel = 'stylesheet';
     hlLink.href = 'https://cdn.jsdelivr.net/npm/highlight.js@11.11.1/styles/github-dark.min.css';
     hlLink.crossOrigin = 'anonymous';
+    hlLink.integrity = 'sha384-wH75j6z1lH97ZOpMOInqhgKzFkAInZPPSPlZpYKYTOqsaizPvhQZmAtLcPKXpLyH';
     document.head.appendChild(hlLink);
 }
 
@@ -84,7 +87,20 @@ export function MarkdownRenderer({
         )}>
             <ReactMarkdown
                 remarkPlugins={[remarkMath]}
-                rehypePlugins={[rehypeKatex, rehypeHighlight, rehypeRaw]}
+                rehypePlugins={[
+                    rehypeKatex, 
+                    rehypeHighlight, 
+                    rehypeRaw,
+                    [rehypeSanitize, {
+                        ...defaultSchema,
+                        attributes: {
+                            ...defaultSchema.attributes,
+                            '*': ['className', 'style'],
+                            'iframe': ['src', 'width', 'height', 'allowFullScreen', 'sandbox', 'referrerPolicy', 'loading', 'className']
+                        },
+                        tagNames: [...(defaultSchema.tagNames || []), 'iframe', 'video', 'source']
+                    }]
+                ]}
                 components={{
                     p: ({ node, children, ...props }) => {
                         // Check if the paragraph contains any element that will render as a div/block
@@ -99,7 +115,17 @@ export function MarkdownRenderer({
 
                         return <p className="mb-4 leading-relaxed" {...props}>{children}</p>;
                     },
-                    a: ({ node, ...props }) => <a className="text-secondary hover:underline" {...props} />,
+                    a: ({ node, ...props }) => {
+                        const isExternal = props.href && (props.href.startsWith('http') || props.href.startsWith('//'));
+                        return (
+                            <a 
+                                className="text-secondary hover:underline" 
+                                target={isExternal ? "_blank" : undefined}
+                                rel={isExternal ? "noopener noreferrer" : undefined}
+                                {...props} 
+                            />
+                        );
+                    },
                     ul: ({ node, ...props }) => <ul className="list-disc list-inside mb-4" {...props} />,
                     ol: ({ node, ...props }) => <ol className="list-decimal list-inside mb-4" {...props} />,
                     li: ({ node, ...props }) => <li className="mb-1" {...props} />,
@@ -174,6 +200,8 @@ export function MarkdownRenderer({
                                 {...props}
                                 loading="lazy"
                                 allowFullScreen
+                                sandbox="allow-scripts allow-same-origin allow-popups"
+                                referrerPolicy="no-referrer"
                             />
                         </div>
                     ),

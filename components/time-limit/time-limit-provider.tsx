@@ -43,7 +43,7 @@ export function TimeLimitProvider({ children }: { children: ReactNode }) {
 
         // Defer to idle time so we don't block initial paint/hydration
         if ('requestIdleCallback' in window) {
-            (window as any).requestIdleCallback(() => fetchStatus(), { timeout: 3000 });
+            window.requestIdleCallback(() => fetchStatus(), { timeout: 3000 });
         } else {
             setTimeout(fetchStatus, 1000);
         }

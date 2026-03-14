@@ -250,14 +250,14 @@ export function ModernExploreView({
                                 }}
                             >
                                 {article.category === "Kitap İncelemesi" ? (
-                                    <BookReviewCard article={article as any} index={idx} />
+                                    <BookReviewCard article={article as never} index={idx} />
                                 ) : article.category === "Deney" ? (
-                                    <ExperimentCard article={article as any} index={idx} />
+                                    <ExperimentCard article={article as never} index={idx} />
                                 ) : article.category === "Terim" ? (
-                                    <TermCard article={article as any} index={idx} />
+                                    <TermCard article={article as never} index={idx} />
                                 ) : (
                                     <SocialArticleCard
-                                        article={article as any}
+                                        article={article as never}
                                         index={idx}
                                         variant="community"
                                         initialLikes={0}

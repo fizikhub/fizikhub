@@ -66,7 +66,7 @@ export function useChat({
                 table: 'messages',
                 filter: `conversation_id=eq.${conversationId}`
             }, (payload) => {
-                const newMsg = payload.new as any;
+                const newMsg = payload.new as unknown as Message;
                 setMessages(prev => {
                     if (prev.find(m => m.id === newMsg.id)) return prev;
                     return [...prev, {
@@ -84,9 +84,9 @@ export function useChat({
                 table: 'messages',
                 filter: `conversation_id=eq.${conversationId}`
             }, (payload) => {
-                const updated = payload.new as any;
+                const updated = payload.new as unknown as Partial<Message>;
                 setMessages(prev => prev.map(m =>
-                    m.id === updated.id ? { ...m, content: updated.content, edited_at: updated.edited_at } : m
+                    m.id === updated.id ? { ...m, content: updated.content ?? m.content, edited_at: updated.edited_at ?? m.edited_at } : m
                 ));
             })
             .on('postgres_changes', {
@@ -95,13 +95,14 @@ export function useChat({
                 table: 'messages',
                 filter: `conversation_id=eq.${conversationId}`
             }, (payload) => {
-                const deletedId = (payload.old as any).id;
+                const deletedId = (payload.old as { id: number }).id;
                 setMessages(prev => prev.filter(m => m.id !== deletedId));
             })
             .subscribe();
 
         return () => { supabase.removeChannel(channel); };
-    }, [conversationId, supabase]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [conversationId]); // Removed supabase from dependencies
 
     // Realtime: reactions
     useEffect(() => {
@@ -118,7 +119,8 @@ export function useChat({
             .subscribe();
 
         return () => { supabase.removeChannel(channel); };
-    }, [conversationId, supabase]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [conversationId]); // Removed supabase from dependencies
 
     // Mark as read on mount and new messages
     useEffect(() => {
@@ -158,20 +160,40 @@ export function useChat({
 
     // Delete
     const handleDelete = useCallback(async (messageId: number) => {
-        setMessages(prev => prev.filter(m => m.id !== messageId));
-        await deleteMessage(messageId);
+        let deletedMsg: Message | undefined;
+        setMessages(prev => {
+            deletedMsg = prev.find(m => m.id === messageId);
+            return prev.filter(m => m.id !== messageId);
+        });
+        
+        const result = await deleteMessage(messageId);
+        
+        if (!result.success && deletedMsg) {
+            // Rollback on failure
+            setMessages(prev => [...prev, deletedMsg as Message].sort((a, b) => 
+                new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+            ));
+        }
     }, []);
 
     // Edit
     const handleEdit = useCallback(async (messageId: number, newContent: string) => {
-        setMessages(prev => prev.map(m =>
-            m.id === messageId ? { ...m, content: newContent, edited_at: new Date().toISOString() } : m
-        ));
+        let oldContent: string | undefined;
+        setMessages(prev => {
+            const msg = prev.find(m => m.id === messageId);
+            if (msg) oldContent = msg.content;
+            return prev.map(m =>
+                m.id === messageId ? { ...m, content: newContent, edited_at: new Date().toISOString() } : m
+            );
+        });
         setEditingMessage(null);
 
         const result = await editMessage(messageId, newContent);
-        if (!result.success) {
-            // Revert on failure - refetch would be needed
+        if (!result.success && oldContent !== undefined) {
+             // Revert on failure
+             setMessages(prev => prev.map(m =>
+                 m.id === messageId ? { ...m, content: oldContent as string, edited_at: null } : m
+             ));
         }
     }, []);
 

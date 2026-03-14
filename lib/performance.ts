@@ -48,16 +48,13 @@ export function useIsLowEndDevice(): boolean {
     const [isLowEnd] = useState(() => {
         if (typeof window !== "undefined" && typeof navigator !== "undefined") {
             const cores = navigator.hardwareConcurrency || 4;
-            const memory = (navigator as any).deviceMemory || 4;
+            const memory = (navigator as unknown as { deviceMemory?: number }).deviceMemory || 4;
             return cores < 4 || memory < 4;
         }
         return false;
     });
 
-    useEffect(() => {
-        // State is already initialized correctly on mount, no need to check again unless we expect it to change (which it shouldn't for cores/memory)
-    }, []);
-
+    // State is already initialized correctly on mount
     return isLowEnd;
 }
 

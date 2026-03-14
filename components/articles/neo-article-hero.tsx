@@ -92,10 +92,10 @@ export function NeoArticleHero({ article, readingTime }: NeoArticleHeroProps) {
                 </div>
 
                 {/* 3. HERO IMAGE BOX */}
-                {(article.cover_url || (article as any).image_url) && (
+                {(article.cover_url || (article as { image_url?: string }).image_url) && (
                     <div className="relative w-full aspect-[16/9] sm:aspect-[21/9] rounded-2xl border-4 border-black dark:border-zinc-800 overflow-hidden shadow-[8px_8px_0px_0px_#000] dark:shadow-[8px_8px_0px_0px_rgba(0,0,0,0.8)] bg-zinc-100 group">
                         <Image
-                            src={article.cover_url || (article as any).image_url}
+                            src={article.cover_url || (article as { image_url?: string }).image_url || ''}
                             alt={article.title}
                             fill
                             className="object-cover group-hover:scale-[1.02] transition-transform duration-500"

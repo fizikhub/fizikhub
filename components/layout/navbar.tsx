@@ -59,7 +59,7 @@ export function Navbar() {
 
         // Defer rain generation to avoid blocking initial hydration
         if ('requestIdleCallback' in window) {
-            (window as any).requestIdleCallback(generateRain, { timeout: 2000 });
+            window.requestIdleCallback(generateRain, { timeout: 2000 });
         } else {
             setTimeout(generateRain, 500);
         }
