@@ -85,12 +85,12 @@ export function ReportButton({ contentType, contentId, variant = "ghost", size =
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button variant={variant} size={size} className="gap-2">
-                    <Flag className="h-4 w-4" />
-                    <span className="hidden sm:inline">Rapor Et</span>
+                <Button variant={variant} size={size} className="gap-1.5 h-9 px-3 rounded-lg border-[2px] border-black dark:border-zinc-600 bg-white dark:bg-zinc-800 text-black dark:text-zinc-300 font-bold text-xs uppercase tracking-wider shadow-[2px_2px_0_0_#000] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.08)] hover:bg-neo-pink hover:text-white hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0_0_#000] transition-all">
+                    <Flag className="h-3.5 w-3.5 stroke-[2.5px]" />
+                    <span className="hidden sm:inline">Rapor</span>
                 </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-md">
+            <DialogContent className="sm:max-w-md border-[2.5px] border-black dark:border-zinc-700 rounded-[10px] shadow-[6px_6px_0_0_#000] dark:shadow-[6px_6px_0_0_rgba(255,255,255,0.06)] bg-white dark:bg-[#1e1e21]">
                 <DialogHeader>
                     <DialogTitle>İçeriği Rapor Et</DialogTitle>
                     <DialogDescription>
@@ -121,10 +121,10 @@ export function ReportButton({ contentType, contentId, variant = "ghost", size =
                     </div>
                 </div>
                 <DialogFooter>
-                    <Button variant="outline" onClick={() => setOpen(false)}>
+                    <Button variant="outline" onClick={() => setOpen(false)} className="border-[2px] border-black dark:border-zinc-600 rounded-lg font-bold shadow-[2px_2px_0_0_#000] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.06)]">
                         İptal
                     </Button>
-                    <Button onClick={handleSubmit} disabled={isSubmitting || !reason}>
+                    <Button onClick={handleSubmit} disabled={isSubmitting || !reason} className="bg-[#FFBD2E] text-black hover:bg-[#FFD268] border-[2px] border-black dark:border-zinc-600 rounded-lg font-bold shadow-[2px_2px_0_0_#000] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.06)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0_0_#000] transition-all">
                         {isSubmitting ? "Gönderiliyor..." : "Gönder"}
                     </Button>
                 </DialogFooter>

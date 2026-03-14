@@ -23,7 +23,7 @@ export function VoteButton({ questionId, initialVotes, initialHasVoted = false, 
     const { playInteractSound } = useUiSounds();
 
     const handleVote = async (e: React.MouseEvent) => {
-        e.preventDefault(); // Prevent link navigation
+        e.preventDefault();
         e.stopPropagation();
 
         if (isVoting) return;
@@ -36,9 +36,8 @@ export function VoteButton({ questionId, initialVotes, initialHasVoted = false, 
         playInteractSound();
 
         try {
-            const result = await voteQuestion(questionId, 1); // Always upvote logic for now
+            const result = await voteQuestion(questionId, 1);
             if (!result.success) {
-                // Revert on error
                 setVotes(votes);
                 setHasVoted(hasVoted);
                 if (result.error === "Giriş yapmalısınız.") {
@@ -48,7 +47,6 @@ export function VoteButton({ questionId, initialVotes, initialHasVoted = false, 
                 }
             }
         } catch (error) {
-            // Revert on error
             setVotes(votes);
             setHasVoted(hasVoted);
             toast.error("Bağlantı hatası.");
@@ -60,13 +58,13 @@ export function VoteButton({ questionId, initialVotes, initialHasVoted = false, 
     return (
         <motion.button
             onClick={handleVote}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+            whileTap={{ scale: 0.92 }}
             className={cn(
-                "flex items-center gap-1.5 px-3 py-1.5 rounded-full transition-all duration-200 border shadow-sm",
+                "flex items-center gap-1.5 px-3 h-9 rounded-lg transition-all duration-200 border-[2px] font-bold text-sm",
                 hasVoted
-                    ? "bg-primary/10 text-primary border-primary/20 hover:bg-primary/20"
-                    : "bg-background hover:bg-muted border-border text-muted-foreground hover:text-foreground",
+                    ? "bg-[#FFBD2E] text-black border-black dark:border-zinc-600 shadow-[2px_2px_0_0_#000] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.08)]"
+                    : "bg-white dark:bg-zinc-800 text-black dark:text-zinc-300 border-black dark:border-zinc-600 shadow-[2px_2px_0_0_#000] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.08)] hover:bg-[#FFBD2E]/20",
+                "hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0_0_#000] dark:hover:shadow-[1px_1px_0_0_rgba(255,255,255,0.06)]",
                 className
             )}
             title="Bu soruyu faydalı bulduysan oy ver"
@@ -79,7 +77,7 @@ export function VoteButton({ questionId, initialVotes, initialHasVoted = false, 
                     exit={{ scale: 0.8, opacity: 0 }}
                     transition={{ duration: 0.15 }}
                 >
-                    <ArrowUp className={cn("h-4 w-4", hasVoted && "stroke-[3px]")} />
+                    <ArrowUp className={cn("h-4 w-4", hasVoted ? "stroke-[3px]" : "stroke-[2.5px]")} />
                 </motion.div>
             </AnimatePresence>
 
@@ -87,7 +85,7 @@ export function VoteButton({ questionId, initialVotes, initialHasVoted = false, 
                 key={votes}
                 initial={{ y: 5, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
-                className={cn("text-sm font-medium tabular-nums", hasVoted && "font-bold")}
+                className="tabular-nums"
             >
                 {votes}
             </motion.span>

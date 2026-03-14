@@ -37,7 +37,6 @@ export function AnswerLikeButton({
 
         if (isLoading) return;
 
-        // Optimistic update
         const newIsLiked = !isLiked;
         const newLikeCount = newIsLiked ? likeCount + 1 : likeCount - 1;
 
@@ -49,13 +48,11 @@ export function AnswerLikeButton({
         try {
             const result = await toggleAnswerLike(answerId);
             if (!result.success) {
-                // Revert on error
                 setIsLiked(isLiked);
                 setLikeCount(likeCount);
                 toast.error(result.error || "Bir hata oluştu.");
             }
         } catch (error) {
-            // Revert on error
             setIsLiked(isLiked);
             setLikeCount(likeCount);
             toast.error("Bağlantı hatası.");
@@ -67,13 +64,13 @@ export function AnswerLikeButton({
     return (
         <motion.button
             onClick={handleLike}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+            whileTap={{ scale: 0.92 }}
             className={cn(
-                "flex flex-col items-center gap-1 px-3 py-2 rounded-lg transition-colors min-w-[60px]",
+                "flex items-center gap-1.5 px-3 h-9 rounded-lg transition-all duration-200 border-[2px] font-bold text-sm",
                 isLiked
-                    ? "bg-primary/10 text-primary"
-                    : "text-muted-foreground hover:bg-muted/50"
+                    ? "bg-[#FFBD2E] text-black border-black dark:border-zinc-600 shadow-[2px_2px_0_0_#000] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.08)]"
+                    : "bg-white dark:bg-zinc-800 text-black dark:text-zinc-300 border-black dark:border-zinc-600 shadow-[2px_2px_0_0_#000] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.08)] hover:bg-[#FFBD2E]/20",
+                "hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0_0_#000] dark:hover:shadow-[1px_1px_0_0_rgba(255,255,255,0.06)]"
             )}
             title={isLiked ? "Beğeniyi geri al" : "Beğen"}
         >
@@ -87,8 +84,8 @@ export function AnswerLikeButton({
                 >
                     <ArrowBigUp
                         className={cn(
-                            "h-8 w-8 transition-all",
-                            isLiked && "fill-primary"
+                            "h-5 w-5 transition-all",
+                            isLiked && "fill-current"
                         )}
                     />
                 </motion.div>
@@ -98,10 +95,7 @@ export function AnswerLikeButton({
                 key={likeCount}
                 initial={{ y: 5, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
-                className={cn(
-                    "text-base font-bold tabular-nums",
-                    isLiked && "text-primary"
-                )}
+                className="tabular-nums"
             >
                 {likeCount}
             </motion.span>
