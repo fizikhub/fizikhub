@@ -19,7 +19,8 @@ interface DarkNeoHeaderProps {
 
 export function DarkNeoHeader({ profile, user, stats, isOwnProfile, isFollowing }: DarkNeoHeaderProps) {
     const initial = profile?.full_name?.[0]?.toUpperCase() || "U";
-    const isAdmin = profile?.username === "baranbozkurt";
+    const isAdmin = profile?.username === "baranbozkurt" || profile?.role === "admin";
+    const isAuthorMode = isAdmin || profile?.role === "editor" || profile?.is_writer === true;
     const hasCoverPhoto = profile?.cover_url;
     const { playInteractSound } = useUiSounds();
 
@@ -179,6 +180,14 @@ export function DarkNeoHeader({ profile, user, stats, isOwnProfile, isFollowing 
                                             <button className="flex items-center gap-2 bg-[#FFBD2E] text-black px-5 py-3 sm:px-4 sm:py-2.5 font-black text-xs rounded-lg border-2 border-black shadow-[2px_2px_0px_0px_#000] hover:shadow-[1px_1px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:bg-[#FFD268] transition-all active:scale-95 active:shadow-none active:translate-x-[2px] active:translate-y-[2px]">
                                                 <PenSquare className="w-4 h-4 sm:w-3.5 sm:h-3.5 stroke-[2.5px]" />
                                                 <span>Yaz</span>
+                                            </button>
+                                        </Link>
+                                    )}
+                                    {isAuthorMode && (
+                                        <Link prefetch={false} href="/yazar-paneli" onClick={handleActionClick} className="flex-shrink-0">
+                                            <button className="flex items-center gap-2 bg-[#33EAA1] text-black px-5 py-3 sm:px-4 sm:py-2.5 font-black text-xs rounded-lg border-2 border-black shadow-[2px_2px_0px_0px_#000] hover:shadow-[1px_1px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:bg-[#20CA86] transition-all active:scale-95 active:shadow-none active:translate-x-[2px] active:translate-y-[2px]">
+                                                <ShieldCheck className="w-4 h-4 sm:w-3.5 sm:h-3.5 stroke-[2.5px]" />
+                                                <span>Yazar Paneli</span>
                                             </button>
                                         </Link>
                                     )}
