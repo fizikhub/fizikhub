@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase-server";
 import { revalidatePath } from "next/cache";
 import { createNotification } from "@/app/notifications/actions";
 import { validateImageFile } from "@/lib/security";
+import { isAdminEmail } from "@/lib/admin";
 
 export async function updateUsername(newUsername: string) {
     const supabase = await createClient();
@@ -31,7 +32,7 @@ export async function updateUsername(newUsername: string) {
         .eq('id', user.id)
         .single();
 
-    const isAdmin = user.email?.toLowerCase() === 'barannnbozkurttb.b@gmail.com';
+    const isAdmin = isAdminEmail(user.email);
     const changeCount = currentProfile?.username_changes_count || 0;
 
     // Eğer admin değilse ve zaten değiştirdiyse hata ver
@@ -188,7 +189,7 @@ export async function saveProfileChanges(formData: FormData) {
                 .single();
 
             if (currentProfile && newUsername !== currentProfile.username) {
-                const isAdmin = user.email?.toLowerCase() === 'barannnbozkurttb.b@gmail.com';
+                const isAdmin = isAdminEmail(user.email);
                 const changeCount = currentProfile?.username_changes_count || 0;
 
                 if (!isAdmin && changeCount >= 1) {

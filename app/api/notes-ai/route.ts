@@ -29,7 +29,7 @@ const PREFERRED_MODELS = [
 ];
 
 async function tryGenerateContent(requestId: string, modelName: string, parts: any[]) {
-    console.log(`[HUD-API][${requestId}] Model: ${modelName}`);
+
     try {
         const model = genAI.getGenerativeModel({
             model: modelName,
@@ -59,6 +59,14 @@ export async function POST(request: NextRequest) {
 
     try {
         const { type, message, audio, noteTitle, noteContent, history } = await request.json();
+
+        // Input validation
+        if (message && typeof message === 'string' && message.length > 5000) {
+            return NextResponse.json({ error: "Message too long (max 5000 chars)" }, { status: 400 });
+        }
+        if (type && !['text', 'audio'].includes(type)) {
+            return NextResponse.json({ error: "Invalid type" }, { status: 400 });
+        }
 
         const audioData = audio ? { inlineData: { mimeType: "audio/webm", data: audio } } : null;
         const systemContext = SYSTEM_PROMPT.replace("{noteTitle}", noteTitle || "Untitled").replace("{noteContent}", noteContent || "Empty");

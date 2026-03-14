@@ -15,6 +15,12 @@ export async function POST(req: Request) {
     }
 
     const { messages } = await req.json();
+
+    // Input validation: prevent abuse with excessively long conversations
+    if (!Array.isArray(messages) || messages.length > 50) {
+        return new Response("Invalid or too many messages (max 50)", { status: 400 });
+    }
+
     const coreMessages = await convertToModelMessages(messages);
 
     // Check for API Key

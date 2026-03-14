@@ -4,10 +4,8 @@ import { ModernExploreView } from "@/components/explore/modern-explore-view";
 import { BreadcrumbJsonLd } from "@/lib/breadcrumbs";
 import { sanitizeSearchQuery } from "@/lib/security";
 
-// ISR Removed for accurate auth state
-// export const revalidate = 0;
-// Use forced dynamic to ensure user is fetched correctly every time
-export const dynamic = "force-dynamic";
+// ISR: revalidate every 60 seconds for better performance and SEO crawlability
+export const revalidate = 60;
 
 export async function generateMetadata({ searchParams }: BlogPageProps): Promise<Metadata> {
     const params = await searchParams;

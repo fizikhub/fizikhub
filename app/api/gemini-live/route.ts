@@ -6,7 +6,7 @@ const MODEL_NAME = "models/gemini-2.5-flash-native-audio-preview-09-2025";
 
 export async function POST(request: NextRequest) {
     const requestId = Math.random().toString(36).substring(7);
-    console.log(`[LIVE-API][${requestId}] Starting Native Audio Dialog session`);
+
 
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
             let audioResponse = "";
 
             ws.on('open', () => {
-                console.log(`[LIVE-API][${requestId}] WebSocket connected`);
+
 
                 // Send setup message first
                 const setupMessage = {
@@ -71,10 +71,10 @@ export async function POST(request: NextRequest) {
             ws.on('message', (data: Buffer) => {
                 try {
                     const message = JSON.parse(data.toString());
-                    console.log(`[LIVE-API][${requestId}] Message received:`, Object.keys(message));
+
 
                     if (message.setupComplete) {
-                        console.log(`[LIVE-API][${requestId}] Setup complete, sending audio`);
+
 
                         // Send the audio input
                         const audioMessage = {
@@ -108,7 +108,7 @@ export async function POST(request: NextRequest) {
                         }
 
                         if (content.turnComplete) {
-                            console.log(`[LIVE-API][${requestId}] Turn complete`);
+
                             ws.close();
 
                             resolve(NextResponse.json({
@@ -130,7 +130,7 @@ export async function POST(request: NextRequest) {
             });
 
             ws.on('close', () => {
-                console.log(`[LIVE-API][${requestId}] WebSocket closed`);
+
             });
 
             // Timeout after 30 seconds

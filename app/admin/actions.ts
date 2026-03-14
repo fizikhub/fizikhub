@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase-server";
 import { revalidatePath } from "next/cache";
+import { isAdminEmail } from "@/lib/admin";
 
 // Helper to verify admin
 async function verifyAdmin() {
@@ -18,7 +19,7 @@ async function verifyAdmin() {
         .eq('id', user.id)
         .single();
 
-    const isAdmin = profile?.role === 'admin' || user.email?.toLowerCase() === 'barannnbozkurttb.b@gmail.com';
+    const isAdmin = profile?.role === 'admin' || isAdminEmail(user.email);
 
     if (!isAdmin) {
         return { isAdmin: false, error: "Bu işlem için admin yetkisi gereklidir." };
@@ -335,7 +336,7 @@ export async function getYoutubeDownloadUrl(url: string) {
 
     for (const instance of COBALT_INSTANCES) {
         try {
-            console.log(`Trying Cobalt instance: ${instance}`);
+
             const response = await fetch(instance, {
                 method: "POST",
                 headers: {
@@ -361,7 +362,7 @@ export async function getYoutubeDownloadUrl(url: string) {
             }
 
             const data = await response.json();
-            console.log(`Response from ${instance}:`, data.status);
+
 
             if (data.status === "error") {
                 lastError = data.text || "Video kısıtlı veya bulunamadı.";
