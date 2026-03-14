@@ -39,7 +39,7 @@ import { updateProfile } from "@/app/profil/actions";
 import { CoverUpload } from "@/components/profile/cover-upload";
 import { AvatarUpload } from "@/components/profile/avatar-upload";
 import { ThemeSelector } from "@/components/profile/theme-selector";
-import { createClient } from "@/lib/supabase-client";
+import { createClient } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
 import { signOut } from "@/app/auth/actions";
 

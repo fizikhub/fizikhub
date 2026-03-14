@@ -3,7 +3,7 @@
 import { m as motion } from "framer-motion";
 import { Flame, Trophy } from "lucide-react";
 import { useState, useEffect } from "react";
-import { createClient } from "@/lib/supabase-client";
+import { createClient } from "@/lib/supabase";
 
 export function StreakHeader() {
     // Mock state for demo - ideally fetched from DB

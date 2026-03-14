@@ -12,7 +12,7 @@ import dynamic from "next/dynamic";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { toast } from "sonner";
-import { createClient } from "@/lib/supabase-client";
+import { createClient } from "@/lib/supabase";
 
 const MarkdownRenderer = dynamic(() => import("@/components/markdown-renderer").then(mod => mod.MarkdownRenderer), {
     loading: () => <div className="animate-pulse h-40 bg-muted/20 rounded-xl" />

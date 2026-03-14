@@ -123,7 +123,7 @@ export function AdminArticleEditor({ article }: AdminArticleEditorProps) {
                 fileType: "image/webp" as const,
             });
 
-            const { createClient } = await import('@/lib/supabase-client'); // Corrected import path
+            const { createClient } = await import('@/lib/supabase'); // Corrected import path
             const supabase = createClient();
 
             const fileExt = "webp";

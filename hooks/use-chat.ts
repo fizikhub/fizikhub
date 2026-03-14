@@ -10,7 +10,7 @@ import {
     getReactions,
     markAsRead,
 } from "@/app/mesajlar/actions";
-import { createClient } from "@/lib/supabase-client";
+import { createClient } from "@/lib/supabase";
 
 interface UseChatOptions {
     conversationId: string;

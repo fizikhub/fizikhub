@@ -5,15 +5,45 @@ import { revalidatePath } from "next/cache";
 import { createNotification } from "@/app/notifications/actions";
 import { validateImageFile } from "@/lib/security";
 import { isAdminEmail } from "@/lib/admin";
+import { SupabaseClient } from "@supabase/supabase-js";
 
-export async function updateUsername(newUsername: string) {
-    const supabase = await createClient();
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
+// ============================================
+// TYPES
+// ============================================
 
-    if (authError || !user) {
-        return { success: false, error: "Giriş yapmalısınız." };
-    }
+export interface SocialLinks {
+    twitter?: string;
+    instagram?: string;
+    github?: string;
+    linkedin?: string;
+    youtube?: string;
+    website?: string;
+}
 
+interface ProfileUpdateData {
+    bio?: string;
+    avatar_url?: string;
+    full_name?: string;
+    website?: string;
+    social_links?: SocialLinks;
+    cover_offset_y?: number;
+    location?: string;
+    onboarding_completed?: boolean;
+    username?: string;
+    username_changes_count?: number;
+    cover_url?: string;
+}
+
+// ============================================
+// HELPER: Username validation & change
+// ============================================
+
+async function validateAndChangeUsername(
+    supabase: SupabaseClient,
+    userId: string,
+    userEmail: string | undefined,
+    newUsername: string
+): Promise<{ success: boolean; error?: string; updateFields?: { username: string; username_changes_count: number } }> {
     // Username boş olamaz
     if (!newUsername || newUsername.trim().length === 0) {
         return { success: false, error: "Kullanıcı adı boş olamaz." };
@@ -25,46 +55,69 @@ export async function updateUsername(newUsername: string) {
         return { success: false, error: "Kullanıcı adı sadece harf, rakam ve alt çizgi içerebilir." };
     }
 
-    // Mevcut profil bilgilerini ve değişim hakkını kontrol et (username_changes_count)
+    // Mevcut profil bilgilerini kontrol et
     const { data: currentProfile } = await supabase
         .from('profiles')
-        .select('id, username_changes_count')
-        .eq('id', user.id)
+        .select('id, username, username_changes_count')
+        .eq('id', userId)
         .single();
 
-    const isAdmin = isAdminEmail(user.email);
+    // Aynı username ise değişiklik gereksiz
+    if (currentProfile?.username === newUsername) {
+        return { success: true };
+    }
+
+    const isAdmin = isAdminEmail(userEmail);
     const changeCount = currentProfile?.username_changes_count || 0;
 
-    // Eğer admin değilse ve zaten değiştirdiyse hata ver
-    // (Varsayılan olarak 0, 1 kere değiştirebilir -> 0 ise izin ver, 1 ise durdur)
     if (!isAdmin && changeCount >= 1) {
         return { success: false, error: "Kullanıcı adınızı sadece bir kez değiştirebilirsiniz." };
     }
 
-    // Kullanıcı adının benzersiz olup olmadığını kontrol et
+    // Benzersizlik kontrolü
     const { data: existingUser } = await supabase
         .from('profiles')
         .select('id')
         .eq('username', newUsername)
-        .neq('id', user.id)
+        .neq('id', userId)
         .single();
 
     if (existingUser) {
         return { success: false, error: "Bu kullanıcı adı zaten kullanılıyor." };
     }
 
-    // Kullanıcı adını güncelle ve sayacı artır
-    const { error: updateError } = await supabase
-        .from('profiles')
-        .update({
+    return {
+        success: true,
+        updateFields: {
             username: newUsername,
             username_changes_count: changeCount + 1
-        })
-        .eq('id', user.id);
+        }
+    };
+}
 
-    if (updateError) {
-        console.error("Username update error:", updateError);
-        return { success: false, error: "Kullanıcı adı güncellenirken hata oluştu." };
+export async function updateUsername(newUsername: string) {
+    const supabase = await createClient();
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+
+    if (authError || !user) {
+        return { success: false, error: "Giriş yapmalısınız." };
+    }
+
+    const result = await validateAndChangeUsername(supabase, user.id, user.email, newUsername);
+    if (!result.success) {
+        return { success: false, error: result.error };
+    }
+
+    if (result.updateFields) {
+        const { error: updateError } = await supabase
+            .from('profiles')
+            .update(result.updateFields)
+            .eq('id', user.id);
+
+        if (updateError) {
+            console.error("Username update error:", updateError);
+            return { success: false, error: "Kullanıcı adı güncellenirken hata oluştu." };
+        }
     }
 
     revalidatePath('/profil');
@@ -76,7 +129,7 @@ export async function updateProfile(formData: {
     avatar_url?: string;
     full_name?: string;
     website?: string;
-    social_links?: any;
+    social_links?: SocialLinks;
     cover_offset_y?: number;
     location?: string;
     onboarding_completed?: boolean;
@@ -88,7 +141,7 @@ export async function updateProfile(formData: {
         return { success: false, error: "Giriş yapmalısınız." };
     }
 
-    const updateData: any = {};
+    const updateData: ProfileUpdateData = {};
 
     if (formData.bio !== undefined) updateData.bio = formData.bio;
     if (formData.avatar_url !== undefined) updateData.avatar_url = formData.avatar_url;
@@ -96,6 +149,7 @@ export async function updateProfile(formData: {
     if (formData.website !== undefined) updateData.website = formData.website;
     if (formData.social_links !== undefined) updateData.social_links = formData.social_links;
     if (formData.cover_offset_y !== undefined) updateData.cover_offset_y = formData.cover_offset_y;
+    if (formData.location !== undefined) updateData.location = formData.location;
     if (formData.onboarding_completed !== undefined) updateData.onboarding_completed = formData.onboarding_completed;
 
     const { error: updateError } = await supabase
@@ -107,13 +161,6 @@ export async function updateProfile(formData: {
         console.error("Profile update error detail:", updateError);
         return { success: false, error: "Profil güncellenirken hata oluştu." };
     }
-
-    // Get username for revalidation
-    const { data: profile } = await supabase
-        .from('profiles')
-        .select('username')
-        .eq('id', user.id)
-        .single();
 
     return { success: true };
 }
@@ -134,7 +181,7 @@ export async function saveProfileChanges(formData: FormData) {
     const coverFile = formData.get("cover") as File | null;
 
     try {
-        const updateData: any = {};
+        const updateData: ProfileUpdateData = {};
         
         // 1. Basic Fields
         if (fullName !== null) updateData.full_name = fullName;
@@ -179,37 +226,15 @@ export async function saveProfileChanges(formData: FormData) {
             updateData.cover_url = urlData.publicUrl;
         }
 
-        // 4. Username Logic
-        if (newUsername && newUsername !== user.user_metadata?.username) {
-            // Check if user has changes left (Reusing part of updateUsername logic but tailored for single update)
-            const { data: currentProfile } = await supabase
-                .from('profiles')
-                .select('username, username_changes_count')
-                .eq('id', user.id)
-                .single();
-
-            if (currentProfile && newUsername !== currentProfile.username) {
-                const isAdmin = isAdminEmail(user.email);
-                const changeCount = currentProfile?.username_changes_count || 0;
-
-                if (!isAdmin && changeCount >= 1) {
-                    return { success: false, error: "Kullanıcı adınızı sadece bir kez değiştirebilirsiniz." };
-                }
-
-                // Check uniqueness
-                const { data: existingUser } = await supabase
-                    .from('profiles')
-                    .select('id')
-                    .eq('username', newUsername)
-                    .neq('id', user.id)
-                    .single();
-
-                if (existingUser) {
-                    return { success: false, error: "Bu kullanıcı adı zaten kullanılıyor." };
-                }
-
-                updateData.username = newUsername;
-                updateData.username_changes_count = changeCount + 1;
+        // 4. Username Logic — DRY: uses shared helper
+        if (newUsername) {
+            const usernameResult = await validateAndChangeUsername(supabase, user.id, user.email, newUsername);
+            if (!usernameResult.success) {
+                return { success: false, error: usernameResult.error };
+            }
+            if (usernameResult.updateFields) {
+                updateData.username = usernameResult.updateFields.username;
+                updateData.username_changes_count = usernameResult.updateFields.username_changes_count;
             }
         }
 
@@ -230,7 +255,7 @@ export async function saveProfileChanges(formData: FormData) {
         
         return { success: true };
 
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error("Profile consolidation error:", error);
         return { success: false, error: "Değişiklikler kaydedilirken bir hata oluştu." };
     }

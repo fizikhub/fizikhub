@@ -19,7 +19,7 @@ import { m as motion, Variants } from "framer-motion";
 import { BorderBeam } from "@/components/magicui/border-beam";
 import HyperText from "@/components/magicui/hyper-text";
 import { GlitchText } from "@/components/magicui/glitch-text";
-import { createClient } from "@/lib/supabase-client";
+import { createClient } from "@/lib/supabase";
 import { TiltCard } from "@/components/magicui/tilt-card";
 import { RealisticStars } from "@/components/share/realistic-stars";
 

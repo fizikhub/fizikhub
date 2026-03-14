@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Loader2, Image as ImageIcon, X, Trash2, Hash, AlignLeft, Send, Sparkles, HelpCircle, BookOpen, Fingerprint, Lightbulb, Link as LinkIcon, AlertTriangle, Save, CloudOff } from "lucide-react";
 import { toast } from "sonner";
-import { createClient } from "@/lib/supabase-client";
+import { createClient } from "@/lib/supabase";
 import { createArticle, updateArticle } from "@/app/profil/article-actions";
 import { cn } from "@/lib/utils";
 import { Label } from "@/components/ui/label";

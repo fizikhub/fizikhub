@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Loader2, Image as ImageIcon, Trash2, Send, FlaskConical, List, FileText, Plus, X, Upload } from "lucide-react";
 import { toast } from "sonner";
-import { createClient } from "@/lib/supabase-client";
+import { createClient } from "@/lib/supabase";
 import { createArticle } from "@/app/profil/article-actions";
 import { cn } from "@/lib/utils";
 import { Textarea } from "@/components/ui/textarea";

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { BlogEditor101 } from "@/components/article/blog-editor-101";
-import { createClient } from "@/lib/supabase-client";
+import { createClient } from "@/lib/supabase";
 
 export default function GuideRedirectPage() {
     const [isOpen, setIsOpen] = useState(true);

@@ -16,7 +16,7 @@ export function HubGPTWidget() {
     useEffect(() => {
         // Fetch user profile on mount
         const fetchUser = async () => {
-            const { createClient } = await import('@/lib/supabase-client');
+            const { createClient } = await import('@/lib/supabase');
             const supabase = createClient();
             const { data: { user } } = await supabase.auth.getUser();
 

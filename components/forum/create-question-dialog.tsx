@@ -11,7 +11,7 @@ import { CustomRocketIcon as Rocket } from "@/components/ui/custom-rocket-icon";
 import { toast } from "sonner";
 import { createQuestion } from "@/app/forum/actions";
 import { m as motion, AnimatePresence } from "framer-motion";
-import { createClient } from "@/lib/supabase-client";
+import { createClient } from "@/lib/supabase";
 import { cn } from "@/lib/utils";
 
 const CATEGORY_GROUPS = [

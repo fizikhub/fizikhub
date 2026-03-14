@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { m as motion, AnimatePresence } from "framer-motion";
 import { X, Image as ImageIcon, Sparkles, Send, Palette } from "lucide-react";
-import { createClient } from "@/lib/supabase-client";
+import { createClient } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";

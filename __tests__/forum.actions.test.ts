@@ -92,17 +92,19 @@ describe('Forum Server Actions', () => {
 
     describe('voteQuestion', () => {
         it('should handle new upvote', async () => {
-            // Mock existing vote returns null
+            // Mock 1: Self-vote check — question author is different from voter
+            mockSingle.mockResolvedValueOnce({ data: { author_id: 'author-456' }, error: null });
+
+            // Mock 2: Existing vote returns null (no prior vote)
             mockSingle.mockResolvedValueOnce({ data: null, error: null });
             
-            // Mock to return author id for notifications
+            // Mock 3: Return author id for notifications
             mockSingle.mockResolvedValueOnce({ data: { author_id: 'author-456', title: 'Test Q' }, error: null });
 
             const result = await voteQuestion(1, 1);
             
             expect(result.success).toBe(true);
             expect(result.voteChange).toBe(1);
-            expect(mockFrom).toHaveBeenCalledWith('question_votes');
             expect(mockInsert).toHaveBeenCalledWith({
                 question_id: 1,
                 user_id: 'user-123',

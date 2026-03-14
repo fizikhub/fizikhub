@@ -8,7 +8,7 @@ import { tr } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { Search, X } from "lucide-react";
-import { createClient } from "@/lib/supabase-client";
+import { createClient } from "@/lib/supabase";
 import { m as motion, AnimatePresence } from "framer-motion";
 
 interface ConversationListProps {
