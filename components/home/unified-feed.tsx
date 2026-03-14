@@ -81,19 +81,19 @@ export function UnifiedFeed({ items, suggestedUsers = [] }: UnifiedFeedProps) {
                         )}
 
                         {item.type === 'question' && (
-                            <div className="rounded-2xl border border-border/60 bg-card/50 p-4 hover:border-border hover:bg-card transition-colors">
+                            <div className="rounded-[10px] border-[2.5px] border-black dark:border-zinc-700 bg-white dark:bg-[#1e1e21] p-4 shadow-[4px_4px_0px_0px_#000] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.08)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[3px_3px_0px_0px_#000] transition-all">
                                 <QuestionCard
                                     question={item.data}
                                     badgeLabel="SORU"
-                                    badgeClassName="bg-muted text-muted-foreground px-2 py-0.5 rounded-md font-semibold text-xs"
+                                    badgeClassName="bg-[#FFBD2E] text-black px-2.5 py-0.5 rounded-md font-black text-[10px] uppercase border-[1.5px] border-black shadow-[1px_1px_0px_0px_#000]"
                                 />
                             </div>
                         )}
 
                         {index === 2 && <div className="mt-6"><CommunityInviteBanner /></div>}
                         {index === 8 && (
-                            <div className="mt-6 rounded-2xl bg-gradient-to-br from-amber-500/5 to-orange-500/5 p-6 border border-amber-500/10">
-                                <h3 className="font-bold text-xs uppercase tracking-widest text-amber-600 dark:text-amber-400 mb-4 text-center">
+                            <div className="mt-6 rounded-[10px] bg-gradient-to-br from-[#FFBD2E]/5 to-orange-500/5 dark:from-[#FFBD2E]/8 dark:to-orange-500/5 p-6 border-[2px] border-[#FFBD2E]/20 dark:border-[#FFBD2E]/15">
+                                <h3 className="font-black text-xs uppercase tracking-wider text-[#FFBD2E] dark:text-[#FFBD2E] mb-4 text-center">
                                     Haftanın Sorusu
                                 </h3>
                                 <QuestionOfTheWeek />
@@ -103,8 +103,8 @@ export function UnifiedFeed({ items, suggestedUsers = [] }: UnifiedFeedProps) {
                 ))}
             </div>
 
-            <div className="mt-8 rounded-2xl bg-muted/20 border border-border/40 p-6">
-                <h3 className="font-bold text-xs uppercase tracking-widest text-muted-foreground mb-4 text-center">
+            <div className="mt-8 rounded-[10px] bg-white dark:bg-[#1e1e21] border-[2.5px] border-black dark:border-zinc-700 p-6 shadow-[4px_4px_0px_0px_#000] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.08)]">
+                <h3 className="font-black text-xs uppercase tracking-wider text-neutral-500 dark:text-zinc-400 mb-4 text-center">
                     Önerilen Araştırmacılar
                 </h3>
                 <SuggestedUsersCard users={suggestedUsers} />
