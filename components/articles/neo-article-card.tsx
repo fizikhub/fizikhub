@@ -118,10 +118,14 @@ export function NeoArticleCard({
             <article
                 className={cn(
                     "flex flex-col relative overflow-hidden",
-                    "bg-white dark:bg-[#1e1e21]",
-                    "border-[2.5px] border-black dark:border-zinc-700 rounded-[10px]",
-                    "shadow-[4px_4px_0px_0px_#000] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.08)]",
-                    "transition-all duration-200 hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_#000] dark:hover:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.06)]",
+                    // COLOR PALETTE: Dark Mode = #27272a (Zinc 800) - Lighter than background
+                    "bg-white dark:bg-[#27272a]",
+                    // BORDER: Pure Black (rgb(0,0,0)) ALWAYS
+                    "border-[3px] border-black rounded-[8px]",
+                    // SHADOW: Standardized Neo Token
+                    "shadow-neo border-black",
+                    // HOVER
+                    "transition-all duration-200 hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_#000]",
                     className
                 )}
             >
@@ -131,7 +135,7 @@ export function NeoArticleCard({
                 />
 
                 {/* 1. IMAGE SECTION */}
-                <div className="relative aspect-[16/9] w-full border-b-[2.5px] border-black dark:border-zinc-700 bg-[#FFC800] z-10">
+                <div className="relative aspect-[16/9] w-full border-b-[3px] border-black bg-[#FFC800] z-10">
                     <OptimizedImage
                         src={article.image_url || "/images/placeholder-article.webp"}
                         alt={article.title}
@@ -168,14 +172,14 @@ export function NeoArticleCard({
                     <div className="mt-auto"></div>
 
                     {/* SEPARATOR - Black Line */}
-                    <div className="w-full h-px border-t-[2px] border-dashed border-black/8 dark:border-zinc-700/50 my-1 sm:my-2" />
+                    <div className="w-full h-px border-t-[2px] border-dashed border-black/10 dark:border-black/20 my-1 sm:my-2" />
 
                     {/* 3. AUTHOR & ACTIONS FOOTER */}
                     <div className="flex items-center justify-between pt-1 sm:pt-2">
 
                         {/* Author */}
                         <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-                            <div className="relative w-8 h-8 sm:w-10 sm:h-10 flex-shrink-0 rounded-full border-[2px] border-black dark:border-zinc-600 overflow-hidden bg-white dark:bg-zinc-800 shadow-[1px_1px_0px_0px_#000] dark:shadow-[1px_1px_0px_0px_rgba(255,255,255,0.06)]">
+                            <div className="relative w-8 h-8 sm:w-10 sm:h-10 flex-shrink-0 rounded-full border-2 border-black overflow-hidden bg-white shadow-[1px_1px_0px_0px_#000]">
                                 <OptimizedAvatar
                                     src={authorAvatar}
                                     alt={authorName}
@@ -199,10 +203,10 @@ export function NeoArticleCard({
                             <button
                                 onClick={handleLike}
                                 className={cn(
-                                    "w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-lg border-[2px] border-black dark:border-zinc-600 transition-all",
+                                    "w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-lg border-2 border-black transition-all",
                                     "active:translate-x-[1px] active:translate-y-[1px] active:shadow-none",
-                                    "shadow-[2px_2px_0px_0px_#000] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.06)] hover:shadow-[1px_1px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px]",
-                                    isLiked ? "bg-[#FFC800] text-black" : "bg-white dark:bg-zinc-800 text-black dark:text-zinc-300 hover:bg-neutral-50 dark:hover:bg-zinc-700"
+                                    "shadow-[2px_2px_0px_0px_#000] hover:shadow-[1px_1px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px]",
+                                    isLiked ? "bg-[#FFC800] text-black" : "bg-white dark:bg-[#18181b] text-black dark:text-white hover:bg-neutral-50 dark:hover:bg-zinc-800"
                                 )}
                             >
                                 <Heart className={cn("w-5 h-5 stroke-[2.5px]", isLiked ? "fill-black stroke-black" : "stroke-current")} />
@@ -222,7 +226,7 @@ export function NeoArticleCard({
                                         window.location.href = url;
                                     }
                                 }}
-                                className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-lg border-[2px] border-black dark:border-zinc-600 bg-white dark:bg-zinc-800 text-black dark:text-zinc-300 hover:bg-[#23A9FA] hover:text-white transition-all active:translate-x-[1px] active:translate-y-[1px] active:shadow-none shadow-[2px_2px_0px_0px_#000] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.06)] hover:shadow-[1px_1px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px]"
+                                className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-lg border-2 border-black bg-white dark:bg-[#18181b] text-black dark:text-white hover:bg-[#23A9FA] transition-all active:translate-x-[1px] active:translate-y-[1px] active:shadow-none shadow-[2px_2px_0px_0px_#000] hover:shadow-[1px_1px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px]"
                             >
                                 <MessageCircle className="w-5 h-5 stroke-[2.5px] stroke-current" />
                             </button>
@@ -230,7 +234,7 @@ export function NeoArticleCard({
                             {/* Share */}
                             <button
                                 onClick={handleShare}
-                                className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-lg border-[2px] border-black dark:border-zinc-600 bg-white dark:bg-zinc-800 text-black dark:text-zinc-300 hover:bg-[#00F050] hover:text-black transition-all active:translate-x-[1px] active:translate-y-[1px] active:shadow-none shadow-[2px_2px_0px_0px_#000] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.06)] hover:shadow-[1px_1px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px]"
+                                className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-lg border-2 border-black bg-white dark:bg-[#18181b] text-black dark:text-white hover:bg-[#00F050] transition-all active:translate-x-[1px] active:translate-y-[1px] active:shadow-none shadow-[2px_2px_0px_0px_#000] hover:shadow-[1px_1px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px]"
                             >
                                 <Share2 className="w-5 h-5 stroke-[2.5px] stroke-current" />
                             </button>
@@ -239,10 +243,10 @@ export function NeoArticleCard({
                             <button
                                 onClick={handleBookmark}
                                 className={cn(
-                                    "w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-lg border-[2px] border-black dark:border-zinc-600 transition-all",
+                                    "w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-lg border-2 border-black transition-all",
                                     "active:translate-x-[1px] active:translate-y-[1px] active:shadow-none",
-                                    "shadow-[2px_2px_0px_0px_#000] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.06)] hover:shadow-[1px_1px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px]",
-                                    isBookmarked ? "bg-black dark:bg-zinc-200 text-white dark:text-black" : "bg-white dark:bg-zinc-800 text-black dark:text-zinc-300 hover:bg-[#FF90E8]"
+                                    "shadow-[2px_2px_0px_0px_#000] hover:shadow-[1px_1px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px]",
+                                    isBookmarked ? "bg-black text-white" : "bg-white dark:bg-[#18181b] text-black dark:text-white hover:bg-[#FF90E8]"
                                 )}
                             >
                                 <Bookmark className={cn("w-5 h-5 stroke-[2.5px]", isBookmarked ? "fill-current" : "stroke-current")} />
