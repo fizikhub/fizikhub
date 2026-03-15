@@ -3,23 +3,18 @@
 import { createClient } from "@/lib/supabase-server";
 import { revalidatePath } from "next/cache";
 import { reviewArticleWithAI } from "@/lib/ai-review";
+import { cache } from "react";
+import { getAuthorizedProfile } from "@/lib/auth-helpers";
+
+
 
 // Sadece admin (baranbozkurt), is_writer=true olan kullanıcılar veya 'editor' rolu olanlar erisebilir
 const isAuthorAdmin = async (userId: string) => {
-    const supabase = await createClient();
-    const { data: profile } = await supabase
-        .from("profiles")
-        .select("username, role, is_writer")
-        .eq("id", userId)
-        .single();
-    
-    return (
-        profile?.username === "baranbozkurt" || 
-        profile?.role === "admin" || 
-        profile?.role === "editor" || 
-        profile?.is_writer === true
-    );
+    const profile = await getAuthorizedProfile(userId);
+    return profile?.isAuthorized || false;
 };
+
+
 
 // İncelenmeyi bekleyen makaleleri getir
 export async function getPendingArticles() {

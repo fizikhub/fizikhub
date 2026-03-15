@@ -1,5 +1,7 @@
 import { Database } from '@/types/database';
 import { SupabaseClient } from '@supabase/supabase-js';
+import { cache } from 'react';
+
 
 export type Article = Database['public']['Tables']['articles']['Row'] & {
     author?: Database['public']['Tables']['profiles']['Row'] | null;
@@ -17,10 +19,11 @@ export type Question = Database['public']['Tables']['questions']['Row'] & {
 
 export type DictionaryTerm = Database['public']['Tables']['dictionary_terms']['Row'];
 
-export async function getArticles(
+export const getArticles = cache(async function (
     supabase: SupabaseClient<Database>,
     options: { status?: string | null; authorRole?: 'admin' | 'all'; fields?: string; limit?: number } = { status: 'published', authorRole: 'all' }
 ) {
+
     // Default to all fields if not specified, but for homepage we will want to restrict this
     const selectFields = options.fields || '*, author:profiles!articles_author_id_fkey(*)';
 
@@ -49,9 +52,11 @@ export async function getArticles(
     }
 
     return data as Article[];
-}
+});
 
-export async function getArticleBySlug(supabase: SupabaseClient<Database>, slug: string) {
+
+export const getArticleBySlug = cache(async function (supabase: SupabaseClient<Database>, slug: string) {
+
     // First try to find by slug
     const { data, error } = await supabase
         .from('articles')
@@ -82,9 +87,11 @@ export async function getArticleBySlug(supabase: SupabaseClient<Database>, slug:
     }
 
     return null;
-}
+});
 
-export async function getQuestions(supabase: SupabaseClient<Database>, options?: { limit?: number }) {
+
+export const getQuestions = cache(async function (supabase: SupabaseClient<Database>, options?: { limit?: number }) {
+
     const { data, error } = await supabase
         .from('questions')
         .select('*, author:profiles(*)')
@@ -97,9 +104,11 @@ export async function getQuestions(supabase: SupabaseClient<Database>, options?:
     }
 
     return data as Question[];
-}
+});
 
-export async function getDictionaryTerms(supabase: SupabaseClient<Database>) {
+
+export const getDictionaryTerms = cache(async function (supabase: SupabaseClient<Database>) {
+
     const { data, error } = await supabase
         .from('dictionary_terms')
         .select('*')
@@ -111,4 +120,5 @@ export async function getDictionaryTerms(supabase: SupabaseClient<Database>) {
     }
 
     return data as DictionaryTerm[];
-}
+});
+

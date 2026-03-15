@@ -4,6 +4,8 @@ import { createClient } from "@/lib/supabase-server";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { reviewArticleWithAI } from "@/lib/ai-review";
+import { getAuthorizedProfile } from "@/lib/auth-helpers";
+
 
 // Helper: Save references for an article
 async function saveReferences(supabase: any, articleId: number, referencesJson: string) {
@@ -68,16 +70,13 @@ export async function createArticle(formData: FormData) {
         return { success: false, error: "Oturum açmanız gerekiyor." };
     }
 
-    // Check if user is a writer
-    const { data: profile } = await supabase
-        .from("profiles")
-        .select("is_writer")
-        .eq("id", user.id)
-        .single();
+    // Check if user is a writer using optimized helper
+    const profile = await getAuthorizedProfile(user.id);
 
-    if (!profile?.is_writer) {
+    if (!profile?.is_writer && profile?.role !== 'author' && profile?.role !== 'admin') {
         return { success: false, error: "Yazar yetkiniz yok." };
     }
+
 
     const title = formData.get("title") as string;
     const excerpt = formData.get("excerpt") as string;
@@ -143,16 +142,13 @@ export async function updateArticle(articleId: number, formData: FormData) {
         return { success: false, error: "Oturum açmanız gerekiyor." };
     }
 
-    // Check if user is a writer
-    const { data: profile } = await supabase
-        .from("profiles")
-        .select("is_writer")
-        .eq("id", user.id)
-        .single();
+    // Check if user is a writer using optimized helper
+    const profile = await getAuthorizedProfile(user.id);
 
-    if (!profile?.is_writer) {
+    if (!profile?.is_writer && profile?.role !== 'author' && profile?.role !== 'admin') {
         return { success: false, error: "Yazar yetkiniz yok." };
     }
+
 
     const title = formData.get("title") as string;
     const excerpt = formData.get("excerpt") as string;
