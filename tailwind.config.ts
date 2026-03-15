@@ -210,6 +210,7 @@ const config = {
                 "marquee": "marquee var(--duration) linear infinite",
                 "marquee-vertical": "marquee-vertical var(--duration) linear infinite",
                 "ripple": "ripple var(--duration,2s) ease calc(var(--i, 0)*.2s) infinite",
+                "spin-slow": "spin 8s linear infinite",
             },
         },
     },
