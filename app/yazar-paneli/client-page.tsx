@@ -7,9 +7,11 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { approveArticle, revokeApproval } from "./actions";
-import { CheckCircle2, Clock, UserIcon, FileText, XCircle, Bot, Search } from "lucide-react";
+import { CheckCircle2, Clock, UserIcon, FileText, XCircle, Bot, Search, Filter } from "lucide-react";
 import Link from "next/link";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 
 const REQUIRED_APPROVALS = 4;
 
@@ -83,6 +85,9 @@ const ArticleCard = memo(({
                 <p className="text-sm text-zinc-400 line-clamp-3 leading-relaxed">
                     {article.excerpt || "İçerik özeti bulunamadı..."}
                 </p>
+                {article.category && (
+                    <Badge variant="outline" className="mt-2 text-[10px] font-bold">{article.category}</Badge>
+                )}
             </div>
 
             <div className="mt-auto">
@@ -156,6 +161,7 @@ ArticleCard.displayName = "ArticleCard";
 export function AuthorPanelClient({ initialArticles }: { initialArticles: any[] }) {
     const [articles, setArticles] = useState(initialArticles);
     const [loadingMap, setLoadingMap] = useState<Record<number, boolean>>({});
+    const [searchQuery, setSearchQuery] = useState("");
 
     const handleApprove = useCallback(async (articleId: number) => {
         setLoadingMap(prev => ({ ...prev, [articleId]: true }));
@@ -227,19 +233,50 @@ export function AuthorPanelClient({ initialArticles }: { initialArticles: any[] 
         );
     }
 
+    const filteredArticles = articles.filter(article => {
+        if (!searchQuery.trim()) return true;
+        const q = searchQuery.toLowerCase();
+        return (
+            article.title?.toLowerCase().includes(q) ||
+            article.excerpt?.toLowerCase().includes(q) ||
+            article.author?.full_name?.toLowerCase().includes(q) ||
+            article.author?.username?.toLowerCase().includes(q) ||
+            article.category?.toLowerCase().includes(q)
+        );
+    });
+
     return (
         <TooltipProvider>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {articles.map((article) => (
-                    <ArticleCard 
-                        key={article.id}
-                        article={article}
-                        isLoading={!!loadingMap[article.id]}
-                        onApprove={handleApprove}
-                        onRevoke={handleRevoke}
-                    />
-                ))}
+            {/* Search */}
+            <div className="relative mb-6">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <Input
+                    placeholder="Makale, yazar veya kategori ara..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pl-10 h-11 bg-muted/30 border-2 border-zinc-200 dark:border-zinc-800 rounded-xl font-medium"
+                />
             </div>
+
+            {filteredArticles.length === 0 ? (
+                <div className="flex flex-col items-center justify-center p-12 border-2 border-dashed border-zinc-800 rounded-xl bg-zinc-900/50">
+                    <Filter className="w-12 h-12 text-zinc-500 mb-4" />
+                    <h3 className="text-lg font-bold mb-1">Sonuç bulunamadı</h3>
+                    <p className="text-zinc-500 text-sm">"{searchQuery}" ile eşleşen makale yok.</p>
+                </div>
+            ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {filteredArticles.map((article) => (
+                        <ArticleCard 
+                            key={article.id}
+                            article={article}
+                            isLoading={!!loadingMap[article.id]}
+                            onApprove={handleApprove}
+                            onRevoke={handleRevoke}
+                        />
+                    ))}
+                </div>
+            )}
         </TooltipProvider>
     );
 }

@@ -173,6 +173,23 @@ export function ArticleEditor({ article }: ArticleEditorProps) {
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+
+        // Validation
+        if (!title.trim() || title.trim().length < 10) {
+            toast.error("Başlık en az 10 karakter olmalıdır.");
+            return;
+        }
+        if (!category) {
+            toast.error("Lütfen bir kategori seçin.");
+            return;
+        }
+        const plainText = content.replace(/<[^>]*>/g, '').trim();
+        const wordCount = plainText ? plainText.split(/\s+/).filter(w => w.length > 0).length : 0;
+        if (wordCount < 50) {
+            toast.error(`Makale en az 50 kelime içermelidir. Şu an: ${wordCount} kelime.`);
+            return;
+        }
+
         setIsSubmitting(true);
 
         const formData = new FormData(e.currentTarget);
@@ -189,7 +206,7 @@ export function ArticleEditor({ article }: ArticleEditorProps) {
             }
 
             if (result.success) {
-                toast.success(article ? "Makale güncellendi" : "Makale oluşturuldu");
+                toast.success(article ? "Makale güncellendi" : "Makale oluşturuldu ve AI incelemesine gönderildi! 🎉");
                 try { localStorage.removeItem(draftKey); } catch { }
                 router.push("/yazar");
             } else {
