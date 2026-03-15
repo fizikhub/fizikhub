@@ -92,10 +92,10 @@ export async function reviewArticleWithAI(
 
     try {
         const model = genAI.getGenerativeModel({ 
-            model: "gemini-2.0-flash-lite",
+            model: "gemini-2.5-flash",
             generationConfig: {
                 temperature: 0.2,
-                maxOutputTokens: 4096,
+                maxOutputTokens: 8192,
                 responseMimeType: "application/json",
             }
         });
@@ -137,8 +137,8 @@ ${referencesText}
         parsed.source_content_match.score = clamp(parsed.source_content_match?.score ?? 0, 0, 100);
 
         return parsed;
-    } catch (error) {
-        console.error("AI Review error:", error);
+    } catch (error: any) {
+        console.error("AI Review error Details:", error?.message || error);
         return null;
     }
 }

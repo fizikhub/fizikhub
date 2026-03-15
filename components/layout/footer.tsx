@@ -286,6 +286,7 @@ function initGL(canvas: HTMLCanvasElement) {
 export function Footer() {
     const pathname = usePathname();
     const isChatPage = pathname?.match(/\/mesajlar\/.+/);
+    const isWriterPanel = pathname?.startsWith('/yazar-paneli') || pathname?.startsWith('/yazar/');
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const boxRef = useRef<HTMLDivElement>(null);
     const glRef = useRef<ReturnType<typeof initGL>>(null);
@@ -295,7 +296,7 @@ export function Footer() {
     useEffect(() => {
         const c = canvasRef.current;
         const b = boxRef.current;
-        if (!c || !b) return;
+        if (!c || !b || isWriterPanel) return;
 
         const resize = () => {
             requestAnimationFrame(() => {
@@ -352,16 +353,17 @@ export function Footer() {
             window.removeEventListener("resize", resize);
             if (afRef.current) cancelAnimationFrame(afRef.current);
         };
-    }, []);
+    }, [isWriterPanel]);
 
     return (
         <footer ref={boxRef} role="contentinfo" aria-label="Site bilgileri"
             className={cn(
-                "relative bg-black overflow-hidden min-h-[520px] md:min-h-[650px] flex flex-col justify-end",
-                isChatPage ? "hidden" : "flex"
+                "relative bg-black overflow-hidden flex flex-col justify-end",
+                isChatPage ? "hidden" : "flex",
+                isWriterPanel ? "min-h-[200px] md:min-h-[200px]" : "min-h-[520px] md:min-h-[650px]"
             )}
         >
-            <canvas ref={canvasRef} className="absolute inset-0 z-0 block" />
+            {!isWriterPanel && <canvas ref={canvasRef} className="absolute inset-0 z-0 block" />}
             {/* SMOOTH GRADIENT TRANSITION — shrunken on mobile to avoid covering the hole */}
             <div className="absolute inset-x-0 top-0 z-10 pointer-events-none h-[150px] md:h-[400px] bg-gradient-to-b from-background via-background/80 to-background/0" />
 
