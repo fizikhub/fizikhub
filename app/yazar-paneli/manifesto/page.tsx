@@ -1,7 +1,8 @@
 import { 
     Sparkles, Quote, Target, PenTool, AlertTriangle, 
-    FileText, Bot, ImageIcon, Link2, LayoutTemplate, Zap, Search, Library, CheckCircle2, FileCode2, FlaskConical, Scale, Database
+    FileText, Bot, ImageIcon, Link2, LayoutTemplate, Zap, Search, Library, CheckCircle2, FileCode2, FlaskConical, Scale, Database, ArrowRight
 } from "lucide-react";
+import Link from "next/link";
 
 export default function ManifestoPage() {
     return (
@@ -330,6 +331,14 @@ export default function ManifestoPage() {
                             <div className="bg-yellow-400 text-black py-4 px-8 rounded-xl inline-block font-black text-2xl md:text-3xl uppercase tracking-tighter transform -rotate-2 border-2 border-white shadow-[0px_0px_30px_rgba(250,204,21,0.5)]">
                                 &quot;Bunu arkadaşıma anlatsam heyecanlanır mıydı?&quot;
                             </div>
+                        </div>
+
+                        <div className="mt-12 flex justify-center">
+                            <Link href="/yazar/yeni">
+                                <button className="group relative bg-[#FFBD2E] text-black font-black text-2xl py-4 px-10 rounded-xl border-[3px] border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[4px] hover:translate-y-[4px] transition-all flex items-center gap-3 uppercase italic">
+                                    Yazmaya Başla <ArrowRight className="w-6 h-6 group-hover:translate-x-2 transition-transform" />
+                                </button>
+                            </Link>
                         </div>
                     </section>
                 </div>
