@@ -1,7 +1,7 @@
 import { getPendingArticles } from "./actions";
 import { AuthorPanelClient } from "./client-page";
 import Link from "next/link";
-import { BookOpen } from "lucide-react";
+import { BookOpen, PenSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export default async function YazarPaneliPage() {
@@ -27,12 +27,21 @@ export default async function YazarPaneliPage() {
                         </p>
                     </div>
                     
-                    <Link href="/yazar-paneli/manifesto" className="flex-shrink-0">
-                        <Button className="font-black border-2 border-black dark:border-zinc-800 bg-primary/10 text-primary hover:bg-primary hover:text-white transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.5)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none h-12 px-6">
-                            <BookOpen className="w-5 h-5 mr-2" />
-                            Yazar Manifestosu
-                        </Button>
-                    </Link>
+                    <div className="flex flex-wrap gap-4 flex-shrink-0">
+                        <Link href="/makale/yeni">
+                            <Button className="font-black border-2 border-black dark:border-zinc-800 bg-[#FFBD2E] text-black hover:bg-[#FFD268] transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.5)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none h-12 px-6">
+                                <PenSquare className="w-5 h-5 mr-2" />
+                                Yazı Yaz
+                            </Button>
+                        </Link>
+                        
+                        <Link href="/yazar-paneli/manifesto">
+                            <Button className="font-black border-2 border-black dark:border-zinc-800 bg-primary/10 text-primary hover:bg-primary hover:text-white transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.5)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none h-12 px-6">
+                                <BookOpen className="w-5 h-5 mr-2" />
+                                Yazar Manifestosu
+                            </Button>
+                        </Link>
+                    </div>
                 </div>
                 
                 <AuthorPanelClient initialArticles={articles || []} />
