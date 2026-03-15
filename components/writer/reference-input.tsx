@@ -4,7 +4,10 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Plus, Trash2, ExternalLink, ChevronDown, ChevronUp } from "lucide-react";
+import { Plus, Trash2, ExternalLink, ChevronDown, ChevronUp, CheckCircle2, AlertCircle, XCircle, Loader2 } from "lucide-react";
+import { checkLinkHealth } from "@/app/yazar-paneli/actions";
+import { toast } from "sonner";
+
 
 export interface Reference {
     url: string;
@@ -24,6 +27,8 @@ const emptyRef: Reference = { url: "", title: "", authors: "", publisher: "", ye
 
 export function ReferenceInput({ references, onChange }: ReferenceInputProps) {
     const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
+    const [healthChecks, setHealthChecks] = useState<Record<number, { loading: boolean, status: 'ok' | 'error' | 'warning' | null, message?: string }>>({});
+
 
     const addReference = () => {
         onChange([...references, { ...emptyRef }]);
@@ -40,7 +45,52 @@ export function ReferenceInput({ references, onChange }: ReferenceInputProps) {
         const newRefs = [...references];
         newRefs[index] = { ...newRefs[index], [field]: value };
         onChange(newRefs);
+
+        // If URL changes, reset its health status
+        if (field === "url") {
+            setHealthChecks(prev => ({
+                ...prev,
+                [index]: { loading: false, status: null }
+            }));
+        }
     };
+
+    const runHealthCheck = async (index: number, url: string) => {
+        if (!url || !url.startsWith("http")) return;
+
+        setHealthChecks(prev => ({
+            ...prev,
+            [index]: { loading: true, status: null }
+        }));
+
+        try {
+            const result = await checkLinkHealth(url);
+            if (result.ok) {
+                setHealthChecks(prev => ({
+                    ...prev,
+                    [index]: { loading: false, status: 'ok' }
+                }));
+            } else {
+                setHealthChecks(prev => ({
+                    ...prev,
+                    [index]: { 
+                        loading: false, 
+                        status: result.status === 404 ? 'error' : 'warning',
+                        message: result.error || (result.status === 404 ? "Bu kaynak artık erişilebilir değil (404)" : "Bağlantı sorunu")
+                    }
+                }));
+                if (result.status === 404) {
+                    toast.error(`Kaynak [${index + 1}] erişilemiyor: 404 Not Found`);
+                }
+            }
+        } catch (error) {
+            setHealthChecks(prev => ({
+                ...prev,
+                [index]: { loading: false, status: 'warning', message: "Kontrol edilemedi" }
+            }));
+        }
+    };
+
 
     return (
         <div className="space-y-3">
@@ -109,15 +159,57 @@ export function ReferenceInput({ references, onChange }: ReferenceInputProps) {
                                         className="h-9 text-sm"
                                     />
                                 </div>
+                                
                                 <div className="space-y-1 sm:col-span-2">
-                                    <Label className="text-xs">URL</Label>
-                                    <Input
-                                        value={ref.url}
-                                        onChange={(e) => updateReference(index, "url", e.target.value)}
-                                        placeholder="https://..."
-                                        className="h-9 text-sm"
-                                    />
+                                    <div className="flex items-center justify-between">
+                                        <Label className="text-xs">URL</Label>
+                                        <div className="flex items-center gap-2">
+                                            {healthChecks[index]?.loading && (
+                                                <span className="flex items-center gap-1 text-[10px] text-muted-foreground animate-pulse">
+                                                    <Loader2 className="w-3 h-3 animate-spin" />
+                                                </span>
+                                            )}
+                                            {healthChecks[index]?.status === 'ok' && (
+                                                <span className="flex items-center gap-1 text-[10px] text-emerald-500 font-medium">
+                                                    <CheckCircle2 className="w-3 h-3" /> Erişilebilir
+                                                </span>
+                                            )}
+                                            {healthChecks[index]?.status === 'error' && (
+                                                <span className="flex items-center gap-1 text-[10px] text-red-500 font-bold">
+                                                    <XCircle className="w-3 h-3" /> Kırık Link (404)
+                                                </span>
+                                            )}
+                                            {healthChecks[index]?.status === 'warning' && (
+                                                <span className="flex items-center gap-1 text-[10px] text-amber-500 font-medium">
+                                                    <AlertCircle className="w-3 h-3" /> {healthChecks[index]?.message || "Sorunlu"}
+                                                </span>
+                                            )}
+                                        </div>
+                                    </div>
+                                    <div className="relative">
+                                        <Input
+                                            value={ref.url}
+                                            onChange={(e) => updateReference(index, "url", e.target.value)}
+                                            onBlur={() => runHealthCheck(index, ref.url)}
+                                            placeholder="https://..."
+                                            className={`h-9 text-sm pr-9 ${
+                                                healthChecks[index]?.status === 'error' ? 'border-red-500 ring-red-500/20' : 
+                                                healthChecks[index]?.status === 'ok' ? 'border-emerald-500/50' : ''
+                                            }`}
+                                        />
+                                        <Button
+                                            type="button"
+                                            variant="ghost"
+                                            size="icon"
+                                            className="absolute right-0 top-0 h-9 w-9 text-muted-foreground hover:text-primary"
+                                            onClick={() => runHealthCheck(index, ref.url)}
+                                            disabled={healthChecks[index]?.loading || !ref.url}
+                                        >
+                                            <ExternalLink className="w-3.5 h-3.5" />
+                                        </Button>
+                                    </div>
                                 </div>
+
                                 <div className="space-y-1">
                                     <Label className="text-xs">Yazar(lar)</Label>
                                     <Input

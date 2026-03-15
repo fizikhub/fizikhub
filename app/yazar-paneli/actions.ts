@@ -305,3 +305,59 @@ export async function triggerManualAIReview(articleId: number) {
         return { success: false, error: err.message };
     }
 }
+
+// Link sağlık kontrolü (Link Health Check)
+export async function checkLinkHealth(url: string) {
+    if (!url || !url.startsWith("http")) {
+        return { ok: false, error: "Geçersiz URL" };
+    }
+
+    try {
+        // First try a HEAD request (faster, doesn't download body)
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 second timeout
+
+        let response;
+        try {
+            response = await fetch(url, { 
+                method: "HEAD", 
+                signal: controller.signal,
+                headers: {
+                    "User-Agent": "FizikHubBot/1.0 (LinkHealthChecker)"
+                },
+                cache: 'no-store'
+            });
+        } catch (headError) {
+            // Some servers block HEAD requests, fallback to GET (with a small limit)
+            const getController = new AbortController();
+            const getTimeoutId = setTimeout(() => getController.abort(), 10000);
+            
+            response = await fetch(url, { 
+                method: "GET", 
+                signal: getController.signal,
+                headers: {
+                    "User-Agent": "FizikHubBot/1.0 (LinkHealthChecker)"
+                },
+                cache: 'no-store'
+                // Note: We can't really limit response body easily with fetch in server actions 
+                // without stream readers, but we only care about the status code here.
+            });
+            clearTimeout(getTimeoutId);
+        }
+
+        clearTimeout(timeoutId);
+
+        return { 
+            ok: response.ok, 
+            status: response.status,
+            statusText: response.statusText
+        };
+    } catch (err: any) {
+        console.error(`Link check failed for ${url}:`, err.message);
+        return { 
+            ok: false, 
+            error: err.name === 'AbortError' ? "Zaman aşımı (Timeout)" : "Erişim hatası",
+            errorCode: err.name
+        };
+    }
+}
