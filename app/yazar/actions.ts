@@ -55,7 +55,8 @@ export async function createArticle(formData: FormData) {
         category,
         image_url: imageUrl,
         author_id: user.id,
-        status: "pending"
+        status: "pending",
+        published: false
     });
 
     if (error) {
@@ -63,6 +64,7 @@ export async function createArticle(formData: FormData) {
         return { success: false, error: "Makale oluşturulurken bir hata oluştu." };
     }
 
+    revalidatePath("/yazar-paneli");
     revalidatePath("/yazar");
     revalidatePath("/kesfet");
     revalidatePath("/blog");
@@ -107,7 +109,8 @@ export async function updateArticle(articleId: number, formData: FormData) {
             content,
             category,
             image_url: imageUrl,
-            status: "pending" // Re-submit for approval on update
+            status: "pending", // Re-submit for approval on update
+            published: false
         })
         .eq("id", articleId)
         .eq("author_id", user.id);
@@ -117,6 +120,7 @@ export async function updateArticle(articleId: number, formData: FormData) {
         return { success: false, error: "Makale güncellenirken bir hata oluştu." };
     }
 
+    revalidatePath("/yazar-paneli");
     revalidatePath("/yazar");
     revalidatePath(`/yazar/${articleId}`);
     revalidatePath("/kesfet");

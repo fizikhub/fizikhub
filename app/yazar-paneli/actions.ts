@@ -33,6 +33,7 @@ export async function getPendingArticles() {
 
     try {
         // İlgili makaleleri ve kimlerin onayladigini getir
+        // published IS NOT TRUE (false veya null) ve status != 'draft' olanları getir
         const { data: articles, error } = await supabase
             .from("articles")
             .select(`
@@ -46,7 +47,7 @@ export async function getPendingArticles() {
                 author:profiles!author_id(full_name, avatar_url, username),
                 article_approvals(user_id, approver:profiles!user_id(avatar_url, full_name, username))
             `)
-            .eq("published", false)
+            .or("published.eq.false,published.is.null")
             .neq("status", "draft") // Taslak olmayan ama henüz yayınlanmamış makaleler
             .order("created_at", { ascending: false });
 
