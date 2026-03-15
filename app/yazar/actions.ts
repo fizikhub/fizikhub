@@ -3,6 +3,62 @@
 import { createClient } from "@/lib/supabase-server";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { reviewArticleWithAI } from "@/lib/ai-review";
+
+// Helper: Save references for an article
+async function saveReferences(supabase: any, articleId: number, referencesJson: string) {
+    try {
+        const references = JSON.parse(referencesJson || "[]");
+        if (!Array.isArray(references) || references.length === 0) return;
+
+        // Delete existing references
+        await supabase.from("article_references").delete().eq("article_id", articleId);
+
+        // Insert new references
+        const refsToInsert = references.map((ref: any, index: number) => ({
+            article_id: articleId,
+            url: ref.url || null,
+            title: ref.title || "Başlıksız kaynak",
+            authors: ref.authors || null,
+            publisher: ref.publisher || null,
+            year: ref.year || null,
+            doi: ref.doi || null,
+            order_index: index,
+        }));
+
+        await supabase.from("article_references").insert(refsToInsert);
+    } catch (e) {
+        console.error("Error saving references:", e);
+    }
+}
+
+// Helper: Trigger AI review (fire-and-forget)
+async function triggerAIReview(supabase: any, articleId: number, title: string, content: string, referencesJson: string) {
+    try {
+        const references = JSON.parse(referencesJson || "[]");
+        const result = await reviewArticleWithAI(title, content, references);
+        
+        if (result) {
+            // Delete existing AI review for this article
+            await supabase.from("article_ai_reviews").delete().eq("article_id", articleId);
+            
+            // Insert new review
+            await supabase.from("article_ai_reviews").insert({
+                article_id: articleId,
+                overall_score: result.overall_score,
+                content_accuracy: result.content_accuracy,
+                grammar_check: result.grammar_check,
+                source_reliability: result.source_reliability,
+                source_content_match: result.source_content_match,
+                suggestions: result.suggestions,
+                raw_response: JSON.stringify(result),
+                model_used: "gemini-2.0-flash-lite",
+            });
+        }
+    } catch (e) {
+        console.error("Error triggering AI review:", e);
+    }
+}
 
 export async function createArticle(formData: FormData) {
     const supabase = await createClient();
@@ -28,6 +84,7 @@ export async function createArticle(formData: FormData) {
     const content = formData.get("content") as string;
     const category = formData.get("category") as string;
     const imageUrl = formData.get("image_url") as string;
+    const referencesJson = formData.get("references") as string;
 
     if (!title || !content || !category) {
         return { success: false, error: "Lütfen zorunlu alanları doldurun." };
@@ -47,7 +104,7 @@ export async function createArticle(formData: FormData) {
         .replace(/-+/g, "-")
         .trim();
 
-    const { error } = await supabase.from("articles").insert({
+    const { data: insertedArticle, error } = await supabase.from("articles").insert({
         title,
         slug: `${slug}-${Date.now()}`, // Ensure uniqueness
         excerpt,
@@ -57,12 +114,18 @@ export async function createArticle(formData: FormData) {
         author_id: user.id,
         status: "pending",
         published: false
-    });
+    }).select("id").single();
 
-    if (error) {
+    if (error || !insertedArticle) {
         console.error("Error creating article:", error);
         return { success: false, error: "Makale oluşturulurken bir hata oluştu." };
     }
+
+    // Save references
+    await saveReferences(supabase, insertedArticle.id, referencesJson);
+
+    // Trigger AI review (fire-and-forget — don't block the user)
+    triggerAIReview(supabase, insertedArticle.id, title, content, referencesJson).catch(console.error);
 
     revalidatePath("/yazar-paneli");
     revalidatePath("/yazar");
@@ -96,6 +159,7 @@ export async function updateArticle(articleId: number, formData: FormData) {
     const content = formData.get("content") as string;
     const category = formData.get("category") as string;
     const imageUrl = formData.get("image_url") as string;
+    const referencesJson = formData.get("references") as string;
 
     if (!title || !content || !category) {
         return { success: false, error: "Lütfen zorunlu alanları doldurun." };
@@ -119,6 +183,12 @@ export async function updateArticle(articleId: number, formData: FormData) {
         console.error("Error updating article:", error);
         return { success: false, error: "Makale güncellenirken bir hata oluştu." };
     }
+
+    // Save references
+    await saveReferences(supabase, articleId, referencesJson);
+
+    // Trigger AI review (fire-and-forget)
+    triggerAIReview(supabase, articleId, title, content, referencesJson).catch(console.error);
 
     revalidatePath("/yazar-paneli");
     revalidatePath("/yazar");

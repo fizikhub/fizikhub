@@ -7,7 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { approveArticle, revokeApproval } from "./actions";
-import { CheckCircle2, Clock, UserIcon, FileText, XCircle } from "lucide-react";
+import { CheckCircle2, Clock, UserIcon, FileText, XCircle, Bot, Search } from "lucide-react";
 import Link from "next/link";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
@@ -56,9 +56,21 @@ const ArticleCard = memo(({
                         <span className="text-[10px] text-zinc-500">@{author?.username || "kullanici"}</span>
                     </div>
                 </div>
-                <div className="flex items-center gap-1.5 text-xs font-bold text-zinc-400 bg-zinc-900 px-2.5 py-1 rounded-md border border-zinc-800">
-                    <Clock className="w-3.5 h-3.5 text-zinc-500" />
-                    <span>{formattedDate}</span>
+                <div className="flex items-center gap-2">
+                    {article.aiScore != null && (
+                        <div className={`flex items-center gap-1 text-xs font-black px-2 py-1 rounded-md border ${
+                            article.aiScore >= 80 ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-500' :
+                            article.aiScore >= 60 ? 'bg-amber-500/10 border-amber-500/30 text-amber-500' :
+                            'bg-red-500/10 border-red-500/30 text-red-500'
+                        }`}>
+                            <Bot className="w-3 h-3" />
+                            {article.aiScore}
+                        </div>
+                    )}
+                    <div className="flex items-center gap-1.5 text-xs font-bold text-zinc-400 bg-zinc-900 px-2.5 py-1 rounded-md border border-zinc-800">
+                        <Clock className="w-3.5 h-3.5 text-zinc-500" />
+                        <span>{formattedDate}</span>
+                    </div>
                 </div>
             </div>
 
@@ -108,9 +120,9 @@ const ArticleCard = memo(({
                 </div>
 
                 <div className="flex gap-2">
-                    <Link href={`/makale/${article.slug}`} target="_blank" className="flex-1">
+                    <Link href={`/yazar-paneli/makale/${article.id}`} className="flex-1">
                         <Button variant="outline" className="w-full font-bold border-2 h-11 border-zinc-800 hover:bg-zinc-800 hover:text-white">
-                            <FileText className="w-4 h-4 mr-2" /> Oku
+                            <Search className="w-4 h-4 mr-2" /> İncele
                         </Button>
                     </Link>
                     

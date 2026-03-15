@@ -22,6 +22,7 @@ const TiptapEditor = dynamic(() => import("./tiptap-editor").then((mod) => mod.T
     loading: () => <div className="h-64 flex items-center justify-center border-2 border-dashed border-black/20 rounded-lg text-zinc-500 font-bold animate-pulse">Editör yükleniyor...</div>
 });
 import { ImageCropDialog } from "@/components/shared/image-crop-dialog";
+import { ReferenceInput, type Reference } from "./reference-input";
 
 interface ArticleEditorProps {
     article?: {
@@ -31,6 +32,7 @@ interface ArticleEditorProps {
         content: string;
         category: string;
         image_url: string | null;
+        references?: Reference[];
     };
 }
 
@@ -56,6 +58,7 @@ export function ArticleEditor({ article }: ArticleEditorProps) {
 
     const [excerpt, setExcerpt] = useState(article?.excerpt || "");
     const [imageUrl, setImageUrl] = useState(article?.image_url || "");
+    const [references, setReferences] = useState<Reference[]>(article?.references || []);
 
     // Crop Dialog States
     const [isCropDialogOpen, setIsCropDialogOpen] = useState(false);
@@ -129,6 +132,7 @@ export function ArticleEditor({ article }: ArticleEditorProps) {
                 if (draft.excerpt) setExcerpt(draft.excerpt);
                 if (draft.imageUrl) setImageUrl(draft.imageUrl);
                 if (draft.content) setContent(draft.content);
+                if (draft.references) setReferences(draft.references);
                 toast.info('Önceki taslağınız geri yüklendi.', { duration: 3000 });
             }
         } catch { }
@@ -145,14 +149,14 @@ export function ArticleEditor({ article }: ArticleEditorProps) {
 
         autoSaveTimer.current = setTimeout(() => {
             try {
-                localStorage.setItem(draftKey, JSON.stringify({ title, category, excerpt, imageUrl, content }));
+                localStorage.setItem(draftKey, JSON.stringify({ title, category, excerpt, imageUrl, content, references }));
                 setAutoSaveStatus('saved');
                 setTimeout(() => setAutoSaveStatus('idle'), 2000);
             } catch { }
         }, 5000);
 
         return () => { if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current); };
-    }, [title, category, excerpt, imageUrl, content, isDraftLoaded]);
+    }, [title, category, excerpt, imageUrl, content, references, isDraftLoaded]);
 
     // Warn before leaving
     useEffect(() => {
@@ -174,6 +178,7 @@ export function ArticleEditor({ article }: ArticleEditorProps) {
         const formData = new FormData(e.currentTarget);
         formData.set("image_url", imageUrl);
         formData.set("content", content); // Use state content from Tiptap
+        formData.set("references", JSON.stringify(references));
 
         try {
             let result;
@@ -294,6 +299,11 @@ export function ArticleEditor({ article }: ArticleEditorProps) {
                         content={content}
                         onChange={setContent}
                     />
+                </div>
+
+                {/* References Section */}
+                <div className="pt-4 border-t">
+                    <ReferenceInput references={references} onChange={setReferences} />
                 </div>
             </div>
 
