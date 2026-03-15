@@ -68,6 +68,20 @@ export function ArticleEditor({ article }: ArticleEditorProps) {
         const file = e.target.files?.[0];
         if (!file) return;
 
+        // File size check
+        if (file.size > 10 * 1024 * 1024) {
+            toast.error("Dosya boyutu 10MB'dan küçük olmalıdır.");
+            if (fileInputRef.current) fileInputRef.current.value = "";
+            return;
+        }
+
+        // File type check
+        if (!file.type.startsWith('image/')) {
+            toast.error("Sadece görsel dosyaları yükleyebilirsiniz.");
+            if (fileInputRef.current) fileInputRef.current.value = "";
+            return;
+        }
+
         // Create a local URL for the cropper
         const objectUrl = URL.createObjectURL(file);
         setTempImageSrc(objectUrl);
@@ -102,9 +116,13 @@ export function ArticleEditor({ article }: ArticleEditorProps) {
             } else {
                 toast.error(result.error || "Resim yüklenemedi");
             }
-        } catch (error) {
+        } catch (error: any) {
             console.error("Compression/Upload error:", error);
-            toast.error("Görsel işlenirken bir hata oluştu");
+            if (error?.message?.includes('network') || error?.message?.includes('fetch')) {
+                toast.error("İnternet bağlantısı sorunu. Lütfen bağlantınızı kontrol edin.");
+            } else {
+                toast.error("Görsel işlenirken bir hata oluştu. Farklı bir görsel deneyin.");
+            }
         } finally {
             setIsUploading(false);
         }

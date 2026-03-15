@@ -313,6 +313,7 @@ export function ReviewDetailClient({ data, articleId }: ReviewDetailClientProps)
                                         { label: "Yazım", score: localAiReview.grammar_check?.score, icon: <PenTool className="w-3.5 h-3.5" /> },
                                         { label: "Kaynaklar", score: localAiReview.source_reliability?.score, icon: <BookOpen className="w-3.5 h-3.5" /> },
                                         { label: "Uyum", score: localAiReview.source_content_match?.score, icon: <CheckCircle2 className="w-3.5 h-3.5" /> },
+                                        { label: "Okunabilirlik", score: localAiReview.readability_score, icon: <FileText className="w-3.5 h-3.5" /> },
                                     ].map(({ label, score, icon }) => (
                                         <div key={label} className="flex items-center gap-2 p-2 rounded-lg bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800">
                                             <span className="text-muted-foreground">{icon}</span>
@@ -407,6 +408,16 @@ export function ReviewDetailClient({ data, articleId }: ReviewDetailClientProps)
                                                 </li>
                                             ))}
                                         </ul>
+                                    </div>
+                                )}
+
+                                {/* Tone Analysis */}
+                                {localAiReview.tone_analysis && (
+                                    <div className="p-3 rounded-lg bg-violet-50 dark:bg-violet-900/10 border border-violet-200 dark:border-violet-900/30">
+                                        <h3 className="text-xs font-bold flex items-center gap-1.5 mb-1">
+                                            <Sparkles className="w-3.5 h-3.5 text-violet-500" /> Üslup Analizi
+                                        </h3>
+                                        <p className="text-xs text-muted-foreground">{localAiReview.tone_analysis}</p>
                                     </div>
                                 )}
 
