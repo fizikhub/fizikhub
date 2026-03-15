@@ -411,7 +411,7 @@ export function ReviewDetailClient({ data, articleId }: ReviewDetailClientProps)
                                 )}
 
                                 <p className="text-[10px] text-muted-foreground text-center mt-2">
-                                    Model: {localAiReview.model_used} · {format(new Date(localAiReview.reviewed_at), "d MMM HH:mm", { locale: tr })}
+                                    Model: <span className="font-bold text-violet-400">FizikHubGPT-1.0 AI</span> · {format(new Date(localAiReview.reviewed_at), "d MMM HH:mm", { locale: tr })}
                                 </p>
                             </div>
                         )}

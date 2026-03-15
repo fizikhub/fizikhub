@@ -18,7 +18,7 @@ import {
     Bold, Italic, List, ListOrdered, Quote,
     Heading1, Heading2, Heading3, Undo, Redo,
     ImagePlus, Loader2, Link as LinkIcon, Youtube as YoutubeIcon,
-    Underline as UnderlineIcon, Calculator, MonitorPlay
+    Underline as UnderlineIcon, Calculator, MonitorPlay, GitBranch
 } from "lucide-react"
 import { useCallback, useRef, useState, useEffect, useMemo, lazy, Suspense } from "react"
 import { uploadArticleImage } from "@/app/yazar/actions"
@@ -26,6 +26,7 @@ import { toast } from "sonner"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from "@/components/ui/dialog"
 import { MathExtension } from './extensions/math-extension'
 import { IframeExtension } from './extensions/iframe-extension'
+import { MermaidExtension } from './extensions/mermaid-extension'
 import { ImageCropDialog } from "@/components/shared/image-crop-dialog"
 
 // Lazy load KaTeX preview (only when math dialog is opened)
@@ -80,6 +81,8 @@ export function TiptapEditor({ content, onChange }: TiptapEditorProps) {
     const [isYoutubeDialogOpen, setIsYoutubeDialogOpen] = useState(false);
     const [isIframeDialogOpen, setIsIframeDialogOpen] = useState(false);
     const [isMathDialogOpen, setIsMathDialogOpen] = useState(false);
+    const [isMermaidDialogOpen, setIsMermaidDialogOpen] = useState(false);
+    const [mermaidCode, setMermaidCode] = useState('');
 
     // Crop Dialog States
     const [isCropDialogOpen, setIsCropDialogOpen] = useState(false);
@@ -135,6 +138,7 @@ export function TiptapEditor({ content, onChange }: TiptapEditorProps) {
             }),
             MathExtension,
             IframeExtension,
+            MermaidExtension,
             Placeholder.configure({
                 placeholder: 'Hikayenizi anlatmaya başlayın...',
             }),
@@ -420,6 +424,59 @@ export function TiptapEditor({ content, onChange }: TiptapEditorProps) {
                                 </div>
                             </div>
                             <DialogFooter><Button type="button" onClick={() => insertMath()}>Ekle</Button></DialogFooter>
+                        </DialogContent>
+                    </Dialog>
+
+                    {/* Mermaid Diagram */}
+                    <Dialog open={isMermaidDialogOpen} onOpenChange={setIsMermaidDialogOpen}>
+                        <DialogTrigger asChild>
+                            <Button type="button" variant="ghost" size="icon" className="h-8 w-8" title="Mermaid Şema Ekle">
+                                <GitBranch className="w-4 h-4" />
+                            </Button>
+                        </DialogTrigger>
+                        <DialogContent className="sm:max-w-lg">
+                            <DialogHeader><DialogTitle>Bilimsel Şema Ekle (Mermaid)</DialogTitle></DialogHeader>
+                            <div className="py-4 space-y-4">
+                                <textarea
+                                    value={mermaidCode}
+                                    onChange={(e) => setMermaidCode(e.target.value)}
+                                    placeholder={"graph LR\n  A[Enerji] --> B[Kütle]\n  B --> C[Işık]"}
+                                    className="w-full min-h-[120px] bg-zinc-950 text-emerald-400 font-mono text-sm rounded-lg p-3 resize-y outline-none border border-zinc-800"
+                                    spellCheck={false}
+                                />
+                                <div className="text-sm text-muted-foreground bg-muted/50 p-4 rounded-md space-y-2">
+                                    <p className="font-medium text-foreground mb-2">Hazır Şablonlar (Tıkla)</p>
+                                    <div className="grid grid-cols-2 gap-2 text-xs">
+                                        {[
+                                            { label: "Akış Diyagramı", code: "graph LR\n  A[Giriş] --> B{Karar}\n  B -->|Evet| C[Sonuç 1]\n  B -->|Hayır| D[Sonuç 2]" },
+                                            { label: "Sıralama", code: "sequenceDiagram\n  Elektron->>Foton: Enerji Yayar\n  Foton->>Dedektör: Algılanır" },
+                                            { label: "Durum Diyagramı", code: "stateDiagram-v2\n  [*] --> Katı\n  Katı --> Sıvı: Isıtma\n  Sıvı --> Gaz: Buharlaşma\n  Gaz --> [*]: Soğuma" },
+                                            { label: "Pasta Grafik", code: 'pie title Evren Bileşimi\n  "Karanlık Enerji" : 68\n  "Karanlık Madde" : 27\n  "Normal Madde" : 5' },
+                                        ].map((item) => (
+                                            <button
+                                                key={item.label}
+                                                onClick={() => setMermaidCode(item.code)}
+                                                className="flex items-center px-2 py-1.5 rounded hover:bg-background hover:shadow-sm border border-transparent hover:border-border transition-all text-left"
+                                                type="button"
+                                            >
+                                                <span>{item.label}</span>
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                            <DialogFooter>
+                                <Button type="button" onClick={() => {
+                                    if (mermaidCode.trim()) {
+                                        editor?.chain().focus().insertContent({
+                                            type: 'mermaid',
+                                            attrs: { code: mermaidCode.trim() }
+                                        }).run();
+                                        setIsMermaidDialogOpen(false);
+                                        setMermaidCode('');
+                                    }
+                                }}>Şemayı Ekle</Button>
+                            </DialogFooter>
                         </DialogContent>
                     </Dialog>
                 </div>
