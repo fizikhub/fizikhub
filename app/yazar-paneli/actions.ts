@@ -43,8 +43,8 @@ export async function getPendingArticles() {
                 created_at,
                 published,
                 author_id,
-                profiles(full_name, avatar_url, username),
-                article_approvals(user_id, profiles(avatar_url, full_name, username))
+                author:profiles!author_id(full_name, avatar_url, username),
+                article_approvals(user_id, approver:profiles!user_id(avatar_url, full_name, username))
             `)
             .eq("published", false)
             .neq("status", "draft") // Taslak olmayan ama henüz yayınlanmamış makaleler
@@ -59,7 +59,7 @@ export async function getPendingArticles() {
             const approvalsList = article.article_approvals || [];
             const approvalCount = approvalsList.length;
             const hasApproved = approvalsList.some(a => a.user_id === user.id);
-            const approvers = approvalsList.map(a => a.profiles); // Kimlerin onayladigini ayikla
+            const approvers = approvalsList.map(a => a.approver); // Kimlerin onayladigini ayikla
 
             return {
                 ...article,
