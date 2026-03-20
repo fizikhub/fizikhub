@@ -26,6 +26,13 @@ export interface AIReviewResult {
     suggestions: string[];
     readability_score?: number;
     tone_analysis?: string;
+    deep_analysis?: {
+        source_claim_agreement: string;
+        ai_detection: string;
+        fizikhub_tone_and_readability: string;
+        structure_and_depth: string;
+        google_eeat: string;
+    };
 }
 
 interface ArticleReference {
@@ -90,6 +97,25 @@ SADECE aşağıdaki JSON formatında yanıt ver, başka hiçbir yazı ekleme:
   ]
 }`;
 
+const GEMMA_DEEP_REVIEW_PROMPT = `Sen FizikHub platformunun Kıdemli Baş Editörüsün. Görevin bir taslak makaleyi ve daha düşük seviyeli bir yapay zeka asistanın çıkardığı yüzeysel analiz raporunu inceleyip çok daha derinlemesine, kritik bir analizi JSON formatında üretmektir.
+
+Analiz etmen gereken 5 ana başlık şunlardır:
+1. **Kaynak - İddia Uyumu (source_claim_agreement)**: Yazarın makalede bulunduğu iddialar gerçekten kaynaklarda geçiyor mu? Yazar kaynaktan ne kadar sapmış? (Metin şeklinde detaylı eleştiri yaz).
+2. **Yapay Zeka Etkisi (ai_detection)**: Bu makale sence baştan sona bir yapay zekaya mı yazdırılmış, yoksa yazar sadece ufak rötüşler mi yaptırmış? Anlatım doğallığını değerlendir.
+3. **FizikHub Tonu ve Okunabilirlik (fizikhub_tone_and_readability)**: Yazının dili okuyucuların anlayabileceği sadelikte mi yoksa boğucu ve akademik mi? Kavramlar iyi açıklanmış mı?
+4. **Yapı ve Detay Derinliği (structure_and_depth)**: Yazar kompleks bir konuyu ele almış ama çok yüzeysel mi bırakmış? (Örneğin "Hawking Radyasyonu anlatılmış ama sadece 2 paragraf"). Giriş, Gelişme ve Sonuç kısımlarının uzunluğu ve tatmin ediciliği yeterli mi? Ne tür başlıklar/kısımlar eklenmeli?
+5. **Google E-E-A-T Uyum (google_eeat)**: Google Kalite Standartları olan Deneyim (Experience), Uzmanlık (Expertise), Otorite (Authoritativeness) ve Güvenilirlik (Trustworthiness) kurallarına uyuyor mu? SEO ve içerik zenginliği açısından nasıl?
+
+**Mutlaka** sadece JSON formatında yanıt dön. Anahtarlar şunlar olmalı:
+{
+  "source_claim_agreement": "...",
+  "ai_detection": "...",
+  "fizikhub_tone_and_readability": "...",
+  "structure_and_depth": "...",
+  "google_eeat": "..."
+}
+`;
+
 export async function reviewArticleWithAI(
     title: string,
     content: string,
@@ -102,32 +128,22 @@ export async function reviewArticleWithAI(
 
     const MAX_RETRIES = 2;
     let lastError: any = null;
+    let initialReviewResult: AIReviewResult | null = null;
+    
+    // Build references text
+    const referencesText = references.length > 0 
+        ? references.map((ref, i) => {
+            let refStr = `[${i + 1}] ${ref.title || "Başlıksız"}`;
+            if (ref.authors) refStr += ` — ${ref.authors}`;
+            if (ref.publisher) refStr += `, ${ref.publisher}`;
+            if (ref.year) refStr += ` (${ref.year})`;
+            if (ref.url) refStr += ` URL: ${ref.url}`;
+            if (ref.doi) refStr += ` DOI: ${ref.doi}`;
+            return refStr;
+        }).join("\n")
+        : "Kaynak belirtilmemiş.";
 
-    for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
-        try {
-            const model = genAI.getGenerativeModel({ 
-                model: "gemini-2.5-flash",
-                generationConfig: {
-                    temperature: 0.2,
-                    maxOutputTokens: 8192,
-                    responseMimeType: "application/json",
-                }
-            });
-
-            // Build references text
-            const referencesText = references.length > 0 
-                ? references.map((ref, i) => {
-                    let refStr = `[${i + 1}] ${ref.title || "Başlıksız"}`;
-                    if (ref.authors) refStr += ` — ${ref.authors}`;
-                    if (ref.publisher) refStr += `, ${ref.publisher}`;
-                    if (ref.year) refStr += ` (${ref.year})`;
-                    if (ref.url) refStr += ` URL: ${ref.url}`;
-                    if (ref.doi) refStr += ` DOI: ${ref.doi}`;
-                    return refStr;
-                }).join("\n")
-                : "Kaynak belirtilmemiş.";
-
-            const userMessage = `
+    const userMessage = `
 MAKALE BAŞLIĞI: ${title}
 
 MAKALE İÇERİĞİ:
@@ -137,10 +153,21 @@ KAYNAKLAR:
 ${referencesText}
 `;
 
-            const result = await model.generateContent([REVIEW_PROMPT, userMessage]);
+    // Phase 1: Gemini 2.5 Flash for base metrics
+    for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+        try {
+            const geminiModel = genAI.getGenerativeModel({ 
+                model: "gemini-2.5-flash",
+                generationConfig: {
+                    temperature: 0.2,
+                    maxOutputTokens: 8192,
+                    responseMimeType: "application/json",
+                }
+            });
+
+            const result = await geminiModel.generateContent([REVIEW_PROMPT, userMessage]);
             const responseText = result.response.text();
 
-            // Parse JSON response — handle potential markdown code blocks
             let cleanedJson = responseText.trim();
             if (cleanedJson.startsWith("```")) {
                 cleanedJson = cleanedJson.replace(/^```(?:json)?\n?/, "").replace(/\n?```$/, "");
@@ -172,21 +199,83 @@ ${referencesText}
             parsed.readability_score = clamp(parsed.readability_score ?? 60, 0, 100);
             if (typeof parsed.tone_analysis !== 'string') parsed.tone_analysis = '';
 
-            return parsed;
+            initialReviewResult = parsed;
+            break; // Success on first wave
         } catch (error: any) {
             lastError = error;
-            console.error(`[FizikHubGPT] AI Review attempt ${attempt + 1} failed:`, error?.message || error);
+            console.error(`[FizikHubGPT - Phase 1] Attempt ${attempt + 1} failed:`, error?.message || error);
 
             if (attempt < MAX_RETRIES) {
-                // Wait before retry (exponential backoff)
                 await new Promise(resolve => setTimeout(resolve, 1000 * (attempt + 1)));
-                continue;
             }
         }
     }
 
-    console.error(`[FizikHubGPT] All ${MAX_RETRIES + 1} attempts failed. Last error:`, lastError?.message);
-    return null;
+    if (!initialReviewResult) {
+        console.error(`[FizikHubGPT] Phase 1 Gemini 2.5 Failed completely. Last error:`, lastError?.message);
+        return null; // Don't proceed to phase 2 if phase 1 failed
+    }
+
+    // Phase 2: Gemma 3 12B for Deep Analysis
+    for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+        try {
+            const gemmaModel = genAI.getGenerativeModel({ 
+                model: "gemma-3-12b-it",
+                generationConfig: {
+                    temperature: 0.3,
+                    maxOutputTokens: 8192,
+                    responseMimeType: "application/json",
+                }
+            });
+
+            const deepUserMessage = `
+MAKALE BAŞLIĞI: ${title}
+
+MAKALE İÇERİĞİ:
+${stripHtml(content)}
+
+KAYNAKLAR:
+${referencesText}
+
+ÖN İNCELEME (Düşük Seviye Asistan Çıktısı):
+${JSON.stringify({
+    content_accuracy: initialReviewResult.content_accuracy,
+    grammar_check: initialReviewResult.grammar_check,
+    source_reliability: initialReviewResult.source_reliability,
+    source_content_match: initialReviewResult.source_content_match,
+    suggestions: initialReviewResult.suggestions
+})}
+`;
+
+            const result = await gemmaModel.generateContent([GEMMA_DEEP_REVIEW_PROMPT, deepUserMessage]);
+            const responseText = result.response.text();
+
+            let cleanedJson = responseText.trim();
+            if (cleanedJson.startsWith("```")) {
+                cleanedJson = cleanedJson.replace(/^```(?:json)?\n?/, "").replace(/\n?```$/, "");
+            }
+
+            const deepAnalysisParsed = JSON.parse(cleanedJson);
+            initialReviewResult.deep_analysis = {
+                source_claim_agreement: deepAnalysisParsed.source_claim_agreement || "Yorum yok.",
+                ai_detection: deepAnalysisParsed.ai_detection || "Yorum yok.",
+                fizikhub_tone_and_readability: deepAnalysisParsed.fizikhub_tone_and_readability || "Yorum yok.",
+                structure_and_depth: deepAnalysisParsed.structure_and_depth || "Yorum yok.",
+                google_eeat: deepAnalysisParsed.google_eeat || "Yorum yok.",
+            };
+            
+            break; // Success
+        } catch (error: any) {
+            console.error(`[FizikHubGPT - Phase 2] Attempt ${attempt + 1} failed:`, error?.message || error);
+            // If it's the last attempt, we still return initialReviewResult (without deep_analysis)
+            // so we don't drop the whole review because gemma failed.
+            if (attempt < MAX_RETRIES) {
+                await new Promise(resolve => setTimeout(resolve, 1000 * (attempt + 1)));
+            }
+        }
+    }
+
+    return initialReviewResult;
 }
 
 function clamp(value: number, min: number, max: number): number {
