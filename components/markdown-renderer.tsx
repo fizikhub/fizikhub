@@ -88,18 +88,21 @@ export function MarkdownRenderer({
             <ReactMarkdown
                 remarkPlugins={[remarkMath]}
                 rehypePlugins={[
-                    rehypeKatex, 
-                    rehypeHighlight, 
                     rehypeRaw,
                     [rehypeSanitize, {
                         ...defaultSchema,
                         attributes: {
                             ...defaultSchema.attributes,
-                            '*': ['className', 'style'],
-                            'iframe': ['src', 'width', 'height', 'allowFullScreen', 'sandbox', 'referrerPolicy', 'loading', 'className']
+                            div: [...(defaultSchema.attributes?.div || []), 'className', 'math', 'math-display'],
+                            span: [...(defaultSchema.attributes?.span || []), 'className', 'math', 'math-inline', 'data-type', 'data-latex'],
+                            code: ['className'],
+                            img: ['src', 'alt', 'title', 'width', 'height', 'loading'],
+                            iframe: ['src', 'width', 'height', 'allow', 'allowfullscreen', 'frameborder'],
                         },
-                        tagNames: [...(defaultSchema.tagNames || []), 'iframe', 'video', 'source']
-                    }]
+                        tagNames: [...(defaultSchema.tagNames || []), 'iframe'],
+                    }],
+                    rehypeKatex,
+                    rehypeHighlight,
                 ]}
                 components={{
                     p: ({ node, children, ...props }) => {

@@ -170,6 +170,10 @@ export function ArticleEditor({ content, onChange, onUploadImage, className, pla
                 onChange(editor.getHTML());
             }, 500);
         },
+        onBlur: ({ editor }) => {
+            if (debounceTimer.current) clearTimeout(debounceTimer.current);
+            onChange(editor.getHTML());
+        },
         immediatelyRender: false,
     });
 

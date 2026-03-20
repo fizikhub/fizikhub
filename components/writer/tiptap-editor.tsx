@@ -164,13 +164,23 @@ export function TiptapEditor({ content, onChange }: TiptapEditorProps) {
             },
         },
         onUpdate: ({ editor }) => {
-            // Sadece HTML'i veya JSON'u state'te tutuyoruz, ağır Markdown dönüşümünü burada YAPIYORUZ ama debounce süresini artırıyoruz
-            // ve onChange'i sadece gerekli olduğunda çağırıyoruz. Daha iyi bir yöntem: onBlur anında dönüştürmek ama mevcut yapıyı bozmamak için debounce'u 1.5 saniyeye çıkardık.
+            // Debounce: only call getHTML() after 1500ms of inactivity
             if (debounceTimer.current) clearTimeout(debounceTimer.current);
             debounceTimer.current = setTimeout(() => {
-                const markdown = (editor.storage as unknown as { markdown: { getMarkdown: () => string } }).markdown.getMarkdown();
-                onChange(markdown);
-            }, 1500); // 500ms -> 1500ms (daha az CPU kullanımı)
+                const storageAny = editor.storage as any;
+                const markdown = Array.isArray(storageAny.markdown) 
+                    ? storageAny.markdown[0]?.getMarkdown?.() 
+                    : storageAny.markdown?.getMarkdown?.();
+                if (markdown) onChange(markdown);
+            }, 1500);
+        },
+        onBlur: ({ editor }) => {
+            if (debounceTimer.current) clearTimeout(debounceTimer.current);
+            const storageAny = editor.storage as any;
+            const markdown = Array.isArray(storageAny.markdown) 
+                ? storageAny.markdown[0]?.getMarkdown?.() 
+                : storageAny.markdown?.getMarkdown?.();
+            if (markdown) onChange(markdown);
         },
         immediatelyRender: false,
     });
