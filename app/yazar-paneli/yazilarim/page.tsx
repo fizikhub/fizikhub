@@ -1,12 +1,12 @@
-import { getPendingArticles } from "./actions";
-import { AuthorPanelClient } from "./client-page";
-import { WriteArticleAction } from "./WriteArticleAction";
+import { getMyArticles } from "../actions";
+import { MyArticlesClient } from "./client-page";
+import { WriteArticleAction } from "../WriteArticleAction";
 import Link from "next/link";
-import { BookOpen, FileText } from "lucide-react";
+import { BookOpen, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-export default async function YazarPaneliPage() {
-    const { articles, error } = await getPendingArticles();
+export default async function YazilarimPage() {
+    const { articles, error } = await getMyArticles();
 
     if (error) {
         return (
@@ -17,27 +17,26 @@ export default async function YazarPaneliPage() {
         );
     }
 
-
-
     return (
         <main className="min-h-screen bg-background pt-24 pb-12">
             <div className="container max-w-6xl mx-auto px-4">
                 <div className="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
                     <div>
-                        <h1 className="text-4xl font-black mb-2">Yazar Ekibi Paneli</h1>
+                        <div className="flex items-center gap-4 mb-2">
+                            <Link href="/yazar-paneli">
+                                <Button variant="ghost" size="icon" className="hover:bg-zinc-100 dark:hover:bg-zinc-800">
+                                    <ArrowLeft className="w-5 h-5" />
+                                </Button>
+                            </Link>
+                            <h1 className="text-4xl font-black">Yazılarım</h1>
+                        </div>
                         <p className="text-zinc-400">
-                            İncelenmeyi bekleyen makaleleri onaylayın. 4 yazar onayı alan makaleler otomatik olarak yayınlanır.
+                            Buradan sadece kendinize ait gönderilmiş makaleleri görüntüleyebilir ve düzenleyebilirsiniz. 
+                            Düzenlediğiniz makalelerin onayları sıfırlanacaktır.
                         </p>
                     </div>
                     
                     <div className="flex flex-wrap gap-3 flex-shrink-0">
-                        <Link href="/yazar-paneli/yazilarim">
-                            <Button variant="outline" className="font-bold border-2 border-black dark:border-zinc-800 h-11 px-5 hover:bg-zinc-100 dark:hover:bg-zinc-800">
-                                <FileText className="w-4 h-4 mr-2" />
-                                Yazılarım
-                            </Button>
-                        </Link>
-                        
                         <WriteArticleAction />
                         
                         <Link href="/yazar-paneli/manifesto">
@@ -49,7 +48,7 @@ export default async function YazarPaneliPage() {
                     </div>
                 </div>
 
-                <AuthorPanelClient initialArticles={articles || []} />
+                <MyArticlesClient initialArticles={articles || []} />
             </div>
         </main>
     );

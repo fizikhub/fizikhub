@@ -180,6 +180,9 @@ export async function updateArticle(articleId: number, formData: FormData) {
         return { success: false, error: "Makale güncellenirken bir hata oluştu." };
     }
 
+    // Yazar yazıyı düzenlediği için tüm onayları sıfırla
+    await supabase.from("article_approvals").delete().eq("article_id", articleId);
+
     // Save references
     await saveReferences(supabase, articleId, referencesJson);
 

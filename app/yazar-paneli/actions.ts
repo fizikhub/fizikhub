@@ -356,3 +356,59 @@ export async function checkLinkHealth(url: string) {
         };
     }
 }
+
+// Yazarın sadece kendi makalelerini getir
+export async function getMyArticles() {
+    const supabase = await createClient();
+    
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return { error: "Yetkisiz erişim" };
+    
+    // Yazar veya admin olmak zorunda
+    const isAdmin = await isAuthorAdmin(user.id);
+    if (!isAdmin) return { error: "Bu sayfaya erişim yetkiniz yok" };
+
+    try {
+        const { data: articles, error } = await supabase
+            .from("articles")
+            .select(`
+                id,
+                title,
+                slug,
+                excerpt,
+                created_at,
+                published,
+                status,
+                author_id,
+                author:profiles!author_id(full_name, avatar_url, username),
+                article_approvals(user_id, approver:profiles!user_id(avatar_url, full_name, username)),
+                article_ai_reviews(overall_score)
+            `)
+            .eq("author_id", user.id)
+            .order("created_at", { ascending: false });
+
+        if (error) {
+            console.error("Yazarın makaleleri getirilirken hata:", error);
+            return { error: error.message };
+        }
+
+        const formattedArticles = articles?.map(article => {
+            const approvalsList = article.article_approvals || [];
+            const approvalCount = approvalsList.length;
+            const approvers = approvalsList.map(a => a.approver);
+            const aiReview = (article as any).article_ai_reviews?.[0] || null;
+
+            return {
+                ...article,
+                approvalCount,
+                approvers,
+                aiScore: aiReview?.overall_score ?? null,
+            };
+        });
+
+        return { articles: formattedArticles };
+
+    } catch (err: any) {
+        return { error: err.message };
+    }
+}
