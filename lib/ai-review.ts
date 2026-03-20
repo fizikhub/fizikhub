@@ -28,10 +28,19 @@ export interface AIReviewResult {
     tone_analysis?: string;
     deep_analysis?: {
         source_claim_agreement: string;
-        ai_detection: string;
         fizikhub_tone_and_readability: string;
         structure_and_depth: string;
         google_eeat: string;
+    };
+    ai_originality_analysis?: {
+        detailed_verdict: string;
+        human_touch_points: string;
+        robotic_language_issues: string;
+        originality_score: number;
+    };
+    final_verdict?: {
+        publishability: "Uygun" | "Revizyon" | "Red";
+        final_notes: string;
     };
 }
 
@@ -44,75 +53,67 @@ interface ArticleReference {
     doi?: string;
 }
 
-const REVIEW_PROMPT = `Sen FizikHub platformunun yapay zeka editörüsün (FizikHubGPT-1.0 AI). Görevin bilimsel makaleleri en yüksek standartlarda incelemek.
-
-Aşağıdaki Türkçe bilim makalesini detaylı bir şekilde incele ve JSON formatında rapor döndür.
+const PHASE1_GEMINI_PROMPT = `Sen FizikHub platformunun yapay zeka editörüsün. Görevin bilimsel makaleleri incelemek.
+Aşağıdaki makaleyi detaylı bir şekilde incele ve SADECE JSON formatında rapor döndür.
 
 İnceleme Kriterleri:
-1. **İçerik Doğruluğu (content_accuracy)**: Makaledeki bilimsel iddiaları kontrol et. Yanlış, eksik veya şüpheli bilgiler varsa belirt. Bilimsel terminolojinin doğru kullanılıp kullanılmadığını kontrol et.
-2. **Yazım & Dilbilgisi (grammar_check)**: Türkçe yazım hataları, noktalama, cümle yapısı sorunlarını tespit et. Akademik Türkçe standartlarına uygunluğu değerlendir.
-3. **Kaynak Güvenilirliği (source_reliability)**: Verilen kaynakların akademik, güvenilir ve erişilebilir olup olmadığını değerlendir. Nature, Science, arXiv gibi Tier-1 kaynaklara bonus puan ver.
-4. **Kaynak-İçerik Uyumu (source_content_match)**: Makaledeki iddialar ile kaynaklardaki bilgiler arasındaki tutarlılığı kontrol et. Kaynaklar gerçekten iddiayı destekliyor mu?
-5. **Okunabilirlik (readability_score)**: Makalenin genel anlaşılırlığını 0-100 arası puanla. Karmaşık kavramlar yeterince açıklanmış mı? Analojiler doğru kullanılmış mı?
-6. **Ton Analizi (tone_analysis)**: Makalenin üslubu hakkında kısa yorum (akademik, popüler bilim, çok teknik, vs.).
-7. **Genel Öneriler (suggestions)**: Makaleyi geliştirmek için somut, uygulanabilir öneriler sun. En az 3, en fazla 7 öneri ver.
+1. content_accuracy: Hatalı bilgi var mı? (0-100 puan, high/medium/low severity hatalar)
+2. grammar_check: Yazım & dilbilgisi hataları (0-100 puan, orijinal vs öneri)
+3. source_reliability: Kaynak güvenilirliği (0-100 puan)
+4. source_content_match: Kaynak iddia uyumu (0-100 puan)
+5. readability_score: Okunabilirlik (0-100 puan)
+6. tone_analysis: Üslup analizi (kısa metin)
+7. suggestions: Makaleyi geliştirmek için 3-7 somut öneri
+8. deep_analysis:
+   - source_claim_agreement: İddia ve kaynaklar örtüşüyor mu? Detaylı eleştiri.
+   - fizikhub_tone_and_readability: FizikHub okuyucusuna uygun sade bir dille mi anlatılmış?
+   - structure_and_depth: Giriş, Gelişme, Sonuç nasıl? Kompleks kısımlar fazla yüzeysel geçilmiş mi? (Örn: Hawking ışıması çok kısa mı kalmış)
+   - google_eeat: Google Deneyim, Uzmanlık, Otorite, Güvenilirlik standartlarına uygun mu?
 
-Her kategori için 0-100 arası puan ver. Genel puanı (overall_score) kategorilerin ağırlıklı ortalaması olarak hesapla:
-- İçerik: %30, Yazım: %20, Kaynak Güvenilirliği: %20, Kaynak-İçerik Uyumu: %20, Okunabilirlik: %10
+Genel puan (overall_score) hesapla: İçerik %30, Yazım %20, Kaynak Güv %20, Kaynak Uyum %20, Okunabilirlik %10.
 
-SADECE aşağıdaki JSON formatında yanıt ver, başka hiçbir yazı ekleme:
-
+SADECE bu yapıdaki JSON formatını döndür başka bir şey ekleme:
 {
-  "overall_score": 75,
-  "content_accuracy": {
-    "score": 80,
-    "issues": [
-      {"text": "sorunlu metin", "severity": "high|medium|low", "explanation": "açıklama"}
-    ]
-  },
-  "grammar_check": {
-    "score": 90,
-    "errors": [
-      {"original": "hatalı metin", "suggestion": "doğru hali", "type": "yazım|noktalama|gramer"}
-    ]
-  },
-  "source_reliability": {
-    "score": 70,
-    "sources": [
-      {"url": "kaynak url", "reliability": "high|medium|low|unknown", "reason": "neden"}
-    ]
-  },
-  "source_content_match": {
-    "score": 85,
-    "mismatches": [
-      {"claim": "makaledeki iddia", "source": "kaynak", "issue": "uyumsuzluk açıklaması"}
-    ]
-  },
-  "readability_score": 78,
-  "tone_analysis": "Makale popüler bilim tarzında yazılmış...",
-  "suggestions": [
-    "Öneri 1",
-    "Öneri 2",
-    "Öneri 3"
-  ]
+  "overall_score": 85,
+  "content_accuracy": { "score": 90, "issues": [ { "text": "...", "severity": "low", "explanation": "..." } ] },
+  "grammar_check": { "score": 90, "errors": [ { "original": "...", "suggestion": "...", "type": "yazım" } ] },
+  "source_reliability": { "score": 80, "sources": [ { "url": "...", "reliability": "medium", "reason": "..." } ] },
+  "source_content_match": { "score": 85, "mismatches": [ { "claim": "...", "source": "...", "issue": "..." } ] },
+  "readability_score": 80,
+  "tone_analysis": "...",
+  "suggestions": [ "...", "..." ],
+  "deep_analysis": {
+    "source_claim_agreement": "...",
+    "fizikhub_tone_and_readability": "...",
+    "structure_and_depth": "...",
+    "google_eeat": "..."
+  }
 }`;
 
-const GEMMA_DEEP_REVIEW_PROMPT = `Sen FizikHub platformunun Kıdemli Baş Editörüsün. Görevin bir taslak makaleyi ve daha düşük seviyeli bir yapay zeka asistanın çıkardığı yüzeysel analiz raporunu inceleyip çok daha derinlemesine, kritik bir analizi JSON formatında üretmektir.
+const PHASE2_GEMMA27B_PROMPT = `Sen FizikHub platformunun Kıdemli Özgünlük (AI Detection) Uzmanısın. Karşında bir makale ve Aşama-1 ön raporu bulunuyor. 
+Senin tek görevin: "Yazının baştan sona AI tarafından mı üretildiği yoksa insan öznelliği barındırıp sadece AI rötüşü mü aldığı incelenir." kuralına göre karar vermektir.
 
-Analiz etmen gereken 5 ana başlık şunlardır:
-1. **Kaynak - İddia Uyumu (source_claim_agreement)**: Yazarın makalede bulunduğu iddialar gerçekten kaynaklarda geçiyor mu? Yazar kaynaktan ne kadar sapmış? (Metin şeklinde detaylı eleştiri yaz).
-2. **Yapay Zeka Etkisi (ai_detection)**: Bu makale sence baştan sona bir yapay zekaya mı yazdırılmış, yoksa yazar sadece ufak rötüşler mi yaptırmış? Anlatım doğallığını değerlendir.
-3. **FizikHub Tonu ve Okunabilirlik (fizikhub_tone_and_readability)**: Yazının dili okuyucuların anlayabileceği sadelikte mi yoksa boğucu ve akademik mi? Kavramlar iyi açıklanmış mı?
-4. **Yapı ve Detay Derinliği (structure_and_depth)**: Yazar kompleks bir konuyu ele almış ama çok yüzeysel mi bırakmış? (Örneğin "Hawking Radyasyonu anlatılmış ama sadece 2 paragraf"). Giriş, Gelişme ve Sonuç kısımlarının uzunluğu ve tatmin ediciliği yeterli mi? Ne tür başlıklar/kısımlar eklenmeli?
-5. **Google E-E-A-T Uyum (google_eeat)**: Google Kalite Standartları olan Deneyim (Experience), Uzmanlık (Expertise), Otorite (Authoritativeness) ve Güvenilirlik (Trustworthiness) kurallarına uyuyor mu? SEO ve içerik zenginliği açısından nasıl?
+Robotik dili, tipik AI kalıplarını (örn. "Sonuç olarak...", "Bununla birlikte..."), insani yazarın bıraktığı izleri ve yorumları denetle.
 
-**Mutlaka** sadece JSON formatında yanıt dön. Anahtarlar şunlar olmalı:
+SADECE JSON döndür:
 {
-  "source_claim_agreement": "...",
-  "ai_detection": "...",
-  "fizikhub_tone_and_readability": "...",
-  "structure_and_depth": "...",
-  "google_eeat": "..."
+  "detailed_verdict": "Metin %100 AI üretimi gibi duruyor çünkü... VEYA Metnin iskeleti insan, sadece düzeltmeler AI ile yapılmış çünkü...",
+  "human_touch_points": "İnsani öznellik barındıran cümle/örnekler...",
+  "robotic_language_issues": "Klasik yapay zeka jargonu, zorlama akademik kelimeler...",
+  "originality_score": 60 
+}
+(originality_score: %0 tamamen robotik chatgpt çıktısı, %100 tamamen insani doğal metin)
+`;
+
+const PHASE3_GEMMA12B_PROMPT = `Sen FizikHub platformunun Genel Yayın Yönetmenisin (Baş Editör). 
+Karşında; Yazarın Makalesi, Aşama-1 (Gemini) teknik raporu, ve Aşama-2 (Gemma 27B) AI-Özgünlük raporu duruyor.
+
+Tüm bu raporları sentezle ve son bir karar ver.
+
+SADECE JSON döndür:
+{
+  "publishability": "Uygun" VEYA "Revizyon" VEYA "Red",
+  "final_notes": "Tüm raporları okuyup makaleyi incelediğimde, özellikle özgünlük eksikliği (veya tam tersi çok iyi olması), yapısal detayların azlığı vb. sebeplerle yazarın şunları şunları mutlaka düzeltmesi lazımdır / makale bu haliyle harikadır..."
 }
 `;
 
@@ -122,15 +123,13 @@ export async function reviewArticleWithAI(
     references: ArticleReference[]
 ): Promise<AIReviewResult | null> {
     if (!apiKey) {
-        console.error("[FizikHubGPT] API key not found. Checked: GOOGLE_GENERATIVE_AI_API_KEY, NEXT_PUBLIC_GEMINI_API_KEY, GOOGLE_AI_API_KEY");
+        console.error("[FizikHubGPT] API key not found.");
         return null;
     }
 
     const MAX_RETRIES = 2;
-    let lastError: any = null;
     let initialReviewResult: AIReviewResult | null = null;
     
-    // Build references text
     const referencesText = references.length > 0 
         ? references.map((ref, i) => {
             let refStr = `[${i + 1}] ${ref.title || "Başlıksız"}`;
@@ -145,37 +144,27 @@ export async function reviewArticleWithAI(
 
     const userMessage = `
 MAKALE BAŞLIĞI: ${title}
-
 MAKALE İÇERİĞİ:
 ${stripHtml(content)}
-
 KAYNAKLAR:
 ${referencesText}
 `;
 
-    // Phase 1: Gemini 2.5 Flash for base metrics
+    // --- PHASE 1: Gemini 2.5 Flash ---
     for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
         try {
             const geminiModel = genAI.getGenerativeModel({ 
                 model: "gemini-2.5-flash",
-                generationConfig: {
-                    temperature: 0.2,
-                    maxOutputTokens: 8192,
-                    responseMimeType: "application/json",
-                }
+                generationConfig: { temperature: 0.2, maxOutputTokens: 8192, responseMimeType: "application/json" }
             });
 
-            const result = await geminiModel.generateContent([REVIEW_PROMPT, userMessage]);
-            const responseText = result.response.text();
-
-            let cleanedJson = responseText.trim();
-            if (cleanedJson.startsWith("```")) {
-                cleanedJson = cleanedJson.replace(/^```(?:json)?\n?/, "").replace(/\n?```$/, "");
-            }
+            const result = await geminiModel.generateContent([PHASE1_GEMINI_PROMPT, userMessage]);
+            let cleanedJson = result.response.text().trim();
+            if (cleanedJson.startsWith("```")) cleanedJson = cleanedJson.replace(/^```(?:json)?\n?/, "").replace(/\n?```$/, "");
 
             const parsed = JSON.parse(cleanedJson) as AIReviewResult;
-
-            // Validate and clamp all scores, ensure null safety
+            
+            // Normalize safety
             parsed.overall_score = clamp(parsed.overall_score ?? 50, 0, 100);
             
             if (!parsed.content_accuracy) parsed.content_accuracy = { score: 50, issues: [] };
@@ -199,79 +188,68 @@ ${referencesText}
             parsed.readability_score = clamp(parsed.readability_score ?? 60, 0, 100);
             if (typeof parsed.tone_analysis !== 'string') parsed.tone_analysis = '';
 
-            initialReviewResult = parsed;
-            break; // Success on first wave
-        } catch (error: any) {
-            lastError = error;
-            console.error(`[FizikHubGPT - Phase 1] Attempt ${attempt + 1} failed:`, error?.message || error);
-
-            if (attempt < MAX_RETRIES) {
-                await new Promise(resolve => setTimeout(resolve, 1000 * (attempt + 1)));
+            if (!parsed.deep_analysis) {
+                parsed.deep_analysis = {
+                    source_claim_agreement: "Yorum yok.", fizikhub_tone_and_readability: "Yorum yok.",
+                    structure_and_depth: "Yorum yok.", google_eeat: "Yorum yok."
+                };
             }
+            initialReviewResult = parsed;
+            break; 
+        } catch (error: any) {
+            console.error(`[FizikHubGPT - Phase 1] Attempt ${attempt + 1} failed:`, error?.message || error);
+            if (attempt < MAX_RETRIES) await new Promise(r => setTimeout(r, 1000 * (attempt + 1)));
         }
     }
 
-    if (!initialReviewResult) {
-        console.error(`[FizikHubGPT] Phase 1 Gemini 2.5 Failed completely. Last error:`, lastError?.message);
-        return null; // Don't proceed to phase 2 if phase 1 failed
-    }
+    if (!initialReviewResult) return null;
 
-    // Phase 2: Gemma 3 12B for Deep Analysis
+    // --- PHASE 2: Gemma 3 27B ---
     for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
         try {
-            const gemmaModel = genAI.getGenerativeModel({ 
-                model: "gemma-3-12b-it",
-                generationConfig: {
-                    temperature: 0.3,
-                    maxOutputTokens: 8192,
-                    responseMimeType: "application/json",
-                }
+            const gemma27bModel = genAI.getGenerativeModel({ 
+                model: "gemma-3-27b-it",
+                generationConfig: { temperature: 0.3, maxOutputTokens: 8192, responseMimeType: "application/json" }
             });
 
-            const deepUserMessage = `
-MAKALE BAŞLIĞI: ${title}
+            const p2Message = `${userMessage}\n\nAŞAMA 1 (Teknik) RAPOR:\n${JSON.stringify({
+                overall_score: initialReviewResult.overall_score,
+                readability_score: initialReviewResult.readability_score,
+                deep_analysis: initialReviewResult.deep_analysis // Include deep analysis for context
+            })}`;
 
-MAKALE İÇERİĞİ:
-${stripHtml(content)}
+            const result = await gemma27bModel.generateContent([PHASE2_GEMMA27B_PROMPT, p2Message]);
+            let cleanedJson = result.response.text().trim();
+            if (cleanedJson.startsWith("```")) cleanedJson = cleanedJson.replace(/^```(?:json)?\n?/, "").replace(/\n?```$/, "");
 
-KAYNAKLAR:
-${referencesText}
-
-ÖN İNCELEME (Düşük Seviye Asistan Çıktısı):
-${JSON.stringify({
-    content_accuracy: initialReviewResult.content_accuracy,
-    grammar_check: initialReviewResult.grammar_check,
-    source_reliability: initialReviewResult.source_reliability,
-    source_content_match: initialReviewResult.source_content_match,
-    suggestions: initialReviewResult.suggestions
-})}
-`;
-
-            const result = await gemmaModel.generateContent([GEMMA_DEEP_REVIEW_PROMPT, deepUserMessage]);
-            const responseText = result.response.text();
-
-            let cleanedJson = responseText.trim();
-            if (cleanedJson.startsWith("```")) {
-                cleanedJson = cleanedJson.replace(/^```(?:json)?\n?/, "").replace(/\n?```$/, "");
-            }
-
-            const deepAnalysisParsed = JSON.parse(cleanedJson);
-            initialReviewResult.deep_analysis = {
-                source_claim_agreement: deepAnalysisParsed.source_claim_agreement || "Yorum yok.",
-                ai_detection: deepAnalysisParsed.ai_detection || "Yorum yok.",
-                fizikhub_tone_and_readability: deepAnalysisParsed.fizikhub_tone_and_readability || "Yorum yok.",
-                structure_and_depth: deepAnalysisParsed.structure_and_depth || "Yorum yok.",
-                google_eeat: deepAnalysisParsed.google_eeat || "Yorum yok.",
-            };
-            
-            break; // Success
+            initialReviewResult.ai_originality_analysis = JSON.parse(cleanedJson);
+            initialReviewResult.ai_originality_analysis!.originality_score = clamp(initialReviewResult.ai_originality_analysis!.originality_score ?? 50, 0, 100);
+            break;
         } catch (error: any) {
             console.error(`[FizikHubGPT - Phase 2] Attempt ${attempt + 1} failed:`, error?.message || error);
-            // If it's the last attempt, we still return initialReviewResult (without deep_analysis)
-            // so we don't drop the whole review because gemma failed.
-            if (attempt < MAX_RETRIES) {
-                await new Promise(resolve => setTimeout(resolve, 1000 * (attempt + 1)));
-            }
+            if (attempt < MAX_RETRIES) await new Promise(r => setTimeout(r, 1000 * (attempt + 1)));
+        }
+    }
+
+    // --- PHASE 3: Gemma 3 12B ---
+    for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+        try {
+            const gemma12bModel = genAI.getGenerativeModel({ 
+                model: "gemma-3-12b-it",
+                generationConfig: { temperature: 0.4, maxOutputTokens: 8192, responseMimeType: "application/json" }
+            });
+
+            const p3Message = `${userMessage}\n\nAŞAMA 1 RAPORU (Derin Analiz Dahil):\n${JSON.stringify(initialReviewResult.deep_analysis)}\n\nAŞAMA 2 RAPORU (Özgünlük - Yapay Zeka Tespiti):\n${JSON.stringify(initialReviewResult.ai_originality_analysis)}`;
+
+            const result = await gemma12bModel.generateContent([PHASE3_GEMMA12B_PROMPT, p3Message]);
+            let cleanedJson = result.response.text().trim();
+            if (cleanedJson.startsWith("```")) cleanedJson = cleanedJson.replace(/^```(?:json)?\n?/, "").replace(/\n?```$/, "");
+
+            initialReviewResult.final_verdict = JSON.parse(cleanedJson);
+            break;
+        } catch (error: any) {
+            console.error(`[FizikHubGPT - Phase 3] Attempt ${attempt + 1} failed:`, error?.message || error);
+            if (attempt < MAX_RETRIES) await new Promise(r => setTimeout(r, 1000 * (attempt + 1)));
         }
     }
 

@@ -26,6 +26,7 @@ import {
     Lightbulb,
     PenTool,
     HelpCircle,
+    Search,
 } from "lucide-react";
 import { addArticleNote, resolveNote, triggerManualAIReview, approveArticle, revokeApproval } from "@/app/yazar-paneli/actions";
 
@@ -411,36 +412,24 @@ export function ReviewDetailClient({ data, articleId }: ReviewDetailClientProps)
                                     </div>
                                 )}
 
-                                {/* Tone Analysis */}
-                                {localAiReview.tone_analysis && (
-                                    <div className="p-3 rounded-lg bg-violet-50 dark:bg-violet-900/10 border border-violet-200 dark:border-violet-900/30">
-                                        <h3 className="text-xs font-bold flex items-center gap-1.5 mb-1">
-                                            <Sparkles className="w-3.5 h-3.5 text-violet-500" /> Üslup Analizi
-                                        </h3>
-                                        <p className="text-xs text-muted-foreground">{localAiReview.tone_analysis}</p>
-                                    </div>
-                                )}
-
-                                {/* Gemma 3 Deep Analysis */}
+                                {/* Aşama 1: Derin Analiz (Gemini 2.5 Flash) */}
                                 {localAiReview.deep_analysis && (
                                     <div className="mt-6 pt-4 border-t-2 border-dashed border-zinc-300 dark:border-zinc-700 space-y-4">
                                         <div className="flex items-center gap-2 mb-2">
-                                            <div className="bg-fuchsia-500/20 p-1.5 rounded-md">
-                                                <Sparkles className="w-4 h-4 text-fuchsia-600 dark:text-fuchsia-400" />
+                                            <div className="bg-violet-500/20 p-1.5 rounded-md">
+                                                <Sparkles className="w-4 h-4 text-violet-600 dark:text-violet-400" />
                                             </div>
-                                            <h3 className="text-sm font-black text-fuchsia-700 dark:text-fuchsia-400">Gemma 3 Derin Analiz</h3>
+                                            <h3 className="text-sm font-black text-violet-700 dark:text-violet-400">Aşama 1: İçerik Uyumu (Gemini)</h3>
                                         </div>
-                                        
                                         <div className="space-y-3">
                                             {[
-                                                { title: "Kaynak-İddia Uyumu", text: localAiReview.deep_analysis.source_claim_agreement, icon: <BookOpen className="w-3.5 h-3.5 text-fuchsia-500" /> },
-                                                { title: "Yapay Zeka Etkisi", text: localAiReview.deep_analysis.ai_detection, icon: <Bot className="w-3.5 h-3.5 text-fuchsia-500" /> },
-                                                { title: "FizikHub Tonu", text: localAiReview.deep_analysis.fizikhub_tone_and_readability, icon: <MessageSquarePlus className="w-3.5 h-3.5 text-fuchsia-500" /> },
-                                                { title: "Yapı ve Derinlik", text: localAiReview.deep_analysis.structure_and_depth, icon: <FileText className="w-3.5 h-3.5 text-fuchsia-500" /> },
-                                                { title: "Google E-E-A-T", text: localAiReview.deep_analysis.google_eeat, icon: <Shield className="w-3.5 h-3.5 text-fuchsia-500" /> }
+                                                { title: "Kaynak-İddia Uyumu", text: localAiReview.deep_analysis.source_claim_agreement, icon: <BookOpen className="w-3.5 h-3.5 text-violet-500" /> },
+                                                { title: "FizikHub Tonu", text: localAiReview.deep_analysis.fizikhub_tone_and_readability, icon: <MessageSquarePlus className="w-3.5 h-3.5 text-violet-500" /> },
+                                                { title: "Yapı ve Derinlik", text: localAiReview.deep_analysis.structure_and_depth, icon: <FileText className="w-3.5 h-3.5 text-violet-500" /> },
+                                                { title: "Google E-E-A-T", text: localAiReview.deep_analysis.google_eeat, icon: <Shield className="w-3.5 h-3.5 text-violet-500" /> }
                                             ].map((item, idx) => (
-                                                <div key={idx} className="p-3 rounded-lg bg-white dark:bg-zinc-900 border border-fuchsia-200 dark:border-fuchsia-900/30 shadow-sm">
-                                                    <h4 className="text-[11px] font-bold uppercase tracking-wider text-fuchsia-600 dark:text-fuchsia-400 flex items-center gap-1.5 mb-1.5">
+                                                <div key={idx} className="p-3 rounded-lg bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-sm">
+                                                    <h4 className="text-[11px] font-bold uppercase tracking-wider text-violet-600 dark:text-violet-400 flex items-center gap-1.5 mb-1.5">
                                                         {item.icon} {item.title}
                                                     </h4>
                                                     <p className="text-xs text-zinc-700 dark:text-zinc-300 leading-relaxed whitespace-pre-wrap">{item.text}</p>
@@ -450,8 +439,70 @@ export function ReviewDetailClient({ data, articleId }: ReviewDetailClientProps)
                                     </div>
                                 )}
 
+                                {/* Aşama 2: Gemma 3 27B AI Tespiti */}
+                                {localAiReview.ai_originality_analysis && (
+                                    <div className="mt-6 pt-4 border-t-2 border-dashed border-zinc-300 dark:border-zinc-700 space-y-4">
+                                        <div className="flex items-center justify-between mb-2">
+                                            <div className="flex items-center gap-2">
+                                                <div className="bg-blue-500/20 p-1.5 rounded-md">
+                                                    <Bot className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                                                </div>
+                                                <h3 className="text-sm font-black text-blue-700 dark:text-blue-400">Aşama 2: AI Tespiti (Gemma 27B)</h3>
+                                            </div>
+                                            <Badge variant={localAiReview.ai_originality_analysis.originality_score > 70 ? "default" : "destructive"}>
+                                                Özgünlük: %{localAiReview.ai_originality_analysis.originality_score || 0}
+                                            </Badge>
+                                        </div>
+                                        <div className="space-y-3">
+                                            {[
+                                                { title: "Yapay Zeka Etkisi", text: localAiReview.ai_originality_analysis.detailed_verdict, icon: <Search className="w-3.5 h-3.5 text-blue-500" /> },
+                                                { title: "İnsani Dokunuşlar", text: localAiReview.ai_originality_analysis.human_touch_points, icon: <CheckCircle2 className="w-3.5 h-3.5 text-blue-500" /> },
+                                                { title: "Robotik Dil Sorunları", text: localAiReview.ai_originality_analysis.robotic_language_issues, icon: <AlertTriangle className="w-3.5 h-3.5 text-amber-500" /> }
+                                            ].map((item, idx) => (
+                                                <div key={idx} className="p-3 rounded-lg bg-blue-50/50 dark:bg-blue-900/10 border border-blue-200 dark:border-blue-900/30 shadow-sm">
+                                                    <h4 className="text-[11px] font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400 flex items-center gap-1.5 mb-1.5">
+                                                        {item.icon} {item.title}
+                                                    </h4>
+                                                    <p className="text-xs text-zinc-700 dark:text-zinc-300 leading-relaxed whitespace-pre-wrap">{item.text}</p>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Aşama 3: Gemma 3 12B Son Karar */}
+                                {localAiReview.final_verdict && (
+                                    <div className="mt-6 pt-4 border-t-2 border-dashed border-zinc-300 dark:border-zinc-700 space-y-4">
+                                        <div className="flex items-center gap-2 mb-2">
+                                            <div className="bg-fuchsia-500/20 p-1.5 rounded-md">
+                                                <Shield className="w-4 h-4 text-fuchsia-600 dark:text-fuchsia-400" />
+                                            </div>
+                                            <h3 className="text-sm font-black text-fuchsia-700 dark:text-fuchsia-400">Aşama 3: Son Karar (Gemma 12B)</h3>
+                                        </div>
+                                        <div className="p-4 rounded-xl border-2 border-fuchsia-200 dark:border-fuchsia-900/50 bg-fuchsia-50 dark:bg-fuchsia-900/10 shadow-sm">
+                                            <div className="flex items-center gap-3 mb-3">
+                                                <h4 className="text-xs font-bold text-fuchsia-600 dark:text-fuchsia-400 uppercase tracking-widest">Yayın Kararı:</h4>
+                                                <Badge
+                                                    className={
+                                                        localAiReview.final_verdict.publishability === "Uygun"
+                                                            ? "bg-emerald-500 hover:bg-emerald-600 text-white"
+                                                            : localAiReview.final_verdict.publishability === "Revizyon"
+                                                            ? "bg-amber-500 hover:bg-amber-600 text-white"
+                                                            : "bg-red-500 hover:bg-red-600 text-white"
+                                                    }
+                                                >
+                                                    {localAiReview.final_verdict.publishability}
+                                                </Badge>
+                                            </div>
+                                            <p className="text-xs font-medium text-zinc-800 dark:text-zinc-200 leading-relaxed whitespace-pre-wrap">
+                                                {localAiReview.final_verdict.final_notes}
+                                            </p>
+                                        </div>
+                                    </div>
+                                )}
+
                                 <p className="text-[10px] text-muted-foreground text-center mt-2">
-                                    Modeller: <span className="font-bold text-violet-400">Gemini 2.5 Flash</span> + <span className="font-bold text-fuchsia-400">Gemma 3 12B</span> · {format(new Date(localAiReview.reviewed_at), "d MMM HH:mm", { locale: tr })}
+                                    Modeller: <span className="font-bold text-violet-400">Gemini 2.5 Flash</span> + <span className="font-bold text-blue-400">Gemma 3 27B</span> + <span className="font-bold text-fuchsia-400">Gemma 3 12B</span> · {format(new Date(localAiReview.reviewed_at), "d MMM HH:mm", { locale: tr })}
                                 </p>
                             </div>
                         )}
