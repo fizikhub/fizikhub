@@ -27,6 +27,7 @@ interface ArticleReaderProps {
     isAdmin: boolean;
     userAvatar?: string;
     relatedArticles: any[];
+    references?: any[];
 }
 
 export function ArticleReader({
@@ -39,7 +40,8 @@ export function ArticleReader({
     isLoggedIn,
     isAdmin,
     userAvatar,
-    relatedArticles
+    relatedArticles,
+    references = []
 }: ArticleReaderProps) {
     const [isZenMode, setIsZenMode] = useState(false);
     const [fontSize, setFontSize] = useState<'sm' | 'base' | 'lg' | 'xl'>('base');
@@ -79,37 +81,35 @@ export function ArticleReader({
                         )}
 
                         {/* Content - NeoBrutalist High Contrast */}
-                        <div className={cn(
-                            "prose sm:prose-[1.125rem] dark:prose-invert max-w-none mb-12 sm:mb-20",
-                            // Headings
-                            "prose-headings:font-black prose-headings:tracking-tighter prose-headings:text-foreground",
-                            "prose-h1:text-3xl sm:prose-h1:text-5xl prose-h1:mb-8 sm:prose-h1:mb-10 prose-h1:leading-[1.15]",
-                            "prose-h2:text-2xl sm:prose-h2:text-4xl prose-h2:mt-12 sm:prose-h2:mt-16 prose-h2:mb-6 prose-h2:border-l-[8px] prose-h2:border-[#FFC800] prose-h2:pl-5 prose-h2:leading-[1.2]",
-                            "prose-h3:text-xl sm:prose-h3:text-3xl prose-h3:mt-10 sm:prose-h3:mt-12 prose-h3:mb-5 prose-h3:font-bold",
-                            // Paragraphs & Text
-                            "prose-p:text-[#111] dark:prose-p:text-zinc-300 prose-p:leading-[1.85] sm:prose-p:leading-[1.9] prose-p:mb-8 md:prose-p:mb-10 prose-p:font-medium",
-                            "prose-strong:text-black dark:prose-strong:text-white prose-strong:font-black prose-strong:bg-[#FFC800]/20 dark:prose-strong:bg-[#23A9FA]/20 prose-strong:px-1 prose-strong:rounded-sm",
-                            // Links
-                            "prose-a:text-black dark:prose-a:text-white prose-a:font-black prose-a:no-underline prose-a:border-b-[3px] prose-a:border-[#23A9FA] dark:prose-a:border-[#FFC800] hover:prose-a:bg-[#23A9FA] dark:hover:prose-a:bg-[#FFC800] hover:prose-a:text-white dark:hover:prose-a:text-black transition-colors break-words prose-a:px-0.5",
-                            // Lists
-                            "prose-li:text-[#111] dark:prose-li:text-zinc-300 prose-li:leading-[1.85] sm:prose-li:leading-relaxed prose-li:marker:text-[#FFC800] prose-li:marker:font-black prose-li:font-medium",
-                            "prose-ul:pl-6 sm:prose-ul:pl-8 prose-ol:pl-6 sm:prose-ol:pl-8",
-                            // Blockquotes
-                            "prose-blockquote:border-l-[6px] sm:prose-blockquote:border-l-[8px] prose-blockquote:border-black dark:prose-blockquote:border-[#FFC800] prose-blockquote:bg-[#FFC800]/10 dark:prose-blockquote:bg-[#FFC800]/5 prose-blockquote:py-5 sm:prose-blockquote:py-8 prose-blockquote:px-6 sm:prose-blockquote:px-10 prose-blockquote:my-10 sm:prose-blockquote:my-12 prose-blockquote:rounded-r-2xl prose-blockquote:not-italic prose-blockquote:font-bold prose-blockquote:text-lg sm:prose-blockquote:text-2xl prose-blockquote:leading-relaxed prose-blockquote:text-black dark:prose-blockquote:text-zinc-100",
-                            // Code
-                            "prose-code:bg-zinc-100 dark:prose-code:bg-zinc-800 prose-code:border-2 prose-code:border-black dark:prose-code:border-zinc-700 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded-md prose-code:text-[#FF3366] dark:prose-code:text-[#FFC800] prose-code:font-mono prose-code:text-[0.85em] sm:prose-code:text-[0.9em] prose-code:font-black prose-code:before:content-none prose-code:after:content-none prose-code:shadow-[2px_2px_0px_0px_#000] dark:prose-code:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.1)]",
-                            "prose-pre:bg-zinc-950 prose-pre:border-4 prose-pre:border-black dark:prose-pre:border-zinc-700 prose-pre:rounded-xl prose-pre:shadow-[8px_8px_0px_0px_#000] dark:prose-pre:shadow-[8px_8px_0px_0px_rgba(0,0,0,0.8)] overflow-x-auto",
-                            // Images
-                            "prose-img:rounded-xl prose-img:border-4 prose-img:border-black dark:prose-img:border-zinc-800 prose-img:shadow-[8px_8px_0px_0px_#000] dark:prose-img:shadow-[8px_8px_0px_0px_rgba(0,0,0,0.6)] prose-img:my-10 sm:prose-img:my-16 prose-img:mx-auto"
-                        )}>
-                            <MarkdownRenderer
-                                content={article.content || ""}
-                                className=""
-                                fontSize={fontSize}
-                                fontFamily={fontFamily}
-                                isZenMode={isZenMode}
-                            />
-                        </div>
+                        <MarkdownRenderer
+                            content={article.content || ""}
+                            fontSize={fontSize}
+                            fontFamily={fontFamily}
+                            isZenMode={isZenMode}
+                            className={cn(
+                                "sm:prose-[1.125rem] mb-12 sm:mb-20 max-w-none w-full",
+                                // Headings
+                                "prose-headings:font-black prose-headings:tracking-tighter prose-headings:text-foreground",
+                                "prose-h1:text-4xl sm:prose-h1:text-6xl prose-h1:mb-8 sm:prose-h1:mb-12 prose-h1:leading-tight prose-h1:uppercase",
+                                "prose-h2:text-2xl sm:prose-h2:text-4xl prose-h2:mt-12 sm:prose-h2:mt-16 prose-h2:mb-6 prose-h2:border-l-[8px] prose-h2:border-[#FFC800] prose-h2:pl-5 prose-h2:leading-snug",
+                                "prose-h3:text-xl sm:prose-h3:text-3xl prose-h3:mt-10 sm:prose-h3:mt-12 prose-h3:mb-5 prose-h3:font-bold",
+                                // Paragraphs & Text
+                                "prose-p:text-[#222] dark:prose-p:text-zinc-300 prose-p:leading-[1.85] sm:prose-p:leading-[1.9] prose-p:mb-8 md:prose-p:mb-10 prose-p:font-medium",
+                                "prose-strong:text-black dark:prose-strong:text-white prose-strong:font-black prose-strong:bg-[#FFC800]/20 dark:prose-strong:bg-[#23A9FA]/20 prose-strong:px-1 prose-strong:rounded-sm",
+                                // Links
+                                "prose-a:text-black dark:prose-a:text-white prose-a:font-black prose-a:no-underline prose-a:border-b-[3px] prose-a:border-[#23A9FA] dark:prose-a:border-[#FFC800] hover:prose-a:bg-[#23A9FA] dark:hover:prose-a:bg-[#FFC800] hover:prose-a:text-white dark:hover:prose-a:text-black transition-colors break-words prose-a:px-0.5",
+                                // Lists
+                                "prose-li:text-[#222] dark:prose-li:text-zinc-300 prose-li:leading-[1.85] sm:prose-li:leading-relaxed prose-li:marker:text-[#FFC800] prose-li:marker:font-black prose-li:font-medium",
+                                "prose-ul:pl-6 sm:prose-ul:pl-8 prose-ol:pl-6 sm:prose-ol:pl-8",
+                                // Blockquotes
+                                "prose-blockquote:border-l-[8px] prose-blockquote:border-black dark:prose-blockquote:border-[#FFC800] prose-blockquote:bg-[#FFC800]/10 dark:prose-blockquote:bg-zinc-800/80 prose-blockquote:py-6 sm:prose-blockquote:py-8 prose-blockquote:px-6 sm:prose-blockquote:px-10 prose-blockquote:my-10 sm:prose-blockquote:my-12 prose-blockquote:rounded-r-2xl prose-blockquote:not-italic prose-blockquote:font-bold prose-blockquote:text-xl sm:prose-blockquote:text-2xl prose-blockquote:leading-relaxed prose-blockquote:text-black dark:prose-blockquote:text-zinc-100",
+                                // Code
+                                "prose-code:bg-zinc-100 dark:prose-code:bg-zinc-800 prose-code:border-2 prose-code:border-black dark:prose-code:border-zinc-700 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded-md prose-code:text-[#FF3366] dark:prose-code:text-[#FFC800] prose-code:font-mono prose-code:text-[0.85em] sm:prose-code:text-[0.9em] prose-code:font-black prose-code:before:content-none prose-code:after:content-none prose-code:shadow-[2px_2px_0px_0px_#000] dark:prose-code:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.1)]",
+                                "prose-pre:bg-zinc-950 prose-pre:border-4 prose-pre:border-black dark:prose-pre:border-zinc-700 prose-pre:rounded-xl prose-pre:shadow-[8px_8px_0px_0px_#000] dark:prose-pre:shadow-[8px_8px_0px_0px_rgba(0,0,0,0.8)] overflow-x-auto",
+                                // Images
+                                "prose-img:rounded-xl prose-img:border-4 prose-img:border-black dark:prose-img:border-zinc-800 prose-img:shadow-[8px_8px_0px_0px_#000] dark:prose-img:shadow-[8px_8px_0px_0px_#FFC800] prose-img:my-10 sm:prose-img:my-16 prose-img:mx-auto max-h-[600px] object-contain cursor-zoom-in"
+                            )}
+                        />
 
                         {/* Floating Action Dock (Reading Controls) - NeoBrutalist */}
                         {!isZenMode && (
@@ -153,8 +153,41 @@ export function ArticleReader({
                                     <AuthorCard author={article.author || {}} />
                                 </div>
 
+                                {/* Sources / Kaynaklar */}
+                                {references && references.length > 0 && (
+                                    <div className="space-y-6">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-2 h-8 bg-blue-500" />
+                                            <h3 className="text-2xl font-black text-foreground uppercase tracking-tight">Kaynaklar</h3>
+                                        </div>
+                                        <div className="grid gap-3 sm:gap-4">
+                                            {references.map((ref, index) => (
+                                                <a 
+                                                    key={ref.id} 
+                                                    href={ref.url} 
+                                                    target="_blank" 
+                                                    rel="noopener noreferrer"
+                                                    className="flex flex-col sm:flex-row gap-3 sm:items-center p-4 bg-zinc-50 dark:bg-zinc-900 border-2 border-black dark:border-zinc-700 rounded-xl hover:-translate-y-1 transition-transform group shadow-[4px_4px_0_0_#000] dark:shadow-[4px_4px_0_0_#FFC800]"
+                                                >
+                                                    <span className="flex-shrink-0 w-8 h-8 rounded-full bg-[#FFC800] text-black font-black flex items-center justify-center border-2 border-black shadow-[2px_2px_0_0_#000]">
+                                                        {index + 1}
+                                                    </span>
+                                                    <div className="flex-1 min-w-0">
+                                                        <p className="font-bold text-base sm:text-lg text-black dark:text-zinc-100 truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                                                            {ref.title || new URL(ref.url).hostname}
+                                                        </p>
+                                                        <p className="text-sm text-zinc-500 truncate">
+                                                            {ref.url}
+                                                        </p>
+                                                    </div>
+                                                </a>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+
                                 {/* Related Articles */}
-                                {relatedArticles.length > 0 && (
+                                {relatedArticles && relatedArticles.length > 0 && (
                                     <div className="space-y-8">
                                         <div className="flex items-center gap-3">
                                             <div className="w-2 h-8 bg-[#FFC800]" />

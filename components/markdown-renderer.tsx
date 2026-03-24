@@ -107,37 +107,37 @@ export function MarkdownRenderer({
                 components={{
                     p: ({ node, children, ...props }) => {
                         // Check if the paragraph contains any element that will render as a div/block
-                        // react-markdown nodes use 'tagName'
                         const hasBlockElement = node?.children?.some((child: any) =>
                             ['img', 'video', 'iframe'].includes(child.tagName)
                         );
 
                         if (hasBlockElement) {
-                            return <div className="mb-4">{children}</div>;
+                            return <div>{children}</div>;
                         }
 
-                        return <p className="mb-4 leading-relaxed" {...props}>{children}</p>;
+                        return <p {...props}>{children}</p>;
                     },
                     a: ({ node, ...props }) => {
                         const isExternal = props.href && (props.href.startsWith('http') || props.href.startsWith('//'));
                         return (
                             <a 
-                                className="text-secondary hover:underline" 
                                 target={isExternal ? "_blank" : undefined}
                                 rel={isExternal ? "noopener noreferrer" : undefined}
                                 {...props} 
                             />
                         );
                     },
-                    ul: ({ node, ...props }) => <ul className="list-disc list-inside mb-4" {...props} />,
-                    ol: ({ node, ...props }) => <ol className="list-decimal list-inside mb-4" {...props} />,
-                    li: ({ node, ...props }) => <li className="mb-1" {...props} />,
-                    h1: ({ node, ...props }) => <h1 className="text-3xl font-black font-serif mt-10 mb-6 text-primary leading-tight" {...props} />,
-                    h2: ({ node, ...props }) => <h2 className="text-2xl font-bold font-serif mt-10 mb-5 text-primary border-b border-black/10 dark:border-white/10 pb-2 leading-snug" {...props} />,
-                    h3: ({ node, ...props }) => <h3 className="text-xl font-bold font-serif mt-8 mb-4 text-secondary leading-normal" {...props} />,
-                    blockquote: ({ node, ...props }) => (
-                        <blockquote className="border-[3px] border-black border-l-[8px] border-l-[#FF3366] dark:border-l-[#FFBD2E] pl-4 sm:pl-6 py-4 my-8 italic bg-neutral-100 dark:bg-[#27272a] rounded-[8px] shadow-[4px_4px_0_0_#000] font-serif font-medium text-black dark:text-zinc-200 leading-relaxed" {...props} />
-                    ),
+                    div: ({ node, className, children, ...props }: any) => {
+                        // Handle LaTeX blocks safely so they don't break the layout horizontally
+                        if (className?.includes?.('math-display')) {
+                            return (
+                                <div className={`overflow-x-auto overflow-y-hidden py-4 my-8 bg-zinc-50 dark:bg-[#111] border-2 border-black dark:border-zinc-800 shadow-[4px_4px_0_0_#000] dark:shadow-[4px_4px_0_0_#FFC800] rounded-xl flex justify-center w-full px-4 ${className}`} {...props}>
+                                    {children}
+                                </div>
+                            );
+                        }
+                        return <div className={className} {...props}>{children}</div>;
+                    },
                     code: ({ node, inline, className, children, ...props }: any) => {
                         return inline ? (
                             <code className="bg-neutral-200 dark:bg-black border-[2px] border-black text-black dark:text-neo-yellow font-bold px-1.5 py-0.5 mx-0.5 rounded-[4px] font-mono shadow-[2px_2px_0_0_#000] text-[0.9em]" {...props}>
@@ -155,7 +155,7 @@ export function MarkdownRenderer({
                         const src = props.src as string;
                         if (src?.endsWith(".mp4") || src?.endsWith(".webm")) {
                             return (
-                                <video controls className="rounded-lg w-full my-4 shadow-lg border border-white/5" {...props}>
+                                <video controls className="w-full" {...props}>
                                     <source src={src} type={`video/${src.split('.').pop()}`} />
                                     Tarayıcınız video etiketini desteklemiyor.
                                 </video>
@@ -163,28 +163,28 @@ export function MarkdownRenderer({
                         }
 
                         return (
-                            <div className="flex flex-col items-center my-8">
+                            <span className="flex flex-col items-center">
                                 <Dialog>
                                     <DialogTrigger asChild>
-                                        <div className="relative group cursor-zoom-in w-full flex justify-center">
+                                        <span className="relative group cursor-zoom-in w-full flex justify-center">
                                             <img
                                                 loading="lazy"
                                                 decoding="async"
-                                                className="rounded-lg shadow-lg border border-white/5 transition-transform duration-300 group-hover:scale-[1.01] max-h-[600px] object-contain"
+                                                className="transition-transform duration-300 group-hover:scale-[1.01] object-contain cursor-zoom-in"
                                                 {...props}
                                             />
-                                            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/20 rounded-lg">
-                                                <div className="bg-black/50 backdrop-blur-sm p-2 rounded-full text-white">
+                                            <span className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/20 rounded-xl pointer-events-none">
+                                                <span className="bg-black/50 backdrop-blur-sm p-2 rounded-full text-white">
                                                     <ZoomIn className="h-6 w-6" />
-                                                </div>
-                                            </div>
-                                        </div>
+                                                </span>
+                                            </span>
+                                        </span>
                                     </DialogTrigger>
                                     <DialogContent className="max-w-[95vw] h-[90vh] bg-transparent border-none shadow-none flex items-center justify-center overflow-hidden p-0">
                                         <img
                                             src={src}
                                             alt={props.alt || "Makale görseli"}
-                                            className="max-w-full max-h-full object-contain rounded-md shadow-2xl"
+                                            className="max-w-full max-h-full object-contain shadow-2xl"
                                         />
                                     </DialogContent>
                                 </Dialog>
@@ -193,11 +193,11 @@ export function MarkdownRenderer({
                                         {props.alt}
                                     </span>
                                 )}
-                            </div>
+                            </span>
                         );
                     },
                     iframe: ({ node, ...props }: any) => (
-                        <div className="aspect-video w-full my-8 rounded-xl overflow-hidden shadow-2xl border border-white/10 bg-black/50">
+                        <span className="block aspect-video w-full my-8 rounded-xl overflow-hidden shadow-[4px_4px_0_0_#000] border-2 border-black dark:border-zinc-800 bg-black/50">
                             <iframe
                                 className="w-full h-full"
                                 {...props}
@@ -206,7 +206,7 @@ export function MarkdownRenderer({
                                 sandbox="allow-scripts allow-same-origin allow-popups"
                                 referrerPolicy="no-referrer"
                             />
-                        </div>
+                        </span>
                     ),
                 }}
             >

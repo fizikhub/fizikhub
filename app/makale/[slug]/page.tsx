@@ -129,6 +129,12 @@ export default async function ArticlePage({ params }: PageProps) {
         .eq('article_id', article.id)
         .order('created_at', { ascending: true });
 
+    // Fetch references
+    const { data: references } = await supabase
+        .from('article_references')
+        .select('*')
+        .eq('article_id', article.id)
+        .order('created_at', { ascending: true });
 
     // Fetch profiles separately
     const userIds = commentsData?.map(c => c.user_id) || [];
@@ -248,6 +254,7 @@ export default async function ArticlePage({ params }: PageProps) {
                             isAdmin={isAdmin}
                             userAvatar={user ? (profiles?.find(p => p.id === user.id)?.avatar_url) : undefined}
                             relatedArticles={relatedArticles || []}
+                            references={references || []}
                         />
                     </>
                 )}
