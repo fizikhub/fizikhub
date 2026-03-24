@@ -78,11 +78,10 @@ export function MarkdownRenderer({
 
     return (
         <div className={cn(
-            "prose prose-invert max-w-none transition-all duration-300",
-            "prose-headings:text-primary prose-a:text-secondary",
+            "max-w-none transition-all duration-300",
             proseSizeClasses[fontSize],
             fontClasses[fontFamily],
-            isZenMode ? "prose-p:opacity-90 leading-loose" : "",
+            isZenMode ? "leading-loose" : "",
             className
         )}>
             <ReactMarkdown
@@ -105,99 +104,86 @@ export function MarkdownRenderer({
                     rehypeHighlight,
                 ]}
                 components={{
+                    // Only override p to handle block elements (img/video/iframe inside <p>)
                     p: ({ node, children, ...props }) => {
-                        // Check if the paragraph contains any element that will render as a div/block
                         const hasBlockElement = node?.children?.some((child: any) =>
                             ['img', 'video', 'iframe'].includes(child.tagName)
                         );
-
                         if (hasBlockElement) {
                             return <div>{children}</div>;
                         }
-
                         return <p {...props}>{children}</p>;
                     },
+                    // External links open in new tab
                     a: ({ node, ...props }) => {
                         const isExternal = props.href && (props.href.startsWith('http') || props.href.startsWith('//'));
                         return (
-                            <a 
+                            <a
                                 target={isExternal ? "_blank" : undefined}
                                 rel={isExternal ? "noopener noreferrer" : undefined}
-                                {...props} 
+                                {...props}
                             />
                         );
                     },
-                    div: ({ node, className, children, ...props }: any) => {
-                        // Handle LaTeX blocks safely so they don't break the layout horizontally
-                        if (className?.includes?.('math-display')) {
+                    // Wrap KaTeX block math in overflow-x-auto container for mobile
+                    div: ({ node, children, className: divClassName, ...props }: any) => {
+                        if (divClassName?.includes('math-display')) {
                             return (
-                                <div className={`overflow-x-auto overflow-y-hidden py-4 my-8 bg-zinc-50 dark:bg-[#111] border-2 border-black dark:border-zinc-800 shadow-[4px_4px_0_0_#000] dark:shadow-[4px_4px_0_0_#FFC800] rounded-xl flex justify-center w-full px-4 ${className}`} {...props}>
-                                    {children}
+                                <div className="overflow-x-auto my-6 sm:my-8 py-4 px-3 sm:px-5 bg-zinc-50 dark:bg-zinc-900/60 border-2 border-black dark:border-zinc-700 rounded-xl shadow-[4px_4px_0px_0px_#000] dark:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.4)]" {...props}>
+                                    <div className={divClassName}>{children}</div>
                                 </div>
                             );
                         }
-                        return <div className={className} {...props}>{children}</div>;
+                        return <div className={divClassName} {...props}>{children}</div>;
                     },
-                    code: ({ node, inline, className, children, ...props }: any) => {
-                        return inline ? (
-                            <code className="bg-neutral-200 dark:bg-black border-[2px] border-black text-black dark:text-neo-yellow font-bold px-1.5 py-0.5 mx-0.5 rounded-[4px] font-mono shadow-[2px_2px_0_0_#000] text-[0.9em]" {...props}>
-                                {children}
-                            </code>
-                        ) : (
-                            <pre className="bg-black dark:bg-[#111111] border-[3px] border-black rounded-[8px] p-4 sm:p-5 overflow-x-auto mb-6 shadow-[4px_4px_0_0_#000]">
-                                <code className="text-sm font-mono text-zinc-50" {...props}>
-                                    {children}
-                                </code>
-                            </pre>
-                        );
-                    },
+                    // Image with Dialog zoom (must stay as custom override)
                     img: ({ node, ...props }: any) => {
                         const src = props.src as string;
                         if (src?.endsWith(".mp4") || src?.endsWith(".webm")) {
                             return (
-                                <video controls className="w-full" {...props}>
+                                <video controls className="rounded-xl w-full my-6 border-4 border-black dark:border-zinc-800 shadow-[6px_6px_0px_0px_#000] dark:shadow-[6px_6px_0px_0px_rgba(0,0,0,0.5)]" {...props}>
                                     <source src={src} type={`video/${src.split('.').pop()}`} />
                                     Tarayıcınız video etiketini desteklemiyor.
                                 </video>
                             );
                         }
-
                         return (
-                            <span className="flex flex-col items-center">
+                            <div className="flex flex-col items-center my-8 sm:my-12">
                                 <Dialog>
                                     <DialogTrigger asChild>
-                                        <span className="relative group cursor-zoom-in w-full flex justify-center">
+                                        <div className="relative group cursor-zoom-in w-full flex justify-center">
                                             <img
                                                 loading="lazy"
                                                 decoding="async"
-                                                className="transition-transform duration-300 group-hover:scale-[1.01] object-contain cursor-zoom-in"
+                                                className="rounded-xl shadow-lg border-4 border-black dark:border-zinc-800 shadow-[6px_6px_0px_0px_#000] dark:shadow-[6px_6px_0px_0px_rgba(0,0,0,0.5)] transition-transform duration-300 group-hover:scale-[1.01] max-h-[600px] object-contain"
                                                 {...props}
                                             />
-                                            <span className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/20 rounded-xl pointer-events-none">
-                                                <span className="bg-black/50 backdrop-blur-sm p-2 rounded-full text-white">
+                                            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/20 rounded-xl">
+                                                <div className="bg-black/60 backdrop-blur-sm p-2.5 rounded-full text-white border-2 border-white/30">
                                                     <ZoomIn className="h-6 w-6" />
-                                                </span>
-                                            </span>
-                                        </span>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </DialogTrigger>
                                     <DialogContent className="max-w-[95vw] h-[90vh] bg-transparent border-none shadow-none flex items-center justify-center overflow-hidden p-0">
                                         <img
                                             src={src}
                                             alt={props.alt || "Makale görseli"}
-                                            className="max-w-full max-h-full object-contain shadow-2xl"
+                                            className="max-w-full max-h-full object-contain rounded-md shadow-2xl"
                                         />
                                     </DialogContent>
                                 </Dialog>
                                 {props.alt && props.alt !== "Makale görseli" && (
-                                    <span className="text-sm text-muted-foreground mt-2 text-center italic border-b-2 border-primary/20 pb-1 px-4">
+                                    <span className="text-xs sm:text-sm text-muted-foreground mt-3 text-center italic font-medium">
                                         {props.alt}
                                     </span>
                                 )}
-                            </span>
+                            </div>
                         );
                     },
+                    // Iframe responsive embed
                     iframe: ({ node, ...props }: any) => (
-                        <span className="block aspect-video w-full my-8 rounded-xl overflow-hidden shadow-[4px_4px_0_0_#000] border-2 border-black dark:border-zinc-800 bg-black/50">
+                        <div className="aspect-video w-full my-8 sm:my-12 rounded-xl overflow-hidden border-4 border-black dark:border-zinc-800 shadow-[6px_6px_0px_0px_#000] dark:shadow-[6px_6px_0px_0px_rgba(0,0,0,0.5)] bg-black/50">
                             <iframe
                                 className="w-full h-full"
                                 {...props}
@@ -206,7 +192,7 @@ export function MarkdownRenderer({
                                 sandbox="allow-scripts allow-same-origin allow-popups"
                                 referrerPolicy="no-referrer"
                             />
-                        </span>
+                        </div>
                     ),
                 }}
             >

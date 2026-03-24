@@ -99,6 +99,13 @@ export default async function ArticlePage({ params }: PageProps) {
         .select('*', { count: 'exact', head: true })
         .eq('article_id', article.id);
 
+    // Fetch article references/sources
+    const { data: references } = await supabase
+        .from('article_references')
+        .select('*')
+        .eq('article_id', article.id)
+        .order('created_at', { ascending: true });
+
     const likeCount = article.title === "Sessiz Bir Varsayım: Yerçekimi" ? 7 : dbLikeCount;
 
     const { data: userLike } = user ? await supabase
@@ -129,12 +136,6 @@ export default async function ArticlePage({ params }: PageProps) {
         .eq('article_id', article.id)
         .order('created_at', { ascending: true });
 
-    // Fetch references
-    const { data: references } = await supabase
-        .from('article_references')
-        .select('*')
-        .eq('article_id', article.id)
-        .order('created_at', { ascending: true });
 
     // Fetch profiles separately
     const userIds = commentsData?.map(c => c.user_id) || [];
