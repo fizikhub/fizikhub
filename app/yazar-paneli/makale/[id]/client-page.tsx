@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import Link from "next/link";
+import { MarkdownRenderer } from "@/components/markdown-renderer";
 import {
     ArrowLeft,
     Bot,
@@ -229,10 +230,9 @@ export function ReviewDetailClient({ data, articleId }: ReviewDetailClientProps)
                                 {article.excerpt}
                             </p>
                         )}
-                        <div
-                            className="prose prose-zinc dark:prose-invert max-w-none prose-headings:font-black prose-img:rounded-lg"
-                            dangerouslySetInnerHTML={{ __html: article.content }}
-                        />
+                        <div className="prose prose-zinc dark:prose-invert max-w-none prose-headings:font-black prose-img:rounded-lg prose-p:leading-relaxed prose-blockquote:border-l-4 prose-blockquote:border-black dark:prose-blockquote:border-zinc-500">
+                            <MarkdownRenderer content={article.content} />
+                        </div>
                     </div>
 
                     {/* References */}
