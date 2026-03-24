@@ -129,6 +129,49 @@
         font-weight: 800;
         color: inherit;
     }
+
+    /* ============================================
+       KaTeX / LaTeX Rendering in Articles
+       ============================================ */
+
+    /* Inline math: subtle vertical centering + spacing */
+    .prose .katex-inline,
+    .prose .math-inline,
+    .prose span.katex {
+        vertical-align: baseline;
+        padding: 0 0.15em;
+    }
+
+    /* Display math: centered block with breathing room */
+    .prose .katex-display,
+    .prose .math-display {
+        margin: 1.5em 0;
+        overflow-x: auto;
+        overflow-y: hidden;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .prose .katex-display > .katex {
+        text-align: center;
+    }
+
+    /* Scale KaTeX font in prose context */
+    .prose .katex {
+        font-size: 1.05em;
+    }
+
+    /* Mobile KaTeX: smaller font to prevent overflow */
+    @media (max-width: 640px) {
+        .prose .katex {
+            font-size: 0.92em;
+        }
+
+        .prose .katex-display,
+        .prose .math-display {
+            margin: 1em 0;
+            padding: 0.5em 0;
+        }
+    }
 }
 
 @layer utilities {}

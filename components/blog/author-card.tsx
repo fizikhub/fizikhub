@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { ExternalLink } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 
 interface Author {
     id?: string;
@@ -23,48 +23,61 @@ export function AuthorCard({ author }: AuthorCardProps) {
     const username = author.username || "anonim";
 
     return (
-        <div className="flex items-start gap-4 p-6 rounded-xl bg-muted/50 border border-border">
-            {/* Avatar */}
-            <Link prefetch={false} href={`/kullanici/${username}`} className="shrink-0">
-                <div className="w-14 h-14 rounded-full overflow-hidden bg-muted">
-                    <Image
-                        src={author.avatar_url || "/images/default-avatar.png"}
-                        alt={displayName}
-                        width={56}
-                        height={56}
-                        className="object-cover w-full h-full"
-                    />
-                </div>
-            </Link>
+        <div className="relative p-5 sm:p-7 bg-white dark:bg-[#27272a] border-[3px] border-black dark:border-zinc-700 rounded-[8px] shadow-neo hover:shadow-neo-hover hover:translate-x-[2px] hover:translate-y-[2px] transition-all duration-200 group overflow-hidden">
+            {/* Noise texture overlay */}
+            <div className="absolute inset-0 opacity-[0.03] pointer-events-none mix-blend-multiply"
+                style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 250 250' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }}
+            />
 
-            {/* Info */}
-            <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 flex-wrap mb-1">
-                    <Link prefetch={false} href={`/kullanici/${username}`}
-                        className="font-semibold text-foreground hover:text-primary transition-colors"
-                    >
-                        {displayName}
-                    </Link>
-                    {author.is_writer && (
-                        <span className="text-[10px] font-medium px-2 py-0.5 bg-primary/10 text-primary rounded-full">
-                            Yazar
-                        </span>
-                    )}
-                </div>
-                <p className="text-sm text-muted-foreground mb-2">
-                    @{username}
-                </p>
-                {author.bio && (
-                    <p className="text-sm text-muted-foreground line-clamp-2">
-                        {author.bio}
-                    </p>
-                )}
-                <Link prefetch={false} href={`/kullanici/${username}`}
-                    className="inline-flex items-center gap-1 text-sm text-primary hover:underline mt-2"
-                >
-                    Profilini gör
-                    <ExternalLink className="w-3 h-3" />
+            {/* Header label */}
+            <div className="flex items-center gap-2 mb-4">
+                <div className="w-1.5 h-6 bg-[#FFC800]" />
+                <span className="text-[10px] sm:text-xs font-black uppercase tracking-widest text-muted-foreground">Yazar</span>
+            </div>
+
+            <div className="flex items-start gap-4 sm:gap-5 relative z-10">
+                {/* Avatar */}
+                <Link prefetch={false} href={`/kullanici/${username}`} className="shrink-0">
+                    <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl border-2 border-black dark:border-zinc-600 overflow-hidden bg-zinc-100 shadow-[2px_2px_0px_0px_#000] dark:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.4)] group-hover:shadow-[3px_3px_0px_0px_#FFC800] transition-shadow">
+                        <Image
+                            src={author.avatar_url || "/images/default-avatar.png"}
+                            alt={displayName}
+                            width={64}
+                            height={64}
+                            className="object-cover w-full h-full"
+                        />
+                    </div>
                 </Link>
+
+                {/* Info */}
+                <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap mb-1">
+                        <Link prefetch={false} href={`/kullanici/${username}`}
+                            className="font-black text-base sm:text-lg text-foreground hover:text-[#FFC800] transition-colors tracking-tight"
+                        >
+                            {displayName}
+                        </Link>
+                        {author.is_writer && (
+                            <span className="text-[10px] font-black px-2 py-0.5 bg-[#FFC800] text-black border-2 border-black rounded-[4px] shadow-[1px_1px_0px_0px_#000] uppercase">
+                                Yazar
+                            </span>
+                        )}
+                    </div>
+                    <p className="text-xs font-bold text-muted-foreground mb-2">
+                        @{username}
+                    </p>
+                    {author.bio && (
+                        <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed font-medium">
+                            {author.bio}
+                        </p>
+                    )}
+                    <Link prefetch={false} href={`/kullanici/${username}`}
+                        className="inline-flex items-center gap-1.5 text-xs font-black text-foreground hover:text-[#FFC800] mt-3 uppercase tracking-wider transition-colors group/link"
+                    >
+                        <span>Profilini Gör</span>
+                        <ArrowRight className="w-3.5 h-3.5 stroke-[3px] group-hover/link:translate-x-1 transition-transform" />
+                    </Link>
+                </div>
             </div>
         </div>
     );

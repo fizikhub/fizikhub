@@ -87,7 +87,8 @@ export function ArticleReader({
                             "prose-headings:font-black prose-headings:tracking-tighter prose-headings:text-foreground",
                             "prose-h1:text-3xl sm:prose-h1:text-5xl prose-h1:mb-8 sm:prose-h1:mb-10 prose-h1:leading-[1.15]",
                             "prose-h2:text-2xl sm:prose-h2:text-4xl prose-h2:mt-12 sm:prose-h2:mt-16 prose-h2:mb-6 prose-h2:border-l-[8px] prose-h2:border-[#FFC800] prose-h2:pl-5 prose-h2:leading-[1.2]",
-                            "prose-h3:text-xl sm:prose-h3:text-3xl prose-h3:mt-10 sm:prose-h3:mt-12 prose-h3:mb-5 prose-h3:font-bold",
+                            "prose-h3:text-xl sm:prose-h3:text-3xl prose-h3:mt-10 sm:prose-h3:mt-12 prose-h3:mb-5 prose-h3:font-bold prose-h3:border-l-[6px] prose-h3:border-[#23A9FA] prose-h3:pl-4 prose-h3:leading-[1.2]",
+                            "prose-h4:text-lg sm:prose-h4:text-xl prose-h4:mt-8 prose-h4:mb-4 prose-h4:font-black prose-h4:text-foreground",
                             // Paragraphs & Text
                             "prose-p:text-[#111] dark:prose-p:text-zinc-300 prose-p:leading-[1.85] sm:prose-p:leading-[1.9] prose-p:mb-8 md:prose-p:mb-10 prose-p:font-medium",
                             "prose-strong:text-black dark:prose-strong:text-white prose-strong:font-black prose-strong:bg-[#FFC800]/20 dark:prose-strong:bg-[#23A9FA]/20 prose-strong:px-1 prose-strong:rounded-sm",
@@ -102,7 +103,9 @@ export function ArticleReader({
                             "prose-code:bg-zinc-100 dark:prose-code:bg-zinc-800 prose-code:border-2 prose-code:border-black dark:prose-code:border-zinc-700 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded-md prose-code:text-[#FF3366] dark:prose-code:text-[#FFC800] prose-code:font-mono prose-code:text-[0.85em] sm:prose-code:text-[0.9em] prose-code:font-black prose-code:before:content-none prose-code:after:content-none prose-code:shadow-[2px_2px_0px_0px_#000] dark:prose-code:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.1)]",
                             "prose-pre:bg-zinc-950 prose-pre:border-4 prose-pre:border-black dark:prose-pre:border-zinc-700 prose-pre:rounded-xl prose-pre:shadow-[8px_8px_0px_0px_#000] dark:prose-pre:shadow-[8px_8px_0px_0px_rgba(0,0,0,0.8)] overflow-x-auto",
                             // Images
-                            "prose-img:rounded-xl prose-img:border-4 prose-img:border-black dark:prose-img:border-zinc-800 prose-img:shadow-[8px_8px_0px_0px_#000] dark:prose-img:shadow-[8px_8px_0px_0px_rgba(0,0,0,0.6)] prose-img:my-10 sm:prose-img:my-16 prose-img:mx-auto"
+                            "prose-img:rounded-xl prose-img:border-4 prose-img:border-black dark:prose-img:border-zinc-800 prose-img:shadow-[8px_8px_0px_0px_#000] dark:prose-img:shadow-[8px_8px_0px_0px_rgba(0,0,0,0.6)] prose-img:my-10 sm:prose-img:my-16 prose-img:mx-auto",
+                            // HR
+                            "prose-hr:border-t-[3px] prose-hr:border-dashed prose-hr:border-black/15 dark:prose-hr:border-white/10 prose-hr:my-10 sm:prose-hr:my-14"
                         )}>
                             <MarkdownRenderer
                                 content={article.content || ""}
