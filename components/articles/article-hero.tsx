@@ -34,7 +34,7 @@ export function ArticleHero({ article, readingTime }: ArticleHeroProps) {
     const rating = metadata.rating || 0;
 
     return (
-        <div className="w-full">
+        <header className="w-full block">
             {/* Back Button */}
             <div className="container max-w-4xl mx-auto px-4 pt-4">
                 <Link prefetch={false} href="/blog">
@@ -228,6 +228,6 @@ export function ArticleHero({ article, readingTime }: ArticleHeroProps) {
                     </div>
                 </>
             )}
-        </div>
+        </header>
     );
 }

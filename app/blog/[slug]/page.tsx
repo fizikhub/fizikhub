@@ -166,6 +166,7 @@ export default async function BlogPage({ params }: PageProps) {
     const isAdmin = user?.email?.toLowerCase() === 'barannnbozkurttb.b@gmail.com';
 
     // Calculate reading time
+    const wordCount = article.content ? article.content.split(/\s+/).length : 0;
     const readingTime = calculateReadingTime(article.content || "");
     const formattedReadingTime = formatReadingTime(readingTime);
 
@@ -178,6 +179,8 @@ export default async function BlogPage({ params }: PageProps) {
         image: article.cover_url || 'https://fizikhub.com/og-image.png',
         datePublished: article.created_at,
         dateModified: (article as { updated_at?: string }).updated_at || article.created_at,
+        wordCount: wordCount,
+        keywords: [article.category || 'Bilim', 'Fizik', 'Fizikhub'].filter(Boolean).join(', '),
         author: {
             '@type': 'Person',
             name: article.author?.full_name || article.author?.username || 'Fizikhub Ekibi',
@@ -196,15 +199,45 @@ export default async function BlogPage({ params }: PageProps) {
         },
     };
 
+    // JSON-LD structured data for Breadcrumb Navigation (AI understands site hierarchy)
+    const breadcrumbLd = {
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+            {
+                '@type': 'ListItem',
+                position: 1,
+                name: 'Anasayfa',
+                item: 'https://fizikhub.com',
+            },
+            {
+                '@type': 'ListItem',
+                position: 2,
+                name: 'Blog',
+                item: 'https://fizikhub.com/blog',
+            },
+            {
+                '@type': 'ListItem',
+                position: 3,
+                name: article.title,
+                item: `https://fizikhub.com/blog/${article.slug}`,
+            },
+        ],
+    };
+
     return (
         <>
             <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
             />
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
+            />
             <ReadingProgress />
 
-            <div className="min-h-screen bg-background pb-20">
+            <article className="min-h-screen bg-background pb-20">
                 {/* Immersive Hero */}
                 <ArticleHero article={article} readingTime={formattedReadingTime} />
 
@@ -221,7 +254,7 @@ export default async function BlogPage({ params }: PageProps) {
                     userAvatar={user ? (profiles?.find(p => p.id === user.id)?.avatar_url) : undefined}
                     relatedArticles={relatedArticles || []}
                 />
-            </div>
+            </article>
         </>
     );
 }

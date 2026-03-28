@@ -175,7 +175,7 @@ export function ArticleReader({
                     isZenMode ? "max-w-3xl" : "max-w-4xl px-4 py-10"
                 )}>
                     {/* Article Content */}
-                    <article>
+                    <div className="article-body-wrapper block">
                         {/* Zen Mode Title */}
                         {isZenMode && (
                             <div className="mb-10 text-center">
@@ -459,7 +459,7 @@ export function ArticleReader({
                                 </div>
                             </div>
                         )}
-                    </article>
+                    </div>
                 </div>
             </div>
 
