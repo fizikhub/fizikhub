@@ -9,9 +9,10 @@ import { ViewTransitionLink } from "@/components/ui/view-transition-link";
 import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
-import { PhysicsFactModal } from "@/components/ui/physics-fact-modal";
+import dynamic from "next/dynamic";
 
-import { CommandPalette } from "@/components/ui/command-palette";
+const PhysicsFactModal = dynamic(() => import("@/components/ui/physics-fact-modal").then(mod => mod.PhysicsFactModal), { ssr: false });
+const CommandPalette = dynamic(() => import("@/components/ui/command-palette").then(mod => mod.CommandPalette), { ssr: false });
 
 const menuItems = [
     { href: '/', label: 'Ana Sayfa', icon: Home },

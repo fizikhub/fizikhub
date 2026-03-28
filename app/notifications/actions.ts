@@ -16,7 +16,7 @@ export async function getNotifications() {
         // 1. Fetch notifications without the join first
         const { data: notifications, error } = await supabase
             .from('notifications')
-            .select('*')
+            .select('id, type, actor_id, resource_id, resource_type, content, is_read, created_at')
             .eq('recipient_id', user.id)
             .order('created_at', { ascending: false })
             .limit(20);
