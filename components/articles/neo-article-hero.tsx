@@ -25,23 +25,14 @@ export function NeoArticleHero({ article, readingTime }: NeoArticleHeroProps) {
 
             <div className="container max-w-4xl mx-auto px-4 pt-6 sm:pt-12">
 
-                {/* 1. TOP BAR: Back & Category */}
+                {/* 1. TOP BAR: Back Button Only */}
                 <div className="flex items-center justify-between mb-6 sm:mb-10">
                     <Link prefetch={false} href="/makale" className="group flex items-center gap-2 sm:gap-3 text-xs sm:text-sm font-black uppercase tracking-widest text-foreground hover:-translate-y-1 transition-transform active:translate-y-0">
                         <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl border-[2.5px] border-black dark:border-zinc-600 bg-white dark:bg-zinc-800 shadow-[2px_2px_0px_0px_#000] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.08)] group-hover:shadow-[3px_3px_0px_0px_#000] group-hover:bg-[#FFC800] group-hover:text-black flex items-center justify-center transition-all">
                             <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 stroke-[3px]" />
                         </div>
-                        <span className="hidden sm:inline group-hover:text-[#FFC800] transition-colors">Arşive Dön</span>
+                        <span className="hidden sm:inline group-hover:text-[#FFC800] transition-colors">Geri Dön</span>
                     </Link>
-
-                    {article.category && (
-                        <div className="px-3 py-1 sm:px-4 sm:py-1.5 bg-[#23A9FA] border-[2.5px] border-black shadow-[2px_2px_0px_0px_#000] sm:shadow-[3px_3px_0px_0px_#000] transform rotate-2 hover:rotate-0 transition-transform cursor-default">
-                            <span className="text-[10px] sm:text-xs font-black uppercase text-white tracking-widest flex items-center gap-1.5">
-                                <Tag className="w-3 h-3 sm:w-4 sm:h-4 stroke-[3px]" />
-                                {article.category}
-                            </span>
-                        </div>
-                    )}
                 </div>
 
                 {/* 2. HERO IMAGE — Neo Brutalist Frame */}
@@ -58,58 +49,60 @@ export function NeoArticleHero({ article, readingTime }: NeoArticleHeroProps) {
                     </div>
                 )}
 
-                {/* 3. TITLE — Massive Neo Brutalist */}
+                {/* 3. CATEGORY + TITLE + META — Clean Premium Layout */}
                 <div className="mb-6 sm:mb-10 relative z-10">
-                    <h1 className="text-2xl sm:text-4xl lg:text-5xl font-black text-foreground leading-[1.1] tracking-tighter uppercase mb-5 sm:mb-8 max-w-3xl selection:bg-[#FFC800] selection:text-black">
+
+                    {/* Category Badge — Neo Brutalist */}
+                    {article.category && (
+                        <div className="mb-4 sm:mb-6">
+                            <span className="inline-flex items-center gap-1.5 px-3 py-1 sm:px-4 sm:py-1.5 bg-[#FFC800] text-black text-[10px] sm:text-xs font-black uppercase tracking-[0.15em] border-[2.5px] border-black shadow-[3px_3px_0px_0px_#000] hover:shadow-[1px_1px_0px_0px_#000] hover:translate-x-[2px] hover:translate-y-[2px] transition-all cursor-default select-none">
+                                <Tag className="w-3 h-3 sm:w-3.5 sm:h-3.5 stroke-[3px]" />
+                                {article.category}
+                            </span>
+                        </div>
+                    )}
+
+                    {/* Title */}
+                    <h1 className="text-2xl sm:text-4xl lg:text-5xl font-black text-foreground leading-[1.1] tracking-tighter mb-6 sm:mb-8 max-w-3xl selection:bg-[#FFC800] selection:text-black">
                         {article.title}
                     </h1>
 
-                    {/* 4. META BAR — Neo Card */}
-                    <div className="flex flex-col sm:flex-row sm:inline-flex sm:flex-wrap sm:items-center gap-3 sm:gap-5 bg-white dark:bg-[#27272a] border-[3px] border-black dark:border-zinc-700 p-3 sm:p-4 rounded-lg sm:rounded-xl shadow-[4px_4px_0px_0px_#000] dark:shadow-[3px_3px_0px_0px_rgba(0,0,0,0.5)]">
+                    {/* 4. META BAR — Compact Inline Layout */}
+                    <div className="flex flex-wrap items-center gap-3 sm:gap-4">
                         {/* Author */}
-                        <div className="flex items-center gap-3 pb-3 sm:pb-0 sm:pr-5 border-b-[2px] sm:border-b-0 sm:border-r-2 border-dashed border-black/15 dark:border-white/10">
-                            <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-lg border-[2.5px] border-black dark:border-zinc-600 overflow-hidden shadow-[2px_2px_0px_0px_#000] dark:shadow-[1px_1px_0px_0px_rgba(255,255,255,0.1)] bg-zinc-100 flex-shrink-0">
+                        <Link
+                            prefetch={false}
+                            href={`/kullanici/${article.author?.username || 'anonim'}`}
+                            className="flex items-center gap-2.5 group/author"
+                        >
+                            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full border-[2.5px] border-black dark:border-zinc-600 overflow-hidden shadow-[2px_2px_0px_0px_#000] dark:shadow-[1px_1px_0px_0px_rgba(255,255,255,0.1)] bg-zinc-100 flex-shrink-0 group-hover/author:shadow-[3px_3px_0px_0px_#FFC800] transition-shadow">
                                 <Image
                                     src={authorAvatar}
                                     alt={authorName}
-                                    width={44}
-                                    height={44}
+                                    width={40}
+                                    height={40}
                                     className="object-cover w-full h-full"
                                 />
                             </div>
-                            <div className="flex flex-col text-left">
-                                <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Yazar</span>
-                                <span className="text-sm font-black text-foreground leading-none mt-0.5">{authorName}</span>
-                            </div>
+                            <span className="text-sm sm:text-base font-black text-foreground group-hover/author:text-[#FFC800] transition-colors">{authorName}</span>
+                        </Link>
+
+                        {/* Dot */}
+                        <span className="text-zinc-400 dark:text-zinc-600 text-lg font-black select-none">·</span>
+
+                        {/* Date */}
+                        <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                            <Calendar className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.5px]" />
+                            <span className="font-bold">{format(new Date(article.created_at), "d MMM yyyy", { locale: tr })}</span>
                         </div>
 
-                        {/* Date & Time row on mobile */}
-                        <div className="flex items-center gap-4 sm:gap-5">
-                            {/* Date */}
-                            <div className="flex items-center gap-2">
-                                <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-md sm:rounded-lg bg-[#FFC800] border-[2px] border-black flex items-center justify-center flex-shrink-0">
-                                    <Calendar className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[3px] text-black" />
-                                </div>
-                                <div className="flex flex-col text-left">
-                                    <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-muted-foreground">Tarih</span>
-                                    <span className="text-xs sm:text-sm font-bold text-foreground">{format(new Date(article.created_at), "d MMM yyyy", { locale: tr })}</span>
-                                </div>
-                            </div>
+                        {/* Dot */}
+                        <span className="text-zinc-400 dark:text-zinc-600 text-lg font-black select-none">·</span>
 
-                            {/* Divider */}
-                            <div className="w-px h-8 bg-black/10 dark:bg-white/10 sm:hidden" />
-                            <div className="hidden sm:block w-px h-10 border-r-2 border-dashed border-black/15 dark:border-white/10" />
-
-                            {/* Read Time */}
-                            <div className="flex items-center gap-2">
-                                <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-md sm:rounded-lg bg-neo-pink border-[2px] border-black flex items-center justify-center flex-shrink-0">
-                                    <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[3px] text-white" />
-                                </div>
-                                <div className="flex flex-col text-left">
-                                    <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-muted-foreground">Süre</span>
-                                    <span className="text-xs sm:text-sm font-bold text-foreground">{readingTime}</span>
-                                </div>
-                            </div>
+                        {/* Read Time */}
+                        <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                            <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.5px]" />
+                            <span className="font-bold">{readingTime}</span>
                         </div>
                     </div>
                 </div>

@@ -15,6 +15,7 @@ import { ReportButton } from "@/components/report-button";
 import { ShareButtons } from "@/components/blog/share-buttons";
 import { RelatedArticles } from "@/components/blog/related-articles";
 import { CommentSection } from "@/components/articles/comment-section";
+import { TTSReader } from "@/components/articles/tts-reader";
 
 interface ArticleReaderProps {
     article: any;
@@ -175,6 +176,16 @@ export function ArticleReader({
                         {/* Footer Section */}
                         {!isZenMode && (
                             <div className="mt-12 space-y-12 sm:space-y-16">
+                                {/* Listen to Article — Bottom CTA */}
+                                {article.content && (
+                                    <div className="flex justify-center">
+                                        <div className="bg-white dark:bg-zinc-900 border-[3px] border-black dark:border-zinc-700 rounded-xl p-4 sm:p-6 shadow-[4px_4px_0px_0px_#000] dark:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.4)] w-full max-w-md text-center space-y-3">
+                                            <p className="text-xs font-black uppercase tracking-widest text-muted-foreground">Yazıyı dinlemeyi tercih eder misin?</p>
+                                            <TTSReader title={article.title} content={article.content} />
+                                        </div>
+                                    </div>
+                                )}
+
                                 {/* Author */}
                                 <div className="border-t-[3px] border-dashed border-black/10 dark:border-white/10 pt-10 sm:pt-12">
                                     <AuthorCard author={article.author || {}} />

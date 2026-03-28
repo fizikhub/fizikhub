@@ -1,13 +1,13 @@
 "use client";
 
 import Image from "next/image";
-import { Clock, Calendar, ArrowLeft, User, Ear } from "lucide-react";
+import { Clock, Calendar, ArrowLeft, User } from "lucide-react";
 import { format } from "date-fns";
 import { tr } from "date-fns/locale";
 import { Article } from "@/lib/api";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { TTSReader } from "@/components/articles/tts-reader";
+import { Tag } from "lucide-react";
 
 interface ArticleHeroProps {
     article: Article;
@@ -136,12 +136,7 @@ export function ArticleHero({ article, readingTime }: ArticleHeroProps) {
                                 </div>
                             </div>
 
-                            {/* Read Aloud Button */}
-                            {article.content && (
-                                <div className="pt-2 sm:pt-4">
-                                    <TTSReader title={bookTitle} content={article.content} />
-                                </div>
-                            )}
+
                         </div>
                     </div>
                 </div>
@@ -169,9 +164,10 @@ export function ArticleHero({ article, readingTime }: ArticleHeroProps) {
 
                     {/* Article Header */}
                     <div className="container max-w-4xl mx-auto px-4 mt-8">
-                        {/* Category */}
+                        {/* Category — Neo Brutalist */}
                         <div className="mb-4">
-                            <span className="inline-block px-3 py-1 text-xs font-semibold uppercase tracking-wider text-primary bg-primary/10 rounded-full">
+                            <span className="inline-flex items-center gap-1.5 px-3 py-1 sm:px-4 sm:py-1.5 bg-[#FFC800] text-black text-[10px] sm:text-xs font-black uppercase tracking-[0.15em] border-[2.5px] border-black shadow-[3px_3px_0px_0px_#000] hover:shadow-[1px_1px_0px_0px_#000] hover:translate-x-[2px] hover:translate-y-[2px] transition-all cursor-default select-none">
+                                <Tag className="w-3 h-3 sm:w-3.5 sm:h-3.5 stroke-[3px]" />
                                 {article.category || "Genel"}
                             </span>
                         </div>
@@ -224,15 +220,10 @@ export function ArticleHero({ article, readingTime }: ArticleHeroProps) {
                             <span className="text-muted-foreground">•</span>
 
                             {/* Reading Time */}
-                            <div className="flex items-center gap-2 text-sm text-muted-foreground mr-2">
+                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
                                 <Clock className="w-4 h-4" />
                                 <span>{readingTime}</span>
                             </div>
-
-                            {/* Read Aloud Button */}
-                            {article.content && (
-                                <TTSReader title={article.title} content={article.content} />
-                            )}
                         </div>
                     </div>
                 </>
