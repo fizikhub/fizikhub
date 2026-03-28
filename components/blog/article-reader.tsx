@@ -97,6 +97,8 @@ export function ArticleReader({
         const container = contentRef.current;
         if (!container) return;
 
+        let cleanupFns: (() => void)[] = [];
+
         const timeout = setTimeout(() => {
             const codeBlocks = container.querySelectorAll('pre');
             codeBlocks.forEach((pre) => {
@@ -112,7 +114,8 @@ export function ArticleReader({
                 const btn = document.createElement('button');
                 btn.className = 'code-copy-btn';
                 btn.textContent = 'Kopyala';
-                btn.addEventListener('click', () => {
+                
+                const handleClick = () => {
                     const code = pre.querySelector('code');
                     const text = code?.textContent || pre.textContent || '';
                     navigator.clipboard.writeText(text).then(() => {
@@ -123,12 +126,28 @@ export function ArticleReader({
                             btn.classList.remove('copied');
                         }, 2000);
                     });
-                });
+                };
+
+                btn.addEventListener('click', handleClick);
                 wrapper.appendChild(btn);
+
+                // Register cleanup to prevent detached DOM memory leaks
+                cleanupFns.push(() => {
+                    btn.removeEventListener('click', handleClick);
+                    btn.remove();
+                    // Optional: revert wrapper
+                    if (wrapper.parentNode) {
+                        wrapper.parentNode.insertBefore(pre, wrapper);
+                        wrapper.remove();
+                    }
+                });
             });
         }, 500);
 
-        return () => clearTimeout(timeout);
+        return () => {
+            clearTimeout(timeout);
+            cleanupFns.forEach(fn => fn());
+        };
     }, [article.content]);
 
     // Lightbox close on Escape
