@@ -85,10 +85,10 @@ export function ArticleReader({
                             "prose prose-base sm:prose-lg dark:prose-invert max-w-none mb-12 sm:mb-20 overflow-x-hidden",
                             // Headings
                             "prose-headings:font-black prose-headings:tracking-tighter prose-headings:text-foreground",
-                            "prose-h1:text-2xl sm:prose-h1:text-4xl md:prose-h1:text-5xl prose-h1:mb-6 sm:prose-h1:mb-10 prose-h1:leading-[1.15]",
-                            "prose-h2:text-xl sm:prose-h2:text-3xl md:prose-h2:text-4xl prose-h2:mt-10 sm:prose-h2:mt-16 prose-h2:mb-5 prose-h2:border-l-[6px] sm:prose-h2:border-l-[8px] prose-h2:border-[#FFC800] prose-h2:pl-4 sm:prose-h2:pl-5 prose-h2:leading-[1.2]",
-                            "prose-h3:text-lg sm:prose-h3:text-2xl md:prose-h3:text-3xl prose-h3:mt-8 sm:prose-h3:mt-12 prose-h3:mb-4 prose-h3:font-bold prose-h3:border-l-[4px] sm:prose-h3:border-l-[6px] prose-h3:border-[#23A9FA] prose-h3:pl-3 sm:prose-h3:pl-4 prose-h3:leading-[1.2]",
-                            "prose-h4:text-base sm:prose-h4:text-xl prose-h4:mt-6 prose-h4:mb-3 prose-h4:font-black prose-h4:text-foreground",
+                            "prose-h1:text-2xl sm:prose-h1:text-4xl md:prose-h1:text-5xl prose-h1:!mb-8 sm:prose-h1:!mb-12 prose-h1:leading-[1.15]",
+                            "prose-h2:text-xl sm:prose-h2:text-3xl md:prose-h2:text-4xl prose-h2:mt-10 sm:prose-h2:mt-16 prose-h2:!mb-6 sm:prose-h2:!mb-8 prose-h2:border-l-[6px] sm:prose-h2:border-l-[8px] prose-h2:border-[#FFC800] prose-h2:pl-4 sm:prose-h2:pl-5 prose-h2:leading-[1.2]",
+                            "prose-h3:text-lg sm:prose-h3:text-2xl md:prose-h3:text-3xl prose-h3:mt-8 sm:prose-h3:mt-12 prose-h3:!mb-5 sm:prose-h3:!mb-6 prose-h3:font-bold prose-h3:border-l-[4px] sm:prose-h3:border-l-[6px] prose-h3:border-[#23A9FA] prose-h3:pl-3 sm:prose-h3:pl-4 prose-h3:leading-[1.2]",
+                            "prose-h4:text-base sm:prose-h4:text-xl prose-h4:mt-6 prose-h4:!mb-4 prose-h4:font-black prose-h4:text-foreground",
                             // Paragraphs & Text — optimized for mobile readability
                             "prose-p:text-[15px] sm:prose-p:text-[17px] md:prose-p:text-[18px] prose-p:text-zinc-800 dark:prose-p:text-zinc-300 prose-p:leading-[1.8] sm:prose-p:leading-[1.85] prose-p:mb-6 sm:prose-p:mb-8 prose-p:font-[450]",
                             "prose-strong:text-black dark:prose-strong:text-white prose-strong:font-black prose-strong:bg-[#FFC800]/20 dark:prose-strong:bg-[#23A9FA]/20 prose-strong:px-1 prose-strong:rounded-sm",

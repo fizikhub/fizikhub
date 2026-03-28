@@ -161,16 +161,16 @@
         font-size: 1.05em;
     }
 
-    /* Mobile KaTeX: smaller font to prevent overflow */
+    /* Mobile KaTeX: Make font size legible on mobile */
     @media (max-width: 640px) {
         .prose .katex {
-            font-size: 0.85em;
+            font-size: 1.15em;
         }
 
         .prose .katex-display,
         .prose .math-display {
-            margin: 0.75em 0;
-            padding: 0.5em 0;
+            margin: 1.25em 0;
+            padding: 0.75em 0;
             max-width: calc(100vw - 2rem);
         }
 
