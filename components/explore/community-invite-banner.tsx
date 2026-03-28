@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 
 export function CommunityInviteBanner() {
     return (
-        <div className="group relative overflow-hidden rounded-2xl border-[3px] border-black bg-black min-h-[120px] shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-y-[-2px] transition-all duration-300">
+        <div className="group relative overflow-hidden rounded-2xl border-2 sm:border-[3px] border-black bg-black min-h-[100px] sm:min-h-[120px] shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] sm:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-y-[-2px] transition-all duration-300">
 
             {/* HOLOGRAPHIC BACKGROUND */}
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,#86efac_10%,#3b82f6_50%,#000_90%)] opacity-80 group-hover:opacity-100 transition-opacity duration-500" />

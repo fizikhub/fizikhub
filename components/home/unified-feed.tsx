@@ -40,8 +40,8 @@ interface UnifiedFeedProps {
 
 export function UnifiedFeed({ items, suggestedUsers = [] }: UnifiedFeedProps) {
     return (
-        <div className="flex flex-col gap-3 sm:gap-6">
-            <div className="flex flex-col gap-5 sm:gap-6">
+        <div className="flex flex-col gap-4 sm:gap-6">
+            <div className="flex flex-col gap-4 sm:gap-6">
                 {items.map((item, index) => (
                     <div
                         key={`${item.type}-${item.data.id}`}
