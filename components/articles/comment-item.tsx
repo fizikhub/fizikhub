@@ -59,34 +59,36 @@ export function CommentItem({ comment, allComments, isAdmin, onReply }: CommentI
 
     return (
         <div className="group">
-            <div className="flex gap-3">
-                <Avatar className="h-8 w-8">
+            <div className="flex gap-3 sm:gap-4">
+                <Avatar className="h-10 w-10 sm:h-12 sm:w-12 border-2 border-black dark:border-zinc-700 shadow-[2px_2px_0px_0px_#000] dark:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.5)]">
                     <AvatarImage src={comment.profiles.avatar_url || ""} />
-                    <AvatarFallback className="text-xs">
+                    <AvatarFallback className="text-sm font-black bg-yellow-400 text-black">
                         {comment.profiles.full_name?.[0] || comment.profiles.username[0].toUpperCase()}
                     </AvatarFallback>
                 </Avatar>
 
-                <div className="flex-1 space-y-1">
-                    <div className="flex items-center gap-2">
-                        <span className="font-medium text-sm">
+                <div className="flex-1 space-y-1.5">
+                    <div className="flex items-center gap-2 flex-wrap">
+                        <span className="font-black text-base sm:text-lg tracking-tight text-foreground">
                             {comment.profiles.full_name || comment.profiles.username}
                         </span>
-                        <span className="text-xs text-muted-foreground">
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground px-2 py-0.5 bg-zinc-100 dark:bg-zinc-800 rounded-md border border-black/10 dark:border-white/10">
                             {formatDistanceToNow(new Date(comment.created_at), { addSuffix: true, locale: tr })}
                         </span>
                     </div>
 
-                    <p className="text-sm">{comment.content}</p>
+                    <p className="text-base font-medium leading-relaxed text-foreground sm:text-lg">
+                        {comment.content}
+                    </p>
 
-                    <div className="flex items-center gap-4 pt-1">
+                    <div className="flex items-center gap-4 pt-2">
                         <Button
                             variant="ghost"
                             size="sm"
                             onClick={() => onReply(comment.id)}
-                            className="h-auto p-0 text-xs text-muted-foreground hover:text-foreground"
+                            className="h-auto p-1 px-2 -ml-2 text-xs font-black uppercase tracking-widest text-muted-foreground hover:text-[#FFC800] hover:bg-[#FFC800]/10 transition-colors"
                         >
-                            <Reply className="h-3 w-3 mr-1" />
+                            <Reply className="h-4 w-4 mr-1.5 stroke-[3px]" />
                             Yanıtla
                         </Button>
 
@@ -96,9 +98,9 @@ export function CommentItem({ comment, allComments, isAdmin, onReply }: CommentI
                                 size="sm"
                                 onClick={handleDelete}
                                 disabled={isDeleting}
-                                className="h-auto p-0 text-xs text-muted-foreground hover:text-destructive opacity-0 group-hover:opacity-100 transition-opacity"
+                                className="h-auto p-1 px-2 text-xs font-black uppercase tracking-widest text-muted-foreground hover:bg-red-50 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all rounded-md"
                             >
-                                <Trash2 className="h-3 w-3 mr-1" />
+                                <Trash2 className="h-4 w-4 mr-1.5 stroke-[3px]" />
                                 {isDeleting ? "Siliniyor..." : "Sil"}
                             </Button>
                         )}
@@ -106,7 +108,7 @@ export function CommentItem({ comment, allComments, isAdmin, onReply }: CommentI
 
                     {/* Nested replies */}
                     {replies && replies.length > 0 && (
-                        <div className="mt-3 ml-6 space-y-3 border-l-2 border-border pl-3">
+                        <div className="mt-4 ml-2 sm:ml-4 pl-4 sm:pl-6 space-y-5 border-l-[3px] border-black/10 dark:border-white/10">
                             {visibleReplies.map((reply) => (
                                 <CommentItem
                                     key={reply.id}
@@ -119,12 +121,11 @@ export function CommentItem({ comment, allComments, isAdmin, onReply }: CommentI
 
                             {hiddenReplyCount > 0 && (
                                 <Button
-                                    variant="link"
+                                    variant="outline"
                                     size="sm"
                                     onClick={() => setShowAllReplies(true)}
-                                    className="h-auto p-0 text-xs font-semibold text-primary hover:text-primary/80 flex items-center gap-1 mt-2"
+                                    className="mt-2 h-8 px-4 text-xs font-black uppercase tracking-widest border-2 border-black/20 dark:border-white/20 hover:border-black dark:hover:border-white transition-colors rounded-lg"
                                 >
-                                    <div className="w-4 h-[1px] bg-primary/50"></div>
                                     Diğer {hiddenReplyCount} yanıtı gör
                                 </Button>
                             )}

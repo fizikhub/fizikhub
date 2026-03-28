@@ -362,7 +362,7 @@ export function ArticleReader({
 
                         {/* Footer Section */}
                         {!isZenMode && (
-                            <div className="mt-12 space-y-12 sm:space-y-16">
+                            <div className="mt-12 space-y-12 sm:space-y-16 pb-32 sm:pb-40">
                                 {/* Listen to Article — Bottom CTA */}
                                 {article.content && (
                                     <div className="flex justify-center">
@@ -375,6 +375,10 @@ export function ArticleReader({
 
                                 {/* Author */}
                                 <div className="border-t-[3px] border-dashed border-black/10 dark:border-white/10 pt-10 sm:pt-12">
+                                    <div className="flex items-center gap-3 mb-8">
+                                        <div className="w-2 h-8 bg-[#FFC800]" />
+                                        <h3 className="text-2xl font-black text-foreground uppercase tracking-tight">Yazar</h3>
+                                    </div>
                                     <AuthorCard author={article.author || {}} />
                                 </div>
 
