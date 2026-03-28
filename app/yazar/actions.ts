@@ -164,9 +164,18 @@ export async function updateArticle(articleId: number, formData: FormData) {
     const isAdmin = profile?.role === "admin" || profile?.username === "baranbozkurt";
 
     // Use admin client (bypasses RLS) when admin is editing someone else's article
-    const writeClient = isAdmin ? (await import("@/lib/supabase-admin")).createAdminClient() : supabase;
+    let writeClient = supabase;
+    if (isAdmin) {
+        try {
+            const { createAdminClient } = await import("@/lib/supabase-admin");
+            writeClient = createAdminClient();
+        } catch (adminErr) {
+            console.error("[updateArticle] Admin client creation failed:", adminErr);
+            return { success: false, error: "Admin istemcisi oluşturulamadı. SUPABASE_SERVICE_ROLE_KEY ortam değişkenini kontrol edin." };
+        }
+    }
 
-    const { error } = await writeClient
+    const { error, count } = await writeClient
         .from("articles")
         .update({
             title,
@@ -180,8 +189,8 @@ export async function updateArticle(articleId: number, formData: FormData) {
         .eq("id", articleId);
 
     if (error) {
-        console.error("Error updating article:", error);
-        return { success: false, error: "Makale güncellenirken bir hata oluştu." };
+        console.error("[updateArticle] Supabase error:", JSON.stringify(error));
+        return { success: false, error: `Makale güncellenirken hata: ${error.message}` };
     }
 
     // Yazar yazıyı düzenlediği için tüm onayları sıfırla
