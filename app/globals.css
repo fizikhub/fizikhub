@@ -240,6 +240,243 @@
         color: #FFC800; /* Keep yellow in dark mode too — brand consistency */
         text-shadow: 2px 2px 0px rgba(0,0,0,0.5);
     }
+
+    /* ============================================
+       PREMIUM BLOCKQUOTE — Decorative Quote Mark
+       ============================================ */
+    .prose blockquote {
+        position: relative;
+    }
+    .prose blockquote::before {
+        content: '"';
+        position: absolute;
+        top: -0.3em;
+        left: 0.15em;
+        font-size: 5rem;
+        line-height: 1;
+        font-family: Georgia, "Times New Roman", serif;
+        font-weight: 900;
+        color: #FFC800;
+        opacity: 0.25;
+        pointer-events: none;
+        z-index: 0;
+    }
+    .dark .prose blockquote::before {
+        color: #23A9FA;
+        opacity: 0.2;
+    }
+
+    /* ============================================
+       CODE BLOCK COPY BUTTON (injected by JS)
+       ============================================ */
+    .code-block-wrapper {
+        position: relative;
+    }
+    .code-copy-btn {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        z-index: 10;
+        padding: 6px 10px;
+        font-size: 11px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: #fff;
+        background: rgba(0,0,0,0.6);
+        border: 2px solid rgba(255,255,255,0.15);
+        border-radius: 6px;
+        cursor: pointer;
+        opacity: 0;
+        transition: opacity 0.2s, background 0.2s, transform 0.15s;
+        backdrop-filter: blur(4px);
+    }
+    .code-block-wrapper:hover .code-copy-btn,
+    .code-copy-btn:focus {
+        opacity: 1;
+    }
+    .code-copy-btn:hover {
+        background: #FFC800;
+        color: #000;
+        border-color: #000;
+        transform: translateY(-1px);
+    }
+    .code-copy-btn.copied {
+        background: #10B981 !important;
+        color: #fff !important;
+        border-color: #059669 !important;
+        opacity: 1;
+    }
+
+    /* ============================================
+       SCROLL REVEAL — Content sections fade in
+       ============================================ */
+    .article-content > * {
+        animation: articleReveal 0.5s ease-out both;
+    }
+    @keyframes articleReveal {
+        from {
+            opacity: 0;
+            transform: translateY(12px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Stagger delay for first few elements */
+    .article-content > *:nth-child(1) { animation-delay: 0s; }
+    .article-content > *:nth-child(2) { animation-delay: 0.05s; }
+    .article-content > *:nth-child(3) { animation-delay: 0.1s; }
+    .article-content > *:nth-child(4) { animation-delay: 0.15s; }
+    .article-content > *:nth-child(5) { animation-delay: 0.2s; }
+
+    /* ============================================
+       IMAGE CAPTIONS — Neo-Brutalist Style
+       ============================================ */
+    .prose figure {
+        margin: 2em 0 !important;
+    }
+    .prose figcaption {
+        text-align: center;
+        font-size: 0.8em;
+        font-weight: 700;
+        color: hsl(var(--muted-foreground));
+        margin-top: 0.75em;
+        font-style: italic;
+        letter-spacing: 0.02em;
+    }
+
+    /* ============================================
+       SCROLL-TO-TOP BUTTON (in article reader)
+       ============================================ */
+    .scroll-to-top-btn {
+        position: fixed;
+        bottom: 90px;
+        right: 20px;
+        z-index: 45;
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        border: 3px solid #000;
+        background: #FFC800;
+        color: #000;
+        box-shadow: 3px 3px 0px 0px #000;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: transform 0.2s, box-shadow 0.2s, opacity 0.3s;
+        opacity: 0;
+        pointer-events: none;
+    }
+    .scroll-to-top-btn.visible {
+        opacity: 1;
+        pointer-events: auto;
+    }
+    .scroll-to-top-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 4px 4px 0px 0px #000;
+    }
+    .scroll-to-top-btn:active {
+        transform: translateY(2px);
+        box-shadow: 1px 1px 0px 0px #000;
+    }
+    .dark .scroll-to-top-btn {
+        background: #23A9FA;
+        border-color: rgba(255,255,255,0.2);
+        box-shadow: 3px 3px 0px 0px rgba(0,0,0,0.3);
+        color: #fff;
+    }
+
+    /* ============================================
+       IMAGE LIGHTBOX OVERLAY
+       ============================================ */
+    .image-lightbox {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        background: rgba(0,0,0,0.9);
+        backdrop-filter: blur(12px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: zoom-out;
+        animation: lightboxFadeIn 0.25s ease-out;
+        padding: 2rem;
+    }
+    .image-lightbox img {
+        max-width: 95vw;
+        max-height: 90vh;
+        object-fit: contain;
+        border-radius: 12px;
+        border: 3px solid rgba(255,255,255,0.15);
+        box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+    }
+    .image-lightbox-close {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        width: 44px;
+        height: 44px;
+        background: rgba(255,255,255,0.1);
+        border: 2px solid rgba(255,255,255,0.2);
+        border-radius: 50%;
+        color: white;
+        font-size: 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+    .image-lightbox-close:hover {
+        background: rgba(255,255,255,0.25);
+    }
+    @keyframes lightboxFadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    /* Make prose images clickable for lightbox */
+    .prose img {
+        cursor: zoom-in;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .prose img:hover {
+        transform: scale(1.01);
+    }
+
+    /* ============================================
+       READING TIME REMAINING PILL
+       ============================================ */
+    .reading-time-pill {
+        position: fixed;
+        top: 12px;
+        right: 16px;
+        z-index: 101;
+        padding: 4px 12px;
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 0.05em;
+        background: rgba(0,0,0,0.75);
+        color: #fff;
+        border-radius: 999px;
+        backdrop-filter: blur(8px);
+        opacity: 0;
+        transform: translateY(-8px);
+        transition: opacity 0.3s, transform 0.3s;
+        pointer-events: none;
+    }
+    .reading-time-pill.visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    .dark .reading-time-pill {
+        background: rgba(255,255,255,0.12);
+        color: #e5e5e5;
+    }
 }
 
 @layer utilities {}

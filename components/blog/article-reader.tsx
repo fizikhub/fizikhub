@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { ReadingControls } from "./reading-controls";
 import dynamic from "next/dynamic";
 const MarkdownRenderer = dynamic(() => import("@/components/markdown-renderer").then(mod => mod.MarkdownRenderer), {
@@ -16,6 +16,7 @@ import { ShareButtons } from "@/components/blog/share-buttons";
 import { RelatedArticles } from "@/components/blog/related-articles";
 import { CommentSection } from "@/components/articles/comment-section";
 import { TTSReader } from "@/components/articles/tts-reader";
+import { ArrowUp, X } from "lucide-react";
 
 interface ArticleReaderProps {
     article: any;
@@ -48,6 +49,13 @@ export function ArticleReader({
     const [fontSize, setFontSize] = useState<'sm' | 'base' | 'lg' | 'xl'>('base');
     const [fontFamily, setFontFamily] = useState<'sans' | 'serif'>('sans');
     const [scrollProgress, setScrollProgress] = useState(0);
+    const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
+    const contentRef = useRef<HTMLDivElement>(null);
+
+    // Parse total reading time from the "X dk" string
+    const totalMinutes = parseInt(readingTime) || 5;
+    const minutesRemaining = Math.max(1, Math.ceil(totalMinutes * (1 - scrollProgress / 100)));
+    const showTimeRemaining = scrollProgress > 5 && scrollProgress < 95;
 
     useEffect(() => {
         const handleScroll = () => {
@@ -62,8 +70,78 @@ export function ArticleReader({
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
+    // Image lightbox: intercept clicks on article images
+    useEffect(() => {
+        const container = contentRef.current;
+        if (!container) return;
+
+        const handleImageClick = (e: Event) => {
+            const target = e.target as HTMLElement;
+            if (target.tagName === 'IMG' && target.closest('.prose')) {
+                e.preventDefault();
+                setLightboxSrc((target as HTMLImageElement).src);
+            }
+        };
+
+        container.addEventListener('click', handleImageClick);
+        return () => container.removeEventListener('click', handleImageClick);
+    }, []);
+
+    // Code block copy buttons: inject after render
+    useEffect(() => {
+        const container = contentRef.current;
+        if (!container) return;
+
+        const timeout = setTimeout(() => {
+            const codeBlocks = container.querySelectorAll('pre');
+            codeBlocks.forEach((pre) => {
+                if (pre.querySelector('.code-copy-btn')) return;
+                
+                // Wrap in a container
+                const wrapper = document.createElement('div');
+                wrapper.className = 'code-block-wrapper';
+                pre.parentNode?.insertBefore(wrapper, pre);
+                wrapper.appendChild(pre);
+
+                // Create copy button
+                const btn = document.createElement('button');
+                btn.className = 'code-copy-btn';
+                btn.textContent = 'Kopyala';
+                btn.addEventListener('click', () => {
+                    const code = pre.querySelector('code');
+                    const text = code?.textContent || pre.textContent || '';
+                    navigator.clipboard.writeText(text).then(() => {
+                        btn.textContent = '✓ Kopyalandı';
+                        btn.classList.add('copied');
+                        setTimeout(() => {
+                            btn.textContent = 'Kopyala';
+                            btn.classList.remove('copied');
+                        }, 2000);
+                    });
+                });
+                wrapper.appendChild(btn);
+            });
+        }, 500);
+
+        return () => clearTimeout(timeout);
+    }, [article.content]);
+
+    // Lightbox close on Escape
+    useEffect(() => {
+        if (!lightboxSrc) return;
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') setLightboxSrc(null);
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [lightboxSrc]);
+
+    const scrollToTop = useCallback(() => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, []);
+
     return (
-        <div className="relative">
+        <div className="relative" ref={contentRef}>
             {/* Reading Progress Bar */}
             <div className="fixed top-0 left-0 w-full h-1.5 z-[100] bg-zinc-200/50 dark:bg-zinc-800/50 backdrop-blur-sm">
                 <div 
@@ -277,6 +355,31 @@ export function ArticleReader({
                 onFontSizeChange={setFontSize}
                 onFontFamilyChange={setFontFamily}
             />
+
+            {/* Reading Time Remaining Pill */}
+            <div className={cn("reading-time-pill", showTimeRemaining && "visible")}>
+                ~{minutesRemaining} dk kaldı
+            </div>
+
+            {/* Scroll to Top Button */}
+            <button
+                onClick={scrollToTop}
+                className={cn("scroll-to-top-btn", scrollProgress > 30 && "visible")}
+                aria-label="Başa dön"
+            >
+                <ArrowUp className="w-5 h-5 stroke-[3px]" />
+            </button>
+
+            {/* Image Lightbox */}
+            {lightboxSrc && (
+                <div className="image-lightbox" onClick={() => setLightboxSrc(null)}>
+                    <button className="image-lightbox-close" onClick={() => setLightboxSrc(null)}>
+                        <X className="w-5 h-5" />
+                    </button>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={lightboxSrc} alt="Büyütülmüş görsel" onClick={(e) => e.stopPropagation()} />
+                </div>
+            )}
         </div>
     );
 }
