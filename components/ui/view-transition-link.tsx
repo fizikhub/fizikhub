@@ -30,7 +30,7 @@ export function ViewTransitionLink({
 
         e.preventDefault();
 
-        if (!document.startViewTransition) {
+        if (!document.startViewTransition || window.innerWidth < 768) {
             router.push(href);
             return;
         }
