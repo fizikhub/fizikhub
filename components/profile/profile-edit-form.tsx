@@ -58,18 +58,31 @@ export function ProfileEditForm({ user, profile }: ProfileEditFormProps) {
         setIsLoading(true);
 
         try {
+            // Step 1: Upload avatar separately if changed (avoids body size limits)
+            if (avatarFile) {
+                const avatarRes = await uploadAvatar(avatarFile);
+                if (!avatarRes.success) {
+                    toast.error(avatarRes.error || "Avatar yüklenemedi.");
+                    // Continue with rest of profile update even if avatar fails
+                }
+            }
+
+            // Step 2: Upload cover separately if changed
+            if (coverFile) {
+                const coverRes = await uploadCover(coverFile);
+                if (!coverRes.success) {
+                    toast.error(coverRes.error || "Kapak fotoğrafı yüklenemedi.");
+                }
+            }
+
+            // Step 3: Update text fields (lightweight, no File objects)
             const formData = new FormData();
             formData.append("full_name", fullName);
             formData.append("bio", bio);
             formData.append("website", website);
+            formData.append("location", location);
             formData.append("username", username);
-            
-            if (avatarFile) {
-                formData.append("avatar", avatarFile);
-            }
-            if (coverFile) {
-                formData.append("cover", coverFile);
-            }
+            // Don't append files here — they're already uploaded above
 
             const res = await saveProfileChanges(formData);
 

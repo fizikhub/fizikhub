@@ -176,6 +176,7 @@ export async function saveProfileChanges(formData: FormData) {
     const fullName = formData.get("full_name") as string;
     const bio = formData.get("bio") as string;
     const website = formData.get("website") as string;
+    const location = formData.get("location") as string;
     const newUsername = formData.get("username") as string;
     const avatarFile = formData.get("avatar") as File | null;
     const coverFile = formData.get("cover") as File | null;
@@ -187,6 +188,7 @@ export async function saveProfileChanges(formData: FormData) {
         if (fullName !== null) updateData.full_name = fullName;
         if (bio !== null) updateData.bio = bio;
         if (website !== null) updateData.website = website;
+        if (location !== null) updateData.location = location;
 
         // 2. Avatar Upload
         if (avatarFile && avatarFile.size > 0 && avatarFile.name !== 'undefined') {
