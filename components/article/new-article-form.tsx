@@ -14,9 +14,6 @@ import { cn } from "@/lib/utils";
 import { Label } from "@/components/ui/label";
 import { BlogEditor101 } from "@/components/article/blog-editor-101";
 import { WriterManifesto } from "@/components/article/writer-manifesto";
-import { Orbitron } from "next/font/google";
-
-const orbitron = Orbitron({ subsets: ["latin"] });
 
 interface NewArticleFormProps {
     userId: string;

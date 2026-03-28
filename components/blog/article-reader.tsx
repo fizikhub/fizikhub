@@ -254,7 +254,7 @@ export function ArticleReader({
 
                                     {/* Share */}
                                     <div className="flex items-center hover:-translate-y-1 transition-transform">
-                                        <ShareButtons title={article.title} slug={article.slug} />
+                                        <ShareButtons title={article.title} slug={article.slug} variant="minimal" className="gap-1 sm:gap-2" />
                                     </div>
 
                                     <div className="w-[3px] h-8 bg-black/10 dark:bg-zinc-700 rounded-full flex-shrink-0" />
