@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef } from "react";
+import { useMemo, useRef, useState, useEffect } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { EffectComposer, Bloom } from "@react-three/postprocessing";
 import * as THREE from "three";
@@ -360,6 +360,27 @@ function BackgroundStars({ count = 2000 }) {
 }
 
 export default function MemeCornerCanvas() {
+    const [isLowEnd, setIsLowEnd] = useState(false);
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const isMobile = window.innerWidth <= 768;
+        const hardwareConcurrency = navigator.hardwareConcurrency || 4;
+        // @ts-ignore
+        const deviceMemory = navigator.deviceMemory || 4;
+
+        if (prefersReducedMotion || (isMobile && (hardwareConcurrency < 4 || deviceMemory < 4))) {
+            setIsLowEnd(true);
+        }
+    }, []);
+
+    if (!mounted || isLowEnd) {
+        // Return a lightweight empty div maintaining dimensions if necessary, or null.
+        return null; 
+    }
+
     return (
         <Canvas
             camera={{ position: [0, 5, 7], fov: 50 }}

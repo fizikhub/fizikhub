@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useMemo } from "react";
+import { useRef, useMemo, useState, useEffect } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 
@@ -275,14 +275,40 @@ function ShootingStars({ count = 20 }) {
 }
 
 export function StarBackground() {
+  const [isLowEnd, setIsLowEnd] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const isMobile = window.innerWidth <= 768;
+    const hardwareConcurrency = navigator.hardwareConcurrency || 4;
+    // @ts-ignore
+    const deviceMemory = navigator.deviceMemory || 4;
+
+    if (prefersReducedMotion || (isMobile && (hardwareConcurrency < 4 || deviceMemory < 4))) {
+      setIsLowEnd(true);
+    }
+  }, []);
+
+  if (!mounted) {
+    return <div className="fixed inset-0 z-0 bg-[#020205] pointer-events-none" />;
+  }
+
   return (
     <div className="fixed inset-0 z-0 bg-[#020205] pointer-events-none">
-      <Canvas camera={{ position: [0, 0, 5], fov: 60 }}>
-        <fog attach="fog" args={["#020205", 10, 1000]} />
-        <Nebula />
-        <Stars />
-        <ShootingStars />
-      </Canvas>
+      {!isLowEnd && (
+        <Canvas camera={{ position: [0, 0, 5], fov: 60 }}>
+          <fog attach="fog" args={["#020205", 10, 1000]} />
+          <Nebula />
+          <Stars />
+          <ShootingStars />
+        </Canvas>
+      )}
+      {/* CSS fallback background particles for low-end hardware */}
+      {isLowEnd && (
+        <div className="absolute inset-0 w-full h-full opacity-30" style={{ backgroundImage: "radial-gradient(circle at center, #ffffff 1px, transparent 1px)", backgroundSize: "40px 40px" }} />
+      )}
       {/* Visual Depth Overlay */}
       <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/60" />
     </div>

@@ -39,11 +39,11 @@ async function triggerAIReview(supabase: any, articleId: number, title: string, 
     try {
         const references = JSON.parse(referencesJson || "[]");
         const result = await reviewArticleWithAI(title, content, references);
-        
+
         if (result) {
             // Delete existing AI review for this article
             await supabase.from("article_ai_reviews").delete().eq("article_id", articleId);
-            
+
             // Insert new review
             await supabase.from("article_ai_reviews").insert({
                 article_id: articleId,
@@ -74,7 +74,7 @@ export async function createArticle(formData: FormData) {
     const profile = await getAuthorizedProfile(user.id);
 
     if (!profile?.is_writer && profile?.role !== 'author' && profile?.role !== 'admin') {
-        return { success: false, error: "Yazar yetkiniz yok." };
+        return { success: false, error: "Yazar yetkiniz yok. Geldiğin yere geri dön." };
     }
 
 
@@ -89,8 +89,8 @@ export async function createArticle(formData: FormData) {
         return { success: false, error: "Lütfen zorunlu alanları doldurun." };
     }
 
-    // Create slug from title
-    const slug = title
+    // Create base slug from title
+    const baseSlug = title
         .toLowerCase()
         .replace(/ğ/g, "g")
         .replace(/ü/g, "u")
@@ -103,9 +103,30 @@ export async function createArticle(formData: FormData) {
         .replace(/-+/g, "-")
         .trim();
 
+    // Ensure uniqueness without using ugly timestamps (Zero-Risk Pattern)
+    // Only applies to newly created articles.
+    let slug = baseSlug;
+    let counter = 1;
+    let isUnique = false;
+
+    while (!isUnique) {
+        const { data: existing } = await supabase
+            .from("articles")
+            .select("id")
+            .eq("slug", slug)
+            .maybeSingle();
+
+        if (existing) {
+            slug = `${baseSlug}-${counter}`;
+            counter++;
+        } else {
+            isUnique = true;
+        }
+    }
+
     const { data: insertedArticle, error } = await supabase.from("articles").insert({
         title,
-        slug: `${slug}-${Date.now()}`, // Ensure uniqueness
+        slug: slug, // Clean, unique slug without timestamp
         excerpt,
         content,
         category,
@@ -117,7 +138,7 @@ export async function createArticle(formData: FormData) {
 
     if (error || !insertedArticle) {
         console.error("Error creating article:", error);
-        return { success: false, error: "Makale oluşturulurken bir hata oluştu." };
+        return { success: false, error: "Makale oluşturulurken bir hata oluştu. Eyvah eyvah..." };
     }
 
     // Save references
@@ -146,7 +167,7 @@ export async function updateArticle(articleId: number, formData: FormData) {
     const profile = await getAuthorizedProfile(user.id);
 
     if (!profile?.is_writer && profile?.role !== 'author' && profile?.role !== 'admin') {
-        return { success: false, error: "Yazar yetkiniz yok." };
+        return { success: false, error: "Yazar yetkiniz yok. Geldiğin yere geri dön." };
     }
 
 
