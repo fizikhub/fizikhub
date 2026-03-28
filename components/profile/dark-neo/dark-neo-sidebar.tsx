@@ -29,7 +29,7 @@ export function DarkNeoSidebar({ profile, user, stats, userBadges }: DarkNeoSide
             className="space-y-6 lg:sticky lg:top-24"
         >
             {/* ABOUT CARD - Vivid & Soft */}
-            <div className="bg-background border-2 border-black dark:border-zinc-800 p-5 relative shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.5)] rounded-xl overflow-hidden group hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.5)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all">
+            <div className="bg-background border-[1.5px] sm:border-2 border-black dark:border-zinc-800 p-4 sm:p-5 relative shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] sm:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_0px_rgba(0,0,0,0.5)] dark:sm:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.5)] rounded-xl overflow-hidden group hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.5)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all">
                 {/* Yellow Accent Bar */}
                 <div className="absolute top-0 left-0 w-full h-1 bg-[#FFC800] transform scale-x-100 transition-transform" />
 
@@ -63,7 +63,7 @@ export function DarkNeoSidebar({ profile, user, stats, userBadges }: DarkNeoSide
             </div>
 
             {/* BADGES CARD - Vivid Grid */}
-            <div className="bg-background border-2 border-black dark:border-zinc-800 p-5 relative shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.5)] rounded-xl group hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.5)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all">
+            <div className="bg-background border-[1.5px] sm:border-2 border-black dark:border-zinc-800 p-4 sm:p-5 relative shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] sm:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_0px_rgba(0,0,0,0.5)] dark:sm:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.5)] rounded-xl group hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.5)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all">
                 <div className="absolute top-0 left-0 w-full h-1 bg-[#23A9FA] transform scale-x-100 transition-transform" />
 
                 <Link prefetch={false} href="/rozetler" onClick={handleInteract} className="h-[2px] w-full block absolute bottom-0 left-0 hover:bg-[#23A9FA] transition-colors z-20"></Link>
