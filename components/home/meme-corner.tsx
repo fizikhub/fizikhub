@@ -14,11 +14,8 @@ export function MemeCorner() {
 
     useEffect(() => {
         // Defer the heavy 500KB Three.js parsing by 1.5 seconds so hydration finishes instantly.
-        // On mobile (< 768px), we don't load the 3D canvas at all to save battery and boost TTI score.
         const timer = setTimeout(() => {
-            if (window.innerWidth > 768) {
-                setLoad3D(true);
-            }
+            setLoad3D(true);
         }, 1500);
         return () => clearTimeout(timer);
     }, []);
