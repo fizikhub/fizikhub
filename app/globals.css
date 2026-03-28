@@ -221,29 +221,24 @@
         color: #000;
     }
 
-    /* Magazine-style Neo-Brutalist Drop Cap for the very first paragraph of the article */
+    /* Elegant Magazine-style Drop Cap */
     .article-content > p:first-of-type::first-letter {
         float: left;
-        font-size: 3.5rem;
-        line-height: 0.8;
+        font-size: 4rem;
+        line-height: 0.75;
         font-weight: 900;
-        font-family: var(--font-heading, "Inter", sans-serif);
-        margin-right: 0.15em;
-        margin-bottom: 0em;
-        padding: 0.1em 0.12em 0em 0.12em;
-        background-color: #FFC800;
-        color: #000;
-        border: 3px solid #000;
-        box-shadow: 4px 4px 0px 0px #000;
-        border-radius: 4px;
+        font-family: Georgia, "Times New Roman", serif;
+        margin-right: 0.1em;
+        margin-top: 0.05em;
+        padding: 0;
+        color: #FFC800; /* FizikHub Yellow — always */
+        text-shadow: 2px 2px 0px rgba(0,0,0,0.15);
         text-transform: uppercase;
     }
 
     .dark .article-content > p:first-of-type::first-letter {
-        background-color: #23A9FA;
-        color: #000;
-        border-color: #fff;
-        box-shadow: 4px 4px 0px 0px #fff;
+        color: #FFC800; /* Keep yellow in dark mode too — brand consistency */
+        text-shadow: 2px 2px 0px rgba(0,0,0,0.5);
     }
 }
 

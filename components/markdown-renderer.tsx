@@ -53,28 +53,36 @@ export function MarkdownRenderer({
     }, []);
 
     // Preprocess content: convert HTML math nodes to proper LaTeX notation
-    // The editor stores math as <span data-type="math" data-latex="..."></span>
-    // but ReactMarkdown + remarkMath only understands $...$ in markdown
+    // The Tiptap editor stores math as <span data-type="math" data-latex="..."></span>
+    // The tiptap-markdown extension serializes math as $latex$ (always inline)
+    // ReactMarkdown + remarkMath only understands $...$ / $$...$$ in markdown
     const processedContent = useMemo(() => {
         let c = content;
 
-        // Step 1: Convert <span data-type="math" data-latex="..."> to raw LaTeX
-        // If the span is alone on a line (possibly wrapped in <p>), make it block math $$...$$
-        // Otherwise keep it inline $...$
-        c = c.replace(/<p>\s*<span[^>]*data-type="math"[^>]*data-latex="([^"]*)"[^>]*>(?:<\/span>)?\s*<\/p>/gi, (_, latex) => `\n\n$$${latex}$$\n\n`);
-        c = c.replace(/<p>\s*<span[^>]*data-latex="([^"]*)"[^>]*data-type="math"[^>]*>(?:<\/span>)?\s*<\/p>/gi, (_, latex) => `\n\n$$${latex}$$\n\n`);
-        
-        // Remaining inline math spans (not alone on a line)
-        c = c.replace(/<span[^>]*data-type="math"[^>]*data-latex="([^"]*)"[^>]*>(?:<\/span>)?/gi, (_, latex) => `$${latex}$`);
-        c = c.replace(/<span[^>]*data-latex="([^"]*)"[^>]*data-type="math"[^>]*>(?:<\/span>)?/gi, (_, latex) => `$${latex}$`);
-        
-        // Step 2: Auto-promote standalone $...$ on their own line to block $$...$$
+        // Step 0: Normalize — remove zero-width spaces, trim excessive blank lines
+        c = c.replace(/[\u200B\u200C\u200D\uFEFF]/g, '');
+
+        // Step 1: Convert <p> containing ONLY a math span → block math $$...$$
+        c = c.replace(/<p>\s*<span[^>]*data-type="math"[^>]*data-latex="([^"]*)"[^>]*>.*?<\/span>\s*<\/p>/gi, (_, latex) => `\n\n$$${latex.trim()}$$\n\n`);
+        c = c.replace(/<p>\s*<span[^>]*data-latex="([^"]*)"[^>]*data-type="math"[^>]*>.*?<\/span>\s*<\/p>/gi, (_, latex) => `\n\n$$${latex.trim()}$$\n\n`);
+
+        // Step 2: Remaining inline math spans (mixed with text in a paragraph)
+        c = c.replace(/<span[^>]*data-type="math"[^>]*data-latex="([^"]*)"[^>]*>.*?<\/span>/gi, (_, latex) => `$${latex.trim()}$`);
+        c = c.replace(/<span[^>]*data-latex="([^"]*)"[^>]*data-type="math"[^>]*>.*?<\/span>/gi, (_, latex) => `$${latex.trim()}$`);
+
+        // Step 3: Self-closing math spans (some editors output <span ... />)
+        c = c.replace(/<span[^>]*data-type="math"[^>]*data-latex="([^"]*)"[^>]*\/>/gi, (_, latex) => `$${latex.trim()}$`);
+
+        // Step 4: Auto-promote standalone $...$ on their own line to block $$...$$
+        // This catches tiptap-markdown serialized output where math is always $...$
         c = c.replace(/^[ \t]*\$([^$\n]+)\$[ \t]*$/gm, '$$$$1$$');
-        // Also handle already-double $$ that got mangled
         c = c.replace(/^[ \t]*\$\$([^$\n]+)\$\$[ \t]*$/gm, '$$$$1$$');
 
-        // Step 3: Strip 4+ leading spaces from formula lines (prevents markdown treating them as code)
+        // Step 5: Strip 4+ leading spaces (prevents markdown code block interpretation)
         c = c.replace(/^\s{4,}(\$\$[^$]+\$\$)$/gm, '$1');
+
+        // Step 6: Collapse 3+ consecutive newlines into 2 (clean up excess whitespace)
+        c = c.replace(/\n{3,}/g, '\n\n');
 
         return c;
     }, [content]);
