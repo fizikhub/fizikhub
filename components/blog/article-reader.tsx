@@ -362,7 +362,7 @@ export function ArticleReader({
 
                         {/* Footer Section */}
                         {!isZenMode && (
-                            <div className="mt-12 space-y-12 sm:space-y-16 pb-32 sm:pb-40">
+                            <div className="mt-10 sm:mt-12 space-y-10 sm:space-y-16 pb-32 sm:pb-40">
                                 {/* Listen to Article — Bottom CTA */}
                                 {article.content && (
                                     <div className="flex justify-center">
@@ -374,10 +374,10 @@ export function ArticleReader({
                                 )}
 
                                 {/* Author */}
-                                <div className="border-t-[3px] border-dashed border-black/10 dark:border-white/10 pt-10 sm:pt-12">
-                                    <div className="flex items-center gap-3 mb-8">
-                                        <div className="w-2 h-8 bg-[#FFC800]" />
-                                        <h3 className="text-2xl font-black text-foreground uppercase tracking-tight">Yazar</h3>
+                                <div className="border-t-[3px] border-dashed border-black/10 dark:border-white/10 pt-8 sm:pt-12">
+                                    <div className="flex items-center gap-2.5 sm:gap-3 mb-6 sm:mb-8">
+                                        <div className="w-1.5 sm:w-2 h-6 sm:h-8 bg-[#FFC800]" />
+                                        <h3 className="text-xl sm:text-2xl font-black text-foreground uppercase tracking-tight">Yazar</h3>
                                     </div>
                                     <AuthorCard author={article.author || {}} />
                                 </div>
@@ -385,10 +385,10 @@ export function ArticleReader({
                                 {/* Source / Reference Cards */}
                                 {references.length > 0 && (
                                     <div className="space-y-5">
-                                        <div className="flex items-center gap-3">
-                                            <div className="w-2 h-8 bg-[#23A9FA]" />
-                                            <h3 className="text-2xl font-black text-foreground uppercase tracking-tight">Kaynaklar</h3>
-                                            <span className="ml-auto text-xs font-bold bg-zinc-100 dark:bg-zinc-800 border-2 border-black dark:border-zinc-700 px-2.5 py-1 rounded-md shadow-[2px_2px_0px_0px_#000] dark:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.3)]">
+                                        <div className="flex items-center gap-2.5 sm:gap-3">
+                                            <div className="w-1.5 sm:w-2 h-6 sm:h-8 bg-[#23A9FA]" />
+                                            <h3 className="text-xl sm:text-2xl font-black text-foreground uppercase tracking-tight">Kaynaklar</h3>
+                                            <span className="ml-auto text-[10px] sm:text-xs font-bold bg-zinc-100 dark:bg-zinc-800 border-2 border-black dark:border-zinc-700 px-2 sm:px-2.5 py-1 rounded-md shadow-[2px_2px_0px_0px_#000] dark:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.3)]">
                                                 {references.length} kaynak
                                             </span>
                                         </div>
@@ -432,20 +432,20 @@ export function ArticleReader({
 
                                 {/* Related Articles */}
                                 {relatedArticles.length > 0 && (
-                                    <div className="space-y-8">
-                                        <div className="flex items-center gap-3">
-                                            <div className="w-2 h-8 bg-[#FFC800]" />
-                                            <h3 className="text-2xl font-black text-foreground uppercase tracking-tight">Benzer Makaleler</h3>
+                                    <div className="space-y-6 sm:space-y-8">
+                                        <div className="flex items-center gap-2.5 sm:gap-3">
+                                            <div className="w-1.5 sm:w-2 h-6 sm:h-8 bg-[#FFC800]" />
+                                            <h3 className="text-xl sm:text-2xl font-black text-foreground uppercase tracking-tight">Benzer Makaleler</h3>
                                         </div>
                                         <RelatedArticles articles={relatedArticles} />
                                     </div>
                                 )}
 
                                 {/* Comments */}
-                                <div className="space-y-8">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-2 h-8 bg-black dark:bg-white" />
-                                        <h3 className="text-2xl font-black text-foreground uppercase tracking-tight">
+                                <div className="space-y-6 sm:space-y-8">
+                                    <div className="flex items-center gap-2.5 sm:gap-3">
+                                        <div className="w-1.5 sm:w-2 h-6 sm:h-8 bg-black dark:bg-white" />
+                                        <h3 className="text-xl sm:text-2xl font-black text-foreground uppercase tracking-tight">
                                             Yorumlar {comments.length > 0 && `(${comments.length})`}
                                         </h3>
                                     </div>

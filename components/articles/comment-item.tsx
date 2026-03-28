@@ -69,26 +69,26 @@ export function CommentItem({ comment, allComments, isAdmin, onReply }: CommentI
 
                 <div className="flex-1 space-y-1.5">
                     <div className="flex items-center gap-2 flex-wrap">
-                        <span className="font-black text-base sm:text-lg tracking-tight text-foreground">
+                        <span className="font-black text-[15px] sm:text-lg tracking-tight text-foreground leading-none">
                             {comment.profiles.full_name || comment.profiles.username}
                         </span>
-                        <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground px-2 py-0.5 bg-zinc-100 dark:bg-zinc-800 rounded-md border border-black/10 dark:border-white/10">
+                        <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-widest text-muted-foreground px-2 py-0.5 bg-zinc-100 dark:bg-zinc-800 rounded-md border border-black/10 dark:border-white/10 mt-[2px]">
                             {formatDistanceToNow(new Date(comment.created_at), { addSuffix: true, locale: tr })}
                         </span>
                     </div>
 
-                    <p className="text-base font-medium leading-relaxed text-foreground sm:text-lg">
+                    <p className="text-sm font-medium leading-relaxed text-foreground sm:text-lg">
                         {comment.content}
                     </p>
 
-                    <div className="flex items-center gap-4 pt-2">
+                    <div className="flex items-center gap-2 sm:gap-4 pt-2">
                         <Button
                             variant="ghost"
                             size="sm"
                             onClick={() => onReply(comment.id)}
-                            className="h-auto p-1 px-2 -ml-2 text-xs font-black uppercase tracking-widest text-muted-foreground hover:text-[#FFC800] hover:bg-[#FFC800]/10 transition-colors"
+                            className="h-auto p-1 px-2 -ml-2 text-[10px] sm:text-xs font-black uppercase tracking-widest text-muted-foreground hover:text-[#FFC800] hover:bg-[#FFC800]/10 transition-colors"
                         >
-                            <Reply className="h-4 w-4 mr-1.5 stroke-[3px]" />
+                            <Reply className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 stroke-[3px]" />
                             Yanıtla
                         </Button>
 
@@ -98,9 +98,9 @@ export function CommentItem({ comment, allComments, isAdmin, onReply }: CommentI
                                 size="sm"
                                 onClick={handleDelete}
                                 disabled={isDeleting}
-                                className="h-auto p-1 px-2 text-xs font-black uppercase tracking-widest text-muted-foreground hover:bg-red-50 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all rounded-md"
+                                className="h-auto p-1 px-2 text-[10px] sm:text-xs font-black uppercase tracking-widest text-muted-foreground hover:bg-red-50 hover:text-red-500 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-all rounded-md"
                             >
-                                <Trash2 className="h-4 w-4 mr-1.5 stroke-[3px]" />
+                                <Trash2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 stroke-[3px]" />
                                 {isDeleting ? "Siliniyor..." : "Sil"}
                             </Button>
                         )}
