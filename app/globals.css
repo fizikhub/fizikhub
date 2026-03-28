@@ -86,7 +86,7 @@
         --shadow-md: 4px 4px 0px 0px var(--border);
         --shadow-lg: 6px 6px 0px 0px var(--border);
         --shadow-xl: 10px 10px 0px 0px var(--border);
-        --shadow-2xl: 16px 16px 0px 0px var(--border);
+        --shadow-2xl: 16px 16px 0px 0px #000;
     }
 }
 
@@ -95,8 +95,23 @@
         @apply border-border;
     }
 
+    html {
+        scroll-behavior: smooth;
+    }
+
     body {
         @apply bg-background text-foreground;
+        font-feature-settings: "rlig" 1, "calt" 1;
+    }
+
+    ::selection {
+        background-color: #FFC800;
+        color: #000;
+    }
+
+    .dark ::selection {
+        background-color: #23A9FA;
+        color: #fff;
     }
 
     h1,
@@ -184,7 +199,12 @@
     }
 
     .prose hr {
-        margin: 2.5em 0 !important;
+        margin: 3em 0 !important;
+        border: none;
+        border-top: 3px dashed rgba(0,0,0,0.15);
+    }
+    .dark .prose hr {
+        border-top-color: rgba(255,255,255,0.15);
     }
 
     /* Mobile KaTeX: LARGER font, not smaller */
@@ -224,12 +244,13 @@
     /* Elegant Magazine-style Drop Cap */
     .article-content > p:first-of-type::first-letter {
         float: left;
-        font-size: 4rem;
-        line-height: 0.75;
+        font-size: 4.5rem;
+        line-height: 0.8;
         font-weight: 900;
         font-family: Georgia, "Times New Roman", serif;
-        margin-right: 0.1em;
-        margin-top: 0.05em;
+        margin-right: 0.12em;
+        margin-top: 0.02em;
+        margin-bottom: -0.1em;
         padding: 0;
         color: #FFC800; /* FizikHub Yellow — always */
         text-shadow: 2px 2px 0px rgba(0,0,0,0.15);
@@ -336,16 +357,32 @@
        IMAGE CAPTIONS — Neo-Brutalist Style
        ============================================ */
     .prose figure {
-        margin: 2em 0 !important;
+        margin: 2.5em 0 !important;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
     }
     .prose figcaption {
         text-align: center;
-        font-size: 0.8em;
-        font-weight: 700;
-        color: hsl(var(--muted-foreground));
-        margin-top: 0.75em;
-        font-style: italic;
-        letter-spacing: 0.02em;
+        font-size: 0.75em;
+        font-weight: 800;
+        background: #FFC800;
+        color: #000;
+        padding: 0.4em 1em;
+        margin-top: 1em;
+        margin-bottom: 0.5em;
+        border: 2px solid #000;
+        box-shadow: 2px 2px 0px 0px #000;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        transform: rotate(-1deg);
+        display: inline-block;
+    }
+    .dark .prose figcaption {
+        background: #23A9FA;
+        color: #fff;
+        border-color: rgba(255,255,255,0.2);
+        box-shadow: 2px 2px 0px 0px rgba(0,0,0,0.5);
     }
 
     /* ============================================

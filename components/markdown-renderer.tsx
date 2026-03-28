@@ -63,8 +63,8 @@ export function MarkdownRenderer({
         c = c.replace(/[\u200B\u200C\u200D\uFEFF]/g, '');
 
         // Step 1: Convert <p> containing ONLY a math span → block math $$...$$
-        c = c.replace(/<p>\s*<span[^>]*data-type="math"[^>]*data-latex="([^"]*)"[^>]*>.*?<\/span>\s*<\/p>/gi, (_, latex) => `\n\n$$${latex.trim()}$$\n\n`);
-        c = c.replace(/<p>\s*<span[^>]*data-latex="([^"]*)"[^>]*data-type="math"[^>]*>.*?<\/span>\s*<\/p>/gi, (_, latex) => `\n\n$$${latex.trim()}$$\n\n`);
+        c = c.replace(/<p>\s*<span[^>]*data-type="math"[^>]*data-latex="([^"]*)"[^>]*>.*?<\/span>\s*<\/p>/gi, (_, latex) => `\n\n$$\n${latex.trim()}\n$$\n\n`);
+        c = c.replace(/<p>\s*<span[^>]*data-latex="([^"]*)"[^>]*data-type="math"[^>]*>.*?<\/span>\s*<\/p>/gi, (_, latex) => `\n\n$$\n${latex.trim()}\n$$\n\n`);
 
         // Step 2: Remaining inline math spans (mixed with text in a paragraph)
         c = c.replace(/<span[^>]*data-type="math"[^>]*data-latex="([^"]*)"[^>]*>.*?<\/span>/gi, (_, latex) => `$${latex.trim()}$`);
@@ -74,9 +74,9 @@ export function MarkdownRenderer({
         c = c.replace(/<span[^>]*data-type="math"[^>]*data-latex="([^"]*)"[^>]*\/>/gi, (_, latex) => `$${latex.trim()}$`);
 
         // Step 4: Auto-promote standalone $...$ on their own line to block $$...$$
-        // This catches tiptap-markdown serialized output where math is always $...$
-        c = c.replace(/^[ \t]*\$([^$\n]+)\$[ \t]*$/gm, '$$$$1$$');
-        c = c.replace(/^[ \t]*\$\$([^$\n]+)\$\$[ \t]*$/gm, '$$$$1$$');
+        // Use replacer function instead of string interpolation to avoid $$1$ bugs
+        c = c.replace(/^[ \t]*\$([^$\n]+)\$[ \t]*$/gm, (_, latex) => `\n$$\n${latex}\n$$\n`);
+        c = c.replace(/^[ \t]*\$\$([^$\n]+)\$\$[ \t]*$/gm, (_, latex) => `\n$$\n${latex}\n$$\n`);
 
         // Step 5: Strip 4+ leading spaces (prevents markdown code block interpretation)
         c = c.replace(/^\s{4,}(\$\$[^$]+\$\$)$/gm, '$1');
