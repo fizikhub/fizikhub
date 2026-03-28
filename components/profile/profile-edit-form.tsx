@@ -40,6 +40,11 @@ export function ProfileEditForm({ user, profile }: ProfileEditFormProps) {
     const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
+            // Check size (5MB limit)
+            if (file.size > 5 * 1024 * 1024) {
+                toast.error("Profil fotoğrafı 5MB'dan küçük olmalıdır.");
+                return;
+            }
             setAvatarFile(file);
             setAvatarPreview(URL.createObjectURL(file));
         }
@@ -48,6 +53,11 @@ export function ProfileEditForm({ user, profile }: ProfileEditFormProps) {
     const handleCoverChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
+            // Check size (5MB limit)
+            if (file.size > 5 * 1024 * 1024) {
+                toast.error("Kapak fotoğrafı 5MB'dan küçük olmalıdır.");
+                return;
+            }
             setCoverFile(file);
             setCoverPreview(URL.createObjectURL(file));
         }
