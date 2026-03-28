@@ -23,9 +23,10 @@ export const metadata = {
 };
 
 export default async function LeaderboardPage() {
-    const leaderboard = await getLeaderboard();
-    const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
+    const [leaderboard, { data: { user } }] = await Promise.all([
+        getLeaderboard(),
+        (async () => { const supabase = await createClient(); return supabase.auth.getUser(); })()
+    ]);
 
     // Shy User Logic: Move @silginim to the bottom
     const silginimIndex = leaderboard.findIndex(u => u.username === 'silginim');

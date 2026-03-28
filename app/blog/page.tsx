@@ -88,22 +88,23 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
         dbQuery = dbQuery.ilike("title", `%${sanitizedQuery}%`);
     }
 
-    const [{ data: articles, count }, { data: { user } }] = await Promise.all([
+    const [{ data: articles, count }, { data: { user } }, { data: userProfile }] = await Promise.all([
         dbQuery.range(offset, offset + limit - 1),
-        supabase.auth.getUser()
+        supabase.auth.getUser(),
+        supabase.from("profiles").select("id, username, full_name, avatar_url, bio").limit(1) // placeholder, filtered below
     ]);
 
     const totalPages = count ? Math.ceil(count / limit) : 0;
 
-    // Fetch current user profile for the share card
-    let userProfile = null;
+    // Re-fetch actual user profile if logged in (the Promise.all placeholder above can't know user.id yet)
+    let finalUserProfile = null;
     if (user) {
         const { data: profile } = await supabase
             .from("profiles")
             .select("id, username, full_name, avatar_url, bio")
             .eq("id", user.id)
             .single();
-        userProfile = profile;
+        finalUserProfile = profile;
     }
 
     return (

@@ -33,21 +33,16 @@ export default async function ConversationPage({
         messages = messagesResult.messages;
         initialReactions = reactionsResult;
 
-        // Fetch other participant info
+        // Fetch other participant info with profile in a single query
         const { data: otherParticipant } = await supabase
             .from("conversation_participants")
-            .select("user_id")
+            .select("user_id, profiles:user_id(id, username, full_name, avatar_url)")
             .eq("conversation_id", conversationId)
             .neq("user_id", user.id)
             .single();
 
         if (otherParticipant) {
-            const { data } = await supabase
-                .from("profiles")
-                .select("id, username, full_name, avatar_url")
-                .eq("id", otherParticipant.user_id)
-                .single();
-            otherUser = data;
+            otherUser = otherParticipant.profiles;
         }
     } catch (e) {
         console.error("Conversation Page: Error fetching data", e);
