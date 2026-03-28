@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import { ReadingControls } from "./reading-controls";
 import dynamic from "next/dynamic";
 const MarkdownRenderer = dynamic(() => import("@/components/markdown-renderer").then(mod => mod.MarkdownRenderer), {
     loading: () => <div className="h-96 w-full animate-pulse bg-muted rounded-xl" />
@@ -16,7 +15,13 @@ import { ShareButtons } from "@/components/blog/share-buttons";
 import { RelatedArticles } from "@/components/blog/related-articles";
 import { CommentSection } from "@/components/articles/comment-section";
 import { TTSReader } from "@/components/articles/tts-reader";
-import { ArrowUp, X } from "lucide-react";
+import { ArrowUp, X, Type, Maximize2, Minimize2, Minus, Plus } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface ArticleReaderProps {
     article: any;
@@ -217,11 +222,12 @@ export function ArticleReader({
                             />
                         </div>
 
-                        {/* Floating Action Dock (Reading Controls) - NeoBrutalist */}
+                        {/* Unified Floating Action Dock — ALL controls in one bar */}
                         {!isZenMode && (
-                            <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 w-fit max-w-[95vw] sm:max-w-max transition-all duration-300">
-                                <div className="p-2 sm:p-3 bg-white dark:bg-zinc-900 rounded-2xl border-4 border-black dark:border-zinc-700 flex items-center justify-between gap-3 sm:gap-5 shadow-[6px_6px_0px_0px_#000] dark:shadow-[6px_6px_0px_0px_rgba(0,0,0,0.5)]">
-                                    <div className="flex items-center gap-2 sm:gap-4 flex-1">
+                            <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 w-fit max-w-[95vw] transition-all duration-300">
+                                <div className="p-2 sm:p-3 bg-white dark:bg-zinc-900 rounded-2xl border-4 border-black dark:border-zinc-700 flex items-center gap-2 sm:gap-4 shadow-[6px_6px_0px_0px_#000] dark:shadow-[6px_6px_0px_0px_rgba(0,0,0,0.5)]">
+                                    {/* Like / Bookmark / Report */}
+                                    <div className="flex items-center gap-1 sm:gap-3">
                                         <div className="flex items-center hover:-translate-y-1 transition-transform">
                                             <LikeButton
                                                 articleId={article.id}
@@ -229,7 +235,6 @@ export function ArticleReader({
                                                 initialCount={likeCount || 0}
                                             />
                                         </div>
-                                        <div className="w-[3px] h-8 sm:h-10 bg-black/10 dark:bg-zinc-700 rounded-full" />
                                         <div className="flex items-center hover:-translate-y-1 transition-transform">
                                             <BookmarkButton
                                                 type="article"
@@ -244,10 +249,114 @@ export function ArticleReader({
                                             />
                                         </div>
                                     </div>
-                                    <div className="flex items-center border-l-[3px] border-black/10 dark:border-zinc-700 pl-3 sm:pl-5 hover:-translate-y-1 transition-transform">
+
+                                    <div className="w-[3px] h-8 bg-black/10 dark:bg-zinc-700 rounded-full flex-shrink-0" />
+
+                                    {/* Share */}
+                                    <div className="flex items-center hover:-translate-y-1 transition-transform">
                                         <ShareButtons title={article.title} slug={article.slug} />
                                     </div>
+
+                                    <div className="w-[3px] h-8 bg-black/10 dark:bg-zinc-700 rounded-full flex-shrink-0" />
+
+                                    {/* Font Settings Dropdown */}
+                                    <DropdownMenu>
+                                        <DropdownMenuTrigger asChild>
+                                            <Button variant="ghost" size="icon" className="rounded-full w-9 h-9 sm:w-10 sm:h-10 hover:bg-black/5 dark:hover:bg-white/10 text-neutral-600 dark:text-neutral-300 flex-shrink-0">
+                                                <Type className="h-4 w-4 sm:h-5 sm:w-5" />
+                                            </Button>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent side="top" align="end" className="w-72 border-[2px] border-black/10 dark:border-white/10 backdrop-blur-3xl p-5 rounded-2xl shadow-xl mb-4">
+                                            <div className="space-y-6" onClick={(e) => e.stopPropagation()}>
+                                                <div className="space-y-3">
+                                                    <div className="flex items-center justify-between">
+                                                        <span className="text-[10px] font-black text-neutral-400 uppercase tracking-widest">YAZI BOYUTU</span>
+                                                        <span className="text-xs font-bold font-mono bg-neutral-100 dark:bg-white/10 px-2 py-0.5 rounded text-neutral-600 dark:text-neutral-300">
+                                                            {fontSize === 'sm' && 'KÜÇÜK'}
+                                                            {fontSize === 'base' && 'NORMAL'}
+                                                            {fontSize === 'lg' && 'BÜYÜK'}
+                                                            {fontSize === 'xl' && 'DEV'}
+                                                        </span>
+                                                    </div>
+                                                    <div className="flex items-center gap-2 bg-neutral-100 dark:bg-white/5 rounded-xl p-1.5 border border-black/5 dark:border-white/5">
+                                                        <Button variant="ghost" size="sm" className="h-8 w-8 rounded-lg" onClick={() => { const steps: ('sm'|'base'|'lg'|'xl')[] = ['sm','base','lg','xl']; const i = steps.indexOf(fontSize); if(i>0) setFontSize(steps[i-1]); }} disabled={fontSize === 'sm'}>
+                                                            <Minus className="h-4 w-4" />
+                                                        </Button>
+                                                        <div className="flex-1 flex gap-1 h-1.5 justify-center">
+                                                            {(['sm','base','lg','xl'] as const).map((step, idx) => (
+                                                                <div key={step} className={cn("flex-1 rounded-full transition-colors", idx <= ['sm','base','lg','xl'].indexOf(fontSize) ? "bg-[#FFC800]" : "bg-neutral-300 dark:bg-neutral-700")} />
+                                                            ))}
+                                                        </div>
+                                                        <Button variant="ghost" size="sm" className="h-8 w-8 rounded-lg" onClick={() => { const steps: ('sm'|'base'|'lg'|'xl')[] = ['sm','base','lg','xl']; const i = steps.indexOf(fontSize); if(i<3) setFontSize(steps[i+1]); }} disabled={fontSize === 'xl'}>
+                                                            <Plus className="h-4 w-4" />
+                                                        </Button>
+                                                    </div>
+                                                </div>
+                                                <div className="space-y-3">
+                                                    <span className="text-[10px] font-black text-neutral-400 uppercase tracking-widest">YAZI TİPİ</span>
+                                                    <div className="grid grid-cols-2 gap-2">
+                                                        <Button variant={fontFamily === 'sans' ? 'default' : 'outline'} size="sm" className={cn("font-sans border-2 relative overflow-hidden", fontFamily === 'sans' ? "bg-black text-white hover:bg-black/90 border-black" : "border-neutral-200 dark:border-white/10 hover:bg-neutral-50")} onClick={() => setFontFamily('sans')}>
+                                                            {fontFamily === 'sans' && <div className="absolute top-0 right-0 w-2 h-2 bg-[#FFC800]" />}
+                                                            MODERN
+                                                        </Button>
+                                                        <Button variant={fontFamily === 'serif' ? 'default' : 'outline'} size="sm" className={cn("font-serif tracking-wide border-2 relative overflow-hidden", fontFamily === 'serif' ? "bg-black text-white hover:bg-black/90 border-black" : "border-neutral-200 dark:border-white/10 hover:bg-neutral-50")} onClick={() => setFontFamily('serif')}>
+                                                            {fontFamily === 'serif' && <div className="absolute top-0 right-0 w-2 h-2 bg-[#FFC800]" />}
+                                                            KLASİK
+                                                        </Button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
+
+                                    {/* Zen Mode */}
+                                    <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        className="rounded-full w-9 h-9 sm:w-10 sm:h-10 hover:bg-black/5 dark:hover:bg-white/10 text-neutral-600 dark:text-neutral-300 group flex-shrink-0"
+                                        onClick={() => setIsZenMode(true)}
+                                        title="Zen Modu"
+                                    >
+                                        <Maximize2 className="h-4 w-4 sm:h-5 sm:w-5 group-hover:scale-110 transition-transform" />
+                                    </Button>
+
+                                    {/* Scroll to Top — only if scrolled */}
+                                    <AnimatePresence>
+                                        {scrollProgress > 30 && (
+                                            <motion.div
+                                                initial={{ width: 0, opacity: 0 }}
+                                                animate={{ width: 'auto', opacity: 1 }}
+                                                exit={{ width: 0, opacity: 0 }}
+                                                className="overflow-hidden flex-shrink-0"
+                                            >
+                                                <Button
+                                                    variant="default"
+                                                    size="icon"
+                                                    onClick={scrollToTop}
+                                                    className="h-9 w-9 sm:h-10 sm:w-10 rounded-full bg-[#FFC800] dark:bg-[#23A9FA] hover:bg-[#FFC800]/90 dark:hover:bg-[#23A9FA]/90 text-black dark:text-white border-[2px] border-black dark:border-white/20"
+                                                    aria-label="Başa dön"
+                                                >
+                                                    <ArrowUp className="h-4 w-4 sm:h-5 sm:w-5 stroke-[3px]" />
+                                                </Button>
+                                            </motion.div>
+                                        )}
+                                    </AnimatePresence>
                                 </div>
+                            </div>
+                        )}
+
+                        {/* Zen Mode Exit Button */}
+                        {isZenMode && (
+                            <div className="fixed bottom-6 right-6 z-50">
+                                <Button
+                                    variant="destructive"
+                                    size="lg"
+                                    className="rounded-full shadow-[4px_4px_0px_#000] border-[2px] border-black font-bold tracking-wider"
+                                    onClick={() => setIsZenMode(false)}
+                                >
+                                    <Minimize2 className="h-5 w-5 mr-2" />
+                                    AYRIL
+                                </Button>
                             </div>
                         )}
 
@@ -350,13 +459,6 @@ export function ArticleReader({
                 </div>
             </div>
 
-            <ReadingControls
-                onZenModeChange={setIsZenMode}
-                onFontSizeChange={setFontSize}
-                onFontFamilyChange={setFontFamily}
-                scrollToTop={scrollToTop}
-                showScrollToTop={scrollProgress > 30}
-            />
 
             {/* Reading Time Remaining Pill */}
             <div className={cn("reading-time-pill", showTimeRemaining && "visible")}>
