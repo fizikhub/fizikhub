@@ -163,7 +163,10 @@ export async function updateArticle(articleId: number, formData: FormData) {
 
     const isAdmin = profile?.role === "admin" || profile?.username === "baranbozkurt";
 
-    let updateQuery = supabase
+    // Use admin client (bypasses RLS) when admin is editing someone else's article
+    const writeClient = isAdmin ? (await import("@/lib/supabase-admin")).createAdminClient() : supabase;
+
+    const { error } = await writeClient
         .from("articles")
         .update({
             title,
@@ -171,16 +174,10 @@ export async function updateArticle(articleId: number, formData: FormData) {
             content,
             category,
             image_url: imageUrl,
-            status: "pending", // Re-submit for approval on update
+            status: "pending",
             published: false
         })
         .eq("id", articleId);
-
-    if (!isAdmin) {
-        updateQuery = updateQuery.eq("author_id", user.id);
-    }
-
-    const { error } = await updateQuery;
 
     if (error) {
         console.error("Error updating article:", error);
@@ -188,13 +185,13 @@ export async function updateArticle(articleId: number, formData: FormData) {
     }
 
     // Yazar yazıyı düzenlediği için tüm onayları sıfırla
-    await supabase.from("article_approvals").delete().eq("article_id", articleId);
+    await writeClient.from("article_approvals").delete().eq("article_id", articleId);
 
     // Save references
-    await saveReferences(supabase, articleId, referencesJson);
+    await saveReferences(writeClient, articleId, referencesJson);
 
     // Trigger AI review (fire-and-forget)
-    triggerAIReview(supabase, articleId, title, content, referencesJson).catch(console.error);
+    triggerAIReview(writeClient, articleId, title, content, referencesJson).catch(console.error);
 
     revalidatePath("/yazar-paneli", "layout");
     revalidatePath("/yazar", "layout");
