@@ -30,13 +30,13 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
             type: "article",
             publishedTime: article.created_at,
             authors: ["Fizikhub"],
-            images: [article.cover_url || "/og-image.png"],
+            images: [article.cover_url || "https://fizikhub.com/og-image.jpg"],
         },
         twitter: {
             card: "summary_large_image",
             title: article.title,
             description: (article.excerpt || article.summary || "").substring(0, 160) + "...",
-            images: [article.cover_url || "/og-image.png"],
+            images: [article.cover_url || "https://fizikhub.com/og-image.jpg"],
         },
     };
 }

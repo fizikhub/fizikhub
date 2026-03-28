@@ -25,14 +25,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
         };
     }
 
-    const ogImageUrl = new URL(`${process.env.NEXT_PUBLIC_APP_URL || 'https://fizikhub.com'}/api/og`);
-    ogImageUrl.searchParams.set('title', article.title);
-    if (article.author?.full_name || article.author?.username) {
-        ogImageUrl.searchParams.set('author', article.author.full_name || article.author.username || "");
-    }
-    if (article.category) {
-        ogImageUrl.searchParams.set('category', article.category);
-    }
+    const coverUrl = article.cover_url && article.cover_url.length > 0
+        ? article.cover_url
+        : "https://fizikhub.com/og-image.jpg";
 
     return {
         title: article.title,
@@ -45,7 +40,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
             authors: ["Fizikhub"],
             images: [
                 {
-                    url: ogImageUrl.toString(),
+                    url: coverUrl,
                     width: 1200,
                     height: 630,
                     alt: article.title,
@@ -56,7 +51,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
             card: "summary_large_image",
             title: article.title,
             description: (article.content || "").substring(0, 160) + "...",
-            images: [ogImageUrl.toString()],
+            images: [coverUrl],
         },
     };
 }
