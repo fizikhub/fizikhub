@@ -180,6 +180,45 @@
             overflow-x: auto;
         }
     }
+
+    /* ============================================
+       Premium Reading Enhancements (Arşa Çıkan UX)
+       ============================================ */
+    
+    /* High-contrast brand selection for that premium neo-brutalist feel */
+    ::selection {
+        background-color: #FFC800; /* Fizikhub Yellow */
+        color: #000;
+    }
+    .dark ::selection {
+        background-color: #23A9FA; /* Fizikhub Blue */
+        color: #000;
+    }
+
+    /* Magazine-style Neo-Brutalist Drop Cap for the very first paragraph of the article */
+    .article-content > p:first-of-type::first-letter {
+        float: left;
+        font-size: 3.5rem;
+        line-height: 0.8;
+        font-weight: 900;
+        font-family: var(--font-heading, "Inter", sans-serif);
+        margin-right: 0.15em;
+        margin-bottom: 0em;
+        padding: 0.1em 0.12em 0em 0.12em;
+        background-color: #FFC800;
+        color: #000;
+        border: 3px solid #000;
+        box-shadow: 4px 4px 0px 0px #000;
+        border-radius: 4px;
+        text-transform: uppercase;
+    }
+
+    .dark .article-content > p:first-of-type::first-letter {
+        background-color: #23A9FA;
+        color: #000;
+        border-color: #fff;
+        box-shadow: 4px 4px 0px 0px #fff;
+    }
 }
 
 @layer utilities {}

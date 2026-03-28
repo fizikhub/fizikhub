@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ReadingControls } from "./reading-controls";
 import dynamic from "next/dynamic";
 const MarkdownRenderer = dynamic(() => import("@/components/markdown-renderer").then(mod => mod.MarkdownRenderer), {
@@ -46,9 +46,31 @@ export function ArticleReader({
     const [isZenMode, setIsZenMode] = useState(false);
     const [fontSize, setFontSize] = useState<'sm' | 'base' | 'lg' | 'xl'>('base');
     const [fontFamily, setFontFamily] = useState<'sans' | 'serif'>('sans');
+    const [scrollProgress, setScrollProgress] = useState(0);
+
+    useEffect(() => {
+        const handleScroll = () => {
+            const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
+            if (totalHeight <= 0) return;
+            const progress = (window.scrollY / totalHeight) * 100;
+            setScrollProgress(Math.min(100, Math.max(0, progress)));
+        };
+
+        window.addEventListener('scroll', handleScroll, { passive: true });
+        handleScroll(); // init
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
 
     return (
         <div className="relative">
+            {/* Reading Progress Bar */}
+            <div className="fixed top-0 left-0 w-full h-1.5 z-[100] bg-zinc-200/50 dark:bg-zinc-800/50 backdrop-blur-sm">
+                <div 
+                    className="h-full bg-[#FFC800] dark:bg-[#23A9FA] transition-all duration-150 ease-out origin-left"
+                    style={{ width: `${scrollProgress}%` }}
+                />
+            </div>
+
             <AnimatePresence>
                 {isZenMode && (
                     <motion.div
@@ -90,7 +112,7 @@ export function ArticleReader({
                             "prose-h3:text-lg sm:prose-h3:text-2xl md:prose-h3:text-3xl prose-h3:mt-8 sm:prose-h3:mt-12 prose-h3:!mb-5 sm:prose-h3:!mb-6 prose-h3:font-bold prose-h3:border-l-[4px] sm:prose-h3:border-l-[6px] prose-h3:border-[#23A9FA] prose-h3:pl-3 sm:prose-h3:pl-4 prose-h3:leading-[1.2]",
                             "prose-h4:text-base sm:prose-h4:text-xl prose-h4:mt-6 prose-h4:!mb-4 prose-h4:font-black prose-h4:text-foreground",
                             // Paragraphs & Text — optimized for mobile readability
-                            "prose-p:text-[15px] sm:prose-p:text-[17px] md:prose-p:text-[18px] prose-p:text-zinc-800 dark:prose-p:text-zinc-300 prose-p:leading-[1.8] sm:prose-p:leading-[1.85] prose-p:mb-6 sm:prose-p:mb-8 prose-p:font-[450]",
+                            "prose-p:text-[15px] sm:prose-p:text-[17px] md:prose-p:text-[18px] prose-p:text-[#1a1a1a] dark:prose-p:text-[#e5e5e5] prose-p:leading-[1.85] sm:prose-p:leading-[1.9] prose-p:mb-6 sm:prose-p:mb-8 prose-p:font-[450]",
                             "prose-strong:text-black dark:prose-strong:text-white prose-strong:font-black prose-strong:bg-[#FFC800]/20 dark:prose-strong:bg-[#23A9FA]/20 prose-strong:px-1 prose-strong:rounded-sm",
                             // Links — break long URLs
                             "prose-a:text-black dark:prose-a:text-white prose-a:font-black prose-a:no-underline prose-a:border-b-[3px] prose-a:border-[#23A9FA] dark:prose-a:border-[#FFC800] hover:prose-a:bg-[#23A9FA] dark:hover:prose-a:bg-[#FFC800] hover:prose-a:text-white dark:hover:prose-a:text-black prose-a:break-all prose-a:px-0.5",
@@ -109,7 +131,7 @@ export function ArticleReader({
                         )}>
                             <MarkdownRenderer
                                 content={article.content || ""}
-                                className=""
+                                className="article-content"
                                 fontSize={fontSize}
                                 fontFamily={fontFamily}
                                 isZenMode={isZenMode}
