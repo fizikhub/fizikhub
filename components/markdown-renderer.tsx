@@ -52,19 +52,30 @@ export function MarkdownRenderer({
         loadMarkdownCSS();
     }, []);
 
-    // Preprocess content: convert HTML math nodes to $...$ notation
+    // Preprocess content: convert HTML math nodes to proper LaTeX notation
     // The editor stores math as <span data-type="math" data-latex="..."></span>
     // but ReactMarkdown + remarkMath only understands $...$ in markdown
     const processedContent = useMemo(() => {
         let c = content;
-        // Convert <span data-type="math" data-latex="..."></span> or self-closing variants
-        c = c.replace(/<span[^>]*data-type="math"[^>]*data-latex="([^"]*)"[^>]*>(?:<\/span>)?/gi, (_, latex) => `<span class="math-inline">${latex}</span>`);
-        c = c.replace(/<span[^>]*data-latex="([^"]*)"[^>]*data-type="math"[^>]*>(?:<\/span>)?/gi, (_, latex) => `<span class="math-inline">${latex}</span>`);
+
+        // Step 1: Convert <span data-type="math" data-latex="..."> to raw LaTeX
+        // If the span is alone on a line (possibly wrapped in <p>), make it block math $$...$$
+        // Otherwise keep it inline $...$
+        c = c.replace(/<p>\s*<span[^>]*data-type="math"[^>]*data-latex="([^"]*)"[^>]*>(?:<\/span>)?\s*<\/p>/gi, (_, latex) => `\n\n$$${latex}$$\n\n`);
+        c = c.replace(/<p>\s*<span[^>]*data-latex="([^"]*)"[^>]*data-type="math"[^>]*>(?:<\/span>)?\s*<\/p>/gi, (_, latex) => `\n\n$$${latex}$$\n\n`);
         
-        // Auto-promote standalone equations to block math!
-        // If a line is exclusively a formula (even if the user just used inline $..$ or added spaces), 
-        // we convert it to block math $$...$$ so it centers perfectly inside the neo-brutalist container.
-        c = c.replace(/^[ \t]*\$\$?([^$\n]+)\$\$?[ \t]*$/gm, '$$$$$1$$$$');
+        // Remaining inline math spans (not alone on a line)
+        c = c.replace(/<span[^>]*data-type="math"[^>]*data-latex="([^"]*)"[^>]*>(?:<\/span>)?/gi, (_, latex) => `$${latex}$`);
+        c = c.replace(/<span[^>]*data-latex="([^"]*)"[^>]*data-type="math"[^>]*>(?:<\/span>)?/gi, (_, latex) => `$${latex}$`);
+        
+        // Step 2: Auto-promote standalone $...$ on their own line to block $$...$$
+        c = c.replace(/^[ \t]*\$([^$\n]+)\$[ \t]*$/gm, '$$$$1$$');
+        // Also handle already-double $$ that got mangled
+        c = c.replace(/^[ \t]*\$\$([^$\n]+)\$\$[ \t]*$/gm, '$$$$1$$');
+
+        // Step 3: Strip 4+ leading spaces from formula lines (prevents markdown treating them as code)
+        c = c.replace(/^\s{4,}(\$\$[^$]+\$\$)$/gm, '$1');
+
         return c;
     }, [content]);
 

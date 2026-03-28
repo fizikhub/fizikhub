@@ -134,18 +134,21 @@
        KaTeX / LaTeX Rendering in Articles
        ============================================ */
 
-    /* Inline math: subtle vertical centering + spacing */
+    /* Inline math: proper vertical alignment */
     .prose .katex-inline,
     .prose .math-inline,
     .prose span.katex {
         vertical-align: baseline;
-        padding: 0 0.15em;
+        padding: 0 0.2em;
     }
 
-    /* Display math: centered block with breathing room */
+    /* Display math: ALWAYS centered block with generous breathing room */
     .prose .katex-display,
     .prose .math-display {
-        margin: 1.5em 0;
+        display: block !important;
+        text-align: center !important;
+        margin: 2em auto !important;
+        padding: 1em 0;
         overflow-x: auto;
         overflow-y: hidden;
         -webkit-overflow-scrolling: touch;
@@ -153,23 +156,46 @@
     }
 
     .prose .katex-display > .katex {
-        text-align: center;
+        text-align: center !important;
     }
 
-    /* Scale KaTeX font in prose context */
+    /* Scale KaTeX font — BIG and readable */
     .prose .katex {
-        font-size: 1.05em;
+        font-size: 1.3em !important;
     }
 
-    /* Mobile KaTeX: Make font size legible on mobile */
+    /* Force spacing between all prose block elements */
+    .prose > * + * {
+        margin-top: 1.5em;
+    }
+
+    .prose h1 + *,
+    .prose h2 + *,
+    .prose h3 + *,
+    .prose h4 + * {
+        margin-top: 1em !important;
+    }
+
+    .prose * + h1,
+    .prose * + h2,
+    .prose * + h3,
+    .prose * + h4 {
+        margin-top: 2.5em !important;
+    }
+
+    .prose hr {
+        margin: 2.5em 0 !important;
+    }
+
+    /* Mobile KaTeX: LARGER font, not smaller */
     @media (max-width: 640px) {
         .prose .katex {
-            font-size: 1.15em;
+            font-size: 1.25em !important;
         }
 
         .prose .katex-display,
         .prose .math-display {
-            margin: 1.25em 0;
+            margin: 1.5em 0 !important;
             padding: 0.75em 0;
             max-width: calc(100vw - 2rem);
         }
