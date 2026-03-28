@@ -266,7 +266,7 @@ export function QuizRunner({ quizId, questions, title, description }: QuizRunner
                             <RotateCcw className="mr-2 h-4 w-4" />
                             Tekrar Dene
                         </Button>
-                        <Link prefetch={false} href="/testler" className="w-full">
+                        <Link prefetch={true} href="/testler" className="w-full">
                             <Button variant="outline" className="w-full border-2 font-bold h-10 text-base">Testlere Dön</Button>
                         </Link>
                     </CardFooter>

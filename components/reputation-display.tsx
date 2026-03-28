@@ -97,7 +97,7 @@ export function ReputationDisplay({
                 </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-                <Link prefetch={false} href="/puanlar-nedir">
+                <Link prefetch={true} href="/puanlar-nedir">
                     <DropdownMenuItem className="cursor-pointer gap-2">
                         <HelpCircle className="h-4 w-4" />
                         Hub Puanlar Nedir?

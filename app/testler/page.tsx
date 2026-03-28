@@ -76,7 +76,7 @@ export default async function QuizzesPage() {
                                 </div>
                             </CardContent>
                             <CardFooter className="pt-0 pb-6 px-6 mt-auto">
-                                <Link prefetch={false} href={`/testler/${quiz.slug}`} className="w-full">
+                                <Link prefetch={true} href={`/testler/${quiz.slug}`} className="w-full">
                                     <Button className="w-full h-12 text-lg font-bold border-2 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] bg-primary text-primary-foreground transition-all">
                                         TESTE BAŞLA
                                         <ArrowRight className="ml-2 h-5 w-5" />

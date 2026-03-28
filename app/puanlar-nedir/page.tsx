@@ -71,7 +71,7 @@ export default function PointsInfoPage() {
             <div className="container mx-auto py-12 px-4 max-w-5xl">
                 {/* Header */}
                 <div className="mb-12 border-b-4 border-black dark:border-white pb-8">
-                    <Link prefetch={false} href="/profil">
+                    <Link prefetch={true} href="/profil">
                         <Button variant="outline" className="mb-6 border-2 border-black dark:border-white rounded-none hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-all uppercase font-bold tracking-wider">
                             <ArrowLeft className="h-4 w-4 mr-2" />
                             Profile Dön

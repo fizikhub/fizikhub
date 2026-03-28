@@ -85,7 +85,7 @@ export function ProfileHeader({ profile, user }: ProfileHeaderProps) {
                                     <RapidScienceButton />
                                 )}
                                 {(profile?.is_writer) && (
-                                    <Link prefetch={false} href="/yazar">
+                                    <Link prefetch={true} href="/yazar">
                                         <Button variant="outline" size="icon" className="rounded-full border-primary/30 hover:bg-primary/10 hover:border-primary text-primary transition-all" title="Yazar Paneli">
                                             <FileText className="h-4 w-4" />
                                         </Button>

@@ -27,7 +27,7 @@ export function NeoArticleHero({ article, readingTime }: NeoArticleHeroProps) {
 
                 {/* 1. TOP BAR: Back Button Only */}
                 <div className="flex items-center justify-between mb-6 sm:mb-10">
-                    <Link prefetch={false} href="/makale" className="group flex items-center gap-2 sm:gap-3 text-xs sm:text-sm font-black uppercase tracking-widest text-foreground hover:-translate-y-1 transition-transform active:translate-y-0">
+                    <Link prefetch={true} href="/makale" className="group flex items-center gap-2 sm:gap-3 text-xs sm:text-sm font-black uppercase tracking-widest text-foreground hover:-translate-y-1 transition-transform active:translate-y-0">
                         <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl border-[2.5px] border-black dark:border-zinc-600 bg-white dark:bg-zinc-800 shadow-[2px_2px_0px_0px_#000] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.08)] group-hover:shadow-[3px_3px_0px_0px_#000] group-hover:bg-[#FFC800] group-hover:text-black flex items-center justify-center transition-all">
                             <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 stroke-[3px]" />
                         </div>
@@ -71,7 +71,7 @@ export function NeoArticleHero({ article, readingTime }: NeoArticleHeroProps) {
                     <div className="flex flex-wrap items-center gap-3 sm:gap-4">
                         {/* Author */}
                         <Link
-                            prefetch={false}
+                            prefetch={true}
                             href={`/kullanici/${article.author?.username || 'anonim'}`}
                             className="flex items-center gap-2.5 group/author"
                         >

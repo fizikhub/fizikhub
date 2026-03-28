@@ -32,7 +32,7 @@ export function AuthorCard({ author }: AuthorCardProps) {
 
             <div className="flex items-start gap-3 sm:gap-5 relative z-10">
                 {/* Avatar */}
-                <Link prefetch={false} href={`/kullanici/${username}`} className="shrink-0 mt-0.5 sm:mt-0">
+                <Link prefetch={true} href={`/kullanici/${username}`} className="shrink-0 mt-0.5 sm:mt-0">
                     <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-xl border-2 sm:border-[3px] border-black dark:border-zinc-600 overflow-hidden bg-zinc-100 shadow-[2px_2px_0px_0px_#000] sm:shadow-[3px_3px_0px_0px_#000] group-hover:shadow-[3px_3px_0px_0px_#FFC800] sm:group-hover:shadow-[4px_4px_0px_0px_#FFC800] transition-shadow">
                         <Image
                             src={author.avatar_url || "/images/default-avatar.png"}
@@ -47,7 +47,7 @@ export function AuthorCard({ author }: AuthorCardProps) {
                 {/* Info */}
                 <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap mb-1 sm:mb-1.5">
-                        <Link prefetch={false} href={`/kullanici/${username}`}
+                        <Link prefetch={true} href={`/kullanici/${username}`}
                             className="font-black text-[15px] sm:text-lg text-foreground hover:text-[#FFC800] transition-colors tracking-tight leading-none"
                         >
                             {displayName}
@@ -66,7 +66,7 @@ export function AuthorCard({ author }: AuthorCardProps) {
                             {author.bio}
                         </p>
                     )}
-                    <Link prefetch={false} href={`/kullanici/${username}`}
+                    <Link prefetch={true} href={`/kullanici/${username}`}
                         className="inline-flex items-center gap-1.5 text-xs font-black text-foreground hover:text-[#FFC800] mt-3 uppercase tracking-wider transition-colors group/link"
                     >
                         <span>Profilini Gör</span>

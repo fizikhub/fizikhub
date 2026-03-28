@@ -20,7 +20,7 @@ export function ForumSidebar() {
     const isPink = mounted && theme === 'pink';
 
     const MenuItem = ({ href, active, icon: Icon, label }: { href: string; active: boolean; icon: any; label: string }) => (
-        <Link prefetch={false} href={href} className="block group">
+        <Link prefetch={true} href={href} className="block group">
             <div className={cn(
                 "flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 border-[2.5px]",
                 active

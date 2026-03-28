@@ -39,7 +39,7 @@ export default async function WriterDashboard() {
                     <h1 className="text-3xl font-bold tracking-tight">Yazar Paneli</h1>
                     <p className="text-muted-foreground mt-1">Makalelerinizi yönetin ve yeni içerikler oluşturun.</p>
                 </div>
-                <Link prefetch={false} href="/yazar/yeni">
+                <Link prefetch={true} href="/yazar/yeni">
                     <Button>
                         <Plus className="mr-2 h-4 w-4" />
                         Yeni Makale
@@ -53,7 +53,7 @@ export default async function WriterDashboard() {
                         <FileText className="h-12 w-12 mx-auto text-muted-foreground/20 mb-4" />
                         <h3 className="text-lg font-medium">Henüz makaleniz yok</h3>
                         <p className="text-muted-foreground mb-6">İlk makalenizi yazarak topluluğa katkıda bulunun.</p>
-                        <Link prefetch={false} href="/yazar/yeni">
+                        <Link prefetch={true} href="/yazar/yeni">
                             <Button variant="outline">Blog Yaz</Button>
                         </Link>
                     </div>
@@ -94,7 +94,7 @@ export default async function WriterDashboard() {
                                 </div>
 
                                 <div className="mt-6 flex items-center gap-2">
-                                    <Link prefetch={false} href={`/yazar/${article.id}`} className="w-full">
+                                    <Link prefetch={true} href={`/yazar/${article.id}`} className="w-full">
                                         <Button variant="outline" className="w-full" size="sm">
                                             <Edit className="mr-2 h-3 w-3" />
                                             Düzenle

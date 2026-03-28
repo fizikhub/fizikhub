@@ -142,12 +142,12 @@ export function AdminUsersList({ initialUsers }: AdminUsersListProps) {
                                                     {user.is_writer ? "Yazarlığı Al" : "Yazar Yap"}
                                                 </Button>
                                                 <Button variant="outline" size="sm" asChild>
-                                                    <Link prefetch={false} href={`/admin/users/${user.id}`}>
+                                                    <Link prefetch={true} href={`/admin/users/${user.id}`}>
                                                         <Activity className="h-4 w-4 mr-1" /> Aktivite
                                                     </Link>
                                                 </Button>
                                                 <Button variant="ghost" size="sm" asChild>
-                                                    <Link prefetch={false} href={`/profil/${user.username}`}>
+                                                    <Link prefetch={true} href={`/profil/${user.username}`}>
                                                         <Eye className="h-4 w-4" />
                                                     </Link>
                                                 </Button>

@@ -380,7 +380,7 @@ export function AnswerList({ questionId, initialAnswers, questionAuthorId, curre
                                 <div className="flex flex-col sm:flex-row gap-0 sm:gap-4 py-4 px-4 sm:px-5">
                                     {/* Left: Avatar column */}
                                     <div className="hidden sm:flex flex-col items-center shrink-0">
-                                        <Link prefetch={false} href={`/kullanici/${answer.profiles?.username}`} className="relative z-10">
+                                        <Link prefetch={true} href={`/kullanici/${answer.profiles?.username}`} className="relative z-10">
                                             <Avatar className={cn(
                                                 "h-9 w-9 border-[2px] border-black dark:border-zinc-600 rounded-full shadow-[2px_2px_0_0_#000] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.06)] bg-white transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0_0_#000]"
                                             )}>
@@ -403,7 +403,7 @@ export function AnswerList({ questionId, initialAnswers, questionAuthorId, curre
                                         <div className="flex items-start justify-between mb-4">
                                             <div className="flex items-center flex-wrap gap-2">
                                                 {/* Mobile Avatar (Visible only on small screens next to name) */}
-                                                <Link prefetch={false} href={`/kullanici/${answer.profiles?.username}`} className="sm:hidden relative z-10">
+                                                <Link prefetch={true} href={`/kullanici/${answer.profiles?.username}`} className="sm:hidden relative z-10">
                                                     <Avatar className="h-7 w-7 border-[2px] border-black dark:border-zinc-600 rounded-full shadow-[1px_1px_0_0_#000] dark:shadow-none bg-white">
                                                         <AvatarImage src={answer.profiles?.avatar_url || ""} className="object-cover" />
                                                         <AvatarFallback className="bg-white dark:bg-zinc-800 text-black dark:text-white font-black text-[10px]">
@@ -412,7 +412,7 @@ export function AnswerList({ questionId, initialAnswers, questionAuthorId, curre
                                                     </Avatar>
                                                 </Link>
 
-                                                <Link prefetch={false} href={`/kullanici/${answer.profiles?.username}`}
+                                                <Link prefetch={true} href={`/kullanici/${answer.profiles?.username}`}
                                                     className="font-bold text-sm text-foreground hover:text-[#FFBD2E] transition-colors px-1 -ml-1 rounded flex items-center gap-1"
                                                 >
                                                     @{answer.profiles?.username || "Anonim"}

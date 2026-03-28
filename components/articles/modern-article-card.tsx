@@ -18,7 +18,7 @@ export function ModernArticleCard({ article, index = 0 }: ModernArticleCardProps
 
     return (
         <div className="h-full p-2">
-            <Link prefetch={false} href={`/blog/${article.slug}`} className="block h-full group">
+            <Link prefetch={true} href={`/blog/${article.slug}`} className="block h-full group">
                 <article
                     className={`
                         relative h-full flex flex-col

@@ -79,7 +79,7 @@ export function AdminArticlesList({ initialArticles }: AdminArticlesListProps) {
                                         </p>
                                     </div>
                                     <div className="flex gap-2">
-                                        <Link prefetch={false} href={`/admin/articles/${article.id}/edit`}>
+                                        <Link prefetch={true} href={`/admin/articles/${article.id}/edit`}>
                                             <Button variant="outline" size="sm">
                                                 <Pencil className="h-4 w-4" />
                                             </Button>

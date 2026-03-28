@@ -173,7 +173,7 @@ export function ReviewDetailClient({ data, articleId }: ReviewDetailClientProps)
         <div className="container max-w-6xl py-6 space-y-6">
             {/* Header */}
             <div className="flex items-center gap-3">
-                <Link href="/yazar-paneli" prefetch={false}>
+                <Link href="/yazar-paneli" prefetch={true}>
                     <Button variant="ghost" size="icon" className="border-2 border-black dark:border-zinc-800">
                         <ArrowLeft className="w-4 h-4" />
                     </Button>
@@ -194,7 +194,7 @@ export function ReviewDetailClient({ data, articleId }: ReviewDetailClientProps)
                 </div>
                 <div className="flex gap-2">
                     {data.isAdmin && (
-                        <Link href={`/yazar/${articleId}`} prefetch={false}>
+                        <Link href={`/yazar/${articleId}`} prefetch={true}>
                             <Button
                                 variant="outline"
                                 size="sm"

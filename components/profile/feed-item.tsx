@@ -39,7 +39,7 @@ export function FeedItem({
 
     return (
         <div className="group relative border-b border-border/40 hover:bg-foreground/[0.02] transition-colors duration-200 last:border-0">
-            <Link prefetch={false} href={href} className="block w-full py-4 px-2 md:p-4">
+            <Link prefetch={true} href={href} className="block w-full py-4 px-2 md:p-4">
                 <div className="flex items-start justify-between gap-4">
                     <div className="flex-1 min-w-0 space-y-1.5">
                         {/* Meta Header */}

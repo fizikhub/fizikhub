@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { ViewTransitionLink } from "@/components/ui/view-transition-link";
 import { usePathname } from "next/navigation";
 import { Home, BookOpen, MessageCircle, User, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -107,7 +106,8 @@ export function BottomNav() {
                             />
 
                             <div className="relative -top-3.5 z-20">
-                                <ViewTransitionLink
+                                <Link
+                                    prefetch={true}
                                     id="nav-item-share"
                                     href="/paylas"
                                     className="relative block"
@@ -135,7 +135,7 @@ export function BottomNav() {
                                     >
                                         <Plus className="w-5 h-5 text-black stroke-[3px] group-hover:rotate-90 group-hover:scale-110 transition-transform duration-300 relative z-10" />
                                     </m.div>
-                                </ViewTransitionLink>
+                                </Link>
                             </div>
 
                             <NavItem
@@ -199,7 +199,8 @@ function NavItem({ id, href, icon: Icon, label, isActive, onInteract }: { id?: s
     };
 
     return (
-        <ViewTransitionLink
+        <Link
+            prefetch={true}
             id={id}
             href={href}
             onClick={handleNavItemClick}
@@ -248,6 +249,6 @@ function NavItem({ id, href, icon: Icon, label, isActive, onInteract }: { id?: s
                     </m.div>
                 </div>
             </m.div>
-        </ViewTransitionLink>
+        </Link>
     );
 }
