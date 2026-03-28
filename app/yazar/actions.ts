@@ -163,19 +163,8 @@ export async function updateArticle(articleId: number, formData: FormData) {
 
     const isAdmin = profile?.role === "admin" || profile?.username === "baranbozkurt";
 
-    // Use admin client (bypasses RLS) when admin is editing someone else's article
-    let writeClient = supabase;
-    if (isAdmin) {
-        try {
-            const { createAdminClient } = await import("@/lib/supabase-admin");
-            writeClient = createAdminClient();
-        } catch (adminErr) {
-            console.error("[updateArticle] Admin client creation failed:", adminErr);
-            return { success: false, error: "Admin istemcisi oluşturulamadı. SUPABASE_SERVICE_ROLE_KEY ortam değişkenini kontrol edin." };
-        }
-    }
-
-    const { error, count } = await writeClient
+    // Build update query - admins bypass author_id check (RLS policy handles permission)
+    let updateQuery = supabase
         .from("articles")
         .update({
             title,
@@ -188,19 +177,25 @@ export async function updateArticle(articleId: number, formData: FormData) {
         })
         .eq("id", articleId);
 
+    if (!isAdmin) {
+        updateQuery = updateQuery.eq("author_id", user.id);
+    }
+
+    const { error } = await updateQuery;
+
     if (error) {
         console.error("[updateArticle] Supabase error:", JSON.stringify(error));
         return { success: false, error: `Makale güncellenirken hata: ${error.message}` };
     }
 
-    // Yazar yazıyı düzenlediği için tüm onayları sıfırla
-    await writeClient.from("article_approvals").delete().eq("article_id", articleId);
+    // Tüm onayları sıfırla
+    await supabase.from("article_approvals").delete().eq("article_id", articleId);
 
     // Save references
-    await saveReferences(writeClient, articleId, referencesJson);
+    await saveReferences(supabase, articleId, referencesJson);
 
     // Trigger AI review (fire-and-forget)
-    triggerAIReview(writeClient, articleId, title, content, referencesJson).catch(console.error);
+    triggerAIReview(supabase, articleId, title, content, referencesJson).catch(console.error);
 
     revalidatePath("/yazar-paneli", "layout");
     revalidatePath("/yazar", "layout");
