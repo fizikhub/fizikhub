@@ -196,12 +196,13 @@ export async function updateArticle(articleId: number, formData: FormData) {
     // Trigger AI review (fire-and-forget)
     triggerAIReview(supabase, articleId, title, content, referencesJson).catch(console.error);
 
-    revalidatePath("/yazar-paneli");
-    revalidatePath("/yazar");
+    revalidatePath("/yazar-paneli", "layout");
+    revalidatePath("/yazar", "layout");
     revalidatePath(`/yazar/${articleId}`);
-    revalidatePath("/kesfet");
-    revalidatePath("/blog");
-    revalidatePath("/");
+    revalidatePath(`/yazar-paneli/makale/${articleId}`);
+    revalidatePath("/kesfet", "layout");
+    revalidatePath("/blog", "layout");
+    revalidatePath("/", "layout");
     return { success: true };
 }
 
