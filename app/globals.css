@@ -149,6 +149,7 @@
         overflow-x: auto;
         overflow-y: hidden;
         -webkit-overflow-scrolling: touch;
+        max-width: 100%;
     }
 
     .prose .katex-display > .katex {
@@ -163,13 +164,20 @@
     /* Mobile KaTeX: smaller font to prevent overflow */
     @media (max-width: 640px) {
         .prose .katex {
-            font-size: 0.92em;
+            font-size: 0.85em;
         }
 
         .prose .katex-display,
         .prose .math-display {
-            margin: 1em 0;
+            margin: 0.75em 0;
             padding: 0.5em 0;
+            max-width: calc(100vw - 2rem);
+        }
+
+        /* Prevent KaTeX from expanding the page */
+        .prose .katex-html {
+            max-width: 100%;
+            overflow-x: auto;
         }
     }
 }

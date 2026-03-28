@@ -78,12 +78,12 @@ export function MarkdownRenderer({
 
     return (
         <div className={cn(
-            "max-w-none transition-all duration-300",
+            "max-w-none transition-all duration-300 overflow-x-hidden",
             proseSizeClasses[fontSize],
             fontClasses[fontFamily],
             isZenMode ? "leading-loose" : "",
             className
-        )}>
+        )} style={{ wordBreak: 'break-word', overflowWrap: 'anywhere' }}>
             <ReactMarkdown
                 remarkPlugins={[remarkMath]}
                 rehypePlugins={[
@@ -92,13 +92,42 @@ export function MarkdownRenderer({
                         ...defaultSchema,
                         attributes: {
                             ...defaultSchema.attributes,
-                            div: [...(defaultSchema.attributes?.div || []), 'className', 'math', 'math-display'],
-                            span: [...(defaultSchema.attributes?.span || []), 'className', 'math', 'math-inline', 'data-type', 'data-latex'],
+                            div: [...(defaultSchema.attributes?.div || []), 'className', 'style'],
+                            span: [...(defaultSchema.attributes?.span || []), 'className', 'style', 'data-type', 'data-latex', 'aria-hidden'],
                             code: ['className'],
                             img: ['src', 'alt', 'title', 'width', 'height', 'loading'],
                             iframe: ['src', 'width', 'height', 'allow', 'allowfullscreen', 'frameborder'],
+                            // KaTeX needs these elements
+                            math: ['xmlns', 'display'],
+                            semantics: [],
+                            annotation: ['encoding'],
+                            mrow: [],
+                            mi: [],
+                            mo: [],
+                            mn: [],
+                            msup: [],
+                            msub: [],
+                            mfrac: [],
+                            mspace: ['width'],
+                            mtext: [],
+                            menclose: ['notation'],
+                            mover: [],
+                            munder: [],
+                            msqrt: [],
+                            mroot: [],
+                            mtable: [],
+                            mtr: [],
+                            mtd: [],
                         },
-                        tagNames: [...(defaultSchema.tagNames || []), 'iframe'],
+                        tagNames: [
+                            ...(defaultSchema.tagNames || []),
+                            'iframe',
+                            // KaTeX HTML tags
+                            'math', 'semantics', 'annotation',
+                            'mrow', 'mi', 'mo', 'mn', 'msup', 'msub', 'mfrac',
+                            'mspace', 'mtext', 'menclose', 'mover', 'munder',
+                            'msqrt', 'mroot', 'mtable', 'mtr', 'mtd',
+                        ],
                     }],
                     rehypeKatex,
                     rehypeHighlight,
@@ -129,8 +158,8 @@ export function MarkdownRenderer({
                     div: ({ node, children, className: divClassName, ...props }: any) => {
                         if (divClassName?.includes('math-display')) {
                             return (
-                                <div className="overflow-x-auto my-6 sm:my-8 py-4 px-3 sm:px-5 bg-zinc-50 dark:bg-zinc-900/60 border-2 border-black dark:border-zinc-700 rounded-xl shadow-[4px_4px_0px_0px_#000] dark:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.4)]" {...props}>
-                                    <div className={divClassName}>{children}</div>
+                                <div className="overflow-x-auto my-6 sm:my-8 py-4 px-3 sm:px-5 bg-zinc-50 dark:bg-zinc-900/60 border-2 border-black dark:border-zinc-700 rounded-xl shadow-[4px_4px_0px_0px_#000] dark:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.4)]" style={{ maxWidth: '100%' }} {...props}>
+                                    <div className={divClassName} style={{ textAlign: 'center', minWidth: 0 }}>{children}</div>
                                 </div>
                             );
                         }
