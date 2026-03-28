@@ -23,12 +23,16 @@ interface ReadingControlsProps {
     onZenModeChange: (isZen: boolean) => void;
     onFontSizeChange: (size: 'sm' | 'base' | 'lg' | 'xl') => void;
     onFontFamilyChange: (font: 'sans' | 'serif') => void;
+    scrollToTop?: () => void;
+    showScrollToTop?: boolean;
 }
 
 export function ReadingControls({
     onZenModeChange,
     onFontSizeChange,
-    onFontFamilyChange
+    onFontFamilyChange,
+    scrollToTop,
+    showScrollToTop
 }: ReadingControlsProps) {
     const [isZenMode, setIsZenMode] = useState(false);
     const [fontSize, setFontSize] = useState<'sm' | 'base' | 'lg' | 'xl'>('base');
@@ -68,8 +72,28 @@ export function ReadingControls({
     };
 
     return (
-        <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3">
+        <div className="fixed bottom-[110px] sm:bottom-6 right-4 sm:right-6 z-50 flex flex-col items-end gap-3">
             <AnimatePresence>
+                {/* Scroll to Top Button */}
+                {showScrollToTop && scrollToTop && (
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.8, y: 20 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.8, y: 20 }}
+                        className="mb-0"
+                    >
+                        <Button
+                            variant="default"
+                            size="icon"
+                            onClick={scrollToTop}
+                            className="h-11 w-11 rounded-xl bg-[#FFC800] dark:bg-[#23A9FA] hover:bg-[#FFC800]/90 dark:hover:bg-[#23A9FA]/90 text-black dark:text-white border-[3px] border-black dark:border-white/20 shadow-[3px_3px_0px_#000] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)] transition-transform hover:-translate-y-1 active:translate-y-0"
+                            aria-label="Başa dön"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="m18 15-6-6-6 6"/></svg>
+                        </Button>
+                    </motion.div>
+                )}
+
                 {isZenMode && (
                     <motion.div
                         initial={{ opacity: 0, scale: 0.8, y: 20 }}

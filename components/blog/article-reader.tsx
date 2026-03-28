@@ -354,21 +354,14 @@ export function ArticleReader({
                 onZenModeChange={setIsZenMode}
                 onFontSizeChange={setFontSize}
                 onFontFamilyChange={setFontFamily}
+                scrollToTop={scrollToTop}
+                showScrollToTop={scrollProgress > 30}
             />
 
             {/* Reading Time Remaining Pill */}
             <div className={cn("reading-time-pill", showTimeRemaining && "visible")}>
                 ~{minutesRemaining} dk kaldı
             </div>
-
-            {/* Scroll to Top Button */}
-            <button
-                onClick={scrollToTop}
-                className={cn("scroll-to-top-btn", scrollProgress > 30 && "visible")}
-                aria-label="Başa dön"
-            >
-                <ArrowUp className="w-5 h-5 stroke-[3px]" />
-            </button>
 
             {/* Image Lightbox */}
             {lightboxSrc && (
