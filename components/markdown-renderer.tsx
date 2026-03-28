@@ -58,9 +58,13 @@ export function MarkdownRenderer({
     const processedContent = useMemo(() => {
         let c = content;
         // Convert <span data-type="math" data-latex="..."></span> or self-closing variants
-        c = c.replace(/<span[^>]*data-type="math"[^>]*data-latex="([^"]*)"[^>]*>(?:<\/span>)?/gi, (_, latex) => `$${latex}$`);
+        c = c.replace(/<span[^>]*data-type="math"[^>]*data-latex="([^"]*)"[^>]*>(?:<\/span>)?/gi, (_, latex) => `<span class="math-inline">${latex}</span>`);
         // Also handle reverse attribute order: data-latex before data-type
-        c = c.replace(/<span[^>]*data-latex="([^"]*)"[^>]*data-type="math"[^>]*>(?:<\/span>)?/gi, (_, latex) => `$${latex}$`);
+        c = c.replace(/<span[^>]*data-latex="([^"]*)"[^>]*data-type="math"[^>]*>(?:<\/span>)?/gi, (_, latex) => `<span class="math-inline">${latex}</span>`);
+        
+        // Fix for common author mistake: centering formulas with spaces.
+        // If a line starts with 4+ spaces, Markdown treats it as a code block and remarkMath ignores it.
+        c = c.replace(/^[ \t]{4,}(\$\$?[^$\n]+\$\$?)[ \t]*$/gm, '$1');
         return c;
     }, [content]);
 
@@ -92,9 +96,9 @@ export function MarkdownRenderer({
                         ...defaultSchema,
                         attributes: {
                             ...defaultSchema.attributes,
-                            div: [...(defaultSchema.attributes?.div || []), 'className', 'style'],
-                            span: [...(defaultSchema.attributes?.span || []), 'className', 'style', 'data-type', 'data-latex', 'aria-hidden'],
-                            code: ['className'],
+                            div: [...(defaultSchema.attributes?.div || []), ['className', 'math', 'math-display'], 'style'],
+                            span: [...(defaultSchema.attributes?.span || []), ['className', 'math', 'math-inline'], 'style', 'data-type', 'data-latex', 'aria-hidden'],
+                            code: [['className', /^language-./, 'hljs', 'math-inline', 'math-display']],
                             img: ['src', 'alt', 'title', 'width', 'height', 'loading'],
                             iframe: ['src', 'width', 'height', 'allow', 'allowfullscreen', 'frameborder'],
                             // KaTeX needs these elements
