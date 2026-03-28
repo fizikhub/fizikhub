@@ -28,12 +28,19 @@ export function ViewTransitionLink({
 
         if (e.defaultPrevented) return;
 
-        e.preventDefault();
-
-        if (!document.startViewTransition || window.innerWidth < 768) {
-            router.push(href);
+        // Let the browser/Next.js handle new tabs
+        if (e.ctrlKey || e.metaKey || e.shiftKey || e.altKey || e.button !== 0) {
             return;
         }
+
+        // On mobile or unsupported browsers, do NOT prevent default.
+        // Let the native Next.js <Link> handle the click natively so it uses React concurrent rendering!
+        // This is crucial for "buttery" fluid navigation without main thread blocking.
+        if (!document.startViewTransition || window.innerWidth < 768) {
+            return;
+        }
+
+        e.preventDefault();
 
         document.startViewTransition(() => {
             router.push(href);
