@@ -143,56 +143,82 @@ export default async function QuestionPage({ params }: PageProps) {
     const hasVoted = userVote?.vote_type === 1;
 
     // Fetch like counts and user likes for all answers
-    const answersWithLikes = await Promise.all((answers || []).map(async (answer) => {
-        const { count: likeCount } = await supabase
-            .from('answer_likes')
-            .select('*', { count: 'exact', head: true })
-            .eq('answer_id', answer.id);
+    // Extract answer IDs
+    const answerIds = (answers || []).map(a => a.id);
+    const hasAnswers = answerIds.length > 0;
 
-        // Fetch comments with like information
-        const { data: comments } = await supabase
+    // Fetch all related data in parallel for answers
+    const [
+        { data: allAnswerLikesData },
+        { data: allAnswerUserLikesData },
+        { data: allCommentsData }
+    ] = await Promise.all([
+        // 1. All answer likes (using view/count or full select grouped by id)
+        // Note: For counts, getting all records is acceptable if the dataset per question is small.
+        // A better approach long-term is an RPC, but fetching 'answer_id' to group in memory works for now.
+        hasAnswers ? supabase
+            .from('answer_likes')
+            .select('answer_id')
+            .in('answer_id', answerIds) : Promise.resolve({ data: [] }),
+
+        // 2. User's explicit likes for these answers
+        user && hasAnswers ? supabase
+            .from('answer_likes')
+            .select('answer_id')
+            .eq('user_id', user.id)
+            .in('answer_id', answerIds) : Promise.resolve({ data: [] }),
+
+        // 3. All comments for these answers
+        hasAnswers ? supabase
             .from('answer_comments')
             .select(`
                 *,
                 profiles(username, full_name, avatar_url, is_verified)
             `)
-            .eq('answer_id', answer.id)
-            .order('created_at', { ascending: true });
+            .in('answer_id', answerIds)
+            .order('created_at', { ascending: true }) : Promise.resolve({ data: [] })
+    ]);
 
-        // Add like counts and isLiked status to comments
-        const commentsWithLikes = await Promise.all((comments || []).map(async (comment) => {
-            const { count: commentLikeCount } = await supabase
-                .from('answer_comment_likes')
-                .select('*', { count: 'exact', head: true })
-                .eq('comment_id', comment.id);
+    const commentIds = (allCommentsData || []).map(c => c.id);
+    const hasComments = commentIds.length > 0;
 
-            let isCommentLiked = false;
-            if (user) {
-                const { data: userCommentLike } = await supabase
-                    .from('answer_comment_likes')
-                    .select('id')
-                    .eq('comment_id', comment.id)
-                    .eq('user_id', user.id)
-                    .single();
-                isCommentLiked = !!userCommentLike;
-            }
+    // Fetch all related data for comments in parallel
+    const [
+        { data: allCommentLikesData },
+        { data: allCommentUserLikesData }
+    ] = await Promise.all([
+        // 1. All comment likes
+        hasComments ? supabase
+            .from('answer_comment_likes')
+            .select('comment_id')
+            .in('comment_id', commentIds) : Promise.resolve({ data: [] }),
 
-            return { ...comment, likeCount: commentLikeCount || 0, isLiked: isCommentLiked };
-        }));
+        // 2. User's specific likes for these comments
+        user && hasComments ? supabase
+            .from('answer_comment_likes')
+            .select('comment_id')
+            .eq('user_id', user.id)
+            .in('comment_id', commentIds) : Promise.resolve({ data: [] })
+    ]);
 
-        let isLiked = false;
-        if (user) {
-            const { data: userLike } = await supabase
-                .from('answer_likes')
-                .select('id')
-                .eq('answer_id', answer.id)
-                .eq('user_id', user.id)
-                .single();
-            isLiked = !!userLike;
-        }
+    // Aggregate in memory (O(N) operations, entirely eliminates N+1 DB calls)
+    const answersWithLikes = (answers || []).map((answer) => {
+        // Count Answer Likes
+        const likeCount = (allAnswerLikesData || []).filter(l => l.answer_id === answer.id).length;
+        // Check User Answer Like
+        const isLiked = (allAnswerUserLikesData || []).some(l => l.answer_id === answer.id);
 
-        return { ...answer, likeCount: likeCount || 0, isLiked, comments: commentsWithLikes };
-    }));
+        // Map Comments
+        const answerComments = (allCommentsData || []).filter(c => c.answer_id === answer.id);
+        const commentsWithLikes = answerComments.map((comment) => {
+            const commentLikeCount = (allCommentLikesData || []).filter(cl => cl.comment_id === comment.id).length;
+            const isCommentLiked = (allCommentUserLikesData || []).some(cl => cl.comment_id === comment.id);
+
+            return { ...comment, likeCount: commentLikeCount, isLiked: isCommentLiked };
+        });
+
+        return { ...answer, likeCount, isLiked, comments: commentsWithLikes };
+    });
 
 
 

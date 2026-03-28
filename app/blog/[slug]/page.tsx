@@ -81,42 +81,22 @@ export default async function BlogPage({ params }: PageProps) {
     // Get current user
     const { data: { user } } = await supabase.auth.getUser();
 
-    // Fetch likes data
-    const { count: dbLikeCount } = await supabase
-        .from('article_likes')
-        .select('*', { count: 'exact', head: true })
-        .eq('article_id', article.id);
+    // Group all independent sequential queries into a Promise.all block
+    const [
+        { count: dbLikeCount },
+        { data: userLike },
+        { data: userBookmark },
+        { data: commentsData },
+        { data: relatedArticles }
+    ] = await Promise.all([
+        supabase.from('article_likes').select('*', { count: 'exact', head: true }).eq('article_id', article.id),
+        user ? supabase.from('article_likes').select('id').eq('article_id', article.id).eq('user_id', user.id).single() : Promise.resolve({ data: null }),
+        user ? supabase.from('article_bookmarks').select('id').eq('article_id', article.id).eq('user_id', user.id).single() : Promise.resolve({ data: null }),
+        supabase.from('article_comments').select('id, content, created_at, parent_comment_id, user_id').eq('article_id', article.id).order('created_at', { ascending: true }),
+        supabase.from('articles').select('id, title, slug, excerpt, cover_url, category, created_at, author:author_id(username, full_name)').eq('category', article.category || 'Genel').neq('id', article.id).order('created_at', { ascending: false }).limit(3)
+    ]);
 
     const likeCount = article.title === "Sessiz Bir Varsayım: Yerçekimi" ? 7 : dbLikeCount;
-
-    const { data: userLike } = user ? await supabase
-        .from('article_likes')
-        .select('id')
-        .eq('article_id', article.id)
-        .eq('user_id', user.id)
-        .single() : { data: null };
-
-    // Fetch bookmark status
-    const { data: userBookmark } = user ? await supabase
-        .from('article_bookmarks')
-        .select('id')
-        .eq('article_id', article.id)
-        .eq('user_id', user.id)
-        .single() : { data: null };
-
-    // Fetch comments with user profiles
-    const { data: commentsData } = await supabase
-        .from('article_comments')
-        .select(`
-            id,
-            content,
-            created_at,
-            parent_comment_id,
-            user_id
-        `)
-        .eq('article_id', article.id)
-        .order('created_at', { ascending: true });
-
 
     if (commentsData && commentsData.length > 0) {
 
@@ -139,28 +119,6 @@ export default async function BlogPage({ params }: PageProps) {
             avatar_url: null
         }
     })) || [];
-
-    // Fetch related articles
-    const { data: relatedArticles } = await supabase
-        .from('articles')
-        .select(`
-            id,
-            title,
-            slug,
-            excerpt,
-            excerpt,
-            cover_url,
-            category,
-            created_at,
-            author:author_id (
-                username,
-                full_name
-            )
-        `)
-        .eq('category', article.category || 'Genel')
-        .neq('id', article.id)
-        .order('created_at', { ascending: false })
-        .limit(3);
 
     // Check if user is admin
     const isAdmin = user?.email?.toLowerCase() === 'barannnbozkurttb.b@gmail.com';

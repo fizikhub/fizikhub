@@ -54,19 +54,20 @@ export default async function PublicProfilePage({ params }: PageProps) {
     const { username } = await params;
     const supabase = await createClient();
 
-    // Fetch profile
-    const { data: profile } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('username', username)
-        .single();
+    // Fetch profile and current user concurrently
+    const [
+        { data: profile },
+        { data: { user } }
+    ] = await Promise.all([
+        supabase.from('profiles').select('*').eq('username', username).single(),
+        supabase.auth.getUser()
+    ]);
 
     if (!profile) {
         notFound();
     }
 
-    // Fetch current user to check if it's own profile
-    const { data: { user } } = await supabase.auth.getUser();
+    // Check if it's own profile
     const isOwnProfile = user?.id === profile.id;
 
     // Run all independent queries in parallel
