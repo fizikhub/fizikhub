@@ -189,6 +189,14 @@ export async function getArticleDetail(articleId: number) {
             .eq("article_id", articleId);
 
         const hasApproved = approvals?.some(a => a.user_id === user.id) || false;
+        
+        const { data: profile } = await supabase
+            .from("profiles")
+            .select("role, username")
+            .eq("id", user.id)
+            .single();
+            
+        const isAdminUser = profile?.role === "admin" || profile?.username === "baranbozkurt";
 
         return {
             article,
@@ -198,6 +206,7 @@ export async function getArticleDetail(articleId: number) {
             approvals: approvals || [],
             hasApproved,
             currentUserId: user.id,
+            isAdmin: isAdminUser,
         };
 
     } catch (err: any) {

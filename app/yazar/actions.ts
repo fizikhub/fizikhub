@@ -161,7 +161,9 @@ export async function updateArticle(articleId: number, formData: FormData) {
         return { success: false, error: "Lütfen zorunlu alanları doldurun." };
     }
 
-    const { error } = await supabase
+    const isAdmin = profile?.role === "admin" || profile?.username === "baranbozkurt";
+
+    let updateQuery = supabase
         .from("articles")
         .update({
             title,
@@ -172,8 +174,13 @@ export async function updateArticle(articleId: number, formData: FormData) {
             status: "pending", // Re-submit for approval on update
             published: false
         })
-        .eq("id", articleId)
-        .eq("author_id", user.id);
+        .eq("id", articleId);
+
+    if (!isAdmin) {
+        updateQuery = updateQuery.eq("author_id", user.id);
+    }
+
+    const { error } = await updateQuery;
 
     if (error) {
         console.error("Error updating article:", error);

@@ -17,23 +17,29 @@ export default async function EditArticlePage({ params }: EditArticlePageProps) 
         redirect("/login");
     }
 
-    // Check if user is a writer
+    // Check if user is a writer or admin
     const { data: profile } = await supabase
         .from("profiles")
-        .select("is_writer")
+        .select("is_writer, role, username")
         .eq("id", user.id)
         .single();
 
-    if (!profile?.is_writer) {
+    if (!profile?.is_writer && profile?.role !== "admin" && profile?.username !== "baranbozkurt") {
         redirect("/");
     }
 
-    const { data: article } = await supabase
+    const isAdmin = profile?.role === "admin" || profile?.username === "baranbozkurt";
+
+    let query = supabase
         .from("articles")
         .select("*")
-        .eq("id", id)
-        .eq("author_id", user.id)
-        .single();
+        .eq("id", id);
+        
+    if (!isAdmin) {
+        query = query.eq("author_id", user.id);
+    }
+    
+    const { data: article } = await query.single();
 
     if (!article) {
         notFound();

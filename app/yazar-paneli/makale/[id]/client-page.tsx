@@ -40,6 +40,7 @@ interface ReviewDetailClientProps {
         approvals: any[];
         hasApproved: boolean;
         currentUserId: string;
+        isAdmin?: boolean;
     };
     articleId: number;
 }
@@ -192,6 +193,17 @@ export function ReviewDetailClient({ data, articleId }: ReviewDetailClientProps)
                     </div>
                 </div>
                 <div className="flex gap-2">
+                    {data.isAdmin && (
+                        <Link href={`/yazar/${articleId}`} prefetch={false}>
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                className="border-2 border-amber-500 font-bold bg-amber-500 hover:bg-amber-600 text-white"
+                            >
+                                <PenTool className="w-4 h-4 mr-2" /> Düzenle
+                            </Button>
+                        </Link>
+                    )}
                     <Button
                         variant="outline"
                         size="sm"
