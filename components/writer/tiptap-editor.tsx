@@ -102,13 +102,9 @@ export function TiptapEditor({ content, onChange }: TiptapEditorProps) {
     // Debounce timer for onUpdate — getMarkdown() is expensive, don't call every keystroke
     const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-    // Avoid re-running regex on every keystroke by setting initial content once
-    const initialContentRef = useRef(false);
-    const [editorContent, setEditorContent] = useState('');
-
-    useEffect(() => {
-        if (!content || initialContentRef.current) return;
-
+    // Calculate initial content synchronously so useEditor gets it on mount
+    const initialEditorContent = useMemo(() => {
+        if (!content) return '';
         let c = content;
         // 1. Convert indented single-dollar math lines to un-indented spans
         c = c.replace(/^[ \t]*\$([^$\n]+)\$[ \t]*$/gm, '<span data-type="math" data-latex="$1"></span>');
@@ -116,10 +112,8 @@ export function TiptapEditor({ content, onChange }: TiptapEditorProps) {
         c = c.replace(/\$\$([^$]+?)\$\$/g, '<span data-type="math" data-latex="$1"></span>');
         // 3. Convert inline $...$ to spans
         c = c.replace(/(^|[^\$])\$([^$\n]+?)\$([^\$]|$)/g, '$1<span data-type="math" data-latex="$2"></span>$3');
-
-        setEditorContent(c);
-        initialContentRef.current = true;
-    }, [content]);
+        return c;
+    }, []); // Only run once on mount using the initial content prop
 
     const editor = useEditor({
         extensions: [
@@ -157,7 +151,7 @@ export function TiptapEditor({ content, onChange }: TiptapEditorProps) {
                 types: ['heading', 'paragraph'],
             }),
         ],
-        content: editorContent,
+        content: initialEditorContent,
         editorProps: {
             attributes: {
                 class: 'prose prose-lg dark:prose-invert max-w-none focus:outline-none min-h-[400px] p-4',
