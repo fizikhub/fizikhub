@@ -101,14 +101,28 @@ export async function approveArticle(articleId: number) {
 
         if (countError) return { success: false, error: countError.message };
 
-        if (count && count >= 4) {
+        // Admin profil kontrolü
+        const { data: adminProfile } = await supabase
+            .from("profiles")
+            .select("role, username")
+            .eq("id", user.id)
+            .single();
+
+        const isStrictAdmin = adminProfile?.role === "admin" || adminProfile?.username === "baranbozkurt";
+
+        // Admin onaylarsa direkt yayına al, diğer yazarlar için 4 onay gerekli
+        if (isStrictAdmin || (count && count >= 4)) {
             await supabase.from("articles")
                 .update({ published: true, status: 'published' }) 
                 .eq("id", articleId);
         }
 
         revalidatePath("/yazar-paneli");
-        return { success: true, count };
+        revalidatePath("/makale");
+        revalidatePath("/kesfet");
+        revalidatePath("/blog");
+        revalidatePath("/");
+        return { success: true, count, published: isStrictAdmin || (count && count >= 4) };
 
     } catch (err: any) {
         return { success: false, error: err.message };
