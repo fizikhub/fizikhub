@@ -99,7 +99,6 @@ export function Navbar() {
                                     left: `${drop.left}%`,
                                     fontSize: `${13 * drop.scale}px`,
                                     color: `rgba(255,255,255,${drop.opacity || 0.3})`,
-                                    filter: 'blur(0.3px)',
                                     animation: `physicsRainUp ${drop.duration}s linear ${drop.delay}s infinite`,
                                 }}
                             >

@@ -42,7 +42,7 @@ export function ProfileEditForm({ user, profile }: ProfileEditFormProps) {
         if (file) {
             // Check size (5MB limit)
             if (file.size > 5 * 1024 * 1024) {
-                toast.error("Profil fotoğrafı 5MB'dan küçük olmalıdır.");
+                toast.error("Profil fotoğrafı 5MB'dan küçük olmalıdır.Fotoğrafı sıkıştır.");
                 return;
             }
             setAvatarFile(file);
@@ -103,7 +103,7 @@ export function ProfileEditForm({ user, profile }: ProfileEditFormProps) {
             router.push('/profil');
 
         } catch (error: any) {
-            toast.error(error.message || "Bir hata oluştu.");
+            toast.error(error.message || "Bir hata oluştu Rick.");
         } finally {
             setIsLoading(false);
         }
