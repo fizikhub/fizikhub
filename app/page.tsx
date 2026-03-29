@@ -132,11 +132,37 @@ const getCachedFeedData = unstable_cache(
   { revalidate: 60, tags: ['feed'] }
 );
 
+import { preload } from "react-dom";
+import { getImageProps } from "next/image";
+
 export default async function Home() {
   const { articles, questions, suggestedUsers, stories, groups } = await getCachedFeedData();
 
   // Process and Merge Data
   const feedItems = processFeedData(articles, questions);
+  
+  // Format slider articles to find the LCP image
+  const sliderArticles = formatSliderArticles(articles);
+  
+  // Explicitly Preload the LCP Image to defeat CSS render-blocking
+  if (sliderArticles && sliderArticles.length > 0 && sliderArticles[0].image) {
+    const { props: { src, srcSet, sizes } } = getImageProps({
+      src: sliderArticles[0].image,
+      alt: sliderArticles[0].title || "LCP Article",
+      fill: true,
+      sizes: "(max-width: 640px) 215px, 275px",
+      priority: true,
+      quality: 85,
+    });
+    
+    // This tells React to hoist a <link rel="preload" as="image"> to the very top of <head>
+    preload(src, {
+      as: "image",
+      imageSrcSet: srcSet,
+      imageSizes: sizes,
+      fetchPriority: "high",
+    });
+  }
 
   // JSON-LD Structured Data for Homepage (ItemList)
   const jsonLd = {
