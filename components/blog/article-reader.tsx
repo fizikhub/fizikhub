@@ -6,7 +6,7 @@ const MarkdownRenderer = dynamic(() => import("@/components/markdown-renderer").
     loading: () => <div className="h-96 w-full animate-pulse bg-muted rounded-xl" />
 });
 import { cn } from "@/lib/utils";
-import { AnimatePresence, m as motion } from "framer-motion";
+import { AnimatePresence, m as motion, useScroll, useMotionValueEvent, useTransform } from "framer-motion";
 import { AuthorCard } from "@/components/blog/author-card";
 import { LikeButton } from "@/components/articles/like-button";
 import { BookmarkButton } from "@/components/bookmark-button";
@@ -53,27 +53,40 @@ export function ArticleReader({
     const [isZenMode, setIsZenMode] = useState(false);
     const [fontSize, setFontSize] = useState<'sm' | 'base' | 'lg' | 'xl'>('base');
     const [fontFamily, setFontFamily] = useState<'sans' | 'serif'>('sans');
-    const [scrollProgress, setScrollProgress] = useState(0);
     const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
+    const [showScrollTop, setShowScrollTop] = useState(false);
     const contentRef = useRef<HTMLDivElement>(null);
+    const pillRef = useRef<HTMLDivElement>(null);
+
+    const { scrollYProgress } = useScroll();
 
     // Parse total reading time from the "X dk" string
     const totalMinutes = parseInt(readingTime) || 5;
-    const minutesRemaining = Math.max(1, Math.ceil(totalMinutes * (1 - scrollProgress / 100)));
-    const showTimeRemaining = scrollProgress > 5 && scrollProgress < 95;
 
-    useEffect(() => {
-        const handleScroll = () => {
-            const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
-            if (totalHeight <= 0) return;
-            const progress = (window.scrollY / totalHeight) * 100;
-            setScrollProgress(Math.min(100, Math.max(0, progress)));
-        };
+    // Use framer-motion to avoid react re-renders on every scroll tick
+    useMotionValueEvent(scrollYProgress, "change", (latest) => {
+        // Toggle scroll-to-top button
+        if (latest > 0.3 && !showScrollTop) {
+            setShowScrollTop(true);
+        } else if (latest <= 0.3 && showScrollTop) {
+            setShowScrollTop(false);
+        }
 
-        window.addEventListener('scroll', handleScroll, { passive: true });
-        handleScroll(); // init
-        return () => window.removeEventListener('scroll', handleScroll);
-    }, []);
+        // Update pill text directly via ref to bypass react render
+        if (pillRef.current) {
+            const progress = latest * 100;
+            const minutesRemaining = Math.max(1, Math.ceil(totalMinutes * (1 - latest)));
+            const showTimeRemaining = progress > 5 && progress < 95;
+            
+            if (showTimeRemaining) {
+                pillRef.current.classList.add("visible");
+                pillRef.current.textContent = `~${minutesRemaining} dk kaldı`;
+            } else {
+                pillRef.current.classList.remove("visible");
+            }
+        }
+    });
+
 
     // Image lightbox: intercept clicks on article images
     useEffect(() => {
@@ -166,13 +179,7 @@ export function ArticleReader({
 
     return (
         <div className="relative" ref={contentRef}>
-            {/* Reading Progress Bar */}
-            <div className="fixed top-0 left-0 w-full h-1.5 z-[100] bg-zinc-200/50 dark:bg-zinc-800/50 backdrop-blur-sm">
-                <div 
-                    className="h-full bg-[#FFC800] dark:bg-[#23A9FA] transition-all duration-150 ease-out origin-left"
-                    style={{ width: `${scrollProgress}%` }}
-                />
-            </div>
+            {/* Reading Progress Bar has been DELETED because app/makale/[slug]/page.tsx already renders <ReadingProgress /> globally! */}
 
             <AnimatePresence>
                 {isZenMode && (
@@ -341,7 +348,7 @@ export function ArticleReader({
 
                                     {/* Scroll to Top — only if scrolled */}
                                     <AnimatePresence>
-                                        {scrollProgress > 30 && (
+                                        {showScrollTop && (
                                             <motion.div
                                                 initial={{ width: 0, opacity: 0 }}
                                                 animate={{ width: 'auto', opacity: 1 }}
@@ -484,9 +491,7 @@ export function ArticleReader({
 
 
             {/* Reading Time Remaining Pill */}
-            <div className={cn("reading-time-pill", showTimeRemaining && "visible")}>
-                ~{minutesRemaining} dk kaldı
-            </div>
+            <div ref={pillRef} className="reading-time-pill"></div>
 
             {/* Image Lightbox */}
             {lightboxSrc && (
