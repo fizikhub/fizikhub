@@ -31,7 +31,6 @@ const nextConfig: NextConfig = {
 
   // Performance optimizations
   experimental: {
-    optimizeCss: true, // Inlines critical CSS & defers the rest
     staleTimes: {
       dynamic: 30, // Client-side cache for dynamic pages (seconds)
       static: 300, // Client-side cache for static pages (seconds)
