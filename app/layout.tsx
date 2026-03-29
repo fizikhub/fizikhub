@@ -238,24 +238,6 @@ export default async function RootLayout({
   return (
     <html lang="tr" suppressHydrationWarning>
       <head>
-        {/* Critical inline CSS — eliminates render-blocking for above-the-fold paint */}
-        <style dangerouslySetInnerHTML={{ __html: `
-          :root{--background:0 0% 100%;--foreground:0 0% 0%;--primary:47 100% 50%;--border:0 0% 0%}
-          .dark{--background:0 0% 16%;--foreground:0 0% 98%;--border:0 0% 100%}
-          *,::before,::after{box-sizing:border-box;border-width:0;border-style:solid;border-color:hsl(var(--border))}
-          html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;tab-size:4;line-height:1.5}
-          body{margin:0;font-family:var(--font-sans),system-ui,arial,sans-serif;background-color:hsl(var(--background));color:hsl(var(--foreground));min-height:100dvh;display:flex;flex-direction:column;-webkit-font-smoothing:antialiased}
-        `}} />
-        {/* Async CSS loader — converts render-blocking <link rel="stylesheet"> to preload+swap */}
-        <script dangerouslySetInnerHTML={{ __html: `
-          if(typeof window!=='undefined'){document.addEventListener('DOMContentLoaded',function(){
-            document.querySelectorAll('link[rel="stylesheet"][href*="/_next/static/css"]').forEach(function(l){
-              var h=l.href;l.rel='preload';l.as='style';
-              l.onload=function(){this.onload=null;this.rel='stylesheet'};
-              l.href=h;
-            });
-          })}
-        `}} />
       </head>
       <body suppressHydrationWarning className={`${inter.variable} ${lora.variable} font-sans min-h-[100dvh] flex flex-col pb-16 md:pb-0 bg-background text-foreground`}>
         {/* KaTeX loaded via components/markdown-renderer.tsx to avoid duplicates */}

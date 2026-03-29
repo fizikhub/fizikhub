@@ -31,6 +31,7 @@ const nextConfig: NextConfig = {
 
   // Performance optimizations
   experimental: {
+    inlineCss: true, // Native Next.js 15+ solution to inline all CSS and eliminate render-blocking <link> tags
     staleTimes: {
       dynamic: 30, // Client-side cache for dynamic pages (seconds)
       static: 300, // Client-side cache for static pages (seconds)
