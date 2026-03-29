@@ -14,8 +14,7 @@ export function BottomNav() {
     const { scrollY, scrollYProgress } = useScroll();
     const scrollVelocity = useVelocity(scrollY);
 
-    // Performance: Instead of React state, use a MotionValue to prevent re-renders on scroll
-    const [isAtBottom, setIsAtBottom] = useState(false);
+    // Pure MotionValues instead of React State to avoid re-renders during scroll
     const navY = useMotionValue(0);
     const targetYRef = useRef(0);
 
@@ -27,15 +26,13 @@ export function BottomNav() {
             let targetY = navY.get();
             let targetDuration = 0.4;
 
-            // Detect if at bottom using scrollYProgress to avoid layout thrashing
-            // (document.body.offsetHeight triggers forced reflow)
+            // Detect if at bottom using scrollYProgress 
+            // We NO LONGER update React state (isAtBottom) here to prevent DOM thrashing
             const isNearBottom = scrollYProgress.get() > 0.95;
 
             if (isNearBottom) {
-                if (!isAtBottom) setIsAtBottom(true);
                 targetY = 0;
             } else {
-                if (isAtBottom) setIsAtBottom(false);
                 if (latest < 50) {
                     targetY = 0;
                 } else if (diff > 5) {
@@ -68,122 +65,81 @@ export function BottomNav() {
     return (
         <m.div
             style={{ y: navY }}
-
             className="fixed bottom-0 left-0 right-0 z-[50] md:hidden font-sans"
         >
             <nav aria-label="Mobil navigasyon" className={cn(
-                "w-full transition-all duration-500",
-                isAtBottom ? "h-[70px] bg-black/60" : "h-[50px] bg-white/80 dark:bg-[#121212]/80",
-                "backdrop-blur-xl border-t border-black/10 dark:border-white/10 flex items-center justify-around px-2 pb-safe relative shadow-[0_-4px_16px_rgba(0,0,0,0.05)]"
+                "w-full transition-all duration-500 h-[50px] bg-white/80 dark:bg-[#121212]/80 backdrop-blur-xl border-t border-black/10 dark:border-white/10 flex items-center justify-around px-2 pb-safe relative shadow-[0_-4px_16px_rgba(0,0,0,0.05)]"
             )}>
+                <div className="flex items-center justify-around w-full">
+                    <NavItem
+                        id="nav-item-home"
+                        href="/"
+                        icon={Home}
+                        label="Ana Sayfa"
+                        isActive={pathname === "/"}
+                        onInteract={vibrate}
+                    />
 
+                    <NavItem
+                        id="nav-item-feed"
+                        href="/makale"
+                        icon={BookOpen}
+                        label="Keşfet"
+                        isActive={pathname.startsWith("/makale")}
+                        onInteract={vibrate}
+                    />
 
-                <AnimatePresence mode="wait">
-                    {!isAtBottom ? (
-                        <m.div
-                            key="nav-icons"
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -10 }}
-                            className="flex items-center justify-around w-full"
+                    <div className="relative -top-3.5 z-20">
+                        <Link
+                            prefetch={true}
+                            id="nav-item-share"
+                            href="/paylas"
+                            className="relative block"
+                            onClick={vibrate}
                         >
-                            <NavItem
-                                id="nav-item-home"
-                                href="/"
-                                icon={Home}
-                                label="Ana Sayfa"
-                                isActive={pathname === "/"}
-                                onInteract={vibrate}
-                            />
-
-                            <NavItem
-                                id="nav-item-feed"
-                                href="/makale"
-                                icon={BookOpen}
-                                label="Keşfet"
-                                isActive={pathname.startsWith("/makale")}
-                                onInteract={vibrate}
-                            />
-
-                            <div className="relative -top-3.5 z-20">
-                                <Link
-                                    prefetch={true}
-                                    id="nav-item-share"
-                                    href="/paylas"
-                                    className="relative block"
-                                    onClick={vibrate}
-                                >
-                                    <m.div
-                                        animate={{ scale: 1 }}
-                                        transition={{
-                                            duration: 0.3,
-                                            ease: "easeInOut"
-                                        }}
-                                        whileTap={{ scale: 0.9, rotate: 15 }}
-                                        className="
-                                            flex items-center justify-center
-                                            w-11 h-11
-                                            bg-[#FACC15]
-                                            border-2 border-black dark:border-white
-                                            rounded-full
-                                            shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]
-                                            dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.5)]
-                                            group
-                                            relative
-                                            overflow-hidden
-                                        "
-                                    >
-                                        <Plus className="w-5 h-5 text-black stroke-[3px] group-hover:rotate-90 group-hover:scale-110 transition-transform duration-300 relative z-10" />
-                                    </m.div>
-                                </Link>
-                            </div>
-
-                            <NavItem
-                                id="nav-item-forum"
-                                href="/forum"
-                                icon={MessageCircle}
-                                label="Forum"
-                                isActive={pathname.startsWith("/forum")}
-                                onInteract={vibrate}
-                            />
-
-                            <NavItem
-                                id="nav-item-profile"
-                                href="/profil"
-                                icon={User}
-                                label="Profil"
-                                isActive={pathname.startsWith("/profil")}
-                                onInteract={vibrate}
-                            />
-                        </m.div>
-                    ) : (
-                        <m.div
-                            key="copyright-info"
-                            initial={{ opacity: 0, scale: 0.9 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            exit={{ opacity: 0, scale: 0.9 }}
-                            className="flex flex-col items-center justify-center gap-1 py-1"
-                        >
-                            <div className="scale-[0.45] origin-center -my-3">
-                                <DankLogo />
-                            </div>
-                            <span
-                                className="font-black text-[10px] tracking-[0.2em] uppercase text-center"
-                                style={{
-                                    background: 'linear-gradient(90deg, #f97316, #ef4444, #f97316)',
-                                    backgroundSize: '200% 100%',
-                                    WebkitBackgroundClip: 'text',
-                                    WebkitTextFillColor: 'transparent',
-                                    filter: 'drop-shadow(0 0 5px rgba(249,115,22,0.3))',
-                                    animation: 'shimmer-nav 3s ease-in-out infinite',
+                            <m.div
+                                animate={{ scale: 1 }}
+                                transition={{
+                                    duration: 0.3,
+                                    ease: "easeInOut"
                                 }}
+                                whileTap={{ scale: 0.9, rotate: 15 }}
+                                className="
+                                    flex items-center justify-center
+                                    w-11 h-11
+                                    bg-[#FACC15]
+                                    border-2 border-black dark:border-white
+                                    rounded-full
+                                    shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]
+                                    dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.5)]
+                                    group
+                                    relative
+                                    overflow-hidden
+                                "
                             >
-                                İzinsiz kopyalayanı kara deliğe atarız.
-                            </span>
+                                <Plus className="w-5 h-5 text-black stroke-[3px] group-hover:rotate-90 group-hover:scale-110 transition-transform duration-300 relative z-10" />
+                            </m.div>
+                        </Link>
+                    </div>
 
-                        </m.div>
-                    )}
-                </AnimatePresence>
+                    <NavItem
+                        id="nav-item-forum"
+                        href="/forum"
+                        icon={MessageCircle}
+                        label="Forum"
+                        isActive={pathname.startsWith("/forum")}
+                        onInteract={vibrate}
+                    />
+
+                    <NavItem
+                        id="nav-item-profile"
+                        href="/profil"
+                        icon={User}
+                        label="Profil"
+                        isActive={pathname.startsWith("/profil")}
+                        onInteract={vibrate}
+                    />
+                </div>
             </nav>
         </m.div>
     );
