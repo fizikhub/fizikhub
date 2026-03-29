@@ -141,7 +141,7 @@ export function BookReviewDetail({
                     animate={{ opacity: 1, y: 0 }}
                     className="flex justify-between items-center mb-8 md:mb-12"
                 >
-                    <Link prefetch={true} href="/" className="group flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
+                    <Link prefetch={false} href="/" className="group flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
                         <div className="p-2 rounded-full border border-border/50 bg-background/50 backdrop-blur-sm group-hover:border-rose-500/50 group-hover:bg-rose-500/5 transition-all">
                             <ArrowLeft className="w-5 h-5" />
                         </div>
@@ -244,7 +244,7 @@ export function BookReviewDetail({
                                 <div>
                                     <span className="text-xs font-black uppercase tracking-widest text-muted-foreground block mb-3">İnceleyen</span>
                                     <div className="flex items-center gap-3 group/author cursor-pointer hover:opacity-80 transition-opacity">
-                                        <Link prefetch={true} href={`/profil/${article.author?.username}`}>
+                                        <Link prefetch={false} href={`/profil/${article.author?.username}`}>
                                             <Avatar className="w-10 h-10 border-2 border-background ring-2 ring-rose-500/20">
                                                 <AvatarImage src={article.author?.avatar_url} />
                                                 <AvatarFallback>{authorInitials}</AvatarFallback>

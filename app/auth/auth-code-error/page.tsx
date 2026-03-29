@@ -13,7 +13,7 @@ export default function AuthErrorPage() {
                 Oturum açma işlemi sırasında bir hata oluştu. Lütfen tekrar deneyin.
             </p>
             <Button asChild>
-                <Link prefetch={true} href="/login">Giriş Sayfasına Dön</Link>
+                <Link prefetch={false} href="/login">Giriş Sayfasına Dön</Link>
             </Button>
         </div>
     );

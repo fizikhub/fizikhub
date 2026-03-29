@@ -37,7 +37,7 @@ export function ArticleHero({ article, readingTime }: ArticleHeroProps) {
         <header className="w-full block">
             {/* Back Button */}
             <div className="container max-w-4xl mx-auto px-4 pt-4">
-                <Link prefetch={true} href="/blog">
+                <Link prefetch={false} href="/blog">
                     <Button
                         variant="ghost"
                         size="sm"
@@ -107,7 +107,7 @@ export function ArticleHero({ article, readingTime }: ArticleHeroProps) {
 
                             {/* Meta Info */}
                             <div className="pt-4 sm:pt-6 mt-4 sm:mt-6 border-t border-border flex flex-wrap items-center gap-3 sm:gap-4 text-xs sm:text-sm text-muted-foreground">
-                                <Link prefetch={true} href={`/kullanici/${article.author?.username || 'anonim'}`}
+                                <Link prefetch={false} href={`/kullanici/${article.author?.username || 'anonim'}`}
                                     className="flex items-center gap-2 hover:text-foreground transition-colors"
                                 >
                                     <div className="relative w-5 h-5 sm:w-6 sm:h-6 rounded-full overflow-hidden bg-muted">
@@ -187,7 +187,7 @@ export function ArticleHero({ article, readingTime }: ArticleHeroProps) {
                         {/* Author & Meta */}
                         <div className="flex flex-wrap items-center gap-4 pb-6 border-b border-border">
                             {/* Author */}
-                            <Link prefetch={true} href={`/kullanici/${article.author?.username || 'anonim'}`}
+                            <Link prefetch={false} href={`/kullanici/${article.author?.username || 'anonim'}`}
                                 className="flex items-center gap-3 hover:opacity-80 transition-opacity"
                             >
                                 <div className="relative w-10 h-10 rounded-full overflow-hidden bg-muted flex items-center justify-center">

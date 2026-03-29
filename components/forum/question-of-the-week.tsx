@@ -88,7 +88,7 @@ export function QuestionOfTheWeek({ questionId, questionSlug }: QuestionOfTheWee
                     </div>
 
                     {/* Action Button */}
-                    <Link prefetch={true} href={targetUrl} className="block group/btn">
+                    <Link prefetch={false} href={targetUrl} className="block group/btn">
                         <Button className="w-full gap-2 bg-black hover:bg-neo-green text-white hover:text-black font-black uppercase text-lg h-12 border-2 border-black transition-all shadow-[4px_4px_0px_0px_#888] hover:shadow-[2px_2px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px]">
                             <Microscope className="h-5 w-5 stroke-[2.5px]" />
                             <span>Analiz Başlat</span>

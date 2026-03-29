@@ -70,7 +70,7 @@ function FreshCard({ title, description, href, icon: Icon, color, accentColor, c
             whileHover={{ y: -6, scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
         >
-            <Link prefetch={true} href={href} className="block h-full">
+            <Link prefetch={false} href={href} className="block h-full">
                 <TiltCard className="h-full w-full" rotationFactor={8}>
                     <div className={cn(
                         "relative h-full w-full bg-white flex flex-col justify-between overflow-hidden",
@@ -309,7 +309,7 @@ export default function PaylasPage() {
                     animate="show"
                     className="mt-6 sm:mt-8 md:mt-10 pb-12"
                 >
-                    <Link prefetch={true} href="/ara" className="block w-full group">
+                    <Link prefetch={false} href="/ara" className="block w-full group">
                         <div className="bg-zinc-950 text-emerald-500 h-16 sm:h-20 rounded-2xl flex items-center justify-between px-4 sm:px-8 border-[4px] border-black hover:bg-black hover:border-emerald-500 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] group-hover:shadow-[0_0_20px_0px_rgba(16,185,129,0.5)] transition-all duration-300 relative overflow-hidden">
                             {/* Terminal Scanline Effect */}
                             <div className="absolute inset-0 bg-[linear-gradient(transparent_50%,rgba(0,0,0,0.5)_50%)] bg-[length:100%_4px] opacity-20 pointer-events-none"></div>

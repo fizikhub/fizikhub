@@ -25,7 +25,7 @@ export function QuestionList({ initialQuestions, userVotes, latestArticle }: Que
                         userVote={userVotes.get(question.id)}
                     />
                     {index === 2 && latestArticle && (
-                        <Link prefetch={true} href={`/makale/${latestArticle.slug}`} className="block group my-2">
+                        <Link prefetch={false} href={`/makale/${latestArticle.slug}`} className="block group my-2">
                             <div className="relative overflow-hidden border-[3px] border-black bg-neutral-50 dark:bg-[#18181b] shadow-[4px_4px_0px_0px_#06b6d4] hover:shadow-[2px_2px_0px_0px_#06b6d4] hover:translate-x-[2px] hover:translate-y-[2px] transition-all duration-200 rounded-[8px] flex flex-col sm:flex-row">
                                 {/* Cyan Header Strip */}
                                 <div className="absolute top-0 left-0 w-full h-1 bg-[#06b6d4] z-20"></div>

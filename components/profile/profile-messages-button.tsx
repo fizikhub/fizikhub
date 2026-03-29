@@ -6,7 +6,7 @@ import Link from "next/link";
 
 export function ProfileMessagesButton() {
     return (
-        <Link prefetch={true} href="/mesajlar">
+        <Link prefetch={false} href="/mesajlar">
             <Button
                 variant="outline"
                 size="sm"

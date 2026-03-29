@@ -24,7 +24,7 @@ export default async function AdminQuizzesPage() {
                         Sitedeki testleri yönet ve yenilerini oluştur.
                     </p>
                 </div>
-                <Link prefetch={true} href="/admin/quizzes/new">
+                <Link prefetch={false} href="/admin/quizzes/new">
                     <Button>
                         <Plus className="h-4 w-4 mr-2" /> Yeni Quiz
                     </Button>
@@ -39,7 +39,7 @@ export default async function AdminQuizzesPage() {
                                 {quiz.title}
                             </CardTitle>
                             <div className="flex items-center gap-2">
-                                <Link prefetch={true} href={`/admin/quizzes/${quiz.id}`}>
+                                <Link prefetch={false} href={`/admin/quizzes/${quiz.id}`}>
                                     <Button variant="ghost" size="icon" className="h-8 w-8">
                                         <Settings className="h-4 w-4" />
                                     </Button>

@@ -59,7 +59,7 @@ export function ProfileSetupHint() {
 
                         {/* Action Buttons */}
                         <div className="flex gap-3 mt-1">
-                            <Link prefetch={true} href="/profil/duzenle" onClick={handleDismiss} className="flex-1">
+                            <Link prefetch={false} href="/profil/duzenle" onClick={handleDismiss} className="flex-1">
                                 <button className="w-full py-2 bg-black text-white font-black uppercase tracking-wider text-sm hover:bg-zinc-800 transition-colors flex items-center justify-center gap-2 group">
                                     Düzenle
                                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />

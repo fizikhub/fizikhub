@@ -304,7 +304,7 @@ export default async function QuestionPage({ params }: PageProps) {
                         {/* Back Button & Header */}
                         <div className="flex items-center gap-4 mb-2 sm:mb-4 px-2 sm:px-0">
                             <Button variant="ghost" size="sm" className="gap-2 pl-2 sm:pl-0 hover:pl-2 transition-all -ml-2 font-bold uppercase text-xs tracking-wider text-muted-foreground hover:text-foreground" asChild>
-                                <Link prefetch={true} href="/forum">
+                                <Link prefetch={false} href="/forum">
                                     <ArrowLeft className="h-4 w-4 stroke-[3px]" />
                                     <span className="hidden sm:inline">Foruma Dön</span>
                                     <span className="sm:hidden">Geri</span>
@@ -343,7 +343,7 @@ export default async function QuestionPage({ params }: PageProps) {
                             {/* 2. Author Info & Edit (Below Header) */}
                             <div className="p-4 sm:p-5 pb-0 flex justify-between items-start gap-3 relative z-10">
                                 <div className="flex items-center gap-3">
-                                    <Link prefetch={true} href={`/kullanici/${question.profiles?.username}`} className="block group">
+                                    <Link prefetch={false} href={`/kullanici/${question.profiles?.username}`} className="block group">
                                         <Avatar className="h-10 w-10 sm:h-11 sm:w-11 border-[2px] border-black dark:border-zinc-600 rounded-full overflow-hidden bg-white shadow-[2px_2px_0_0_#000] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.1)] group-hover:shadow-[1px_1px_0_0_#000] group-hover:translate-x-[1px] group-hover:translate-y-[1px] transition-all">
                                             <AvatarImage src={question.profiles?.avatar_url || ""} className="object-cover" />
                                             <AvatarFallback className="bg-white dark:bg-zinc-800 text-black dark:text-white font-black text-sm">
@@ -352,7 +352,7 @@ export default async function QuestionPage({ params }: PageProps) {
                                         </Avatar>
                                     </Link>
                                     <div className="flex flex-col leading-tight">
-                                        <Link prefetch={true} href={`/kullanici/${question.profiles?.username}`}
+                                        <Link prefetch={false} href={`/kullanici/${question.profiles?.username}`}
                                             className="font-bold text-base sm:text-lg hover:text-[#FFBD2E] transition-colors flex items-center gap-1.5"
                                         >
                                             @{question.profiles?.username || "Anonim"}
@@ -502,13 +502,13 @@ export default async function QuestionPage({ params }: PageProps) {
                                 </p>
                                 <div className="space-y-2">
                                     <Button variant="outline" className="w-full justify-start font-bold text-xs uppercase border-[2px] border-black dark:border-zinc-600 hover:bg-[#FFBD2E] hover:text-black hover:border-black h-10 rounded-lg shadow-[2px_2px_0_0_#000] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.08)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0_0_#000] transition-all dark:text-zinc-300" asChild>
-                                        <Link prefetch={true} href="/forum?sort=popular">Popüler Sorular</Link>
+                                        <Link prefetch={false} href="/forum?sort=popular">Popüler Sorular</Link>
                                     </Button>
                                     <Button variant="outline" className="w-full justify-start font-bold text-xs uppercase border-[2px] border-black dark:border-zinc-600 hover:bg-neo-pink hover:text-white hover:border-black h-10 rounded-lg shadow-[2px_2px_0_0_#000] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.08)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0_0_#000] transition-all dark:text-zinc-300" asChild>
-                                        <Link prefetch={true} href="/forum?category=Kuantum">#Kuantum</Link>
+                                        <Link prefetch={false} href="/forum?category=Kuantum">#Kuantum</Link>
                                     </Button>
                                     <Button variant="outline" className="w-full justify-start font-bold text-xs uppercase border-[2px] border-black dark:border-zinc-600 hover:bg-neo-blue hover:text-white hover:border-black h-10 rounded-lg shadow-[2px_2px_0_0_#000] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.08)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0_0_#000] transition-all dark:text-zinc-300" asChild>
-                                        <Link prefetch={true} href="/forum?category=Astrofizik">#Astrofizik</Link>
+                                        <Link prefetch={false} href="/forum?category=Astrofizik">#Astrofizik</Link>
                                     </Button>
                                 </div>
                             </div>
