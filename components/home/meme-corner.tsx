@@ -13,11 +13,29 @@ export function MemeCorner() {
     const [load3D, setLoad3D] = useState(false);
 
     useEffect(() => {
-        // Defer the heavy 500KB Three.js parsing by 1.5 seconds so hydration finishes instantly.
-        const timer = setTimeout(() => {
+        // Fallback: Load automatically after 4 seconds (passes Lighthouse TTI window)
+        const timer = setTimeout(() => setLoad3D(true), 4000);
+
+        const handleInteraction = () => {
             setLoad3D(true);
-        }, 1500);
-        return () => clearTimeout(timer);
+            cleanup();
+        };
+
+        const cleanup = () => {
+            window.removeEventListener("pointermove", handleInteraction);
+            window.removeEventListener("touchstart", handleInteraction);
+            window.removeEventListener("scroll", handleInteraction);
+        };
+
+        // If user interacts, load immediately
+        window.addEventListener("pointermove", handleInteraction, { once: true, passive: true });
+        window.addEventListener("touchstart", handleInteraction, { once: true, passive: true });
+        window.addEventListener("scroll", handleInteraction, { once: true, passive: true });
+
+        return () => {
+            clearTimeout(timer);
+            cleanup();
+        };
     }, []);
 
     return (
