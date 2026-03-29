@@ -1,10 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Bell, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import ReactConfetti from 'react-confetti';
-import { useWindowSize } from 'react-use';
+import confetti from 'canvas-confetti';
 import { m as motion } from "framer-motion";
 import {
     DropdownMenu,
@@ -42,8 +41,6 @@ export function NotificationBell({ className }: { className?: string }) {
     const [unreadCount, setUnreadCount] = useState(0);
     const [isOpen, setIsOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
-    const [showConfetti, setShowConfetti] = useState(false);
-    const { width, height } = useWindowSize();
     // Fix: Initialize supabase client once
     const [supabase] = useState(() => createClient());
     const router = useRouter();
@@ -73,8 +70,7 @@ export function NotificationBell({ className }: { className?: string }) {
             );
 
             if (hasAdminNotification) {
-                setShowConfetti(true);
-                setTimeout(() => setShowConfetti(false), 7000);
+                confetti({ particleCount: 200, spread: 120, origin: { y: 0.3 } });
             }
         } catch (error) {
             if (process.env.NODE_ENV === 'development') {
@@ -186,7 +182,6 @@ export function NotificationBell({ className }: { className?: string }) {
 
     return (
         <>
-            {showConfetti && <ReactConfetti width={width} height={height} numberOfPieces={200} recycle={false} />}
             <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
                 <DropdownMenuTrigger asChild>
                     <Button

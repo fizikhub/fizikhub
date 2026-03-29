@@ -49,7 +49,7 @@ const nextConfig: NextConfig = {
       '@react-three/drei',
       '@react-three/postprocessing',
       'canvas-confetti',
-      'react-confetti',
+
       'html2canvas',
       'lenis',
       'sonner',

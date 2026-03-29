@@ -2,7 +2,52 @@
 
 import React from "react";
 import { cn } from "@/lib/utils";
-import * as Phosphor from "@phosphor-icons/react";
+import {
+    Brain,
+    Tree,
+    CompassTool,
+    Binoculars,
+    Planet,
+    MathOperations,
+    Wheelchair,
+    Palette,
+    Footprints,
+    GlobeHemisphereWest,
+    MapTrifold,
+    HandHeart,
+    Sparkle,
+    ShootingStar,
+    Atom,
+    Question,
+    MagnifyingGlass,
+    ChatsTeardrop,
+    Trophy,
+    Lightning,
+    BookOpenText,
+    Eye,
+    BookmarkSimple,
+    GraduationCap,
+    Users,
+    Star,
+    Lightbulb,
+    Heart,
+    Plant,
+    Microscope,
+    ChalkboardTeacher,
+    Student,
+    Globe,
+    Infinity,
+    Shapes,
+    Wrench,
+    Flask,
+    Moon,
+    Bird,
+    PuzzlePiece,
+    CircleDashed,
+    Cat,
+    Target,
+} from "@phosphor-icons/react";
+import type { Icon } from "@phosphor-icons/react";
 
 export interface CustomBadgeIconProps {
     name: string;
@@ -22,120 +67,120 @@ const COLORS = {
     white: "#FFFFFF",
 };
 
-export const BadgeData = [
+export const BadgeData: { match: string; icon: Icon; color: string }[] = [
     // 1. Einstein
-    { match: "einstein", icon: Phosphor.Brain, color: COLORS.cyan },
+    { match: "einstein", icon: Brain, color: COLORS.cyan },
     // 2. Newton
-    { match: "newton", icon: Phosphor.Tree, color: COLORS.green },
+    { match: "newton", icon: Tree, color: COLORS.green },
     // 3. Da Vinci
-    { match: "vinci", icon: Phosphor.CompassTool, color: COLORS.yellow },
+    { match: "vinci", icon: CompassTool, color: COLORS.yellow },
     // 4. Galileo
-    { match: "galileo", icon: Phosphor.Binoculars, color: COLORS.blue },
+    { match: "galileo", icon: Binoculars, color: COLORS.blue },
     // 5. Kopernik
-    { match: "kopernik", icon: Phosphor.Planet, color: COLORS.orange },
+    { match: "kopernik", icon: Planet, color: COLORS.orange },
     // 6. Leibniz
-    { match: "leibniz", icon: Phosphor.MathOperations, color: COLORS.purple },
+    { match: "leibniz", icon: MathOperations, color: COLORS.purple },
     // 7. Hawking
-    { match: "hawking", icon: Phosphor.Wheelchair, color: COLORS.blue },
+    { match: "hawking", icon: Wheelchair, color: COLORS.blue },
     // 8. Mona Lisa
-    { match: "monalisa", icon: Phosphor.Palette, color: COLORS.pink },
+    { match: "monalisa", icon: Palette, color: COLORS.pink },
     // 9. Ay'a İlk Adım
-    { match: "adım", icon: Phosphor.Footprints, color: COLORS.white },
+    { match: "adım", icon: Footprints, color: COLORS.white },
     // 10. Merhaba Dünya
-    { match: "merhaba", icon: Phosphor.GlobeHemisphereWest, color: COLORS.blue },
+    { match: "merhaba", icon: GlobeHemisphereWest, color: COLORS.blue },
     // 11. Kaşif
-    { match: "kaşif", icon: Phosphor.MapTrifold, color: COLORS.yellow },
-    { match: "kasif", icon: Phosphor.MapTrifold, color: COLORS.yellow },
+    { match: "kaşif", icon: MapTrifold, color: COLORS.yellow },
+    { match: "kasif", icon: MapTrifold, color: COLORS.yellow },
     // 12. Yardımsever
-    { match: "yardımsever", icon: Phosphor.HandHeart, color: COLORS.pink },
-    { match: "yardimsever", icon: Phosphor.HandHeart, color: COLORS.pink },
+    { match: "yardımsever", icon: HandHeart, color: COLORS.pink },
+    { match: "yardimsever", icon: HandHeart, color: COLORS.pink },
     // 13. Yıldız Tozu
-    { match: "yıldız tozu", icon: Phosphor.Sparkle, color: COLORS.purple },
-    { match: "yildiz tozu", icon: Phosphor.Sparkle, color: COLORS.purple },
+    { match: "yıldız tozu", icon: Sparkle, color: COLORS.purple },
+    { match: "yildiz tozu", icon: Sparkle, color: COLORS.purple },
     // 14. Kuyruklu Yıldız
-    { match: "kuyruklu", icon: Phosphor.ShootingStar, color: COLORS.cyan },
+    { match: "kuyruklu", icon: ShootingStar, color: COLORS.cyan },
     // 15. Galaksi
-    { match: "galaksi", icon: Phosphor.Atom, color: COLORS.blue },
+    { match: "galaksi", icon: Atom, color: COLORS.blue },
     // 16. Soru İşareti
-    { match: "soru", icon: Phosphor.Question, color: COLORS.orange },
+    { match: "soru", icon: Question, color: COLORS.orange },
     // 17. Meraklı
-    { match: "meraklı", icon: Phosphor.MagnifyingGlass, color: COLORS.green },
-    { match: "merakli", icon: Phosphor.MagnifyingGlass, color: COLORS.green },
+    { match: "meraklı", icon: MagnifyingGlass, color: COLORS.green },
+    { match: "merakli", icon: MagnifyingGlass, color: COLORS.green },
     // 18. Soru Ustası
-    { match: "usta", icon: Phosphor.ChatsTeardrop, color: COLORS.purple },
+    { match: "usta", icon: ChatsTeardrop, color: COLORS.purple },
     // 19. En İyi Cevap
-    { match: "cevap", icon: Phosphor.Trophy, color: COLORS.yellow },
+    { match: "cevap", icon: Trophy, color: COLORS.yellow },
     // 20. Tesla
-    { match: "tesla", icon: Phosphor.Lightning, color: COLORS.yellow },
+    { match: "tesla", icon: Lightning, color: COLORS.yellow },
     // 21. Seri Okuyucu
-    { match: "okuyucu", icon: Phosphor.BookOpenText, color: COLORS.cyan },
+    { match: "okuyucu", icon: BookOpenText, color: COLORS.cyan },
     // 22. Keskin Göz
-    { match: "keskin", icon: Phosphor.Eye, color: COLORS.green },
+    { match: "keskin", icon: Eye, color: COLORS.green },
     // 23. Bilge
-    { match: "bilge", icon: Phosphor.BookmarkSimple, color: COLORS.purple },
+    { match: "bilge", icon: BookmarkSimple, color: COLORS.purple },
     // 24. Uzman
-    { match: "uzman", icon: Phosphor.GraduationCap, color: COLORS.orange },
+    { match: "uzman", icon: GraduationCap, color: COLORS.orange },
     // 25. Fizik Dehası
-    { match: "dehas", icon: Phosphor.Atom, color: COLORS.blue },
+    { match: "dehas", icon: Atom, color: COLORS.blue },
     // 26. Sosyal Kelebek
-    { match: "sosyal", icon: Phosphor.Users, color: COLORS.pink },
+    { match: "sosyal", icon: Users, color: COLORS.pink },
     // 27. Popüler
-    { match: "popüler", icon: Phosphor.Star, color: COLORS.yellow },
-    { match: "populer", icon: Phosphor.Star, color: COLORS.yellow },
+    { match: "popüler", icon: Star, color: COLORS.yellow },
+    { match: "populer", icon: Star, color: COLORS.yellow },
     // 28. Fikir Önderi
-    { match: "önder", icon: Phosphor.Lightbulb, color: COLORS.yellow },
-    { match: "onder", icon: Phosphor.Lightbulb, color: COLORS.yellow },
+    { match: "önder", icon: Lightbulb, color: COLORS.yellow },
+    { match: "onder", icon: Lightbulb, color: COLORS.yellow },
     // 29. Sevilen
-    { match: "sevilen", icon: Phosphor.Heart, color: COLORS.pink },
+    { match: "sevilen", icon: Heart, color: COLORS.pink },
     // 30. Çaylak
-    { match: "çaylak", icon: Phosphor.Plant, color: COLORS.green },
-    { match: "caylak", icon: Phosphor.Plant, color: COLORS.green },
+    { match: "çaylak", icon: Plant, color: COLORS.green },
+    { match: "caylak", icon: Plant, color: COLORS.green },
     // 31. Gözlemci
-    { match: "gözlemci", icon: Phosphor.Binoculars, color: COLORS.blue },
-    { match: "gozlemci", icon: Phosphor.Binoculars, color: COLORS.blue },
+    { match: "gözlemci", icon: Binoculars, color: COLORS.blue },
+    { match: "gozlemci", icon: Binoculars, color: COLORS.blue },
     // 32. Araştırmacı
-    { match: "araştır", icon: Phosphor.Microscope, color: COLORS.pink },
-    { match: "arastir", icon: Phosphor.Microscope, color: COLORS.pink },
+    { match: "araştır", icon: Microscope, color: COLORS.pink },
+    { match: "arastir", icon: Microscope, color: COLORS.pink },
     // 33. Teorisyen
-    { match: "teorisyen", icon: Phosphor.ChalkboardTeacher, color: COLORS.yellow },
+    { match: "teorisyen", icon: ChalkboardTeacher, color: COLORS.yellow },
     // 34. Profesör
-    { match: "profesör", icon: Phosphor.Student, color: COLORS.green },
-    { match: "profesor", icon: Phosphor.Student, color: COLORS.green },
+    { match: "profesör", icon: Student, color: COLORS.green },
+    { match: "profesor", icon: Student, color: COLORS.green },
     // 35. Kozmolog
-    { match: "kozmolog", icon: Phosphor.Globe, color: COLORS.purple },
+    { match: "kozmolog", icon: Globe, color: COLORS.purple },
     // 36. Evrensel
-    { match: "evrensel", icon: Phosphor.Infinity, color: COLORS.blue },
+    { match: "evrensel", icon: Infinity, color: COLORS.blue },
     // 37. Kuantum
-    { match: "kuantum", icon: Phosphor.Shapes, color: COLORS.purple },
+    { match: "kuantum", icon: Shapes, color: COLORS.purple },
     // 38. Çırak
-    { match: "çırak", icon: Phosphor.Wrench, color: COLORS.orange },
-    { match: "cirak", icon: Phosphor.Wrench, color: COLORS.orange },
+    { match: "çırak", icon: Wrench, color: COLORS.orange },
+    { match: "cirak", icon: Wrench, color: COLORS.orange },
     // 39. Curie
-    { match: "curie", icon: Phosphor.Flask, color: COLORS.cyan },
+    { match: "curie", icon: Flask, color: COLORS.cyan },
     // 40. Galileo Fallback
-    { match: "galileo fallback", icon: Phosphor.Binoculars, color: COLORS.blue },
+    { match: "galileo fallback", icon: Binoculars, color: COLORS.blue },
     // 41. Gece Kuşu
-    { match: "gece", icon: Phosphor.Moon, color: COLORS.purple },
+    { match: "gece", icon: Moon, color: COLORS.purple },
     // 42. Bilge Baykuş
-    { match: "baykuş", icon: Phosphor.Bird, color: COLORS.blue },
-    { match: "baykus", icon: Phosphor.Bird, color: COLORS.blue },
+    { match: "baykuş", icon: Bird, color: COLORS.blue },
+    { match: "baykus", icon: Bird, color: COLORS.blue },
     // 43. Sorun Çözücü
-    { match: "çözücü", icon: Phosphor.PuzzlePiece, color: COLORS.orange },
-    { match: "cozucu", icon: Phosphor.PuzzlePiece, color: COLORS.orange },
+    { match: "çözücü", icon: PuzzlePiece, color: COLORS.orange },
+    { match: "cozucu", icon: PuzzlePiece, color: COLORS.orange },
     // 44. Karadelik
-    { match: "karadelik", icon: Phosphor.CircleDashed, color: COLORS.white },
+    { match: "karadelik", icon: CircleDashed, color: COLORS.white },
     // 45. Schrödinger
-    { match: "schrödinger", icon: Phosphor.Cat, color: COLORS.green },
-    { match: "schrodinger", icon: Phosphor.Cat, color: COLORS.green },
+    { match: "schrödinger", icon: Cat, color: COLORS.green },
+    { match: "schrodinger", icon: Cat, color: COLORS.green },
     // 46. Bohr
-    { match: "bohr", icon: Phosphor.Target, color: COLORS.yellow },
+    { match: "bohr", icon: Target, color: COLORS.yellow },
 ];
 
 export function CustomBadgeIcon({ name, size = 48, className }: CustomBadgeIconProps) {
     const n = name.toLocaleLowerCase("tr-TR").trim();
 
     // Bul veya Fallback'e düş
-    const match = BadgeData.find(b => n.includes(b.match)) || { icon: Phosphor.Star, color: COLORS.white };
+    const match = BadgeData.find(b => n.includes(b.match)) || { icon: Star, color: COLORS.white };
     const IconComponent = match.icon;
 
     // Kutunun boyutları (Neo-Brutalist wrapper)

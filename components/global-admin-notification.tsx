@@ -4,8 +4,7 @@ import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase";
 import { getNotifications, markAsRead } from "@/app/notifications/actions";
 import { useRouter } from "next/navigation";
-import ReactConfetti from 'react-confetti';
-import { useWindowSize } from 'react-use';
+import confetti from 'canvas-confetti';
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { m as motion, AnimatePresence } from "framer-motion";
@@ -13,7 +12,7 @@ import { m as motion, AnimatePresence } from "framer-motion";
 export default function GlobalAdminNotification() {
     const [adminNotification, setAdminNotification] = useState<any>(null);
     const [isVisible, setIsVisible] = useState(false);
-    const { width, height } = useWindowSize();
+
     // Initialize state for client-side only usage
     const [supabase] = useState(() => createClient());
     const router = useRouter();
@@ -63,6 +62,7 @@ export default function GlobalAdminNotification() {
                 if (adminNote) {
                     setAdminNotification(adminNote);
                     setIsVisible(true);
+                    confetti({ particleCount: 500, spread: 160, origin: { y: 0.2 } });
                 }
             } catch (e) {
                 console.error("Notification check failed", e);
@@ -99,7 +99,6 @@ export default function GlobalAdminNotification() {
         <AnimatePresence>
             {isVisible && (
                 <>
-                    <ReactConfetti width={width} height={height} numberOfPieces={500} recycle={false} />
                     <motion.div
                         initial={{ y: -100, opacity: 0 }}
                         animate={{ y: 0, opacity: 1 }}
