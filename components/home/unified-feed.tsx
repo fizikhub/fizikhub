@@ -1,6 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import { useState } from "react";
 import { NeoArticleCard } from "@/components/articles/neo-article-card";
 
 // Lazy load non-critical feed cards to minimize initial JS bundle size and TBT
@@ -39,10 +40,15 @@ interface UnifiedFeedProps {
 }
 
 export function UnifiedFeed({ items, suggestedUsers = [] }: UnifiedFeedProps) {
+    const [visibleCount, setVisibleCount] = useState(10);
+    
+    const visibleItems = items.slice(0, visibleCount);
+    const hasMore = visibleCount < items.length;
+
     return (
         <div className="flex flex-col gap-4 sm:gap-6">
             <div className="flex flex-col gap-4 sm:gap-6">
-                {items.map((item, index) => (
+                {visibleItems.map((item, index) => (
                     <div
                         key={`${item.type}-${item.data.id}`}
                         className="feed-item-appear will-change-transform"
@@ -81,19 +87,19 @@ export function UnifiedFeed({ items, suggestedUsers = [] }: UnifiedFeedProps) {
                         )}
 
                         {item.type === 'question' && (
-                            <div className="rounded-2xl border border-border/60 bg-card/50 p-4 hover:border-border hover:bg-card transition-colors">
+                            <div className="rounded-[10px] bg-white dark:bg-[#1e1e21] hover:bg-neutral-50 dark:hover:bg-[#252529] transition-colors p-1 sm:p-2 border-[3px] border-black dark:border-zinc-700 shadow-[4px_4px_0px_0px_#000] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)]">
                                 <QuestionCard
                                     question={item.data}
                                     badgeLabel="SORU"
-                                    badgeClassName="bg-muted text-muted-foreground px-2 py-0.5 rounded-md font-semibold text-xs"
+                                    badgeClassName="bg-black text-[#FFBD2E] px-2 py-0.5 rounded-md font-black uppercase text-xs tracking-wider"
                                 />
                             </div>
                         )}
 
                         {index === 2 && <div className="mt-6"><CommunityInviteBanner /></div>}
                         {index === 8 && (
-                            <div className="mt-6 rounded-2xl bg-gradient-to-br from-amber-500/5 to-orange-500/5 p-6 border border-amber-500/10">
-                                <h3 className="font-bold text-xs uppercase tracking-widest text-amber-600 dark:text-amber-400 mb-4 text-center">
+                            <div className="mt-6 rounded-[10px] bg-gradient-to-br from-[#FFBD2E] to-[#FFD466] p-6 border-[3px] border-black shadow-[4px_4px_0px_0px_#000]">
+                                <h3 className="font-black text-sm uppercase tracking-widest text-black mb-4 text-center">
                                     Haftanın Sorusu
                                 </h3>
                                 <QuestionOfTheWeek />
@@ -103,8 +109,17 @@ export function UnifiedFeed({ items, suggestedUsers = [] }: UnifiedFeedProps) {
                 ))}
             </div>
 
-            <div className="mt-8 rounded-2xl bg-muted/20 border border-border/40 p-6">
-                <h3 className="font-bold text-xs uppercase tracking-widest text-muted-foreground mb-4 text-center">
+            {hasMore && (
+                <button
+                    onClick={() => setVisibleCount(prev => prev + 10)}
+                    className="w-full py-4 mt-2 font-black text-sm uppercase tracking-widest bg-[#FFBD2E] text-black border-[3px] border-black rounded-[8px] sm:rounded-[10px] shadow-[4px_4px_0px_0px_#000] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_#000] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all"
+                >
+                    Daha Fazla Göster
+                </button>
+            )}
+
+            <div className="mt-6 rounded-[10px] bg-white dark:bg-[#1e1e21] border-[3px] border-black dark:border-zinc-700 shadow-[4px_4px_0px_0px_#000] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] p-6">
+                <h3 className="font-black text-xs uppercase tracking-widest text-neutral-500 dark:text-zinc-400 mb-4 text-center">
                     Önerilen Araştırmacılar
                 </h3>
                 <SuggestedUsersCard users={suggestedUsers} />

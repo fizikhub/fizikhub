@@ -443,35 +443,7 @@
         transform: scale(1.01);
     }
 
-    /* ============================================
-       READING TIME REMAINING PILL
-       ============================================ */
-    .reading-time-pill {
-        position: fixed;
-        top: 12px;
-        right: 16px;
-        z-index: 101;
-        padding: 4px 12px;
-        font-size: 11px;
-        font-weight: 800;
-        letter-spacing: 0.05em;
-        background: rgba(0,0,0,0.75);
-        color: #fff;
-        border-radius: 999px;
-        backdrop-filter: blur(8px);
-        opacity: 0;
-        transform: translateY(-8px);
-        transition: opacity 0.3s, transform 0.3s;
-        pointer-events: none;
-    }
-    .reading-time-pill.visible {
-        opacity: 1;
-        transform: translateY(0);
-    }
-    .dark .reading-time-pill {
-        background: rgba(255,255,255,0.12);
-        color: #e5e5e5;
-    }
+
 }
 
 @layer utilities {}

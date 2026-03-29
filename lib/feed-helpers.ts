@@ -15,6 +15,20 @@ export function processFeedData(articles: any[], questions: any[]): FeedItem[] {
             type = 'term';
         }
 
+        // --- Payload Optimization ---
+        // NeoArticleCard expects `summary` or `content` for its preview text.
+        // We calculate a summary here. Instead of deleting the content completely
+        // (which breaks TermCard, BookReviewCard using regex on content metadata),
+        // we heavily truncate it to 500 characters. This preserves the meta block
+        // at the top of the Markdown while still saving ~200KB-1MB per SSR!
+        if (a.content) {
+            if (!a.summary) {
+                const tempSummary = a.content.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+                a.summary = tempSummary.substring(0, 200) + (tempSummary.length > 200 ? '...' : '');
+            }
+            a.content = a.content.length > 500 ? a.content.substring(0, 500) : a.content;
+        }
+
         feedItems.push({
             type: type,
             data: {
@@ -28,6 +42,14 @@ export function processFeedData(articles: any[], questions: any[]): FeedItem[] {
 
     // Add Questions
     questions.forEach((q) => {
+        // --- Payload Optimization ---
+        // Strip HTML and truncate question content to a max of 400 chars.
+        // QuestionCard only needs the first 160-300 chars for its "Read More" state.
+        if (q.content) {
+            const plainContent = q.content.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+            q.content = plainContent.length > 400 ? plainContent.substring(0, 400) + '...' : plainContent;
+        }
+
         feedItems.push({
             type: 'question',
             data: {

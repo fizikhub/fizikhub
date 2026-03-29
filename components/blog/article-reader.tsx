@@ -56,12 +56,8 @@ export function ArticleReader({
     const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
     const [showScrollTop, setShowScrollTop] = useState(false);
     const contentRef = useRef<HTMLDivElement>(null);
-    const pillRef = useRef<HTMLDivElement>(null);
 
     const { scrollYProgress } = useScroll();
-
-    // Parse total reading time from the "X dk" string
-    const totalMinutes = parseInt(readingTime) || 5;
 
     // Use framer-motion to avoid react re-renders on every scroll tick
     useMotionValueEvent(scrollYProgress, "change", (latest) => {
@@ -70,20 +66,6 @@ export function ArticleReader({
             setShowScrollTop(true);
         } else if (latest <= 0.3 && showScrollTop) {
             setShowScrollTop(false);
-        }
-
-        // Update pill text directly via ref to bypass react render
-        if (pillRef.current) {
-            const progress = latest * 100;
-            const minutesRemaining = Math.max(1, Math.ceil(totalMinutes * (1 - latest)));
-            const showTimeRemaining = progress > 5 && progress < 95;
-            
-            if (showTimeRemaining) {
-                pillRef.current.classList.add("visible");
-                pillRef.current.textContent = `~${minutesRemaining} dk kaldı`;
-            } else {
-                pillRef.current.classList.remove("visible");
-            }
         }
     });
 
@@ -488,10 +470,6 @@ export function ArticleReader({
                     </div>
                 </div>
             </div>
-
-
-            {/* Reading Time Remaining Pill */}
-            <div ref={pillRef} className="reading-time-pill"></div>
 
             {/* Image Lightbox */}
             {lightboxSrc && (
