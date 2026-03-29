@@ -29,7 +29,6 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   reactStrictMode: true,
 
-  reactCompiler: true,
   // Performance optimizations
   experimental: {
     staleTimes: {
