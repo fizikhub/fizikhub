@@ -31,9 +31,9 @@ import { LatestArticlesSlider } from "@/components/home/latest-articles-slider";
 // "ana sayfayı sanki ınstagram veya twitterdaki gibi bir akış olmasını istiyorum" implies the feed IS the main experience.
 
 export const metadata: Metadata = {
-  title: "Ana Sayfa",
-  description: "Fizikhub Ana Sayfa: En güncel bilimsel makaleler, fizik forum tartışmaları, interaktif simülasyonlar, fizik terimleri sözlüğü ve çevrimiçi soru testleri. Türkçe fizik öğren ve sorularını çöz.",
-  keywords: ["fizik", "bilim", "uzay", "kuantum", "astrofizik", "TYT fizik", "AYT fizik", "bilim forumu", "fizik soruları", "bilim sözlüğü", "türkçe bilim platformu", "interaktif fizik", "fizik deneyleri"],
+  title: "Fizik, Uzay ve Bilim Eğitim Platformu | Fizikhub",
+  description: "Fizikhub: En güncel bilimsel makaleler, fizik forum tartışmaları, interaktif uzay simülasyonları, kuantum fiziği ve çevrimiçi soru testleri. Türkçe bilim platformu.",
+  keywords: ["fizik", "bilim", "uzay", "kuantum", "astrofizik", "TYT fizik", "AYT fizik", "bilim forumu", "fizik makaleleri", "bilim sözlüğü", "türkçe bilim platformu", "interaktif fizik", "fizik deneyleri"],
   openGraph: {
     title: "Fizikhub — Türkiye'nin Fizik, Uzay ve Bilim Merkezi",
     description: "Türkçe bilim platformu: Fizik makaleleri, aktif bilim forumu, kavram sözlüğü, eğitim testleri ve interaktif fizik simülasyonları.",
@@ -188,6 +188,7 @@ export default async function Home() {
 
   return (
     <main className="min-h-screen bg-background relative selection:bg-emerald-500/30">
+      <h1 className="sr-only">Fizik, Bilim, Uzay ve Kuantum Evreni Platformu | Fizikhub</h1>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
