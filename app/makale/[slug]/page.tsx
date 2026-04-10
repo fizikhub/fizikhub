@@ -138,6 +138,8 @@ export default async function ArticlePage({ params }: PageProps) {
         image: article.cover_url || 'https://fizikhub.com/og-image.png',
         datePublished: article.created_at,
         dateModified: (article as { updated_at?: string }).updated_at || article.created_at,
+        wordCount: article.content ? article.content.split(/\s+/).length : 0,
+        articleBody: article.content,
         author: {
             '@type': 'Person',
             name: article.author?.full_name || article.author?.username || 'Fizikhub Ekibi',
@@ -153,7 +155,7 @@ export default async function ArticlePage({ params }: PageProps) {
         },
         mainEntityOfPage: {
             '@type': 'WebPage',
-            '@id': `https://fizikhub.com/blog/${article.slug}`,
+            '@id': `https://fizikhub.com/makale/${article.slug}`,
         },
     };
 

@@ -22,6 +22,8 @@ export const metadata = {
     alternates: { canonical: "https://fizikhub.com/sozluk" },
 };
 
+export const revalidate = 3600;
+
 export default async function DictionaryPage() {
     const supabase = await createClient();
     const terms = await getDictionaryTerms(supabase);

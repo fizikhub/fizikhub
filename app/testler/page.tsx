@@ -24,6 +24,8 @@ export const metadata = {
     alternates: { canonical: "https://fizikhub.com/testler" },
 };
 
+export const revalidate = 1800;
+
 export default async function QuizzesPage() {
     const quizzes = await getQuizzes();
 
