@@ -44,7 +44,7 @@ export const getArticles = cache(async function (
                 console.error('Error fetching articles:', JSON.stringify(error, null, 2));
                 return [];
             }
-            return data as Article[];
+            return data as unknown as Article[];
         },
         [`articles-${JSON.stringify(options)}`],
         { revalidate: 600, tags: ['articles'] } // 10 minutes cache
@@ -67,7 +67,7 @@ export const getArticleBySlug = cache(async function (_supabase: SupabaseClient<
                 .eq('slug', querySlug)
                 .maybeSingle();
 
-            if (data) return data as Article;
+            if (data) return data as unknown as Article;
 
             // If not found and slug looks like a numeric ID, try to find by ID
             if (/^\d+$/.test(querySlug)) {
@@ -77,7 +77,7 @@ export const getArticleBySlug = cache(async function (_supabase: SupabaseClient<
                     .eq('id', parseInt(querySlug))
                     .maybeSingle();
 
-                if (byId) return byId as Article;
+                if (byId) return byId as unknown as Article;
             }
 
             if (error) console.error('Error fetching article:', JSON.stringify(error, null, 2));
