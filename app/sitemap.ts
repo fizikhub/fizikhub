@@ -135,8 +135,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }));
 
     const articlePages: MetadataRoute.Sitemap = (articlesResult.data || []).map((article) => {
-        // Differentiate between blog posts, experiments, and book reviews by category
-        let urlPrefix = 'blog';
+        // Differentiate between articles (makale), experiments, and book reviews by category
+        let urlPrefix = 'makale';
         if (article.category === 'Deney') urlPrefix = 'deney';
         else if (article.category === 'Kitap İncelemesi') urlPrefix = 'kitap-inceleme';
 

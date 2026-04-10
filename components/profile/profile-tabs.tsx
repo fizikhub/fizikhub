@@ -237,7 +237,7 @@ export function ProfileTabs({
                                 </div>
                             ) : (
                                 bookmarkedArticles.map((item: any) => (
-                                    <Link prefetch={false} key={item.articles.id} href={`/blog/${item.articles.slug}`}>
+                                    <Link prefetch={false} key={item.articles.id} href={`/makale/${item.articles.slug}`}>
                                         <div className="bg-black/40 border border-white/10 p-6 rounded-xl hover:border-amber-500/50 transition-all hover:bg-amber-950/20 group">
                                             <h3 className="font-black uppercase mb-2 text-lg text-white group-hover:text-amber-400 transition-colors">{item.articles.title}</h3>
                                             <p className="text-sm text-gray-400 line-clamp-2 mb-3 font-mono text-xs">{item.articles.excerpt}</p>

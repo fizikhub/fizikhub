@@ -99,7 +99,7 @@ export function NeoArticleCard({
     const handleShare = (e: React.MouseEvent) => {
         e.preventDefault();
         e.stopPropagation();
-        const url = `${window.location.origin}/blog/${article.slug}`;
+        const url = `${window.location.origin}/makale/${article.slug}`;
         navigator.clipboard.writeText(url);
         toast.success("Link kopyalandı!");
     };
@@ -118,7 +118,7 @@ export function NeoArticleCard({
     const authorAvatar = article.author?.avatar_url || article.profiles?.avatar_url || "/images/default-avatar.png";
 
     return (
-        <ViewTransitionLink href={`/blog/${article.slug}`} className="block group">
+        <ViewTransitionLink href={`/makale/${article.slug}`} className="block group">
             <article
                 className={cn(
                     "flex flex-col relative overflow-hidden",
@@ -221,7 +221,7 @@ export function NeoArticleCard({
                                 onClick={(e) => {
                                     e.preventDefault();
                                     e.stopPropagation();
-                                    const url = `/blog/${article.slug}#comments`;
+                                    const url = `/makale/${article.slug}#comments`;
                                     if (document.startViewTransition) {
                                         document.startViewTransition(() => {
                                             window.location.href = url;

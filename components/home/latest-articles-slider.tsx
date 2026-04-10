@@ -46,7 +46,7 @@ export function LatestArticlesSlider({ articles }: LatestArticlesSliderProps) {
                             key={article.id}
                             className="flex-shrink-0 w-[215px] sm:w-[275px] snap-start"
                         >
-                            <Link href={`/blog/${article.slug}`} prefetch={false}>
+                            <Link href={`/makale/${article.slug}`} prefetch={false}>
                                 <div className="group relative bg-zinc-950 border-2 border-zinc-800 hover:border-yellow-400/60 shadow-[3px_3px_0px_0px_rgba(39,39,42,0.8)] hover:shadow-[4px_4px_0px_0px_rgba(250,204,21,0.4)] active:shadow-none active:translate-x-[2px] active:translate-y-[2px] transition-all duration-300 rounded-2xl overflow-hidden aspect-[16/10] flex flex-col">
                                     {/* Image Container */}
                                     <div className="absolute inset-0 z-0">

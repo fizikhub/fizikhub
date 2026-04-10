@@ -201,6 +201,15 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  async redirects() {
+    return [
+      {
+        source: '/blog/:slug',
+        destination: '/makale/:slug',
+        permanent: true,
+      },
+    ];
+  },
 };
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
