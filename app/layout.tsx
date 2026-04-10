@@ -41,7 +41,7 @@ export const viewport = {
 export const metadata: Metadata = {
   metadataBase: new URL('https://fizikhub.com'),
   title: {
-    default: "Fizikhub",
+    default: "Fizikhub | Fizik, Uzay ve Bilim Platformu",
     template: "%s | Fizikhub"
   },
   alternates: {

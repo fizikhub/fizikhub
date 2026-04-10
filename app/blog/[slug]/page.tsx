@@ -37,7 +37,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
             description: (article.content || "").substring(0, 160) + "...",
             type: "article",
             publishedTime: article.created_at,
-            authors: ["Fizikhub"],
+            authors: [article.author?.full_name || "Fizikhub"],
             images: [
                 {
                     url: coverUrl,
@@ -52,6 +52,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
             title: article.title,
             description: (article.content || "").substring(0, 160) + "...",
             images: [coverUrl],
+        },
+        alternates: {
+            canonical: `https://fizikhub.com/blog/${slug}`,
         },
     };
 }
@@ -145,7 +148,7 @@ export default async function BlogPage({ params }: PageProps) {
             name: 'Fizikhub',
             logo: {
                 '@type': 'ImageObject',
-                url: 'https://fizikhub.com/og-image.png',
+                url: 'https://fizikhub.com/icon-512.png',
             },
         },
         mainEntityOfPage: {

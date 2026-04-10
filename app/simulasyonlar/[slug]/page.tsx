@@ -36,12 +36,26 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
             title: sim.seo.title,
             description: sim.seo.description,
             keywords: sim.seo.keywords,
+            openGraph: {
+                title: sim.seo.title,
+                description: sim.seo.description,
+                type: 'website',
+                url: `https://fizikhub.com/simulasyonlar/${slug}`,
+            },
+            alternates: { canonical: `https://fizikhub.com/simulasyonlar/${slug}` },
         };
     }
 
     return {
         title: `${sim.title} Simülasyonu | FizikHub`,
         description: `${sim.title} ile fizik kurallarını interaktif olarak keşfedin.`,
+        openGraph: {
+            title: `${sim.title} Simülasyonu — Fizikhub`,
+            description: `${sim.title} ile fizik kurallarını interaktif olarak keşfedin.`,
+            type: 'website',
+            url: `https://fizikhub.com/simulasyonlar/${slug}`,
+        },
+        alternates: { canonical: `https://fizikhub.com/simulasyonlar/${slug}` },
     };
 }
 

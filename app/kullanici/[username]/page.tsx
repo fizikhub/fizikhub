@@ -47,6 +47,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
             description,
             ...(profile.avatar_url && { images: [profile.avatar_url] }),
         },
+        alternates: {
+            canonical: `https://fizikhub.com/kullanici/${username}`,
+        },
     };
 }
 

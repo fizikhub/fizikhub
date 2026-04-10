@@ -38,6 +38,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
             description: (article.excerpt || article.summary || "").substring(0, 160) + "...",
             images: [article.cover_url || "https://fizikhub.com/og-image.jpg"],
         },
+        alternates: {
+            canonical: `https://fizikhub.com/deney/${slug}`,
+        },
     };
 }
 
@@ -116,7 +119,7 @@ export default async function ExperimentPage({ params }: PageProps) {
             name: 'Fizikhub',
             logo: {
                 '@type': 'ImageObject',
-                url: 'https://fizikhub.com/og-image.png',
+                url: 'https://fizikhub.com/icon-512.png',
             },
         },
         mainEntityOfPage: {

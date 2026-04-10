@@ -141,13 +141,14 @@ export default async function ArticlePage({ params }: PageProps) {
         author: {
             '@type': 'Person',
             name: article.author?.full_name || article.author?.username || 'Fizikhub Ekibi',
+            url: article.author?.username ? `https://fizikhub.com/kullanici/${article.author.username}` : 'https://fizikhub.com',
         },
         publisher: {
             '@type': 'Organization',
             name: 'Fizikhub',
             logo: {
                 '@type': 'ImageObject',
-                url: 'https://fizikhub.com/og-image.png',
+                url: 'https://fizikhub.com/icon-512.png',
             },
         },
         mainEntityOfPage: {
