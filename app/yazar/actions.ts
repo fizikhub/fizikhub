@@ -1,7 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase-server";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { redirect } from "next/navigation";
 import { reviewArticleWithAI } from "@/lib/ai-review";
 import { getAuthorizedProfile } from "@/lib/auth-helpers";
@@ -152,6 +152,8 @@ export async function createArticle(formData: FormData) {
     revalidatePath("/kesfet");
     revalidatePath("/blog");
     revalidatePath("/");
+    revalidateTag('articles');
+    revalidateTag('feed');
     return { success: true };
 }
 
@@ -225,6 +227,8 @@ export async function updateArticle(articleId: number, formData: FormData) {
     revalidatePath("/kesfet", "layout");
     revalidatePath("/blog", "layout");
     revalidatePath("/", "layout");
+    revalidateTag('articles');
+    revalidateTag('feed');
     return { success: true };
 }
 

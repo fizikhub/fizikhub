@@ -16,8 +16,20 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     if (!quiz) return { title: "Test Bulunamadı" };
 
     return {
-        title: `${quiz.title} | Fizikhub`,
-        description: quiz.description,
+        title: `${quiz.title} | Fizik Testi`,
+        description: quiz.description || `${quiz.title} - Fizikhub'da fizik bilgini test et!`,
+        openGraph: {
+            title: `${quiz.title} — Fizikhub Fizik Testi`,
+            description: quiz.description || `${quiz.title} - Fizik bilgini test et ve puan kazan!`,
+            type: "website",
+            url: `https://fizikhub.com/testler/${slug}`,
+        },
+        twitter: {
+            card: "summary",
+            title: `${quiz.title} — Fizikhub`,
+            description: quiz.description || `${quiz.title} - Fizik bilgini test et!`,
+        },
+        alternates: { canonical: `https://fizikhub.com/testler/${slug}` },
     };
 }
 

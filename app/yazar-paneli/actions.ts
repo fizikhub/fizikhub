@@ -1,7 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase-server";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { reviewArticleWithAI } from "@/lib/ai-review";
 import { cache } from "react";
 import { getAuthorizedProfile } from "@/lib/auth-helpers";
@@ -122,6 +122,8 @@ export async function approveArticle(articleId: number) {
         revalidatePath("/kesfet");
         revalidatePath("/blog");
         revalidatePath("/");
+        revalidateTag('articles');
+        revalidateTag('feed');
         return { success: true, count, published: isStrictAdmin || (count && count >= 4) };
 
     } catch (err: any) {
