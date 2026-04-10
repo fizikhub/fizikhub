@@ -1,9 +1,5 @@
 import { createClient } from '@/lib/supabase-server';
-
-const ADMIN_EMAILS = [
-    'barannnbozkurttb.b@gmail.com',
-    'barannnnbozkurttb.b@gmail.com'
-] as const;
+import { ADMIN_EMAILS, isAdminEmail } from './admin-shared';
 
 /**
  * Centralized admin verification utility.
@@ -18,7 +14,7 @@ export async function verifyAdmin() {
         return { isAdmin: false, user: null, supabase, error: "Giriş yapmalısınız." } as const;
     }
 
-    const isEmailAdmin = ADMIN_EMAILS.includes(user.email?.toLowerCase() as typeof ADMIN_EMAILS[number]);
+    const isEmailAdmin = isAdminEmail(user.email);
 
     if (isEmailAdmin) {
         return { isAdmin: true, user, supabase, error: null } as const;
@@ -38,13 +34,4 @@ export async function verifyAdmin() {
     return { isAdmin: false, user, supabase, error: "Bu işlem için admin yetkisi gereklidir." } as const;
 }
 
-/**
- * Quick check if a user email is an admin email.
- * For use in places where you already have the user object.
- */
-export function isAdminEmail(email: string | null | undefined): boolean {
-    if (!email) return false;
-    return ADMIN_EMAILS.includes(email.toLowerCase() as typeof ADMIN_EMAILS[number]);
-}
-
-export { ADMIN_EMAILS };
+export { ADMIN_EMAILS, isAdminEmail };

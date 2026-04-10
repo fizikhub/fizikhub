@@ -42,7 +42,7 @@ import { ThemeSelector } from "@/components/profile/theme-selector";
 import { createClient } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
 import { signOut } from "@/app/auth/actions";
-import { isAdminEmail } from "@/lib/admin";
+import { isAdminEmail } from "@/lib/admin-shared";
 
 interface ProfileSettingsButtonProps {
     currentFullName: string | null;

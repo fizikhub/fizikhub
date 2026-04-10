@@ -16,7 +16,7 @@ import { RelatedArticles } from "@/components/blog/related-articles";
 import { CommentSection } from "@/components/articles/comment-section";
 import { TTSReader } from "@/components/articles/tts-reader";
 import { ArrowUp, X, Type, Maximize2, Minimize2, Minus, Plus } from "lucide-react";
-import { isAdminEmail } from "@/lib/admin";
+import { isAdminEmail } from "@/lib/admin-shared";
 import { Button } from "@/components/ui/button";
 import {
     DropdownMenu,

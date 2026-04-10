@@ -17,7 +17,7 @@ import {
 import { deleteAnswer } from "@/app/forum/actions";
 import { toast } from "sonner";
 import { createClient } from "@/lib/supabase";
-import { isAdminEmail } from "@/lib/admin";
+import { isAdminEmail } from "@/lib/admin-shared";
 
 interface DeleteAnswerButtonProps {
     answerId: number;

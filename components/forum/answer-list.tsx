@@ -25,7 +25,7 @@ import { RealtimeCommentList } from "@/components/forum/realtime-comment-list";
 import { AnswerCommentForm } from "@/components/forum/answer-comment-form";
 import { ShareDrawer } from "@/components/forum/share-drawer";
 import { cn } from "@/lib/utils";
-import { isAdminEmail } from "@/lib/admin";
+import { isAdminEmail } from "@/lib/admin-shared";
 
 type Answer = Database['public']['Tables']['answers']['Row'] & {
     is_accepted: boolean | null;

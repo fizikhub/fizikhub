@@ -19,7 +19,7 @@ import { toast } from "sonner";
 import { updateProfile } from "@/app/profil/actions";
 import { CoverUpload } from "@/components/profile/cover-upload";
 import { ThemeSelector } from "@/components/profile/theme-selector";
-import { isAdminEmail } from "@/lib/admin";
+import { isAdminEmail } from "@/lib/admin-shared";
 
 interface EditProfileButtonProps {
     currentFullName: string | null;
