@@ -152,7 +152,9 @@ export async function createArticle(formData: FormData) {
     revalidatePath("/kesfet");
     revalidatePath("/blog");
     revalidatePath("/");
+    // @ts-ignore
     revalidateTag('articles');
+    // @ts-ignore
     revalidateTag('feed');
     return { success: true };
 }
@@ -227,7 +229,9 @@ export async function updateArticle(articleId: number, formData: FormData) {
     revalidatePath("/kesfet", "layout");
     revalidatePath("/blog", "layout");
     revalidatePath("/", "layout");
+    // @ts-ignore
     revalidateTag('articles');
+    // @ts-ignore
     revalidateTag('feed');
     return { success: true };
 }

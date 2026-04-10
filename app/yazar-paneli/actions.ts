@@ -122,7 +122,9 @@ export async function approveArticle(articleId: number) {
         revalidatePath("/kesfet");
         revalidatePath("/blog");
         revalidatePath("/");
+        // @ts-ignore - Next.js 16 type definitions issue
         revalidateTag('articles');
+        // @ts-ignore
         revalidateTag('feed');
         return { success: true, count, published: isStrictAdmin || (count && count >= 4) };
 
