@@ -25,6 +25,7 @@ import { RealtimeCommentList } from "@/components/forum/realtime-comment-list";
 import { AnswerCommentForm } from "@/components/forum/answer-comment-form";
 import { ShareDrawer } from "@/components/forum/share-drawer";
 import { cn } from "@/lib/utils";
+import { isAdminEmail } from "@/lib/admin";
 
 type Answer = Database['public']['Tables']['answers']['Row'] & {
     is_accepted: boolean | null;
@@ -434,7 +435,7 @@ export function AnswerList({ questionId, initialAnswers, questionAuthorId, curre
 
                                             {/* Actions Menu */}
                                             <div className="flex items-center opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity gap-1">
-                                                {(user?.id === questionAuthorId || ['barannnbozkurttb.b@gmail.com', 'barannnnbozkurttb.b@gmail.com'].includes(user?.email?.toLowerCase())) && (
+                                                {(user?.id === questionAuthorId || isAdminEmail(user?.email)) && (
                                                     <Button
                                                         variant="ghost"
                                                         size="icon"
@@ -449,7 +450,7 @@ export function AnswerList({ questionId, initialAnswers, questionAuthorId, curre
                                                     </Button>
                                                 )}
 
-                                                {(user?.id === answer.author_id || user?.email?.includes('admin')) && (
+                                                {(user?.id === answer.author_id || isAdminEmail(user?.email)) && (
                                                     <DeleteAnswerButton
                                                         answerId={answer.id}
                                                         questionId={questionId}
@@ -545,6 +546,7 @@ export function AnswerList({ questionId, initialAnswers, questionAuthorId, curre
                                                     answerId={answer.id}
                                                     initialComments={answer.comments || []}
                                                     currentUserId={user?.id}
+                                                    currentUserEmail={user?.email}
                                                     questionId={questionId}
                                                     onDelete={(commentId) => handleCommentDeleted(answer.id, commentId)}
                                                     onCommentsChange={(comments) => {

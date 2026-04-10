@@ -9,6 +9,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { BackgroundWrapper } from "@/components/home/background-wrapper";
 import { cn } from "@/lib/utils";
+import { isAdminEmail } from "@/lib/admin";
 
 import { AnswerList } from "@/components/forum/answer-list";
 import { DeleteQuestionButton } from "@/components/forum/delete-question-button";
@@ -105,7 +106,7 @@ export default async function QuestionPage({ params }: PageProps) {
 
     // Check if user is admin
     const { data: { user } } = await supabase.auth.getUser();
-    const isAdmin = user?.email?.toLowerCase() === 'barannnbozkurttb.b@gmail.com';
+    const isAdmin = isAdminEmail(user?.email);
 
     // Fetch answers and user interactions in parallel
     const [

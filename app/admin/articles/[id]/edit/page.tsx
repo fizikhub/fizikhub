@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase-server";
 import { notFound } from "next/navigation";
 import { AdminArticleEditor } from "@/components/admin/admin-article-editor";
+import { verifyAdmin } from "@/lib/admin";
 
 interface PageProps {
     params: Promise<{ id: string }>;
@@ -11,8 +12,8 @@ export default async function EditArticlePage({ params }: PageProps) {
     const supabase = await createClient();
 
     // Check if user is admin
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user || user.email?.toLowerCase() !== 'barannnbozkurttb.b@gmail.com') {
+    const { isAdmin } = await verifyAdmin();
+    if (!isAdmin) {
         notFound();
     }
 

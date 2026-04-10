@@ -75,12 +75,17 @@ const nextConfig: NextConfig = {
     removeConsole: process.env.NODE_ENV === "production",
   },
 
-  // Redirects for broken links (e.g. arXiv links)
+  // Redirects for broken links (e.g. arXiv links) and old blog slugs
   async redirects() {
     return [
       {
         source: '/abs/:path*',
         destination: 'https://arxiv.org/abs/:path*',
+        permanent: true,
+      },
+      {
+        source: '/blog/:slug',
+        destination: '/makale/:slug',
         permanent: true,
       },
     ];
@@ -201,15 +206,7 @@ const nextConfig: NextConfig = {
       },
     ];
   },
-  async redirects() {
-    return [
-      {
-        source: '/blog/:slug',
-        destination: '/makale/:slug',
-        permanent: true,
-      },
-    ];
-  },
+
 };
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports

@@ -15,6 +15,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { isAdminEmail } from "@/lib/admin";
 
 export function AuthButton() {
     const [user, setUser] = useState<User | null>(null);
@@ -29,12 +30,8 @@ export function AuthButton() {
             if (session?.user) {
 
 
-                const adminEmails = [
-                    'barannnbozkurttb.b@gmail.com',
-                    'barannnnbozkurttb.b@gmail.com'
-                ];
-                const userEmail = session.user.email?.toLowerCase().trim();
-                const isEmailMatch = adminEmails.includes(userEmail || '');
+                const userEmail = session.user.email;
+                const isEmailMatch = isAdminEmail(userEmail);
 
                 if (isEmailMatch) {
                     setIsAdmin(true);

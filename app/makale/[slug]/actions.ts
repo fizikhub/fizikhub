@@ -3,6 +3,7 @@
 import { createClient } from "@/lib/supabase-server";
 import { revalidatePath } from "next/cache";
 import { createNotification } from "@/app/notifications/actions";
+import { isAdminEmail } from "@/lib/admin";
 
 // Toggle like on an article
 export async function toggleLike(articleId: number) {
@@ -185,8 +186,7 @@ export async function deleteComment(commentId: number) {
     }
 
     // Check if user is admin (explicit check for safety)
-    const adminEmails = ['barannnbozkurttb.b@gmail.com', 'barannnnbozkurttb.b@gmail.com'];
-    const isEmailAdmin = adminEmails.includes(user.email?.toLowerCase().trim() || '');
+    const isEmailAdmin = isAdminEmail(user.email);
 
     let isAdmin = isEmailAdmin;
     if (!isAdmin) {

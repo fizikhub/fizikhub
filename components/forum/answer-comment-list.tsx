@@ -21,6 +21,7 @@ import {
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { CommentLikeButton } from "./comment-like-button";
+import { isAdminEmail } from "@/lib/admin";
 
 interface Comment {
     id: number;
@@ -40,13 +41,14 @@ interface Comment {
 interface AnswerCommentListProps {
     comments: Comment[];
     currentUserId?: string;
+    currentUserEmail?: string;
     questionId: number;
     onDelete: (commentId: number) => void;
 }
 
-export function AnswerCommentList({ comments, currentUserId, questionId, onDelete }: AnswerCommentListProps) {
+export function AnswerCommentList({ comments, currentUserId, currentUserEmail, questionId, onDelete }: AnswerCommentListProps) {
     const [isDeleting, setIsDeleting] = useState<number | null>(null);
-    const isAdmin = currentUserId === 'barannnbozkurttb.b@gmail.com';
+    const isAdmin = isAdminEmail(currentUserEmail);
 
     const handleDelete = async (commentId: number) => {
         setIsDeleting(commentId);

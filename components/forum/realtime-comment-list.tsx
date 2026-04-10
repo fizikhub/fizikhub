@@ -8,6 +8,7 @@ interface RealtimeCommentListProps {
     answerId: number;
     initialComments: any[];
     currentUserId?: string;
+    currentUserEmail?: string;
     questionId: number;
     onDelete?: (commentId: number) => void;
     onCommentsChange?: (comments: any[]) => void;
@@ -17,6 +18,7 @@ export function RealtimeCommentList({
     answerId,
     initialComments,
     currentUserId,
+    currentUserEmail,
     questionId,
     onDelete,
     onCommentsChange
@@ -39,6 +41,7 @@ export function RealtimeCommentList({
         <AnswerCommentList
             comments={comments}
             currentUserId={currentUserId}
+            currentUserEmail={currentUserEmail}
             questionId={questionId}
             onDelete={(id) => {
                 if (onDelete) onDelete(id);

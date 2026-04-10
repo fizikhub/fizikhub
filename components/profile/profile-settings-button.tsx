@@ -42,6 +42,7 @@ import { ThemeSelector } from "@/components/profile/theme-selector";
 import { createClient } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
 import { signOut } from "@/app/auth/actions";
+import { isAdminEmail } from "@/lib/admin";
 
 interface ProfileSettingsButtonProps {
     currentFullName: string | null;
@@ -82,7 +83,7 @@ export function ProfileSettingsButton({
     const [isUpdating, setIsUpdating] = useState(false);
 
     const router = useRouter();
-    const isAdmin = userEmail === 'barannnbozkurttb.b@gmail.com';
+    const isAdmin = isAdminEmail(userEmail);
     const userInitial = currentFullName?.charAt(0) || currentUsername?.charAt(0)?.toUpperCase() || "U";
 
     // Check if allowed to change username

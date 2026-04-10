@@ -19,6 +19,7 @@ import { toast } from "sonner";
 import { updateProfile } from "@/app/profil/actions";
 import { CoverUpload } from "@/components/profile/cover-upload";
 import { ThemeSelector } from "@/components/profile/theme-selector";
+import { isAdminEmail } from "@/lib/admin";
 
 interface EditProfileButtonProps {
     currentFullName: string | null;
@@ -37,7 +38,7 @@ export function EditProfileButton({ currentFullName, currentBio, currentAvatarUr
     const [username, setUsername] = useState(currentUsername || "");
     const [bio, setBio] = useState(currentBio || "");
 
-    const isAdmin = userEmail === 'barannnbozkurttb.b@gmail.com';
+    const isAdmin = isAdminEmail(userEmail);
     const [avatarUrl, setAvatarUrl] = useState(currentAvatarUrl || "");
     const [website, setWebsite] = useState(currentWebsite || "");
     const [twitter, setTwitter] = useState(currentSocialLinks?.twitter || "");

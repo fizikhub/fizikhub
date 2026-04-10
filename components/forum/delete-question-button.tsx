@@ -17,6 +17,7 @@ import {
 import { deleteQuestion } from "@/app/forum/actions";
 import { toast } from "sonner";
 import { createClient } from "@/lib/supabase";
+import { isAdminEmail } from "@/lib/admin";
 
 interface DeleteQuestionButtonProps {
     questionId: number;
@@ -34,7 +35,7 @@ export function DeleteQuestionButton({ questionId, authorId }: DeleteQuestionBut
             const { data: { user } } = await supabase.auth.getUser();
             if (!user) return;
 
-            const isAdmin = user.email === 'barannnbozkurttb.b@gmail.com';
+            const isAdmin = isAdminEmail(user.email);
             const isAuthor = user.id === authorId;
 
             if (isAdmin || isAuthor) {

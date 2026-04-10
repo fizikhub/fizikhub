@@ -5,6 +5,7 @@ import { getArticleBySlug } from "@/lib/api";
 import { calculateReadingTime, formatReadingTime } from "@/lib/reading-time";
 import { Metadata } from "next";
 import { ExperimentViewer } from "@/components/experiment/experiment-viewer";
+import { isAdminEmail } from "@/lib/admin";
 
 interface PageProps {
     params: Promise<{ slug: string }>;
@@ -95,7 +96,7 @@ export default async function ExperimentPage({ params }: PageProps) {
     })) || [];
 
     // Check if user is admin
-    const isAdmin = user?.email?.toLowerCase() === 'barannnbozkurttb.b@gmail.com';
+    const isAdmin = isAdminEmail(user?.email);
 
     // Calculate reading time
     const readingTime = calculateReadingTime(article.content || "");

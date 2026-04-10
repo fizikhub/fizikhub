@@ -16,6 +16,7 @@ import { RelatedArticles } from "@/components/blog/related-articles";
 import { CommentSection } from "@/components/articles/comment-section";
 import { TTSReader } from "@/components/articles/tts-reader";
 import { ArrowUp, X, Type, Maximize2, Minimize2, Minus, Plus } from "lucide-react";
+import { isAdminEmail } from "@/lib/admin";
 import { Button } from "@/components/ui/button";
 import {
     DropdownMenu,
@@ -73,7 +74,7 @@ export function ArticleReader({
             
             if (!user) return;
             
-            const isUserAdmin = user.email?.toLowerCase() === 'barannnbozkurttb.b@gmail.com';
+            const isUserAdmin = isAdminEmail(user.email);
             const baseAvatar = user.user_metadata?.avatar_url;
 
             const [likesRes, bookmarksRes, profileRes] = await Promise.all([
