@@ -22,6 +22,7 @@ import {
     DropdownMenuContent,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { createClient } from "@/lib/supabase";
 
 interface ArticleReaderProps {
     article: any;
@@ -56,6 +57,41 @@ export function ArticleReader({
     const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
     const [showScrollTop, setShowScrollTop] = useState(false);
     const contentRef = useRef<HTMLDivElement>(null);
+
+    const [userContext, setUserContext] = useState({
+        isLiked: initialLiked,
+        isBookmarked: initialBookmarked,
+        isLoggedIn: isLoggedIn,
+        isAdmin: isAdmin,
+        userAvatar: userAvatar
+    });
+
+    useEffect(() => {
+        const fetchUserData = async () => {
+            const supabase = createClient();
+            const { data: { user } } = await supabase.auth.getUser();
+            
+            if (!user) return;
+            
+            const isUserAdmin = user.email?.toLowerCase() === 'barannnbozkurttb.b@gmail.com';
+            const baseAvatar = user.user_metadata?.avatar_url;
+
+            const [likesRes, bookmarksRes, profileRes] = await Promise.all([
+                supabase.from('article_likes').select('id').eq('article_id', article.id).eq('user_id', user.id).single(),
+                supabase.from('article_bookmarks').select('id').eq('article_id', article.id).eq('user_id', user.id).single(),
+                supabase.from('profiles').select('avatar_url').eq('id', user.id).single()
+            ]);
+
+            setUserContext({
+                isLiked: !!likesRes.data,
+                isBookmarked: !!bookmarksRes.data,
+                isLoggedIn: true,
+                isAdmin: isUserAdmin,
+                userAvatar: profileRes.data?.avatar_url || baseAvatar
+            });
+        };
+        fetchUserData();
+    }, [article.id]);
 
     const { scrollYProgress } = useScroll();
 
@@ -239,7 +275,7 @@ export function ArticleReader({
                                         <div className="flex items-center hover:-translate-y-1 transition-transform">
                                             <LikeButton
                                                 articleId={article.id}
-                                                initialLiked={initialLiked}
+                                                initialLiked={userContext.isLiked}
                                                 initialCount={likeCount || 0}
                                             />
                                         </div>
@@ -247,7 +283,7 @@ export function ArticleReader({
                                             <BookmarkButton
                                                 type="article"
                                                 itemId={article.id}
-                                                initialBookmarked={initialBookmarked}
+                                                initialBookmarked={userContext.isBookmarked}
                                             />
                                         </div>
                                         <div className="flex items-center hover:-translate-y-1 transition-transform">
@@ -460,9 +496,9 @@ export function ArticleReader({
                                     <CommentSection
                                         articleId={article.id}
                                         comments={comments || []}
-                                        isLoggedIn={isLoggedIn}
-                                        isAdmin={isAdmin}
-                                        userAvatar={userAvatar}
+                                        isLoggedIn={userContext.isLoggedIn}
+                                        isAdmin={userContext.isAdmin}
+                                        userAvatar={userContext.userAvatar}
                                     />
                                 </div>
                             </div>

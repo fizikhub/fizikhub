@@ -10,8 +10,7 @@ import dynamic from "next/dynamic";
 
 // Lazy load components for better initial page load performance
 const Footer = dynamic(
-    () => import("@/components/layout/footer").then(mod => mod.Footer),
-    { ssr: false }
+    () => import("@/components/layout/footer").then(mod => mod.Footer)
 );
 
 const GlobalAdminNotification = dynamic(
@@ -20,11 +19,8 @@ const GlobalAdminNotification = dynamic(
 );
 
 const DesktopSidebar = dynamic(
-    () => import("@/components/layout/desktop-sidebar").then(mod => mod.DesktopSidebar),
-    { ssr: false }
+    () => import("@/components/layout/desktop-sidebar").then(mod => mod.DesktopSidebar)
 );
-
-
 
 const HubGPTButton = dynamic(
     () => import("@/components/ai/hub-gpt-button").then(mod => mod.HubGPTButton),
@@ -32,9 +28,9 @@ const HubGPTButton = dynamic(
 );
 
 const BottomNav = dynamic(
-    () => import("@/components/layout/bottom-nav").then(mod => mod.BottomNav),
-    { ssr: false }
+    () => import("@/components/layout/bottom-nav").then(mod => mod.BottomNav)
 );
+
 
 export function NavigationWrapper({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();

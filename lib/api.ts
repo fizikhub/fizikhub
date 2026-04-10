@@ -1,6 +1,8 @@
 import { Database } from '@/types/database';
 import { SupabaseClient } from '@supabase/supabase-js';
 import { cache } from 'react';
+import { unstable_cache } from 'next/cache';
+import { createStaticClient } from './supabase-server';
 
 
 export type Article = Database['public']['Tables']['articles']['Row'] & {
@@ -20,73 +22,72 @@ export type Question = Database['public']['Tables']['questions']['Row'] & {
 export type DictionaryTerm = Database['public']['Tables']['dictionary_terms']['Row'];
 
 export const getArticles = cache(async function (
-    supabase: SupabaseClient<Database>,
+    _supabase: SupabaseClient<Database>, // Kept for backwards compatibility but ignored
     options: { status?: string | null; authorRole?: 'admin' | 'all'; fields?: string; limit?: number } = { status: 'published', authorRole: 'all' }
 ) {
+    const fetchCached = unstable_cache(
+        async () => {
+            const staticClient = createStaticClient();
+            const selectFields = options.fields || '*, author:profiles!articles_author_id_fkey(*)';
 
-    // Default to all fields if not specified, but for homepage we will want to restrict this
-    const selectFields = options.fields || '*, author:profiles!articles_author_id_fkey(*)';
+            let query = staticClient
+                .from('articles')
+                .select(selectFields)
+                .order('created_at', { ascending: false });
 
-    let query = supabase
-        .from('articles')
-        .select(selectFields)
-        .order('created_at', { ascending: false });
+            if (options.status) query = query.eq('status', options.status);
+            if (options.authorRole === 'admin') query = query.eq('author.role', 'admin');
+            if (options.limit) query = query.limit(options.limit);
 
-    if (options.status) {
-        query = query.eq('status', options.status);
-    }
+            const { data, error } = await query;
+            if (error) {
+                console.error('Error fetching articles:', JSON.stringify(error, null, 2));
+                return [];
+            }
+            return data as Article[];
+        },
+        [`articles-${JSON.stringify(options)}`],
+        { revalidate: 600, tags: ['articles'] } // 10 minutes cache
+    );
 
-    if (options.authorRole === 'admin') {
-        query = query.eq('author.role', 'admin');
-    }
-
-    if (options.limit) {
-        query = query.limit(options.limit);
-    }
-
-    const { data, error } = await query;
-
-    if (error) {
-        console.error('Error fetching articles:', JSON.stringify(error, null, 2));
-        return [];
-    }
-
-    return data as Article[];
+    return await fetchCached();
 });
 
 
-export const getArticleBySlug = cache(async function (supabase: SupabaseClient<Database>, slug: string) {
+export const getArticleBySlug = cache(async function (_supabase: SupabaseClient<Database>, slug: string) {
+    
+    const fetchCached = unstable_cache(
+        async (querySlug: string) => {
+            const staticClient = createStaticClient();
+            
+            // First try to find by slug
+            const { data, error } = await staticClient
+                .from('articles')
+                .select('*, author:profiles!articles_author_id_fkey(*)')
+                .eq('slug', querySlug)
+                .maybeSingle();
 
-    // First try to find by slug
-    const { data, error } = await supabase
-        .from('articles')
-        .select('*, author:profiles!articles_author_id_fkey(*)')
-        .eq('slug', slug)
-        .maybeSingle();
+            if (data) return data as Article;
 
-    if (data) {
-        return data as Article;
-    }
+            // If not found and slug looks like a numeric ID, try to find by ID
+            if (/^\d+$/.test(querySlug)) {
+                const { data: byId } = await staticClient
+                    .from('articles')
+                    .select('*, author:profiles!articles_author_id_fkey(*)')
+                    .eq('id', parseInt(querySlug))
+                    .maybeSingle();
 
-    // If not found and slug looks like a numeric ID, try to find by ID
-    // This handles cases where we link to /blog/[id] instead of /blog/[slug]
-    if (/^\d+$/.test(slug)) {
-        const { data: byId } = await supabase
-            .from('articles')
-            .select('*, author:profiles!articles_author_id_fkey(*)')
-            .eq('id', parseInt(slug))
-            .maybeSingle();
+                if (byId) return byId as Article;
+            }
 
-        if (byId) {
-            return byId as Article;
-        }
-    }
+            if (error) console.error('Error fetching article:', JSON.stringify(error, null, 2));
+            return null;
+        },
+        [`article-${slug}`],
+        { revalidate: 600, tags: ['articles', `article-${slug}`] } // 10 minutes cache
+    );
 
-    if (error) {
-        console.error('Error fetching article:', JSON.stringify(error, null, 2));
-    }
-
-    return null;
+    return await fetchCached(slug);
 });
 
 

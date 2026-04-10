@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Bookmark } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase";
@@ -24,6 +24,10 @@ export function BookmarkButton({
     const [isLoading, setIsLoading] = useState(false);
     // Fix: Initialize supabase client once
     const [supabase] = useState(() => createClient());
+
+    useEffect(() => {
+        setIsBookmarked(initialBookmarked);
+    }, [initialBookmarked]);
 
     const toggleBookmark = async () => {
         setIsLoading(true);

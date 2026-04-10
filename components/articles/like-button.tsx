@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -17,6 +17,10 @@ export function LikeButton({ articleId, initialLiked, initialCount }: LikeButton
     const [liked, setLiked] = useState(initialLiked);
     const [count, setCount] = useState(initialCount);
     const [isLoading, setIsLoading] = useState(false);
+
+    useEffect(() => {
+        setLiked(initialLiked);
+    }, [initialLiked]);
 
     const handleLike = async () => {
         // Optimistic update

@@ -90,24 +90,19 @@ export default async function ArticlePage({ params }: PageProps) {
         notFound();
     }
 
-    // Get current user
-    const { data: { user } } = await supabase.auth.getUser();
-
     // Group all independent sequential queries into a Promise.all block
+    // We only fetch public data to ensure this page remains statically cacheable.
+    // User-specific data (likes, bookmarks, auth status) will be fetched client-side.
     const [
         { count: dbLikeCount },
         { data: references },
-        { data: userLike },
-        { data: userBookmark },
         { data: commentsData },
         { data: relatedArticles }
     ] = await Promise.all([
         supabase.from('article_likes').select('*', { count: 'exact', head: true }).eq('article_id', article.id),
         supabase.from('article_references').select('*').eq('article_id', article.id).order('created_at', { ascending: true }),
-        user ? supabase.from('article_likes').select('id').eq('article_id', article.id).eq('user_id', user.id).single() : Promise.resolve({ data: null }),
-        user ? supabase.from('article_bookmarks').select('id').eq('article_id', article.id).eq('user_id', user.id).single() : Promise.resolve({ data: null }),
         supabase.from('article_comments').select('id, content, created_at, parent_comment_id, user_id').eq('article_id', article.id).order('created_at', { ascending: true }),
-        supabase.from('articles').select('id, title, slug, excerpt, cover_url, category, created_at, author:author_id(username, full_name)').eq('category', article.category || 'Genel').neq('id', article.id).order('created_at', { ascending: false }).limit(3)
+        supabase.from('articles').select('id, title, slug, excerpt, cover_url, category, created_at, author:author_id(username, full_name, avatar_url)').eq('category', article.category || 'Genel').neq('id', article.id).order('created_at', { ascending: false }).limit(3)
     ]);
 
     const likeCount = article.title === "Sessiz Bir Varsayım: Yerçekimi" ? 7 : dbLikeCount;
@@ -129,9 +124,6 @@ export default async function ArticlePage({ params }: PageProps) {
             avatar_url: null
         }
     })) || [];
-
-    // Check if user is admin
-    const isAdmin = user?.email?.toLowerCase() === 'barannnbozkurttb.b@gmail.com';
 
     // Calculate reading time
     const readingTime = calculateReadingTime(article.content || "");
@@ -178,19 +170,19 @@ export default async function ArticlePage({ params }: PageProps) {
                         article={article}
                         readingTime={formattedReadingTime}
                         likeCount={likeCount || 0}
-                        initialLiked={!!userLike}
-                        initialBookmarked={!!userBookmark}
+                        initialLiked={false}
+                        initialBookmarked={false}
                         comments={comments || []}
-                        isLoggedIn={!!user}
-                        userAvatar={user ? (profiles?.find(p => p.id === user.id)?.avatar_url) : undefined}
+                        isLoggedIn={false}
+                        userAvatar={undefined}
                     />
                 ) : article.category === 'Terim' ? (
                     <TermDetail
                         article={article}
                         readingTime={formattedReadingTime}
                         likeCount={likeCount || 0}
-                        initialLiked={!!userLike}
-                        initialBookmarked={!!userBookmark}
+                        initialLiked={false}
+                        initialBookmarked={false}
                     />
                 ) : (
                     <>
@@ -202,12 +194,12 @@ export default async function ArticlePage({ params }: PageProps) {
                             article={article}
                             readingTime={formattedReadingTime}
                             likeCount={likeCount || 0}
-                            initialLiked={!!userLike}
-                            initialBookmarked={!!userBookmark}
+                            initialLiked={false}
+                            initialBookmarked={false}
                             comments={comments || []}
-                            isLoggedIn={!!user}
-                            isAdmin={isAdmin}
-                            userAvatar={user ? (profiles?.find(p => p.id === user.id)?.avatar_url) : undefined}
+                            isLoggedIn={false}
+                            isAdmin={false}
+                            userAvatar={undefined}
                             relatedArticles={relatedArticles || []}
                             references={references || []}
                         />

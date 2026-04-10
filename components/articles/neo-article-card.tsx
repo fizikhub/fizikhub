@@ -12,7 +12,8 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { toggleArticleLike, toggleArticleBookmark } from "@/app/makale/actions";
 import { useHaptic } from "@/hooks/use-haptic";
-import { triggerSmallConfetti } from "@/lib/confetti";
+// Confetti and other heavy interactions will be loaded on demand to minimize TBT
+
 
 interface NeoArticleCardProps {
     article: Article;
@@ -46,7 +47,10 @@ export function NeoArticleCard({
 
         if (!isLiked) {
             triggerHaptic();
-            triggerSmallConfetti(e.clientX, e.clientY);
+            // Dynamite import for heavy interaction library (canvas-confetti)
+            import("@/lib/confetti").then(mod => {
+                mod.triggerSmallConfetti(e.clientX, e.clientY);
+            });
         }
 
         const previousLiked = isLiked;

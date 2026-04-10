@@ -3,7 +3,13 @@
 import { cn } from "@/lib/utils";
 import { useState, useEffect } from "react";
 import Image from "next/image";
-import { StoryViewer } from "./story-viewer";
+import dynamic from "next/dynamic";
+
+// Dynamic import for StoryViewer to defer framer-motion and supabase/ssr
+const StoryViewer = dynamic(() => import("./story-viewer").then(mod => mod.StoryViewer), {
+    ssr: false,
+});
+
 
 interface NexusStoriesProps {
     initialStories?: any[];
