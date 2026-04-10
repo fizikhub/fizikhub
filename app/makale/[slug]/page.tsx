@@ -99,8 +99,8 @@ export default async function ArticlePage({ params }: PageProps) {
         { data: commentsData },
         { data: relatedArticles }
     ] = await Promise.all([
-        supabase.from('article_likes').select('*', { count: 'exact', head: true }).eq('article_id', article.id),
-        supabase.from('article_references').select('*').eq('article_id', article.id).order('created_at', { ascending: true }),
+        supabase.from('article_likes').select('id', { count: 'exact', head: true }).eq('article_id', article.id),
+        supabase.from('article_references').select('id, title, url, created_at').eq('article_id', article.id).order('created_at', { ascending: true }),
         supabase.from('article_comments').select('id, content, created_at, parent_comment_id, user_id').eq('article_id', article.id).order('created_at', { ascending: true }),
         supabase.from('articles').select('id, title, slug, excerpt, cover_url, category, created_at, author:author_id(username, full_name, avatar_url)').eq('category', article.category || 'Genel').neq('id', article.id).order('created_at', { ascending: false }).limit(3)
     ]);

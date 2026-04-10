@@ -7,10 +7,10 @@ export async function GET() {
     const supabase = await createClient();
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://fizikhub.com';
 
-    // Fetch latest 5 published blogs
-    const { data: latestBlogs } = await supabase
-        .from('blogs')
-        .select('title, slug, excerpt, created_at, profiles(username)')
+    // Fetch latest 5 published articles
+    const { data: latestArticles } = await supabase
+        .from('articles')
+        .select('title, slug, excerpt, created_at, profiles!articles_author_id_fkey(username)')
         .eq('status', 'published')
         .order('created_at', { ascending: false })
         .limit(5);
@@ -40,12 +40,12 @@ export async function GET() {
 
     text += `## Güncel ve Popüler Canlı İçerikler (Real-time Feed)\n\n`;
 
-    if (latestBlogs && latestBlogs.length > 0) {
+    if (latestArticles && latestArticles.length > 0) {
         text += `### En Yeni Yayımlanan Makaleler\n`;
-        latestBlogs.forEach(blog => {
-            const authorName = Array.isArray(blog.profiles) ? blog.profiles[0]?.username : (blog.profiles as { username?: string })?.username;
-            text += `- [${blog.title}](${baseUrl}/blog/${blog.slug}) (Yazar: ${authorName || 'Fizikhub Eğitmeni'} | Tarih: ${new Date(blog.created_at).toLocaleDateString('tr-TR')})\n`;
-            if (blog.excerpt) text += `  Özet: ${blog.excerpt}\n`;
+        latestArticles.forEach(article => {
+            const authorName = Array.isArray(article.profiles) ? article.profiles[0]?.username : (article.profiles as { username?: string })?.username;
+            text += `- [${article.title}](${baseUrl}/blog/${article.slug}) (Yazar: ${authorName || 'Fizikhub Eğitmeni'} | Tarih: ${new Date(article.created_at).toLocaleDateString('tr-TR')})\n`;
+            if (article.excerpt) text += `  Özet: ${article.excerpt}\n`;
         });
         text += `\n`;
     }

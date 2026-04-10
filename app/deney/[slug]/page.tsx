@@ -67,7 +67,7 @@ export default async function ExperimentPage({ params }: PageProps) {
         { data: commentsData },
         { data: relatedArticles }
     ] = await Promise.all([
-        supabase.from('article_likes').select('*', { count: 'exact', head: true }).eq('article_id', article.id),
+        supabase.from('article_likes').select('id', { count: 'exact', head: true }).eq('article_id', article.id),
         user ? supabase.from('article_likes').select('id').eq('article_id', article.id).eq('user_id', user.id).single() : Promise.resolve({ data: null }),
         user ? supabase.from('article_bookmarks').select('id').eq('article_id', article.id).eq('user_id', user.id).single() : Promise.resolve({ data: null }),
         supabase.from('article_comments').select('id, content, created_at, parent_comment_id, user_id').eq('article_id', article.id).order('created_at', { ascending: true }),
