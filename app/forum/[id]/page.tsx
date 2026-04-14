@@ -29,6 +29,7 @@ import { RelatedQuestions } from "@/components/forum/related-questions";
 import { ReplyButton } from "@/components/forum/reply-button";
 import { ReadingProgress } from "@/components/forum/reading-progress";
 import { ShareDrawer } from "@/components/forum/share-drawer";
+import { BreadcrumbJsonLd } from "@/lib/breadcrumbs";
 
 import { Metadata } from "next";
 
@@ -292,6 +293,10 @@ export default async function QuestionPage({ params }: PageProps) {
         <div className="min-h-screen bg-background pb-20 relative overflow-x-hidden selection:bg-[#FFBD2E]/20 selection:text-[#FFBD2E]">
             <ReadingProgress />
             <BackgroundWrapper />
+            <BreadcrumbJsonLd items={[
+                { name: 'Forum', href: '/forum' },
+                { name: question.title, href: `/forum/${id}` }
+            ]} />
             <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

@@ -50,6 +50,12 @@ export const metadata: Metadata = {
     images: ["/og-image.jpg"],
     creator: "@fizikhub",
   },
+  alternates: {
+    canonical: "https://www.fizikhub.com",
+    types: {
+      'application/rss+xml': '/feed.xml',
+    },
+  },
 };
 
 // Cached Data Fetching

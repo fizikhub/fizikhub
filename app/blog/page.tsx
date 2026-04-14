@@ -12,7 +12,8 @@ export async function generateMetadata({ searchParams }: BlogPageProps): Promise
     const category = typeof params.category === 'string' ? params.category : undefined;
     const page = typeof params.page === 'string' ? params.page : undefined;
 
-    let canonicalUrl = "https://www.fizikhub.com/blog";
+    // Canonical always points to /makale (the primary route)
+    let canonicalUrl = "https://www.fizikhub.com/makale";
     const queryParams = new URLSearchParams();
     if (category && category !== "Tümü") queryParams.set("category", category);
     if (page && page !== "1") queryParams.set("page", page);
@@ -23,6 +24,10 @@ export async function generateMetadata({ searchParams }: BlogPageProps): Promise
     return {
         title: "Keşfet | Fizikhub",
         description: "Fizik dünyasındaki en son makaleleri, popüler konuları ve bilimsel tartışmaları keşfedin. Kuantum, astrofizik, biyoloji ve daha fazlası.",
+        robots: {
+            index: false,
+            follow: true,
+        },
         openGraph: {
             title: "Keşfet — Fizikhub",
             description: "Fizik dünyasındaki en son makaleleri, popüler konuları ve bilimsel tartışmaları keşfedin.",

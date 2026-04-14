@@ -50,7 +50,7 @@ export async function GET() {
         const authorName = author?.full_name || author?.username || 'Fizikhub';
 
         // Determine URL prefix based on category
-        let urlPrefix = 'blog';
+        let urlPrefix = 'makale';
         if (article.category === 'Deney') urlPrefix = 'deney';
         else if (article.category === 'Kitap İncelemesi') urlPrefix = 'kitap-inceleme';
 

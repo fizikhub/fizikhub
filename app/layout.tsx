@@ -119,12 +119,32 @@ const jsonLdOrg = {
   url: 'https://www.fizikhub.com',
   logo: {
     '@type': 'ImageObject',
+    '@id': 'https://www.fizikhub.com/#logo',
     url: 'https://www.fizikhub.com/icon-512.png',
     width: 512,
     height: 512,
+    caption: 'Fizikhub',
   },
+  image: { '@id': 'https://www.fizikhub.com/#logo' },
   description: 'Bilimi Ti\'ye Alıyoruz Ama Ciddi Şekilde. Fizik, astronomi, kuantum ve daha fazlası — Türkçe bilim platformu.',
   foundingDate: '2024',
+  inLanguage: 'tr-TR',
+  areaServed: 'TR',
+  knowsAbout: [
+    'Fizik', 'Kuantum Fizigi', 'Astrofizik', 'Termodinamik', 'Klasik Mekanik',
+    'Nükler Fizik', 'Optik', 'Elektromanyetizma', 'Kozmoloji', 'Bilim Tarihi',
+    'TYT Fizik', 'AYT Fizik', 'Astronomi', 'Kimya', 'Biyofizik'
+  ],
+  hasOfferCatalog: {
+    '@type': 'OfferCatalog',
+    name: 'Fizikhub İçerikleri',
+    itemListElement: [
+      { '@type': 'Offer', itemOffered: { '@type': 'Course', name: 'Fizik Testleri' } },
+      { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Bilim Forumu' } },
+      { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Fizik Simülasyonları' } },
+      { '@type': 'Offer', itemOffered: { '@type': 'Book', name: 'Bilim Sözlüğü' } },
+    ]
+  },
   sameAs: [
     'https://twitter.com/fizikhub',
     'https://instagram.com/fizikhub'
