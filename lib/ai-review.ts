@@ -103,7 +103,7 @@ SADECE JSON döndür:
   "originality_score": 60 
 }
 (originality_score: %0 tamamen robotik chatgpt çıktısı, %100 tamamen insani doğal metin)
-\`;
+`;
 
 const PHASE3_GEMINI_PROMPT = `Sen FizikHub platformunun Genel Yayın Yönetmenisin (Baş Editör). 
 Karşında; Yazarın Makalesi, Aşama-1 (Gemini) teknik raporu, ve Aşama-2 AI-Özgünlük raporu duruyor.
