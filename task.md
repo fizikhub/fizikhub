@@ -6,4 +6,4 @@
 - `[x]` 4. **Resim Alt Etiketi Temizliği** (Eksik veya jenerik `alt` taşıyan `Image` elementleri tespit edilip onarılacak).
 - `[x]` 5. **Hyperlink İyileştirmeleri** (Next.js `<Link>` komponentine geçirilip gecikme düşürülecek).
 - `[x]` 6. **Sitemap Gelişmiş XML** (Sitemap'e makale kapak resimlerini dahil edilecek).
-- `[/]` 7. **Kontrol ve Doğrulama** (Son SEO testleri ve deploy).
+- `[x]` 7. **Kontrol ve Doğrulama** (Son SEO testleri ve deploy).
