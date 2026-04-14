@@ -194,7 +194,7 @@ export function StoryViewer({ stories: initialStories, initialIndex, isOpen, onC
                         <div className="flex items-center gap-2 pointer-events-auto">
                             <div className="w-8 h-8 rounded-full p-[1.5px] bg-gradient-to-tr from-yellow-400 to-orange-500">
                                 <div className="w-full h-full rounded-full bg-zinc-800 overflow-hidden relative border border-black/50">
-                                    <Image src={currentStory.image} alt={`${currentStory.title} profil`} fill className="object-cover" />
+                                    <Image src={currentStory.image} alt={`${currentStory.title} profil`} fill sizes="(max-width: 640px) 150px, 300px" className="object-cover" />
                                 </div>
                             </div>
                             <div className="flex flex-col">

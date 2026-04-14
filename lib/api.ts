@@ -91,35 +91,49 @@ export const getArticleBySlug = cache(async function (_supabase: SupabaseClient<
 });
 
 
-export const getQuestions = cache(async function (supabase: SupabaseClient<Database>, options?: { limit?: number }) {
+export const getQuestions = cache(async function (_supabase: SupabaseClient<Database>, options?: { limit?: number }) {
+    const fetchCached = unstable_cache(
+        async () => {
+            const staticClient = createStaticClient();
+            const { data, error } = await staticClient
+                .from('questions')
+                .select('*, author:profiles(*)')
+                .order('created_at', { ascending: false })
+                .limit(options?.limit || 50);
 
-    const { data, error } = await supabase
-        .from('questions')
-        .select('*, author:profiles(*)')
-        .order('created_at', { ascending: false })
-        .limit(options?.limit || 50);
+            if (error) {
+                console.error('Error fetching questions:', error);
+                return [];
+            }
+            return data as Question[];
+        },
+        [`questions-${options?.limit || 50}`],
+        { revalidate: 60, tags: ['questions'] } // 1 minute cache for fresh forum data
+    );
 
-    if (error) {
-        console.error('Error fetching questions:', error);
-        return [];
-    }
-
-    return data as Question[];
+    return await fetchCached();
 });
 
 
-export const getDictionaryTerms = cache(async function (supabase: SupabaseClient<Database>) {
+export const getDictionaryTerms = cache(async function (_supabase: SupabaseClient<Database>) {
+    const fetchCached = unstable_cache(
+        async () => {
+            const staticClient = createStaticClient();
+            const { data, error } = await staticClient
+                .from('dictionary_terms')
+                .select('*')
+                .order('term', { ascending: true });
 
-    const { data, error } = await supabase
-        .from('dictionary_terms')
-        .select('*')
-        .order('term', { ascending: true });
+            if (error) {
+                console.error('Error fetching dictionary terms:', JSON.stringify(error, null, 2));
+                return [];
+            }
+            return data as DictionaryTerm[];
+        },
+        ['dictionary_terms'],
+        { revalidate: 3600, tags: ['dictionary'] } // 1 hour cache since terms rarely change
+    );
 
-    if (error) {
-        console.error('Error fetching dictionary terms:', JSON.stringify(error, null, 2));
-        return [];
-    }
-
-    return data as DictionaryTerm[];
+    return await fetchCached();
 });
 

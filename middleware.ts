@@ -96,6 +96,8 @@ export async function middleware(request: NextRequest) {
             url.pathname = cleanPathname;
             return NextResponse.redirect(url, 301);
         }
+    }
+
     // Normalize query params for /blog to fix Canonical tag warnings (kategori -> category)
     if (pathname === '/blog') {
         const url = request.nextUrl.clone();

@@ -211,7 +211,7 @@ export function BookReviewEditor({ userId }: BookReviewEditorProps) {
                 {/* Cover Image Header */}
                 {coverUrl && (
                     <div className="relative w-full aspect-[21/9] sm:aspect-[4/1] bg-black border-b-[3px] border-black group">
-                        <Image src={coverUrl} alt="Cover" fill className="object-cover opacity-90 transition-opacity group-hover:opacity-100" />
+                        <Image src={coverUrl} alt="Cover" fill sizes="(max-width: 640px) 100vw, 768px" className="object-cover opacity-90 transition-opacity group-hover:opacity-100" />
                         <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors" />
                         <Button
                             variant="destructive"
