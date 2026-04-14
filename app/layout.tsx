@@ -150,7 +150,7 @@ const jsonLdWebsite = {
     '@type': 'SearchAction',
     target: {
       '@type': 'EntryPoint',
-      urlTemplate: 'https://fizikhub.com/blog?q={search_term_string}'
+      urlTemplate: 'https://fizikhub.com/ara?q={search_term_string}'
     },
     'query-input': 'required name=search_term_string'
   }

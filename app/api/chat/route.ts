@@ -31,7 +31,7 @@ export async function POST(req: Request) {
 
     try {
         const result = await streamText({
-            model: google('gemma-3-27b-it'),
+            model: google('gemini-2.5-flash'),
             messages: coreMessages,
             system: `${FIZIKHUB_KNOWLEDGE_BASE}
 

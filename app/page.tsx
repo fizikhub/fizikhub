@@ -173,7 +173,7 @@ export default async function Home() {
       position: index + 1,
       item: {
         '@type': 'Article',
-        url: `https://fizikhub.com/blog/${article.slug}`,
+        url: `https://fizikhub.com/makale/${article.slug}`,
         name: article.title,
         headline: article.title,
         image: article.cover_url || "https://fizikhub.com/og-image.png",

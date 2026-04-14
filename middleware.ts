@@ -77,6 +77,57 @@ export async function middleware(request: NextRequest) {
         return NextResponse.redirect(url, 301);
     }
 
+    // Clean up URLs broken by markdown parsing bugs (trailing characters after closed parenthesis)
+    // E.g. /abs/123) or /storage/...blob)olay
+    if (pathname.includes(')')) {
+        const cleanPathname = pathname.split(')')[0];
+        if (cleanPathname.length > 0) {
+            const url = request.nextUrl.clone();
+            url.pathname = cleanPathname;
+            return NextResponse.redirect(url, 301);
+        }
+    }
+
+    // Clean up trailing .*
+    if (pathname.endsWith('.*')) {
+        const cleanPathname = pathname.replace(/\.\*$/, '');
+        if (cleanPathname.length > 0) {
+            const url = request.nextUrl.clone();
+            url.pathname = cleanPathname;
+            return NextResponse.redirect(url, 301);
+        }
+    // Normalize query params for /blog to fix Canonical tag warnings (kategori -> category)
+    if (pathname === '/blog') {
+        const url = request.nextUrl.clone();
+        const kategori = url.searchParams.get('kategori');
+        if (kategori) {
+            url.searchParams.delete('kategori');
+            url.searchParams.set('category', kategori);
+            return NextResponse.redirect(url, 301);
+        }
+    }
+
+    // Redirect /abs/* to 404 (arXiv automation removed)
+    if (pathname.startsWith('/abs/')) {
+        const url = request.nextUrl.clone();
+        url.pathname = '/404';
+        return NextResponse.rewrite(url);
+    }
+
+    // Soft-redirect /storage/ links to the actual Supabase bucket
+    if (pathname.startsWith('/storage/v1/object/public/')) {
+        const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://cd8341b2-228f-4981-ac3a-5a84c9adca5e.supabase.co';
+        const url = new URL(`${supabaseUrl}${pathname}`);
+        return NextResponse.redirect(url, 301);
+    }
+
+    // Redirect junk single-character paths that bots hit
+    if (['/n', '/2', '/slot', '/ozel', '/interstellar'].includes(pathname) || pathname === '/&' || pathname === '/$') {
+        const url = request.nextUrl.clone();
+        url.pathname = '/';
+        return NextResponse.redirect(url, 301);
+    }
+
     // Rate limit auth endpoints (login, register, password reset)
     if (pathname.startsWith('/login') || pathname.startsWith('/register') || pathname.startsWith('/auth')) {
         if (request.method === 'POST' && isRateLimited(`auth:${ip}`, MAX_REQUESTS_AUTH)) {

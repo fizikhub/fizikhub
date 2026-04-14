@@ -79,8 +79,8 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       {
-        source: '/abs/:path*',
-        destination: 'https://arxiv.org/abs/:path*',
+        source: '/kesfet',
+        destination: '/ara',
         permanent: true,
       },
       {

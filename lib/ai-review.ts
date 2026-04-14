@@ -90,7 +90,7 @@ SADECE bu yapıdaki JSON formatını döndür başka bir şey ekleme:
   }
 }`;
 
-const PHASE2_GEMMA27B_PROMPT = `Sen FizikHub platformunun Kıdemli Özgünlük (AI Detection) Uzmanısın. Karşında bir makale ve Aşama-1 ön raporu bulunuyor. 
+const PHASE2_GEMINI_PROMPT = `Sen FizikHub platformunun Kıdemli Özgünlük (AI Detection) Uzmanısın. Karşında bir makale ve Aşama-1 ön raporu bulunuyor. 
 Senin tek görevin: "Yazının baştan sona AI tarafından mı üretildiği yoksa insan öznelliği barındırıp sadece AI rötüşü mü aldığı incelenir." kuralına göre karar vermektir.
 
 Robotik dili, tipik AI kalıplarını (örn. "Sonuç olarak...", "Bununla birlikte..."), insani yazarın bıraktığı izleri ve yorumları denetle.
@@ -103,10 +103,10 @@ SADECE JSON döndür:
   "originality_score": 60 
 }
 (originality_score: %0 tamamen robotik chatgpt çıktısı, %100 tamamen insani doğal metin)
-`;
+\`;
 
-const PHASE3_GEMMA12B_PROMPT = `Sen FizikHub platformunun Genel Yayın Yönetmenisin (Baş Editör). 
-Karşında; Yazarın Makalesi, Aşama-1 (Gemini) teknik raporu, ve Aşama-2 (Gemma 27B) AI-Özgünlük raporu duruyor.
+const PHASE3_GEMINI_PROMPT = `Sen FizikHub platformunun Genel Yayın Yönetmenisin (Baş Editör). 
+Karşında; Yazarın Makalesi, Aşama-1 (Gemini) teknik raporu, ve Aşama-2 AI-Özgünlük raporu duruyor.
 
 Tüm bu raporları sentezle ve son bir karar ver.
 
@@ -204,11 +204,11 @@ ${referencesText}
 
     if (!initialReviewResult) return null;
 
-    // --- PHASE 2: Gemma 3 27B ---
+    // --- PHASE 2: Gemini (Özgünlük) ---
     for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
         try {
-            const gemma27bModel = genAI.getGenerativeModel({ 
-                model: "gemma-3-27b-it",
+            const geminiOriginalityModel = genAI.getGenerativeModel({ 
+                model: "gemini-2.5-flash",
                 generationConfig: { temperature: 0.3, maxOutputTokens: 8192, responseMimeType: "application/json" }
             });
 
@@ -218,7 +218,7 @@ ${referencesText}
                 deep_analysis: initialReviewResult.deep_analysis // Include deep analysis for context
             })}`;
 
-            const result = await gemma27bModel.generateContent([PHASE2_GEMMA27B_PROMPT, p2Message]);
+            const result = await geminiOriginalityModel.generateContent([PHASE2_GEMINI_PROMPT, p2Message]);
             let cleanedJson = result.response.text().trim();
             if (cleanedJson.startsWith("```")) cleanedJson = cleanedJson.replace(/^```(?:json)?\n?/, "").replace(/\n?```$/, "");
 
@@ -231,17 +231,17 @@ ${referencesText}
         }
     }
 
-    // --- PHASE 3: Gemma 3 12B ---
+    // --- PHASE 3: Gemini (Karar) ---
     for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
         try {
-            const gemma12bModel = genAI.getGenerativeModel({ 
-                model: "gemma-3-12b-it",
+            const geminiDecisionModel = genAI.getGenerativeModel({ 
+                model: "gemini-2.5-flash",
                 generationConfig: { temperature: 0.4, maxOutputTokens: 8192, responseMimeType: "application/json" }
             });
 
             const p3Message = `${userMessage}\n\nAŞAMA 1 RAPORU (Derin Analiz Dahil):\n${JSON.stringify(initialReviewResult.deep_analysis)}\n\nAŞAMA 2 RAPORU (Özgünlük - Yapay Zeka Tespiti):\n${JSON.stringify(initialReviewResult.ai_originality_analysis)}`;
 
-            const result = await gemma12bModel.generateContent([PHASE3_GEMMA12B_PROMPT, p3Message]);
+            const result = await geminiDecisionModel.generateContent([PHASE3_GEMINI_PROMPT, p3Message]);
             let cleanedJson = result.response.text().trim();
             if (cleanedJson.startsWith("```")) cleanedJson = cleanedJson.replace(/^```(?:json)?\n?/, "").replace(/\n?```$/, "");
 
