@@ -12,7 +12,7 @@ export async function generateMetadata({ searchParams }: BlogPageProps): Promise
     const category = typeof params.category === 'string' ? params.category : undefined;
     const page = typeof params.page === 'string' ? params.page : undefined;
 
-    let canonicalUrl = "https://fizikhub.com/blog";
+    let canonicalUrl = "https://www.fizikhub.com/blog";
     const queryParams = new URLSearchParams();
     if (category && category !== "Tümü") queryParams.set("category", category);
     if (page && page !== "1") queryParams.set("page", page);

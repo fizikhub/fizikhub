@@ -11,9 +11,9 @@ export const metadata: Metadata = {
         title: "Rozetler — FizikHub",
         description: "20 efsanevi rozeti topla, bilim yolculuğunda ilerle.",
         type: "website",
-        url: "https://fizikhub.com/rozetler",
+        url: "https://www.fizikhub.com/rozetler",
     },
-    alternates: { canonical: "https://fizikhub.com/rozetler" },
+    alternates: { canonical: "https://www.fizikhub.com/rozetler" },
 };
 
 export default async function RozetlerPage() {

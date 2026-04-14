@@ -28,7 +28,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
     const coverUrl = article.cover_url && article.cover_url.length > 0
         ? article.cover_url
-        : "https://fizikhub.com/og-image.jpg"; // Updated to match layout's default
+        : "https://www.fizikhub.com/og-image.jpg"; // Updated to match layout's default
 
     return {
         title: article.title,
@@ -55,7 +55,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
             images: [coverUrl],
         },
         alternates: {
-            canonical: `${process.env.NEXT_PUBLIC_APP_URL || 'https://fizikhub.com'}/makale/${slug}`,
+            canonical: `${process.env.NEXT_PUBLIC_APP_URL || 'https://www.fizikhub.com'}/makale/${slug}`,
         },
     };
 }
@@ -135,7 +135,7 @@ export default async function ArticlePage({ params }: PageProps) {
         '@type': 'Article',
         headline: article.title,
         description: (article.content || "").substring(0, 160) + "...",
-        image: article.cover_url || 'https://fizikhub.com/og-image.png',
+        image: article.cover_url || 'https://www.fizikhub.com/og-image.png',
         datePublished: article.created_at,
         dateModified: (article as { updated_at?: string }).updated_at || article.created_at,
         wordCount: article.content ? article.content.split(/\s+/).length : 0,
@@ -143,19 +143,19 @@ export default async function ArticlePage({ params }: PageProps) {
         author: {
             '@type': 'Person',
             name: article.author?.full_name || article.author?.username || 'Fizikhub Ekibi',
-            url: article.author?.username ? `https://fizikhub.com/kullanici/${article.author.username}` : 'https://fizikhub.com',
+            url: article.author?.username ? `https://www.fizikhub.com/kullanici/${article.author.username}` : 'https://www.fizikhub.com',
         },
         publisher: {
             '@type': 'Organization',
             name: 'Fizikhub',
             logo: {
                 '@type': 'ImageObject',
-                url: 'https://fizikhub.com/icon-512.png',
+                url: 'https://www.fizikhub.com/icon-512.png',
             },
         },
         mainEntityOfPage: {
             '@type': 'WebPage',
-            '@id': `https://fizikhub.com/makale/${article.slug}`,
+            '@id': `https://www.fizikhub.com/makale/${article.slug}`,
         },
     };
 

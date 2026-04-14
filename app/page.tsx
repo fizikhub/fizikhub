@@ -38,7 +38,7 @@ export const metadata: Metadata = {
     title: "Fizikhub — Türkiye'nin Fizik, Uzay ve Bilim Merkezi",
     description: "Türkçe bilim platformu: Fizik makaleleri, aktif bilim forumu, kavram sözlüğü, eğitim testleri ve interaktif fizik simülasyonları.",
     type: "website",
-    url: "https://fizikhub.com",
+    url: "https://www.fizikhub.com",
     images: [{ url: "/og-image.jpg", width: 1200, height: 630, alt: "Fizikhub — Bilimi Ti'ye Alıyoruz" }],
     locale: "tr_TR",
     siteName: "Fizikhub",
@@ -173,10 +173,10 @@ export default async function Home() {
       position: index + 1,
       item: {
         '@type': 'Article',
-        url: `https://fizikhub.com/makale/${article.slug}`,
+        url: `https://www.fizikhub.com/makale/${article.slug}`,
         name: article.title,
         headline: article.title,
-        image: article.cover_url || "https://fizikhub.com/og-image.png",
+        image: article.cover_url || "https://www.fizikhub.com/og-image.png",
         datePublished: article.created_at,
         author: {
           '@type': 'Person',

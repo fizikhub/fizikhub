@@ -9,9 +9,9 @@ export const metadata: Metadata = {
         title: "Hub Puan Sistemi — Fizikhub",
         description: "Puan kazanarak rütbenizi yükseltin ve toplulukta yerinizi alın.",
         type: "website",
-        url: "https://fizikhub.com/puanlar-nedir",
+        url: "https://www.fizikhub.com/puanlar-nedir",
     },
-    alternates: { canonical: "https://fizikhub.com/puanlar-nedir" },
+    alternates: { canonical: "https://www.fizikhub.com/puanlar-nedir" },
 };
 import { Badge } from "@/components/ui/badge";
 import {

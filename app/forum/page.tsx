@@ -20,7 +20,7 @@ export const metadata = {
         title: "Bilim Forumu — Fizikhub",
         description: "Fizik sorularını sor, tartışmalara katıl ve topluluktan öğren.",
         type: "website",
-        url: "https://fizikhub.com/forum",
+        url: "https://www.fizikhub.com/forum",
         images: [{ url: "/og-image.jpg", width: 1200, height: 630, alt: "Fizikhub Bilim Forumu" }],
     },
     twitter: {
@@ -29,7 +29,7 @@ export const metadata = {
         description: "Fizik sorularını sor, tartışmalara katıl ve topluluktan öğren.",
         images: ["/og-image.jpg"],
     },
-    alternates: { canonical: "https://fizikhub.com/forum" },
+    alternates: { canonical: "https://www.fizikhub.com/forum" },
 };
 
 interface ForumPageProps {
@@ -122,13 +122,13 @@ export default async function ForumPage({ searchParams }: ForumPageProps) {
         '@type': 'CollectionPage',
         name: 'Fizikhub Bilim Forumu',
         description: 'Fizik sorularını sor, tartışmalara katıl ve topluluktan öğren.',
-        url: 'https://fizikhub.com/forum',
+        url: 'https://www.fizikhub.com/forum',
         mainEntity: {
             '@type': 'ItemList',
             itemListElement: questions?.map((q, i) => ({
                 '@type': 'ListItem',
                 position: i + 1,
-                url: `https://fizikhub.com/forum/${q.id}`,
+                url: `https://www.fizikhub.com/forum/${q.id}`,
                 name: q.title
             })) || []
         }

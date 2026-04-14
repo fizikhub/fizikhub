@@ -36,7 +36,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
             title: `${displayName} — FizikHub Profil`,
             description,
             type: 'profile',
-            url: `https://fizikhub.com/kullanici/${username}`,
+            url: `https://www.fizikhub.com/kullanici/${username}`,
             ...(profile.avatar_url && {
                 images: [{ url: profile.avatar_url, width: 200, height: 200, alt: displayName }]
             }),
@@ -48,7 +48,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
             ...(profile.avatar_url && { images: [profile.avatar_url] }),
         },
         alternates: {
-            canonical: `https://fizikhub.com/kullanici/${username}`,
+            canonical: `https://www.fizikhub.com/kullanici/${username}`,
         },
     };
 }

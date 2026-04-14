@@ -12,7 +12,7 @@ export const metadata: Metadata = {
         title: "Fizik Makaleleri — Fizikhub",
         description: "Kuantum, astrofizik, görelilik ve modern fizik üzerine Türkçe bilimsel makaleler ve araştırmalar.",
         type: "website",
-        url: "https://fizikhub.com/makale",
+        url: "https://www.fizikhub.com/makale",
         images: [{ url: "/og-image.jpg", width: 1200, height: 630, alt: "Fizikhub Makaleler" }],
     },
     twitter: {
@@ -21,7 +21,7 @@ export const metadata: Metadata = {
         description: "Kuantum, astrofizik ve modern fizik üzerine Türkçe bilimsel makaleler.",
         images: ["/og-image.jpg"],
     },
-    alternates: { canonical: "https://fizikhub.com/makale" },
+    alternates: { canonical: "https://www.fizikhub.com/makale" },
 };
 
 export const revalidate = 60;

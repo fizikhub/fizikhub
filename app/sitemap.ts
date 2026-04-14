@@ -5,7 +5,7 @@ export const revalidate = 3600; // Revalidate sitemap every hour
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const supabase = await createClient();
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://fizikhub.com';
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.fizikhub.com';
 
     // Static pages with all important routes
     const staticPages: MetadataRoute.Sitemap = [

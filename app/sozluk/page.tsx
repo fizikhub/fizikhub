@@ -12,14 +12,14 @@ export const metadata = {
         title: "Bilim Sözlüğü — Fizikhub",
         description: "Fizik ve bilim terimlerinin Türkçe açıklamaları. Karmaşık kavramları anlaşılır bir dille öğrenin.",
         type: "website",
-        url: "https://fizikhub.com/sozluk",
+        url: "https://www.fizikhub.com/sozluk",
     },
     twitter: {
         card: "summary",
         title: "Bilim Sözlüğü — Fizikhub",
         description: "Fizik ve bilim terimlerinin Türkçe açıklamaları.",
     },
-    alternates: { canonical: "https://fizikhub.com/sozluk" },
+    alternates: { canonical: "https://www.fizikhub.com/sozluk" },
 };
 
 export const revalidate = 3600;

@@ -8,7 +8,7 @@ export interface BreadcrumbItem {
     href: string;
 }
 
-const BASE_URL = 'https://fizikhub.com';
+const BASE_URL = 'https://www.fizikhub.com';
 
 export function generateBreadcrumbJsonLd(items: BreadcrumbItem[]) {
     // Always start with homepage

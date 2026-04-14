@@ -21,7 +21,7 @@ export async function GET() {
         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!.trim()
     );
 
-    const baseUrl = 'https://fizikhub.com';
+    const baseUrl = 'https://www.fizikhub.com';
 
     // Fetch latest 50 published articles
     const { data: articles } = await supabase

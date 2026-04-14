@@ -28,7 +28,7 @@ export async function getSiteContext(supabase: SupabaseClient) {
             const summary = art.content_text ? art.content_text.substring(0, 300) + "..." : "İçerik özeti yok.";
             return `- MAKALE: "${art.title}" (Yazar: ${authorName})
   Özet: ${summary}
-  Link: https://fizikhub.com/blog/${art.slug}`;
+  Link: https://www.fizikhub.com/blog/${art.slug}`;
         }).join("\n\n");
 
         return `

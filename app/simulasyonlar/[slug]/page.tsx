@@ -40,9 +40,9 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
                 title: sim.seo.title,
                 description: sim.seo.description,
                 type: 'website',
-                url: `https://fizikhub.com/simulasyonlar/${slug}`,
+                url: `https://www.fizikhub.com/simulasyonlar/${slug}`,
             },
-            alternates: { canonical: `https://fizikhub.com/simulasyonlar/${slug}` },
+            alternates: { canonical: `https://www.fizikhub.com/simulasyonlar/${slug}` },
         };
     }
 
@@ -53,9 +53,9 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
             title: `${sim.title} Simülasyonu — Fizikhub`,
             description: `${sim.title} ile fizik kurallarını interaktif olarak keşfedin.`,
             type: 'website',
-            url: `https://fizikhub.com/simulasyonlar/${slug}`,
+            url: `https://www.fizikhub.com/simulasyonlar/${slug}`,
         },
-        alternates: { canonical: `https://fizikhub.com/simulasyonlar/${slug}` },
+        alternates: { canonical: `https://www.fizikhub.com/simulasyonlar/${slug}` },
     };
 }
 

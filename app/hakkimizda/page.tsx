@@ -8,9 +8,9 @@ export const metadata: Metadata = {
         title: "Hakkımızda — Fizikhub",
         description: "Fizikhub, fiziği sevdirmek ve anlaşılır kılmak amacıyla kurulmuş bir bilim platformudur.",
         type: "website",
-        url: "https://fizikhub.com/hakkimizda",
+        url: "https://www.fizikhub.com/hakkimizda",
     },
-    alternates: { canonical: "https://fizikhub.com/hakkimizda" },
+    alternates: { canonical: "https://www.fizikhub.com/hakkimizda" },
 };
 
 export default function AboutPage() {

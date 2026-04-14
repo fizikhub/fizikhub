@@ -14,14 +14,14 @@ export const metadata = {
         title: "Fizik Testleri — Fizikhub",
         description: "Bilgini test et, puan kazan ve liderlik tablosunda yüksel.",
         type: "website",
-        url: "https://fizikhub.com/testler",
+        url: "https://www.fizikhub.com/testler",
     },
     twitter: {
         card: "summary",
         title: "Fizik Testleri — Fizikhub",
         description: "Bilgini test et, puan kazan ve liderlik tablosunda yüksel.",
     },
-    alternates: { canonical: "https://fizikhub.com/testler" },
+    alternates: { canonical: "https://www.fizikhub.com/testler" },
 };
 
 export const revalidate = 1800;

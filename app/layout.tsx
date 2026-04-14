@@ -39,7 +39,7 @@ export const viewport = {
 
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://fizikhub.com'),
+  metadataBase: new URL('https://www.fizikhub.com'),
   title: {
     default: "Fizikhub | Fizik, Uzay ve Bilim Platformu",
     template: "%s | Fizikhub"
@@ -60,7 +60,7 @@ export const metadata: Metadata = {
     "Kuantum Fiziği", "Astrofizik", "Bilim Sözlüğü", "kara delik", "görelilik", "fizik formülleri",
     "bilim insanları", "einstein", "newton", "modern fizik", "astronomi"
   ],
-  authors: [{ name: "Fizikhub Ekibi", url: "https://fizikhub.com" }],
+  authors: [{ name: "Fizikhub Ekibi", url: "https://www.fizikhub.com" }],
   creator: "Fizikhub",
   publisher: "Fizikhub",
   manifest: "/manifest.json",
@@ -71,7 +71,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "tr_TR",
-    url: "https://fizikhub.com",
+    url: "https://www.fizikhub.com",
     title: "Fizikhub | Türkiye'nin Fizik & Uzay Platformu",
     description: "Fizikhub: Türkiye'nin en aktif bilim, fizik, uzay, kuantum ve evren platformu. Türkçe akademik makaleler, bilimsel forum, sözlük ve interaktif bilim eğitim merkezi.",
     siteName: "Fizikhub",
@@ -113,13 +113,13 @@ export const metadata: Metadata = {
 const jsonLdOrg = {
   '@context': 'https://schema.org',
   '@type': ['Organization', 'EducationalOrganization'],
-  '@id': 'https://fizikhub.com/#organization',
+  '@id': 'https://www.fizikhub.com/#organization',
   name: 'Fizikhub',
   alternateName: 'FizikHub',
-  url: 'https://fizikhub.com',
+  url: 'https://www.fizikhub.com',
   logo: {
     '@type': 'ImageObject',
-    url: 'https://fizikhub.com/icon-512.png',
+    url: 'https://www.fizikhub.com/icon-512.png',
     width: 512,
     height: 512,
   },
@@ -140,17 +140,17 @@ const jsonLdOrg = {
 const jsonLdWebsite = {
   '@context': 'https://schema.org',
   '@type': 'WebSite',
-  '@id': 'https://fizikhub.com/#website',
+  '@id': 'https://www.fizikhub.com/#website',
   name: 'Fizikhub',
-  url: 'https://fizikhub.com',
+  url: 'https://www.fizikhub.com',
   description: 'Türkçe bilim platformu: fizik makaleleri, forum, sözlük, testler ve simülasyonlar.',
-  publisher: { '@id': 'https://fizikhub.com/#organization' },
+  publisher: { '@id': 'https://www.fizikhub.com/#organization' },
   inLanguage: 'tr-TR',
   potentialAction: {
     '@type': 'SearchAction',
     target: {
       '@type': 'EntryPoint',
-      urlTemplate: 'https://fizikhub.com/ara?q={search_term_string}'
+      urlTemplate: 'https://www.fizikhub.com/ara?q={search_term_string}'
     },
     'query-input': 'required name=search_term_string'
   }
@@ -183,7 +183,7 @@ export default async function RootLayout({
       <html lang="tr" suppressHydrationWarning>
         <head>
 
-          <link rel="canonical" href="https://fizikhub.com" />
+          <link rel="canonical" href="https://www.fizikhub.com" />
           <link rel="preconnect" href={process.env.NEXT_PUBLIC_SUPABASE_URL!} />
           <link rel="dns-prefetch" href={process.env.NEXT_PUBLIC_SUPABASE_URL!} />
         </head>

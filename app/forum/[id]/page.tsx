@@ -55,7 +55,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
         };
     }
 
-    const ogUrl = new URL(`${process.env.NEXT_PUBLIC_APP_URL || 'https://fizikhub.com'}/api/og`);
+    const ogUrl = new URL(`${process.env.NEXT_PUBLIC_APP_URL || 'https://www.fizikhub.com'}/api/og`);
     ogUrl.searchParams.set('title', question.title);
     ogUrl.searchParams.set('category', question.category || 'Genel');
 
@@ -82,7 +82,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
             images: [ogUrl.toString()],
         },
         alternates: {
-            canonical: `${process.env.NEXT_PUBLIC_APP_URL || 'https://fizikhub.com'}/forum/${id}`,
+            canonical: `${process.env.NEXT_PUBLIC_APP_URL || 'https://www.fizikhub.com'}/forum/${id}`,
         },
     };
 }
@@ -232,7 +232,7 @@ export default async function QuestionPage({ params }: PageProps) {
     const acceptedAnswer = answersWithLikes?.find(a => a.is_accepted);
     const suggestedAnswers = answersWithLikes?.filter(a => !a.is_accepted);
 
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://fizikhub.com';
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.fizikhub.com';
 
     const jsonLd = {
         '@context': 'https://schema.org',
@@ -427,7 +427,7 @@ export default async function QuestionPage({ params }: PageProps) {
                                     <ReplyButton />
 
                                     <ShareDrawer
-                                        url={`${process.env.NEXT_PUBLIC_APP_URL || 'https://fizikhub.com'}/forum/${question.id}`}
+                                        url={`${process.env.NEXT_PUBLIC_APP_URL || 'https://www.fizikhub.com'}/forum/${question.id}`}
                                         title={question.title}
                                     >
                                         <Button variant="ghost" size="icon" className="h-9 w-9 border-[2px] border-black dark:border-zinc-600 bg-white dark:bg-zinc-800 rounded-lg text-black dark:text-zinc-300 shadow-[2px_2px_0_0_#000] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.08)] hover:bg-[#FFBD2E] hover:text-black hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0_0_#000] transition-all pointer-events-auto">

@@ -8,14 +8,14 @@ export const metadata: Metadata = {
         title: "Fizik Simülasyonları — Fizikhub",
         description: "İnteraktif simülasyonlarla fiziği deneyerek öğrenin. Parametreleri değiştirin, sonuçları gözlemleyin.",
         type: "website",
-        url: "https://fizikhub.com/simulasyonlar",
+        url: "https://www.fizikhub.com/simulasyonlar",
     },
     twitter: {
         card: "summary",
         title: "Fizik Simülasyonları — Fizikhub",
         description: "İnteraktif simülasyonlarla fiziği deneyerek öğrenin.",
     },
-    alternates: { canonical: "https://fizikhub.com/simulasyonlar" },
+    alternates: { canonical: "https://www.fizikhub.com/simulasyonlar" },
 };
 
 export default function SimulasyonlarLayout({

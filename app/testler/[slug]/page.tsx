@@ -22,14 +22,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
             title: `${quiz.title} — Fizikhub Fizik Testi`,
             description: quiz.description || `${quiz.title} - Fizik bilgini test et ve puan kazan!`,
             type: "website",
-            url: `https://fizikhub.com/testler/${slug}`,
+            url: `https://www.fizikhub.com/testler/${slug}`,
         },
         twitter: {
             card: "summary",
             title: `${quiz.title} — Fizikhub`,
             description: quiz.description || `${quiz.title} - Fizik bilgini test et!`,
         },
-        alternates: { canonical: `https://fizikhub.com/testler/${slug}` },
+        alternates: { canonical: `https://www.fizikhub.com/testler/${slug}` },
     };
 }
 

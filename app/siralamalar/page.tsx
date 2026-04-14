@@ -12,14 +12,14 @@ export const metadata = {
         title: "Liderlik Tablosu — Fizikhub",
         description: "Topluluğun en aktif ve başarılı üyeleri. Sıralamada yerinizi alın!",
         type: "website",
-        url: "https://fizikhub.com/siralamalar",
+        url: "https://www.fizikhub.com/siralamalar",
     },
     twitter: {
         card: "summary",
         title: "Liderlik Tablosu — Fizikhub",
         description: "Topluluğun en aktif ve başarılı üyeleri.",
     },
-    alternates: { canonical: "https://fizikhub.com/siralamalar" },
+    alternates: { canonical: "https://www.fizikhub.com/siralamalar" },
 };
 
 export default async function LeaderboardPage() {

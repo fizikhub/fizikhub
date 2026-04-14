@@ -5,7 +5,7 @@ export const revalidate = 3600;
 
 export async function GET() {
     const supabase = await createClient();
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://fizikhub.com';
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.fizikhub.com';
 
     // Fetch latest 5 published articles
     const { data: latestArticles } = await supabase

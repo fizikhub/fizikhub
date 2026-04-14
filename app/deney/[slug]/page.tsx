@@ -31,16 +31,16 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
             type: "article",
             publishedTime: article.created_at,
             authors: ["Fizikhub"],
-            images: [article.cover_url || "https://fizikhub.com/og-image.jpg"],
+            images: [article.cover_url || "https://www.fizikhub.com/og-image.jpg"],
         },
         twitter: {
             card: "summary_large_image",
             title: article.title,
             description: (article.excerpt || article.summary || "").substring(0, 160) + "...",
-            images: [article.cover_url || "https://fizikhub.com/og-image.jpg"],
+            images: [article.cover_url || "https://www.fizikhub.com/og-image.jpg"],
         },
         alternates: {
-            canonical: `https://fizikhub.com/deney/${slug}`,
+            canonical: `https://www.fizikhub.com/deney/${slug}`,
         },
     };
 }
@@ -108,7 +108,7 @@ export default async function ExperimentPage({ params }: PageProps) {
         '@type': 'Article',
         headline: article.title,
         description: (article.excerpt || "").substring(0, 160) + "...",
-        image: article.cover_url || 'https://fizikhub.com/og-image.png',
+        image: article.cover_url || 'https://www.fizikhub.com/og-image.png',
         datePublished: article.created_at,
         dateModified: (article as { updated_at?: string }).updated_at || article.created_at,
         author: {
@@ -120,12 +120,12 @@ export default async function ExperimentPage({ params }: PageProps) {
             name: 'Fizikhub',
             logo: {
                 '@type': 'ImageObject',
-                url: 'https://fizikhub.com/icon-512.png',
+                url: 'https://www.fizikhub.com/icon-512.png',
             },
         },
         mainEntityOfPage: {
             '@type': 'WebPage',
-            '@id': `https://fizikhub.com/deney/${article.slug}`,
+            '@id': `https://www.fizikhub.com/deney/${article.slug}`,
         },
     };
 
