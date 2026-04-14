@@ -97,7 +97,7 @@ export function ModernArticleCard({ article, index = 0 }: ModernArticleCardProps
                                 <div className="relative w-8 h-8 rounded-full border-2 border-black overflow-hidden bg-gray-200">
                                     <Image
                                         src={article.profiles?.avatar_url || "/images/default-avatar.png"}
-                                        alt={article.profiles?.full_name || "Yazar"}
+                                        alt={`${article.profiles?.full_name || "Yazar"} Profil Resmi`}
                                         fill
                                         className="object-cover"
                                     />

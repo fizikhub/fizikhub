@@ -28,8 +28,26 @@ export default async function DictionaryPage() {
     const supabase = await createClient();
     const terms = await getDictionaryTerms(supabase);
 
+    // JSON-LD for DefinedTerm / FAQPage
+    const jsonLd = {
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        mainEntity: terms.map((t) => ({
+            '@type': 'Question',
+            name: `${t.term} Nedir?`,
+            acceptedAnswer: {
+                '@type': 'Answer',
+                text: t.definition,
+            }
+        }))
+    };
+
     return (
         <>
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+            />
             <BreadcrumbJsonLd items={[{ name: 'Sözlük', href: '/sozluk' }]} />
             <div className="container py-12 px-4 md:px-6 max-w-7xl mx-auto min-h-screen">
                 <div className="flex flex-col md:flex-row gap-8 items-end mb-12 border-b-4 border-black dark:border-white pb-8">

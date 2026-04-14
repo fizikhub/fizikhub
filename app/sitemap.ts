@@ -88,14 +88,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
         supabase
             .from('articles')
-            .select('slug, updated_at, category')
+            .select('slug, updated_at, category, cover_url')
             .eq('status', 'published')
             .order('created_at', { ascending: false })
             .limit(1000),
 
         supabase
             .from('profiles')
-            .select('username, updated_at')
+            .select('username, updated_at, avatar_url')
             .not('username', 'is', null)
             .order('created_at', { ascending: false })
             .limit(500),
@@ -140,6 +140,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
             lastModified: new Date(article.updated_at),
             changeFrequency: 'weekly' as const,
             priority: 0.9,
+            ...(article.cover_url ? { images: [article.cover_url] } : { images: [`${baseUrl}/api/og?title=${encodeURIComponent(article.slug)}`] }),
         };
     });
 
@@ -148,14 +149,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         lastModified: new Date(profile.updated_at),
         changeFrequency: 'monthly' as const,
         priority: 0.6,
+        ...(profile.avatar_url ? { images: [profile.avatar_url] } : {}),
     }));
 
-    const termPages: MetadataRoute.Sitemap = (termsResult.data || []).map((term) => ({
-        url: `${baseUrl}/sozluk/${term.slug}`,
-        lastModified: new Date(term.updated_at),
-        changeFrequency: 'monthly' as const,
-        priority: 0.5,
-    }));
+    // Removed termPages because /sozluk/[slug] does not exist; terms are listed on /sozluk
 
     const quizPages: MetadataRoute.Sitemap = (quizzesResult.data || []).map((quiz) => ({
         url: `${baseUrl}/testler/${quiz.slug}`,
@@ -176,7 +173,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         ...questionPages,
         ...articlePages,
         ...profilePages,
-        ...termPages,
         ...quizPages,
         ...simulationPages,
     ];

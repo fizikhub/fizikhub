@@ -301,7 +301,7 @@ export function AnswerList({ questionId, initialAnswers, questionAuthorId, curre
                         <h3 className="font-[family-name:var(--font-outfit)] text-xl sm:text-2xl font-black uppercase text-black dark:text-white">Tartışmaya Katıl</h3>
                         <p className="text-neutral-500 dark:text-zinc-400 font-medium text-sm">Bu soruya cevap vermek veya yorum yapmak için giriş yapmalısın.</p>
                         <Button className="w-full font-black uppercase tracking-widest rounded-lg h-11 bg-white dark:bg-zinc-800 text-black dark:text-white border-[2.5px] border-black dark:border-zinc-600 shadow-[2px_2px_0_0_#000] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.08)] hover:bg-[#FFBD2E] hover:text-black hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0_0_#000] transition-all" asChild>
-                            <a href="/login">Giriş Yap / Kayıt Ol</a>
+                            <Link href="/login">Giriş Yap / Kayıt Ol</Link>
                         </Button>
                     </div>
                 </div>

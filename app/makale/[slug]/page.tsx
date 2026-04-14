@@ -26,16 +26,24 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
         };
     }
 
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.fizikhub.com';
+    const authorName = article.author?.full_name || article.author?.username || 'Fizikhub';
+    const category = article.category || 'Makale';
+
+    const fallbackOgUrl = new URL(`${baseUrl}/api/og`);
+    fallbackOgUrl.searchParams.set('title', article.title);
+    fallbackOgUrl.searchParams.set('author', authorName);
+    fallbackOgUrl.searchParams.set('category', category);
+
     const coverUrl = article.cover_url && article.cover_url.length > 0
         ? article.cover_url
-        : "https://www.fizikhub.com/og-image.jpg";
+        : fallbackOgUrl.toString();
 
     // Use excerpt if available for a better meta description, fallback to content snippet
     const description = article.excerpt
         ? article.excerpt.substring(0, 160)
         : (article.content || "").replace(/[#*`>\[\]]/g, "").substring(0, 160) + "...";
 
-    const authorName = article.author?.full_name || article.author?.username || 'Fizikhub';
     const tags = (article as any).tags as string[] | undefined;
 
     return {

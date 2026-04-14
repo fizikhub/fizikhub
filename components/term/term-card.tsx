@@ -87,7 +87,7 @@ export function TermCard({ article, index }: TermCardProps) {
                         <div className="flex items-center gap-2">
                             <div className="w-6 h-6 rounded-full border-2 border-black overflow-hidden bg-white relative">
                                 {article.author?.avatar_url ? (
-                                    <Image src={article.author.avatar_url} alt={article.author.full_name || "A"} fill sizes="24px" className="object-cover" />
+                                    <Image src={article.author.avatar_url} alt={`${article.author?.full_name || "Yazar"} Profil Resmi`} fill sizes="24px" className="object-cover" />
                                 ) : (
                                     <div className="w-full h-full bg-black" />
                                 )}

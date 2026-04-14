@@ -138,8 +138,39 @@ export default async function PublicProfilePage({ params }: PageProps) {
         badges: Array.isArray(ub.badges) ? ub.badges[0] : ub.badges
     }))?.filter(ub => ub.badges) || [];
 
+    // JSON-LD for E-E-A-T Profile
+    const jsonLd = {
+        '@context': 'https://schema.org',
+        '@type': 'ProfilePage',
+        '@id': `https://www.fizikhub.com/kullanici/${profile.username}`,
+        dateCreated: profile.created_at,
+        dateModified: profile.updated_at || profile.created_at,
+        mainEntity: {
+            '@type': 'Person',
+            '@id': `https://www.fizikhub.com/kullanici/${profile.username}#person`,
+            name: profile.full_name || `@${profile.username}`,
+            alternateName: profile.username,
+            description: profile.bio || `${profile.full_name || profile.username} adlı kullanıcının FizikHub profili.`,
+            image: profile.avatar_url || 'https://www.fizikhub.com/default-avatar.png',
+            url: `https://www.fizikhub.com/kullanici/${profile.username}`,
+            interactionStatistic: [
+                {
+                    '@type': 'InteractionCounter',
+                    interactionType: 'https://schema.org/WriteAction',
+                    userInteractionCount: stats.articlesCount + stats.answersCount + stats.questionsCount
+                }
+            ],
+            // Adding known social links if available in future
+            ...(profile.website && { sameAs: [profile.website] })
+        }
+    };
+
     return (
         <main className="min-h-screen bg-background relative selection:bg-emerald-500/30">
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+            />
             <BackgroundWrapper />
 
             <div className="container max-w-7xl mx-auto px-2 sm:px-4 md:px-6 relative z-10 pt-4 lg:pt-8 pb-32">
