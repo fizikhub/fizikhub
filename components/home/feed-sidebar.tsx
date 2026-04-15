@@ -3,7 +3,7 @@
 import { UserPlus, Sparkles, User } from "lucide-react";
 import Link from "next/link";
 import { ViewTransitionLink } from "@/components/ui/view-transition-link";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { OptimizedAvatar } from "@/components/ui/optimized-image";
 import { Button } from "@/components/ui/button";
 import { FollowButton } from "@/components/profile/follow-button";
 
@@ -61,12 +61,12 @@ export function FeedSidebar({ suggestedUsers = [] }: { suggestedUsers?: any[] })
                         suggestedUsers.map((user: any) => (
                             <div key={user.id} className="flex items-center gap-3 justify-between group">
                                 <Link href={`/kullanici/${user.username}`} className="flex items-center gap-3 overflow-hidden flex-1 relative z-10 outline-none">
-                                    <Avatar className="w-10 h-10 shrink-0 border border-border group-hover:border-foreground/20 transition-colors">
-                                        <AvatarImage src={user.avatar_url || undefined} alt={user.username || ""} className="object-cover" />
-                                        <AvatarFallback className="bg-neutral-100 dark:bg-neutral-800 text-foreground font-bold">
-                                            {user.avatar_url ? null : <User className="w-4 h-4" />}
-                                        </AvatarFallback>
-                                    </Avatar>
+                                    <OptimizedAvatar
+                                        src={user.avatar_url}
+                                        alt={user.username || ""}
+                                        size={40}
+                                        className="shrink-0 border border-border group-hover:border-foreground/20 transition-colors font-bold"
+                                    />
                                     <div className="text-sm min-w-0 pr-2">
                                         <div className="font-bold truncate group-hover:underline text-foreground">{user.full_name || user.username}</div>
                                         <div className="text-muted-foreground text-xs truncate">@{user.username}</div>

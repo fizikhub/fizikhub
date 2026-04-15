@@ -1,6 +1,6 @@
 "use client";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { OptimizedAvatar } from "@/components/ui/optimized-image";
 import { cn } from "@/lib/utils";
 import { Trophy, Star, Crown } from "lucide-react";
 import Link from "next/link";
@@ -64,9 +64,9 @@ export function LeaderboardCard({ user, currentUserId }: LeaderboardCardProps) {
         <>
             <ShyModeModal isOpen={showShyModal} onClose={() => setShowShyModal(false)} />
             <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: user.rank * 0.05, type: "spring", stiffness: 100 }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: user.rank * 0.05, duration: 0.3 }}
             >
                 <Link prefetch={false} href={`/kullanici/${user.username}`}>
                     <div className={cn(
@@ -107,15 +107,15 @@ export function LeaderboardCard({ user, currentUserId }: LeaderboardCardProps) {
 
                         {/* Avatar */}
                         <div className="relative z-10">
-                            <Avatar className={cn(
-                                "h-10 w-10 sm:h-12 sm:w-12 border-[2px]",
-                                isSilginim ? "border-pink-600 ring-2 ring-pink-300 ring-offset-1" : "border-black shadow-[2px_2px_0px_0px_#000]"
-                            )}>
-                                <AvatarImage src={user.avatar_url} className="object-cover" />
-                                <AvatarFallback className={cn("font-black", isSilginim ? "bg-pink-100 text-pink-700" : "bg-white text-black")}>
-                                    {user.username.charAt(0).toUpperCase()}
-                                </AvatarFallback>
-                            </Avatar>
+                            <OptimizedAvatar
+                                src={user.avatar_url}
+                                alt={user.username}
+                                size={48}
+                                className={cn(
+                                    "border-[2px]",
+                                    isSilginim ? "border-pink-600 ring-2 ring-pink-300 ring-offset-1" : "border-black shadow-[2px_2px_0px_0px_#000]"
+                                )}
+                            />
                         </div>
 
                         {/* User Info */}

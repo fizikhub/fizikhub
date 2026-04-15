@@ -47,7 +47,7 @@ export function SuggestedUsersCard({ users }: SuggestedUsersCardProps) {
                 {users.map((user, i) => (
                     <div
                         key={user.id}
-                        className="flex-shrink-0 w-48 snap-center animate-in fade-in slide-in-from-right-8 duration-700 fill-mode-both"
+                        className="flex-shrink-0 w-48 snap-center animate-in fade-in duration-500 fill-mode-both"
                         style={{ animationDelay: `${i * 100}ms` }}
                     >
                         <div className="flex flex-col items-center p-5 bg-card border border-border rounded-2xl text-center hover:border-amber-500/30 hover:shadow-lg transition-all duration-300 group">
