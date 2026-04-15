@@ -6,10 +6,10 @@ import { Suspense } from "react";
 import { FeedSkeleton, SliderSkeleton, SidebarSkeleton } from "@/components/home/performance-skeletons";
 import { processFeedData, formatSliderArticles } from "@/lib/feed-helpers";
 
-// Dynamic Imports with SSR False to reduce hydration & main-thread work
-const ScrollProgress = dynamic(() => import("@/components/ui/scroll-progress").then(mod => mod.ScrollProgress), { ssr: false });
-const BackToTop = dynamic(() => import("@/components/ui/back-to-top").then(mod => mod.BackToTop), { ssr: false });
-const NexusStories = dynamic(() => import("@/components/home/nexus-stories").then(mod => mod.NexusStories), { ssr: false });
+// Dynamic Imports (Client boundaries lazy loaded automatically)
+const ScrollProgress = dynamic(() => import("@/components/ui/scroll-progress").then(mod => mod.ScrollProgress));
+const BackToTop = dynamic(() => import("@/components/ui/back-to-top").then(mod => mod.BackToTop));
+const NexusStories = dynamic(() => import("@/components/home/nexus-stories").then(mod => mod.NexusStories));
 // CompactHero is statically imported — its text is the LCP element and must be server-rendered.
 import { CompactHero } from "@/components/home/compact-hero";
 
