@@ -83,6 +83,8 @@ export function MarkdownRenderer({
             isZenMode ? "leading-loose" : "",
             className
         )} style={{ wordBreak: 'break-word', overflowWrap: 'anywhere' }}>
+            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.25/dist/katex.min.css" precedence="default" crossOrigin="anonymous" />
+            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.11.1/styles/github-dark.min.css" precedence="default" crossOrigin="anonymous" />
             <ReactMarkdown
                 remarkPlugins={[remarkMath]}
                 rehypePlugins={[
