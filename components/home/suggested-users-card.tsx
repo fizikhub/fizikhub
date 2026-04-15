@@ -1,8 +1,7 @@
 "use client";
 
-import { m as motion } from "framer-motion";
-import { UserPlus, Star } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Star } from "lucide-react";
+import { OptimizedAvatar } from "@/components/ui/optimized-image";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { useState } from "react";
@@ -46,22 +45,19 @@ export function SuggestedUsersCard({ users }: SuggestedUsersCardProps) {
 
             <div className="flex gap-4 overflow-x-auto pb-4 px-2 scrollbar-hide snap-x">
                 {users.map((user, i) => (
-                    <motion.div
+                    <div
                         key={user.id}
-                        initial={{ opacity: 0, x: 20 }}
-                        whileInView={{ opacity: 1, x: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ delay: i * 0.1 }}
-                        className="flex-shrink-0 w-48 snap-center"
+                        className="flex-shrink-0 w-48 snap-center animate-in fade-in slide-in-from-right-8 duration-700 fill-mode-both"
+                        style={{ animationDelay: `${i * 100}ms` }}
                     >
                         <div className="flex flex-col items-center p-5 bg-card border border-border rounded-2xl text-center hover:border-amber-500/30 hover:shadow-lg transition-all duration-300 group">
                             <div className="relative mb-3">
-                                <Avatar className="w-16 h-16 ring-2 ring-transparent group-hover:ring-amber-500/20 transition-all">
-                                    <AvatarImage src={user.avatar_url} />
-                                    <AvatarFallback className="text-lg font-bold bg-secondary">
-                                        {user.username?.[0]?.toUpperCase() || "U"}
-                                    </AvatarFallback>
-                                </Avatar>
+                                <OptimizedAvatar
+                                    src={user.avatar_url}
+                                    alt={user.username || "User"}
+                                    size={64}
+                                    className="ring-2 ring-transparent group-hover:ring-amber-500/20 transition-all font-bold text-lg"
+                                />
                                 {user.is_verified && (
                                     <div className="absolute -bottom-1 -right-1 bg-blue-500 text-white p-0.5 rounded-full border-2 border-card">
                                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
@@ -87,7 +83,7 @@ export function SuggestedUsersCard({ users }: SuggestedUsersCardProps) {
                                 {following.includes(user.id) ? "Takip Ediliyor" : "Takip Et"}
                             </Button>
                         </div>
-                    </motion.div>
+                    </div>
                 ))}
             </div>
         </div>

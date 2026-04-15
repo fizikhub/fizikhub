@@ -24,8 +24,8 @@ const FeedSidebar = dynamic(() => import("@/components/home/feed-sidebar").then(
   loading: () => <SidebarSkeleton />,
 });
 
-// LCP Component — STATIC IMPORT so Next.js can preload the hero image
-import { LatestArticlesSlider } from "@/components/home/latest-articles-slider";
+// LCP Component is NO LONGER LatestArticlesSlider, CompactHero is the LCP component.
+const LatestArticlesSlider = dynamic(() => import("@/components/home/latest-articles-slider").then(mod => mod.LatestArticlesSlider));
 
 // "ana sayfayı sanki ınstagram veya twitterdaki gibi bir akış olmasını istiyorum" implies the feed IS the main experience.
 
