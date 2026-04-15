@@ -5,6 +5,7 @@ import { ForumSidebar } from "@/components/forum/forum-sidebar";
 import { QuestionCard } from "@/components/forum/question-card";
 import { QuestionList } from "@/components/forum/question-list";
 import { QuestionOfTheWeek } from "@/components/forum/question-of-the-week";
+import { ForumHeaderFallback } from "@/components/forum/forum-header-fallback";
 import { Ghost } from "lucide-react";
 import { BreadcrumbJsonLd } from "@/lib/breadcrumbs";
 import { sanitizeSearchQuery } from "@/lib/security";
@@ -143,7 +144,7 @@ export default async function ForumPage({ searchParams }: ForumPageProps) {
             />
             <div className="bg-background min-h-screen pb-20">
                 <div className="container py-4 md:py-8 px-4 md:px-8 max-w-[1600px] mx-auto">
-                    <Suspense fallback={<div className="h-[300px] rounded-3xl bg-muted/20 animate-pulse mb-8" />}>
+                    <Suspense fallback={<ForumHeaderFallback currentCategory={category} currentSort={sort} />}>
                         <ModernForumHeader />
                     </Suspense>
 

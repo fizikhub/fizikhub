@@ -107,12 +107,16 @@ export function Navbar() {
                         ))}
                     </div>
 
-                    {/* RULER TICKS - SHARPER */}
-                    <div className="absolute bottom-0 left-0 right-0 h-1.5 flex justify-between px-1 pointer-events-none opacity-20 mix-blend-overlay">
-                        {[...Array(60)].map((_, i) => (
-                            <div key={i} className="w-[1px] bg-white h-full" style={{ height: i % 10 === 0 ? '100%' : '50%' }} />
-                        ))}
-                    </div>
+                    {/* RULER TICKS - CSS ONLY (0 DOM Elements) */}
+                    <div 
+                        className="absolute bottom-0 left-0 right-0 h-1.5 pointer-events-none opacity-20 mix-blend-overlay"
+                        style={{
+                            background: `
+                                repeating-linear-gradient(to right, white 0px, white 1px, transparent 1px, transparent 1.666%) bottom / 100% 50% no-repeat,
+                                repeating-linear-gradient(to right, white 0px, white 1px, transparent 1px, transparent 16.666%) bottom / 100% 100% no-repeat
+                            `
+                        }}
+                    />
 
                     {/* LEFT: BRAND */}
                     <div className="relative z-50 flex-shrink-0 pt-0.5 hover:scale-105 transition-transform duration-300">
