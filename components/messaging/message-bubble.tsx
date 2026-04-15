@@ -3,7 +3,7 @@
 import { Message } from "@/app/mesajlar/actions";
 import { cn } from "@/lib/utils";
 import { m as motion, AnimatePresence } from "framer-motion";
-import { OptimizedAvatar } from "@/components/ui/optimized-image";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
     Trash2,
     Pencil,
@@ -73,8 +73,8 @@ export function MessageBubble({
 
     return (
         <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
             layout
             transition={{ type: "spring", stiffness: 500, damping: 30 }}
             className={cn(
@@ -93,12 +93,12 @@ export function MessageBubble({
                 {!isMe && (
                     <div className="w-7 flex-shrink-0">
                         {showAvatar && (
-                            <OptimizedAvatar
-                                src={otherUserAvatar}
-                                alt="?"
-                                size={28}
-                                className="rounded-full ring-2 ring-[#050505] font-bold text-[10px]"
-                            />
+                            <Avatar className="w-7 h-7 rounded-full ring-2 ring-[#050505]">
+                                <AvatarImage src={otherUserAvatar || ""} />
+                                <AvatarFallback className="bg-zinc-800 text-[9px] font-bold text-zinc-400">
+                                    ?
+                                </AvatarFallback>
+                            </Avatar>
                         )}
                     </div>
                 )}

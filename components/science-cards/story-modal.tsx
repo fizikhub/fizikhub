@@ -4,7 +4,7 @@ import { m as motion, AnimatePresence } from "framer-motion";
 import { X, Clock, User } from "lucide-react";
 import NextImage from "next/image";
 import { useEffect, useState } from "react";
-import { OptimizedAvatar } from "@/components/ui/optimized-image";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface StoryModalProps {
     isOpen: boolean;
@@ -79,12 +79,10 @@ export function StoryModal({ isOpen, onClose, story }: StoryModalProps) {
                     {/* Header Info */}
                     <div className="absolute top-8 left-4 right-4 z-30 flex items-center justify-between">
                         <div className="flex items-center gap-3">
-                            <OptimizedAvatar
-                                src={story.author?.avatar_url}
-                                alt={story.author?.username || "Yazar"}
-                                size={32}
-                                className="border border-white/20 font-bold"
-                            />
+                            <Avatar className="w-8 h-8 border border-white/20">
+                                <AvatarImage src={story.author?.avatar_url} />
+                                <AvatarFallback>{story.author?.username?.[0]}</AvatarFallback>
+                            </Avatar>
                             <div className="text-white text-sm font-semibold drop-shadow-md">
                                 {story.author?.username || "Yazar"}
                             </div>
@@ -94,14 +92,12 @@ export function StoryModal({ isOpen, onClose, story }: StoryModalProps) {
 
                     {/* Main Content Image */}
                     <div className="absolute inset-0">
-                        <NextImage
+                        {/* Use standard img to avoid Next.js Image issues in modal context */}
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
                             src={story.image_url}
                             alt={story.title}
-                            fill
                             className="w-full h-full object-cover"
-                            sizes="(max-width: 768px) 100vw, 400px"
-                            quality={85}
-                            priority
                         />
                         <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black/90" />
                     </div>
@@ -109,8 +105,8 @@ export function StoryModal({ isOpen, onClose, story }: StoryModalProps) {
                     {/* Bottom Content */}
                     <div className="absolute bottom-0 left-0 right-0 p-6 z-30">
                         <motion.div
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
+                            initial={{ y: 20, opacity: 0 }}
+                            animate={{ y: 0, opacity: 1 }}
                             transition={{ delay: 0.2 }}
                         >
                             <span className={`inline-block w-8 h-1 mb-4 rounded-full bg-gradient-to-r ${story.color}`} />

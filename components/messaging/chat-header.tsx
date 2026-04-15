@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { ArrowLeft, Search, MoreVertical } from "lucide-react";
-import { OptimizedAvatar } from "@/components/ui/optimized-image";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useState } from "react";
 
 interface ChatHeaderProps {
@@ -38,12 +38,12 @@ export function ChatHeader({ otherUser, onSearch }: ChatHeaderProps) {
 
                 {/* Avatar */}
                 <div className="relative">
-                    <OptimizedAvatar
-                        src={otherUser?.avatar_url}
-                        alt={otherUser?.username || "Kullanıcı"}
-                        size={40}
-                        className="border-2 border-zinc-800 rounded-full font-bold text-xs"
-                    />
+                    <Avatar className="h-10 w-10 border-2 border-zinc-800 rounded-full">
+                        <AvatarImage src={otherUser?.avatar_url || ""} className="object-cover" />
+                        <AvatarFallback className="bg-zinc-800 text-zinc-400 font-bold text-xs">
+                            {initials}
+                        </AvatarFallback>
+                    </Avatar>
                     {/* Online dot */}
                     <div className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-emerald-500 rounded-full border-2 border-[#0a0a0a]" />
                 </div>

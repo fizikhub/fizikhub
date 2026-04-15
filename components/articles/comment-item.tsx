@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { formatDistanceToNow } from "date-fns";
 import { tr } from "date-fns/locale";
-import { OptimizedAvatar } from "@/components/ui/optimized-image";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Trash2, Reply } from "lucide-react";
 import { deleteComment } from "@/app/makale/[slug]/actions";
@@ -60,12 +60,12 @@ export function CommentItem({ comment, allComments, isAdmin, onReply }: CommentI
     return (
         <div className="group">
             <div className="flex gap-3 sm:gap-4">
-                <OptimizedAvatar
-                    src={comment.profiles.avatar_url}
-                    alt={comment.profiles.full_name || comment.profiles.username}
-                    size={48}
-                    className="shrink-0 border-2 border-black dark:border-zinc-700 shadow-[2px_2px_0px_0px_#000] dark:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.5)] font-black"
-                />
+                <Avatar className="h-10 w-10 sm:h-12 sm:w-12 border-2 border-black dark:border-zinc-700 shadow-[2px_2px_0px_0px_#000] dark:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.5)]">
+                    <AvatarImage src={comment.profiles.avatar_url || ""} />
+                    <AvatarFallback className="text-sm font-black bg-yellow-400 text-black">
+                        {comment.profiles.full_name?.[0] || comment.profiles.username[0].toUpperCase()}
+                    </AvatarFallback>
+                </Avatar>
 
                 <div className="flex-1 space-y-1.5">
                     <div className="flex items-center gap-2 flex-wrap">

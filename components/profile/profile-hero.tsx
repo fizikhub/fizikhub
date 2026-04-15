@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { OptimizedAvatar } from "@/components/ui/optimized-image";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { BadgeCheck, PenSquare, Twitter, Github, LinkIcon, Settings, Calendar } from "lucide-react";
@@ -56,12 +56,12 @@ export function ProfileHero({
                 {/* Floating Avatar */}
                 <div className="absolute -top-12 left-6 md:-top-16 md:left-8">
                     <div className="w-24 h-24 md:w-32 md:h-32 rounded-full border-[3px] border-black bg-white p-1 shadow-[2px_2px_0px_rgba(0,0,0,0.2)]">
-                        <OptimizedAvatar
-                            src={profile?.avatar_url}
-                            alt={profile?.full_name || "U"}
-                            size={128}
-                            className="w-full h-full rounded-full border border-zinc-200 font-bold"
-                        />
+                        <Avatar className="w-full h-full rounded-full border border-zinc-200">
+                            <AvatarImage src={profile?.avatar_url} className="object-cover" />
+                            <AvatarFallback className="text-3xl font-bold bg-zinc-100 text-zinc-500">
+                                {profile?.full_name?.charAt(0) || "U"}
+                            </AvatarFallback>
+                        </Avatar>
                         {profile?.is_verified && (
                             <div className="absolute bottom-0 right-0 bg-blue-500 text-white p-0.5 rounded-full border-2 border-white shadow-sm" title="Onaylı">
                                 <BadgeCheck className="w-5 h-5" />

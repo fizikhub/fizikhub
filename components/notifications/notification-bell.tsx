@@ -16,7 +16,7 @@ import { createClient } from "@/lib/supabase";
 import { getNotifications, getUnreadCount, markAsRead, markAllAsRead } from "@/app/notifications/actions";
 import { formatDistanceToNow } from "date-fns";
 import { tr } from "date-fns/locale";
-import { OptimizedAvatar } from "@/components/ui/optimized-image";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
@@ -268,12 +268,10 @@ export function NotificationBell({ className }: { className?: string }) {
                                             "rounded-full p-[1px] transition-all duration-300",
                                             !notification.is_read ? "bg-gradient-to-br from-primary to-transparent" : "bg-border"
                                         )}>
-                                            <OptimizedAvatar
-                                                src={notification.actor?.avatar_url}
-                                                alt={notification.actor?.username || "?"}
-                                                size={36}
-                                                className="border-2 border-background font-bold text-xs"
-                                            />
+                                            <Avatar className="h-9 w-9 border-2 border-background">
+                                                <AvatarImage src={notification.actor?.avatar_url || ""} />
+                                                <AvatarFallback>{notification.actor?.username?.[0]?.toUpperCase()}</AvatarFallback>
+                                            </Avatar>
                                         </div>
                                     </div>
 

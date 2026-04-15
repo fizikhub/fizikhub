@@ -31,8 +31,13 @@ export function HeaderSpaceBackground() {
         if (!ctx) return;
 
         // Set canvas size to match container
-        // Removed: Manual resizeCanvas called here. 
-        // We will move it to the ResizeObserver for non-blocking performance.
+        const resizeCanvas = () => {
+            if (canvas && canvas.parentElement) {
+                canvas.width = canvas.parentElement.offsetWidth;
+                canvas.height = canvas.parentElement.offsetHeight;
+            }
+        };
+        resizeCanvas();
 
         // Star properties - REDUCED COUNT for performance
         const starCount = mobile ? 40 : 80; // Was 200
@@ -89,28 +94,19 @@ export function HeaderSpaceBackground() {
 
         render();
 
-        // Handle resize with observer to avoid forced synchronous layout
-        const resizeObserver = new ResizeObserver((entries) => {
-            for (const entry of entries) {
-                const { width, height } = entry.contentRect;
-                requestAnimationFrame(() => {
-                    canvas.width = width;
-                    canvas.height = height;
-                    // Reposition stars on resize
-                    stars.forEach(star => {
-                        star.x = Math.random() * width;
-                        star.y = Math.random() * height;
-                    });
-                });
-            }
-        });
-
-        if (canvas.parentElement) {
-            resizeObserver.observe(canvas.parentElement);
-        }
+        // Handle resize
+        const handleResize = () => {
+            resizeCanvas();
+            // Reposition stars on resize
+            stars.forEach(star => {
+                star.x = Math.random() * canvas.width;
+                star.y = Math.random() * canvas.height;
+            });
+        };
+        window.addEventListener('resize', handleResize);
 
         return () => {
-            resizeObserver.disconnect();
+            window.removeEventListener('resize', handleResize);
             cancelAnimationFrame(animationFrameId);
         };
     }, []);

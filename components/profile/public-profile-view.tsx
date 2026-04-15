@@ -3,7 +3,7 @@
 import { m as motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { SpaceBackground } from "@/components/home/space-background";
-import { OptimizedAvatar } from "@/components/ui/optimized-image";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MessageSquare, Twitter, Github, Linkedin, Instagram, Calendar, Link as LinkIcon, Microscope, Activity, Scan, Bell, Bookmark } from "lucide-react";
@@ -53,9 +53,10 @@ export function PublicProfileView({
     };
 
     const itemVariants: any = {
-        hidden: { opacity: 0 },
+        hidden: { opacity: 0, y: 20 },
         visible: {
             opacity: 1,
+            y: 0,
             transition: {
                 duration: 0.5,
                 ease: "easeOut"
@@ -96,12 +97,12 @@ export function PublicProfileView({
                                 {/* Avatar */}
                                 <div className="relative mb-6">
                                     <div className="h-28 w-28 rounded-full relative">
-                                        <OptimizedAvatar
-                                            src={profile.avatar_url}
-                                            alt={profile.full_name || profile.username}
-                                            size={112}
-                                            className="h-full w-full border-2 border-foreground/10 font-medium"
-                                        />
+                                        <Avatar className="h-full w-full border-2 border-foreground/10">
+                                            <AvatarImage src={profile.avatar_url || ""} className="object-cover" />
+                                            <AvatarFallback className="text-3xl bg-muted text-foreground font-medium">
+                                                {profile.full_name?.charAt(0) || profile.username?.charAt(0).toUpperCase()}
+                                            </AvatarFallback>
+                                        </Avatar>
                                     </div>
                                 </div>
 
@@ -257,8 +258,8 @@ export function PublicProfileView({
                                             questions?.map((question, index) => (
                                                 <motion.div
                                                     key={question.id}
-                                                    initial={{ opacity: 0 }}
-                                                    animate={{ opacity: 1 }}
+                                                    initial={{ opacity: 0, y: 10 }}
+                                                    animate={{ opacity: 1, y: 0 }}
                                                     transition={{ delay: index * 0.03 }}
                                                 >
                                                     <Link prefetch={false} href={`/forum/${question.id}`} className="block group">

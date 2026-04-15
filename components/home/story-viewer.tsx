@@ -3,7 +3,6 @@
 import { m as motion, AnimatePresence } from "framer-motion";
 import { X, ChevronLeft, ChevronRight, Trash2, Loader2 } from "lucide-react";
 import Image from "next/image";
-import { OptimizedAvatar } from "@/components/ui/optimized-image";
 import { useState, useEffect, useCallback } from "react";
 import { createPortal } from "react-dom";
 import { createBrowserClient } from "@supabase/ssr";
@@ -194,12 +193,9 @@ export function StoryViewer({ stories: initialStories, initialIndex, isOpen, onC
                     <div className="absolute top-8 left-0 right-0 z-[100] px-4 sm:px-6 flex items-center justify-between pointer-events-none">
                         <div className="flex items-center gap-2 pointer-events-auto">
                             <div className="w-8 h-8 rounded-full p-[1.5px] bg-gradient-to-tr from-yellow-400 to-orange-500">
-                                <OptimizedAvatar
-                                    src={currentStory.image}
-                                    alt={currentStory.title}
-                                    size={32}
-                                    className="border border-black/50"
-                                />
+                                <div className="w-full h-full rounded-full bg-zinc-800 overflow-hidden relative border border-black/50">
+                                    <Image src={currentStory.image} alt={`${currentStory.title} profil`} fill sizes="(max-width: 640px) 150px, 300px" className="object-cover" />
+                                </div>
                             </div>
                             <div className="flex flex-col">
                                 <span className="text-white font-black text-xs uppercase tracking-tight drop-shadow-md leading-none">
@@ -261,8 +257,8 @@ export function StoryViewer({ stories: initialStories, initialIndex, isOpen, onC
                         {/* Text Overlay */}
                         <div className="absolute inset-0 z-20 flex flex-col justify-end p-6 sm:p-10 pointer-events-none">
                             <motion.div
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
+                                initial={{ opacity: 0, y: 30 }}
+                                animate={{ opacity: 1, y: 0 }}
                                 key={currentIndex}
                                 className="space-y-3 max-w-sm pointer-events-auto"
                             >
