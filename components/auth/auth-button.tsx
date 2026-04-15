@@ -14,7 +14,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { OptimizedAvatar } from "@/components/ui/optimized-image";
 import { isAdminEmail } from "@/lib/admin-shared";
 
 export function AuthButton() {
@@ -73,11 +73,13 @@ export function AuthButton() {
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-                    <Avatar className="h-8 w-8">
-                        <AvatarImage src={avatarUrl || undefined} alt={user?.email || ""} />
-                        <AvatarFallback>{user?.email?.charAt(0).toUpperCase() || "?"}</AvatarFallback>
-                    </Avatar>
+                <Button variant="ghost" className="relative h-8 w-8 rounded-full p-0">
+                    <OptimizedAvatar
+                        src={avatarUrl}
+                        alt={user?.email || ""}
+                        size={32}
+                        className=""
+                    />
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-56" align="end" forceMount>
