@@ -7,8 +7,8 @@ import Link from "next/link";
 export function HypothesisWidget() {
     return (
         <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
             viewport={{ once: true }}
             className="group relative overflow-hidden rounded-2xl border-2 border-indigo-500/30 bg-indigo-950/20 md:bg-gradient-to-r md:from-indigo-950/20 md:to-purple-900/20 p-6 backdrop-blur-sm"
         >

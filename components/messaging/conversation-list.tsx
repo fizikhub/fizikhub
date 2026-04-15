@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Conversation, getConversations } from "@/app/mesajlar/actions";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { OptimizedAvatar } from "@/components/ui/optimized-image";
 import { formatDistanceToNow } from "date-fns";
 import { tr } from "date-fns/locale";
 import { cn } from "@/lib/utils";
@@ -118,8 +118,8 @@ export function ConversationList({
                         return (
                             <motion.div
                                 key={conversation.id}
-                                initial={{ opacity: 0, y: 10 }}
-                                animate={{ opacity: 1, y: 0 }}
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
                                 transition={{ delay: i * 0.03, duration: 0.2 }}
                             >
                                 <Link
@@ -136,15 +136,12 @@ export function ConversationList({
                                     >
                                         {/* Avatar */}
                                         <div className="relative shrink-0">
-                                            <Avatar className="h-12 w-12 border-2 border-zinc-800 group-hover:border-zinc-700 transition-colors rounded-full">
-                                                <AvatarImage
-                                                    src={otherUser?.avatar_url || ""}
-                                                    className="object-cover"
-                                                />
-                                                <AvatarFallback className="bg-zinc-800 text-zinc-400 font-bold text-sm">
-                                                    {initials}
-                                                </AvatarFallback>
-                                            </Avatar>
+                                            <OptimizedAvatar
+                                                src={otherUser?.avatar_url}
+                                                alt={displayName}
+                                                size={48}
+                                                className="border-2 border-zinc-800 group-hover:border-zinc-700 transition-colors font-bold text-sm"
+                                            />
                                             {/* Online dot */}
                                             <div className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-emerald-500 rounded-full border-2 border-[#050505]" />
                                         </div>
