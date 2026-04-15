@@ -21,28 +21,32 @@ import HyperText from "@/components/magicui/hyper-text";
 import { GlitchText } from "@/components/magicui/glitch-text";
 import { createClient } from "@/lib/supabase";
 import { TiltCard } from "@/components/magicui/tilt-card";
-import { RealisticStars } from "@/components/share/realistic-stars";
+import dynamic from "next/dynamic";
+
+// PERF: Lazy-load heavy Three.js WebGL canvas to prevent main-thread blocking
+const RealisticStars = dynamic(() => import("@/components/share/realistic-stars").then(mod => mod.RealisticStars), {
+    ssr: false,
+    loading: () => null
+});
 
 const container: Variants = {
     hidden: { opacity: 0 },
     show: {
         opacity: 1,
         transition: {
-            staggerChildren: 0.1
+            staggerChildren: 0.08
         }
     }
 };
 
+// PERF: Opacity-only transitions to prevent CLS (no y/scale transforms)
 const item: Variants = {
-    hidden: { y: 20, opacity: 0, scale: 0.95 },
+    hidden: { opacity: 0 },
     show: {
-        y: 0,
         opacity: 1,
-        scale: 1,
         transition: {
-            type: "spring",
-            stiffness: 120,
-            damping: 15
+            duration: 0.4,
+            ease: "easeOut"
         }
     }
 };
@@ -66,9 +70,7 @@ function FreshCard({ title, description, href, icon: Icon, color, accentColor, c
     return (
         <motion.div
             variants={item}
-            className={cn("relative group w-full h-full perspective-1000", colSpan, rowSpan)}
-            whileHover={{ y: -6, scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
+            className={cn("relative group w-full h-full perspective-1000 hover:-translate-y-1.5 hover:scale-[1.02] active:scale-[0.98] transition-transform duration-300", colSpan, rowSpan)}
         >
             <Link prefetch={false} href={href} className="block h-full">
                 <TiltCard className="h-full w-full" rotationFactor={8}>
@@ -200,8 +202,8 @@ export default function PaylasPage() {
 
                 {/* Header - Compact */}
                 <motion.div
-                    initial={{ opacity: 0, y: -20 }}
-                    animate={{ opacity: 1, y: 0 }}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
                     className="mb-6 md:mb-10 pt-2 relative"
                 >
                     <div className="flex flex-col md:flex-row md:items-end justify-between gap-2 relative z-10">
@@ -220,14 +222,14 @@ export default function PaylasPage() {
                         <motion.p
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
-                            className="text-black font-bold text-sm md:text-base max-w-xs md:text-right leading-tight bg-white p-3 rounded-xl border-[3px] border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+                            className="flex items-center justify-center md:items-start text-black font-bold text-sm md:text-base w-full md:w-auto max-w-xs md:text-right leading-tight bg-white p-3 rounded-xl border-[3px] border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] min-h-[64px] md:min-h-[56px]"
                         >
                             {loaded ? (
                                 userName ?
-                                    `Bugün ne paylaşmak istersin, ${userName}?` :
-                                    "Bugün ne paylaşmak istersin?"
+                                    <span className="line-clamp-2">Bugün ne paylaşmak istersin, {userName}?</span> :
+                                    <span>Bugün ne paylaşmak istersin?</span>
                             ) : (
-                                "Yükleniyor..."
+                                <span className="opacity-50">Yükleniyor...</span>
                             )}
                         </motion.p>
                     </div>
