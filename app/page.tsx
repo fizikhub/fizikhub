@@ -3,16 +3,15 @@ import { unstable_cache } from "next/cache";
 import type { Metadata } from "next";
 import dynamic from "next/dynamic";
 import { Suspense } from "react";
-import { NexusStories } from "@/components/home/nexus-stories";
-
-// CompactHero is statically imported — its text is the LCP element and must be server-rendered.
-// The Three.js canvas inside MemeCorner is already dynamically imported with ssr:false.
-import { CompactHero } from "@/components/home/compact-hero";
-
-import { ScrollProgress } from "@/components/ui/scroll-progress";
-import { BackToTop } from "@/components/ui/back-to-top";
 import { FeedSkeleton, SliderSkeleton, SidebarSkeleton } from "@/components/home/performance-skeletons";
 import { processFeedData, formatSliderArticles } from "@/lib/feed-helpers";
+
+// Dynamic Imports with SSR False to reduce hydration & main-thread work
+const ScrollProgress = dynamic(() => import("@/components/ui/scroll-progress").then(mod => mod.ScrollProgress), { ssr: false });
+const BackToTop = dynamic(() => import("@/components/ui/back-to-top").then(mod => mod.BackToTop), { ssr: false });
+const NexusStories = dynamic(() => import("@/components/home/nexus-stories").then(mod => mod.NexusStories), { ssr: false });
+// CompactHero is statically imported — its text is the LCP element and must be server-rendered.
+import { CompactHero } from "@/components/home/compact-hero";
 
 // Lazy Load Heavy Components
 const UnifiedFeed = dynamic(() => import("@/components/home/unified-feed").then(mod => mod.UnifiedFeed), {

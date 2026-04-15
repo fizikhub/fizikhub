@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useMemo } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
@@ -10,27 +10,8 @@ import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
 import { cn } from "@/lib/utils";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { ZoomIn } from "lucide-react";
-
-// Lazy load heavy CSS — only when MarkdownRenderer mounts
-let cssLoaded = false;
-function loadMarkdownCSS() {
-    if (cssLoaded || typeof window === 'undefined') return;
-    cssLoaded = true;
-    // Inject KaTeX CSS
-    const katexLink = document.createElement('link');
-    katexLink.rel = 'stylesheet';
-    katexLink.href = 'https://cdn.jsdelivr.net/npm/katex@0.16.25/dist/katex.min.css';
-    katexLink.crossOrigin = 'anonymous';
-    katexLink.integrity = 'sha384-WcoG4HRXMzYzfCgiyfrySxx90XSl2rxY5mnVY5TwtWE6KLrArNKn0T/mOgNL0Mmi';
-    document.head.appendChild(katexLink);
-    // Inject highlight.js CSS
-    const hlLink = document.createElement('link');
-    hlLink.rel = 'stylesheet';
-    hlLink.href = 'https://cdn.jsdelivr.net/npm/highlight.js@11.11.1/styles/github-dark.min.css';
-    hlLink.crossOrigin = 'anonymous';
-    hlLink.integrity = 'sha384-wH75j6z1lH97ZOpMOInqhgKzFkAInZPPSPlZpYKYTOqsaizPvhQZmAtLcPKXpLyH';
-    document.head.appendChild(hlLink);
-}
+import Image from "next/image";
+import Link from "next/link";
 
 interface MarkdownRendererProps {
     content: string;
@@ -47,11 +28,6 @@ export function MarkdownRenderer({
     fontFamily = 'serif',
     isZenMode = false
 }: MarkdownRendererProps) {
-    // Load KaTeX + highlight.js CSS on first mount
-    useEffect(() => {
-        loadMarkdownCSS();
-    }, []);
-
     // Preprocess content: convert HTML math nodes to proper LaTeX notation
     // The Tiptap editor stores math as <span data-type="math" data-latex="..."></span>
     // The tiptap-markdown extension serializes math as $latex$ (always inline)
@@ -166,13 +142,21 @@ export function MarkdownRenderer({
                         }
                         return <p {...props}>{children}</p>;
                     },
-                    // External links open in new tab
+                    // External links open in new tab, internal links use Next.js routing
                     a: ({ node, ...props }) => {
-                        const isExternal = props.href && (props.href.startsWith('http') || props.href.startsWith('//'));
+                        const href = props.href || '';
+                        const isExternal = href.startsWith('http') && !href.includes('fizikhub.com');
+                        
+                        if (!isExternal && href) {
+                            return (
+                                <Link href={href} prefetch={true} {...props} />
+                            );
+                        }
+                        
                         return (
                             <a
-                                target={isExternal ? "_blank" : undefined}
-                                rel={isExternal ? "noopener noreferrer" : undefined}
+                                target="_blank"
+                                rel="noopener noreferrer"
                                 {...props}
                             />
                         );
@@ -188,7 +172,7 @@ export function MarkdownRenderer({
                         }
                         return <div className={divClassName} {...props}>{children}</div>;
                     },
-                    // Image with Dialog zoom (must stay as custom override)
+                    // Image with Dialog zoom
                     img: ({ node, ...props }: any) => {
                         const src = props.src as string;
                         if (src?.endsWith(".mp4") || src?.endsWith(".webm")) {
@@ -204,11 +188,13 @@ export function MarkdownRenderer({
                                 <Dialog>
                                     <DialogTrigger asChild>
                                         <div className="relative group cursor-zoom-in w-full flex justify-center">
-                                            <img
-                                                loading="lazy"
-                                                decoding="async"
-                                                className="rounded-xl shadow-lg border-4 border-black dark:border-zinc-800 shadow-[6px_6px_0px_0px_#000] dark:shadow-[6px_6px_0px_0px_rgba(0,0,0,0.5)] transition-transform duration-300 group-hover:scale-[1.01] max-h-[600px] object-contain"
-                                                {...props}
+                                            <Image
+                                                src={src}
+                                                alt={props.alt || "Makale görseli"}
+                                                width={1200}
+                                                height={675}
+                                                unoptimized
+                                                className="w-full h-auto rounded-xl shadow-lg border-4 border-black dark:border-zinc-800 shadow-[6px_6px_0px_0px_#000] dark:shadow-[6px_6px_0px_0px_rgba(0,0,0,0.5)] transition-transform duration-300 group-hover:scale-[1.01] max-h-[600px] object-contain"
                                             />
                                             <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/20 rounded-xl">
                                                 <div className="bg-black/60 backdrop-blur-sm p-2.5 rounded-full text-white border-2 border-white/30">

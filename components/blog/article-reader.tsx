@@ -220,15 +220,15 @@ export function ArticleReader({
                     isZenMode ? "max-w-3xl" : "max-w-4xl px-4 py-10"
                 )}>
                     {/* Article Content */}
-                    <div className="article-body-wrapper block">
+                    <article className="article-body-wrapper block">
                         {/* Zen Mode Title */}
                         {isZenMode && (
-                            <div className="mb-10 text-center">
+                            <header className="mb-10 text-center">
                                 <h1 className="text-3xl sm:text-4xl font-bold tracking-tight mb-4">
                                     {article.title}
                                 </h1>
                                 <p className="text-muted-foreground text-sm">{readingTime}</p>
-                            </div>
+                            </header>
                         )}
 
                         {/* Content - NeoBrutalist High Contrast */}
@@ -419,13 +419,13 @@ export function ArticleReader({
                                 )}
 
                                 {/* Author */}
-                                <div className="border-t-[3px] border-dashed border-black/10 dark:border-white/10 pt-8 sm:pt-12">
+                                <aside className="border-t-[3px] border-dashed border-black/10 dark:border-white/10 pt-8 sm:pt-12">
                                     <div className="flex items-center gap-2.5 sm:gap-3 mb-6 sm:mb-8">
                                         <div className="w-1.5 sm:w-2 h-6 sm:h-8 bg-[#FFC800]" />
                                         <h3 className="text-xl sm:text-2xl font-black text-foreground uppercase tracking-tight">Yazar</h3>
                                     </div>
                                     <AuthorCard author={article.author || {}} />
-                                </div>
+                                </aside>
 
                                 {/* Source / Reference Cards */}
                                 {references.length > 0 && (
@@ -504,7 +504,7 @@ export function ArticleReader({
                                 </div>
                             </div>
                         )}
-                    </div>
+                    </article>
                 </div>
             </div>
 

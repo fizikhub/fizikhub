@@ -44,7 +44,8 @@ export function NeoArticleHero({ article, readingTime }: NeoArticleHeroProps) {
                             fill
                             className="object-cover group-hover:scale-[1.02] transition-transform duration-500"
                             priority
-                            sizes="(max-width: 768px) 100vw, 1200px"
+                            fetchPriority="high"
+                            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 768px, 1200px"
                         />
                     </div>
                 )}
