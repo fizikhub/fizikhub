@@ -40,8 +40,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
         : fallbackOgUrl.toString();
 
     // Use excerpt if available for a better meta description, fallback to content snippet
-    const description = article.excerpt
-        ? article.excerpt.substring(0, 160)
+    const description = (article.excerpt || (article as any).summary || "") 
+        ? (article.excerpt || (article as any).summary || "").substring(0, 160)
         : (article.content || "").replace(/[#*`>\[\]]/g, "").substring(0, 160) + "...";
 
     const tags = (article as any).tags as string[] | undefined;
@@ -120,16 +120,21 @@ export default async function ArticlePage({ params }: PageProps) {
     // We only fetch public data to ensure this page remains statically cacheable.
     // User-specific data (likes, bookmarks, auth status) will be fetched client-side.
     const [
-        { count: dbLikeCount },
-        { data: references },
-        { data: commentsData },
-        { data: relatedArticles }
+        likesRes,
+        referencesRes,
+        commentsRes,
+        relatedRes
     ] = await Promise.all([
         supabase.from('article_likes').select('id', { count: 'exact', head: true }).eq('article_id', article.id),
         supabase.from('article_references').select('id, title, url, created_at').eq('article_id', article.id).order('created_at', { ascending: true }),
         supabase.from('article_comments').select('id, content, created_at, parent_comment_id, user_id').eq('article_id', article.id).order('created_at', { ascending: true }),
         supabase.from('articles').select('id, title, slug, excerpt, cover_url, category, created_at, author:author_id(username, full_name, avatar_url)').eq('category', article.category || 'Genel').neq('id', article.id).order('created_at', { ascending: false }).limit(3)
     ]);
+
+    const dbLikeCount = likesRes.count || 0;
+    const references = referencesRes.data || [];
+    const commentsData = commentsRes.data || [];
+    const relatedArticles = relatedRes.data || [];
 
     const likeCount = article.title === "Sessiz Bir Varsayım: Yerçekimi" ? 7 : dbLikeCount;
 
