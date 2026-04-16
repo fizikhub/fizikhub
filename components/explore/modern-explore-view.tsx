@@ -109,7 +109,7 @@ export function ModernExploreView({
             }
             // Reset page to 1 on category change
             params.delete("page");
-            router.push(`/blog?${params.toString()}`);
+            router.push(`/makale?${params.toString()}`);
         });
     };
 

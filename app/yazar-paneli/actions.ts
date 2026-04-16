@@ -120,7 +120,7 @@ export async function approveArticle(articleId: number) {
         revalidatePath("/yazar-paneli");
         revalidatePath("/makale");
         revalidatePath("/kesfet");
-        revalidatePath("/blog");
+        revalidatePath("/makale");
         revalidatePath("/");
         // @ts-ignore - Next.js 16 type definitions issue
         revalidateTag('articles');

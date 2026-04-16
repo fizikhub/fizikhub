@@ -231,7 +231,7 @@ export function ProfileTabs({
                                 <div className="border border-dashed border-white/10 p-12 text-center bg-black/20 rounded-xl">
                                     <Bookmark className="h-12 w-12 mx-auto mb-4 text-white/20" />
                                     <p className="text-white/30 font-mono uppercase mb-4">Arşiv boş.</p>
-                                    <Link prefetch={false} href="/blog">
+                                    <Link prefetch={false} href="/makale">
                                         <Button variant="outline" className="border-amber-500/50 text-amber-400 hover:bg-amber-500/10">KEŞFET</Button>
                                     </Link>
                                 </div>

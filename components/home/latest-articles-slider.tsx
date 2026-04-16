@@ -30,7 +30,7 @@ export function LatestArticlesSlider({ articles }: LatestArticlesSliderProps) {
                     <span className="w-1.5 h-5 bg-yellow-400 rounded-sm border border-yellow-500" />
                     Popüler Yazılar
                 </h2>
-                <Link href="/blog" prefetch={false} className="text-[9px] sm:text-[10px] font-bold uppercase tracking-widest flex items-center gap-1 group text-muted-foreground hover:text-yellow-500 transition-colors">
+                <Link href="/makale" prefetch={false} className="text-[9px] sm:text-[10px] font-bold uppercase tracking-widest flex items-center gap-1 group text-muted-foreground hover:text-yellow-500 transition-colors">
                     Tümünü Gör
                     <ChevronRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
                 </Link>

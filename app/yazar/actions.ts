@@ -150,7 +150,7 @@ export async function createArticle(formData: FormData) {
     revalidatePath("/yazar-paneli");
     revalidatePath("/yazar");
     revalidatePath("/kesfet");
-    revalidatePath("/blog");
+    revalidatePath("/makale");
     revalidatePath("/");
     // @ts-ignore
     revalidateTag('articles');
@@ -227,7 +227,7 @@ export async function updateArticle(articleId: number, formData: FormData) {
     revalidatePath(`/yazar/${articleId}`);
     revalidatePath(`/yazar-paneli/makale/${articleId}`);
     revalidatePath("/kesfet", "layout");
-    revalidatePath("/blog", "layout");
+    revalidatePath("/makale", "layout");
     revalidatePath("/", "layout");
     // @ts-ignore
     revalidateTag('articles');

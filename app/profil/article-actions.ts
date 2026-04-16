@@ -116,7 +116,7 @@ export async function updateArticle(formData: FormData) {
     }
 
     revalidatePath("/profil");
-    revalidatePath("/blog");
+    revalidatePath("/makale");
 
     return { success: true };
 }
@@ -151,7 +151,7 @@ export async function deleteArticle(articleId: number) {
     }
 
     revalidatePath("/profil");
-    revalidatePath("/blog");
+    revalidatePath("/makale");
 
     return { success: true };
 }

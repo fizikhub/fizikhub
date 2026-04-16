@@ -42,7 +42,7 @@ export async function deleteArticle(id: number) {
     }
 
     revalidatePath('/admin');
-    revalidatePath('/blog');
+    revalidatePath('/makale');
     return { success: true };
 }
 
@@ -272,7 +272,7 @@ export async function updateArticle(id: number, data: {
     }
 
     revalidatePath('/admin/articles');
-    revalidatePath('/blog');
+    revalidatePath('/makale');
     revalidatePath('/kesfet');
     revalidatePath('/');
     return { success: true };

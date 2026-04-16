@@ -37,7 +37,7 @@ export function ArticleHero({ article, readingTime }: ArticleHeroProps) {
         <header className="w-full block">
             {/* Back Button */}
             <div className="container max-w-4xl mx-auto px-4 pt-4">
-                <Link prefetch={false} href="/blog">
+                <Link prefetch={false} href="/makale">
                     <Button
                         variant="ghost"
                         size="sm"

@@ -21,7 +21,7 @@ interface ShareButtonsProps {
 
 export function ShareButtons({ title, slug, variant = 'default', className }: ShareButtonsProps) {
     const [copied, setCopied] = useState(false);
-    const url = typeof window !== 'undefined' ? `${window.location.origin}/blog/${slug}` : '';
+    const url = typeof window !== 'undefined' ? `${window.location.origin}/makale/${slug}` : '';
 
     const handleCopy = () => {
         navigator.clipboard.writeText(url);

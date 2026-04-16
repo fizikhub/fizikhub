@@ -31,7 +31,7 @@ export async function updateSession(request: NextRequest) {
     // OPTIMIZATION: Skip auth check for public static pages to improve TTFB.
     // These pages are cached/public and don't need server-side user data.
     const publicPaths = ['/', '/hakkimizda', '/gizlilik-politikasi', '/kullanim-sartlari', '/iletisim', '/puanlar-nedir'];
-    const publicPrefixes = ['/blog', '/forum', '/sozluk', '/testler', '/simulasyonlar', '/siralamalar', '/deney', '/kitap-inceleme', '/kullanici', '/yazar'];
+    const publicPrefixes = ['/makale', '/forum', '/sozluk', '/testler', '/simulasyonlar', '/siralamalar', '/deney', '/kitap-inceleme', '/kullanici', '/yazar'];
 
     const isPublicPage = publicPaths.includes(request.nextUrl.pathname) ||
         publicPrefixes.some(prefix => request.nextUrl.pathname.startsWith(prefix));

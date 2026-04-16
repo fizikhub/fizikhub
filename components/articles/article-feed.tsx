@@ -138,7 +138,7 @@ export function ArticleFeed({ articles, categories, activeCategory, sortParam, n
 
                             return (
                                 <Link
-                                    href={`/blog/${article.slug}`}
+                                    href={`/makale/${article.slug}`}
                                     key={article.id}
                                     className={cn(
                                         "group flex h-full",

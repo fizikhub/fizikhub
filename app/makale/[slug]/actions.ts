@@ -42,9 +42,9 @@ export async function toggleLike(articleId: number) {
             .single();
 
         if (article) {
-            revalidatePath(`/blog/${article.slug}`);
+            revalidatePath(`/makale/${article.slug}`);
         } else {
-            revalidatePath(`/blog/${articleId}`);
+            revalidatePath(`/makale/${articleId}`);
         }
 
         return { success: true, liked: false };
@@ -76,9 +76,9 @@ export async function toggleLike(articleId: number) {
                 content: `"${article.title}" makaleni beğendi.`
             });
 
-            revalidatePath(`/blog/${article.slug}`);
+            revalidatePath(`/makale/${article.slug}`);
         } else {
-            revalidatePath(`/blog/${articleId}`);
+            revalidatePath(`/makale/${articleId}`);
         }
 
         return { success: true, liked: true };
@@ -168,9 +168,9 @@ export async function createComment(articleId: number, content: string, parentCo
         .single();
 
     if (articleForReval) {
-        revalidatePath(`/blog/${articleForReval.slug}`);
+        revalidatePath(`/makale/${articleForReval.slug}`);
     } else {
-        revalidatePath(`/blog/${articleId}`);
+        revalidatePath(`/makale/${articleId}`);
     }
 
     return { success: true };
@@ -229,9 +229,9 @@ export async function deleteComment(commentId: number) {
     }
 
     if (articleSlug) {
-        revalidatePath(`/blog/${articleSlug}`);
+        revalidatePath(`/makale/${articleSlug}`);
     } else {
-        revalidatePath(`/blog/*`);
+        revalidatePath(`/makale/*`);
     }
 
     return { success: true };

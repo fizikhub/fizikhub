@@ -374,7 +374,7 @@ export function Footer() {
                     <span className="text-zinc-500 text-[8px]">•</span>
                     <Link prefetch={false} href="/iletisim" className="text-xs font-bold text-zinc-200 hover:text-white transition-colors duration-300 uppercase tracking-widest drop-shadow-md">İletişim</Link>
                     <span className="text-zinc-500 text-[8px]">•</span>
-                    <Link prefetch={false} href="/blog" className="text-xs font-bold text-zinc-200 hover:text-white transition-colors duration-300 uppercase tracking-widest drop-shadow-md">Blog</Link>
+                    <Link prefetch={false} href="/makale" className="text-xs font-bold text-zinc-200 hover:text-white transition-colors duration-300 uppercase tracking-widest drop-shadow-md">Blog</Link>
                     <span className="text-zinc-500 text-[8px]">•</span>
                     <Link prefetch={false} href="/gizlilik-politikasi" className="text-xs font-bold text-zinc-200 hover:text-white transition-colors duration-300 uppercase tracking-widest drop-shadow-md">Gizlilik</Link>
                     <span className="text-zinc-500 text-[8px]">•</span>

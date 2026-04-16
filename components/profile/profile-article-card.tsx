@@ -23,7 +23,7 @@ export function ProfileArticleCard({ article }: ProfileArticleCardProps) {
     const readingTime = calculateReadingTime(article.content || "");
 
     return (
-        <Link prefetch={false} href={`/blog/${article.slug}`}>
+        <Link prefetch={false} href={`/makale/${article.slug}`}>
             <div className="group h-full bg-card border-2 border-foreground/10 rounded-lg overflow-hidden shadow-[3px_3px_0px_0px_rgba(0,0,0,0.1)] dark:shadow-[3px_3px_0px_0px_rgba(255,255,255,0.1)] hover:shadow-[5px_5px_0px_0px_rgba(0,0,0,0.15)] dark:hover:shadow-[5px_5px_0px_0px_rgba(255,255,255,0.15)] hover:-translate-y-0.5 transition-all duration-200 cursor-pointer flex flex-col">
                 {/* Cover Image */}
                 {article.cover_url && (

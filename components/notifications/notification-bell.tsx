@@ -142,7 +142,7 @@ export function NotificationBell({ className }: { className?: string }) {
             case 'comment':
             case 'reply':
                 if (notification.resource_type === 'question') return `/forum/${notification.resource_id}`;
-                if (notification.resource_type === 'article') return `/blog/${notification.resource_id}`; // Assuming slug or id
+                if (notification.resource_type === 'article') return `/makale/${notification.resource_id}`; // Assuming slug or id
                 return '#';
             case 'welcome':
                 if (notification.resource_type === 'system') return '#';

@@ -45,7 +45,7 @@ export function TermDetail({ article, readingTime, likeCount, initialLiked, init
             <div className="container max-w-4xl mx-auto px-4 py-8 sm:py-16 relative z-10">
 
                 {/* Back Button */}
-                <Link prefetch={false} href="/blog?category=Terim" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-8 sm:mb-12 transition-colors group">
+                <Link prefetch={false} href="/makale?category=Terim" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-8 sm:mb-12 transition-colors group">
                     <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
                     <span className="text-sm font-bold uppercase tracking-wider">Terimler Sözlüğüne Dön</span>
                 </Link>

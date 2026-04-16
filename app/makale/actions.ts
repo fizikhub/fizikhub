@@ -45,8 +45,8 @@ export async function toggleArticleLike(articleId: number) {
         // Potential: Add notification here if we had the author_id ready
     }
 
-    revalidatePath('/blog');
-    revalidatePath(`/blog/[slug]`); // We'll rely on global revalidation or targeted
+    revalidatePath('/makale');
+    revalidatePath(`/makale/[slug]`); // We'll rely on global revalidation or targeted
     return { success: true };
 }
 
@@ -83,6 +83,6 @@ export async function toggleArticleBookmark(articleId: number) {
         if (error) return { success: false, error: error.message };
     }
 
-    revalidatePath('/blog');
+    revalidatePath('/makale');
     return { success: true };
 }

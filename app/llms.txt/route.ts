@@ -31,7 +31,7 @@ export async function GET() {
 
     text += `## Önemli Kaynaklar (Core Pages)\n`;
     text += `- **Anasayfa**: ${baseUrl}\n`;
-    text += `- **Bilim Makaleleri (Blog)**: ${baseUrl}/blog\n`;
+    text += `- **Bilim Makaleleri (Blog)**: ${baseUrl}/makale\n`;
     text += `- **Soru-Cevap Forumu**: ${baseUrl}/forum\n`;
     text += `- **Bilim Sözlüğü**: ${baseUrl}/sozluk\n`;
     text += `- **İnteraktif Simülasyon Merkezi**: ${baseUrl}/simulasyonlar\n`;
@@ -44,7 +44,7 @@ export async function GET() {
         text += `### En Yeni Yayımlanan Makaleler\n`;
         latestArticles.forEach(article => {
             const authorName = Array.isArray(article.profiles) ? article.profiles[0]?.username : (article.profiles as { username?: string })?.username;
-            text += `- [${article.title}](${baseUrl}/blog/${article.slug}) (Yazar: ${authorName || 'Fizikhub Eğitmeni'} | Tarih: ${new Date(article.created_at).toLocaleDateString('tr-TR')})\n`;
+            text += `- [${article.title}](${baseUrl}/makale/${article.slug}) (Yazar: ${authorName || 'Fizikhub Eğitmeni'} | Tarih: ${new Date(article.created_at).toLocaleDateString('tr-TR')})\n`;
             if (article.excerpt) text += `  Özet: ${article.excerpt}\n`;
         });
         text += `\n`;

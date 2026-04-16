@@ -44,6 +44,6 @@ export async function createArticle(formData: any) {
     }
 
     revalidatePath('/admin');
-    revalidatePath('/blog');
+    revalidatePath('/makale');
     return { success: true };
 }

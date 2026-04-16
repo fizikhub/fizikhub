@@ -31,7 +31,7 @@ export function RelatedArticles({ articles }: RelatedArticlesProps) {
             {articles.map((article) => (
                 <Link
                     key={article.id}
-                    href={`/blog/${article.slug}`}
+                    href={`/makale/${article.slug}`}
                     className="group block"
                 >
                     <div className="rounded-xl sm:rounded-[12px] border-2 sm:border-[3px] border-black dark:border-zinc-700 bg-card overflow-hidden shadow-[3px_3px_0px_0px_#000] sm:shadow-[4px_4px_0px_0px_#000] dark:shadow-[3px_3px_0px_0px_rgba(0,0,0,0.6)] sm:dark:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.6)] group-hover:shadow-[4px_4px_0px_0px_#000] sm:group-hover:shadow-[6px_6px_0px_0px_#000] dark:group-hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)] sm:dark:group-hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,0.8)] group-hover:-translate-y-0.5 sm:group-hover:-translate-y-1 transition-all duration-200">

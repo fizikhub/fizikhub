@@ -43,7 +43,7 @@ export default function robots(): MetadataRoute.Robots {
 
     const aiRules = aiBots.map(bot => ({
         userAgent: bot,
-        allow: ['/', '/blog/', '/makale/', '/forum/', '/sozluk/', '/llms.txt', '/testler/', '/simulasyonlar/'],
+        allow: ['/', '/makale/', '/forum/', '/sozluk/', '/llms.txt', '/testler/', '/simulasyonlar/'],
         disallow: commonDisallow,
         crawlDelay: 2, // Be kind to our servers, LLMs!
     }));

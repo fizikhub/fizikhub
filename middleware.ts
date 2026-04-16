@@ -98,8 +98,8 @@ export async function middleware(request: NextRequest) {
         }
     }
 
-    // Normalize query params for /blog to fix Canonical tag warnings (kategori -> category)
-    if (pathname === '/blog') {
+    // Normalize query params for /makale to fix Canonical tag warnings (kategori -> category)
+    if (pathname === '/makale') {
         const url = request.nextUrl.clone();
         const kategori = url.searchParams.get('kategori');
         if (kategori) {

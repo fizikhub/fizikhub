@@ -15,7 +15,7 @@ export function SearchInput() {
         } else {
             params.delete("search");
         }
-        replace(`/blog?${params.toString()}`);
+        replace(`/makale?${params.toString()}`);
     }, 500);
 
     return (

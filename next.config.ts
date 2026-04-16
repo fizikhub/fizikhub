@@ -84,8 +84,13 @@ const nextConfig: NextConfig = {
         permanent: true,
       },
       {
-        source: '/blog/:slug',
-        destination: '/makale/:slug',
+        source: '/blog',
+        destination: '/makale',
+        permanent: true,
+      },
+      {
+        source: '/blog/:slug*',
+        destination: '/makale/:slug*',
         permanent: true,
       },
     ];

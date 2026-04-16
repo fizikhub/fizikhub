@@ -98,7 +98,7 @@ export function NotificationsList({ userId }: { userId: string }) {
             case 'new_comment_reply':
             case 'new_vote':
                 if (notification.resource_type === 'question') return `/forum/${notification.resource_id}`;
-                if (notification.resource_type === 'article') return `/blog/${notification.resource_id}`;
+                if (notification.resource_type === 'article') return `/makale/${notification.resource_id}`;
                 return '#';
             case 'welcome':
                 return '/profil';

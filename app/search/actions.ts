@@ -40,7 +40,7 @@ export async function searchGlobal(query: string): Promise<SearchResult[]> {
                 const type = item.source_type || 'article'; // Default if unknown
                 let url = '/';
                 if (type === 'question') url = `/forum/soru/${item.id}`;
-                else if (type === 'article') url = `/blog/${item.id}`; // using ID, or slug if available in item logic
+                else if (type === 'article') url = `/makale/${item.id}`; // using ID, or slug if available in item logic
                 else if (type === 'user') url = `/kullanici/${item.username}`;
 
                 // Avoid duplicates if we combine lists, but for now let's prioritize vector results
@@ -101,7 +101,7 @@ export async function searchGlobal(query: string): Promise<SearchResult[]> {
                     id: a.id,
                     title: a.title,
                     description: a.content.substring(0, 60) + '...',
-                    url: `/blog/${a.id}`,
+                    url: `/makale/${a.id}`,
                     image: a.cover_image
                 });
             }
