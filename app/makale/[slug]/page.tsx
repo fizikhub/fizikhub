@@ -3,7 +3,7 @@ import { ReadingProgress } from "@/components/blog/reading-progress";
 import { TableOfContents } from "@/components/blog/table-of-contents";
 import { RelatedArticles } from "@/components/blog/related-articles";
 import { NeoArticleHero } from "@/components/articles/neo-article-hero";
-import { createClient } from "@/lib/supabase-server";
+import { createStaticClient } from "@/lib/supabase-server";
 import { getArticleBySlug } from "@/lib/api";
 import { calculateReadingTime, formatReadingTime } from "@/lib/reading-time";
 import { Metadata } from "next";
@@ -17,7 +17,7 @@ interface PageProps {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
     const { slug } = await params;
-    const supabase = await createClient();
+    const supabase = createStaticClient();
     const article = await getArticleBySlug(supabase, slug);
 
     if (!article) {
@@ -109,7 +109,7 @@ export async function generateStaticParams() {
 
 export default async function ArticlePage({ params }: PageProps) {
     const { slug } = await params;
-    const supabase = await createClient();
+    const supabase = createStaticClient();
     const article = await getArticleBySlug(supabase, slug);
 
     if (!article) {
