@@ -5,7 +5,8 @@ export function processFeedData(articles: any[], questions: any[]): FeedItem[] {
     const feedItems: FeedItem[] = [];
 
     // Add Articles
-    articles.forEach((a) => {
+    articles.forEach((originalA) => {
+        const a = { ...originalA };
         let type: FeedItem['type'] = a.author?.is_writer ? 'article' : 'blog';
         if (a.category === 'Deney') {
             type = 'experiment';

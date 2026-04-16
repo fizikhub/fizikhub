@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, SelectGroup, SelectLabel } from "@/components/ui/select";
 import {
     Loader2,
     Upload
@@ -36,17 +36,54 @@ interface ArticleEditorProps {
     };
 }
 
-const CATEGORIES = [
-    "Kuantum Fiziği",
-    "Astrofizik",
-    "Modern Fizik",
-    "Klasik Fizik",
-    "Parçacık Fiziği",
-    "Termodinamik",
-    "Elektromanyetizma",
-    "Bilim Tarihi",
-    "Popüler Bilim"
-];
+const CATEGORIES = {
+    "Fizik": [
+        "Kuantum Fiziği",
+        "Astrofizik",
+        "Modern Fizik",
+        "Klasik Fizik",
+        "Parçacık Fiziği",
+        "Termodinamik",
+        "Elektromanyetizma",
+        "Optik ve Fotonik"
+    ],
+    "Biyoloji": [
+        "Evrimsel Biyoloji",
+        "Moleküler Biyoloji",
+        "Genetik",
+        "Nörobiyoloji",
+        "Hücre Biyolojisi",
+        "Zooloji",
+        "Botanik"
+    ],
+    "Kimya": [
+        "Organik Kimya",
+        "İnorganik Kimya",
+        "Fizikokimya",
+        "Biyokimya",
+        "Analitik Kimya"
+    ],
+    "Matematik": [
+        "Cebir",
+        "Geometri",
+        "Kalkülüs ve Analiz",
+        "Uygulamalı Matematik",
+        "Ayrık Matematik"
+    ],
+    "Mühendislik ve Teknoloji": [
+        "Bilgisayar Bilimleri",
+        "Yapay Zeka",
+        "Uzay Mühendisliği",
+        "Malzeme Bilimi",
+        "Mekatronik"
+    ],
+    "Diğer Bilimler": [
+        "Bilim Tarihi",
+        "Popüler Bilim",
+        "Tıp ve Sağlık Bilimleri",
+        "Yer Bilimleri ve Jeoloji"
+    ]
+};
 
 export function ArticleEditor({ article }: ArticleEditorProps) {
     const router = useRouter();
@@ -54,7 +91,7 @@ export function ArticleEditor({ article }: ArticleEditorProps) {
     const [isUploading, setIsUploading] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [title, setTitle] = useState(article?.title || "");
-    const [category, setCategory] = useState(article?.category || CATEGORIES[0]);
+    const [category, setCategory] = useState(article?.category || CATEGORIES["Fizik"][0]);
 
     const [excerpt, setExcerpt] = useState(article?.excerpt || "");
     const [imageUrl, setImageUrl] = useState(article?.image_url || "");
@@ -270,10 +307,15 @@ export function ArticleEditor({ article }: ArticleEditorProps) {
                                 <SelectValue placeholder="Kategori seçin" />
                             </SelectTrigger>
                             <SelectContent>
-                                {CATEGORIES.map((cat) => (
-                                    <SelectItem key={cat} value={cat}>
-                                        {cat}
-                                    </SelectItem>
+                                {Object.entries(CATEGORIES).map(([group, categories]) => (
+                                    <SelectGroup key={group}>
+                                        <SelectLabel>{group}</SelectLabel>
+                                        {categories.map((cat) => (
+                                            <SelectItem key={cat} value={cat}>
+                                                {cat}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectGroup>
                                 ))}
                             </SelectContent>
                         </Select>
