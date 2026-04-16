@@ -91,7 +91,14 @@ export function ArticleEditor({ article }: ArticleEditorProps) {
     const [isUploading, setIsUploading] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [title, setTitle] = useState(article?.title || "");
-    const [category, setCategory] = useState(article?.category || CATEGORIES["Fizik"][0]);
+
+    // Check if existing article has a custom category (not in predefined list)
+    const allPredefined = Object.values(CATEGORIES).flat();
+    const initialIsCustom = article?.category ? !allPredefined.includes(article.category) : false;
+    const [category, setCategory] = useState(initialIsCustom ? "__custom__" : (article?.category || CATEGORIES["Fizik"][0]));
+    const [customCategory, setCustomCategory] = useState(initialIsCustom ? (article?.category || "") : "");
+    const isCustomCategory = category === "__custom__";
+    const effectiveCategory = isCustomCategory ? customCategory : category;
 
     const [excerpt, setExcerpt] = useState(article?.excerpt || "");
     const [imageUrl, setImageUrl] = useState(article?.image_url || "");
@@ -184,6 +191,7 @@ export function ArticleEditor({ article }: ArticleEditorProps) {
                 const draft = JSON.parse(saved);
                 if (draft.title) setTitle(draft.title);
                 if (draft.category) setCategory(draft.category);
+                if (draft.customCategory) setCustomCategory(draft.customCategory);
                 if (draft.excerpt) setExcerpt(draft.excerpt);
                 if (draft.imageUrl) setImageUrl(draft.imageUrl);
                 if (draft.content) setContent(draft.content);
@@ -204,7 +212,7 @@ export function ArticleEditor({ article }: ArticleEditorProps) {
 
         autoSaveTimer.current = setTimeout(() => {
             try {
-                localStorage.setItem(draftKey, JSON.stringify({ title, category, excerpt, imageUrl, content, references }));
+                localStorage.setItem(draftKey, JSON.stringify({ title, category, customCategory, excerpt, imageUrl, content, references }));
                 setAutoSaveStatus('saved');
                 setTimeout(() => setAutoSaveStatus('idle'), 2000);
             } catch { }
@@ -234,8 +242,8 @@ export function ArticleEditor({ article }: ArticleEditorProps) {
             toast.error("Başlık en az 10 karakter olmalıdır.");
             return;
         }
-        if (!category) {
-            toast.error("Lütfen bir kategori seçin.");
+        if (!effectiveCategory || effectiveCategory.trim().length < 2) {
+            toast.error(isCustomCategory ? "Özel kategori adı en az 2 karakter olmalıdır." : "Lütfen bir kategori seçin.");
             return;
         }
         const plainText = content.replace(/<[^>]*>/g, '').trim();
@@ -302,7 +310,7 @@ export function ArticleEditor({ article }: ArticleEditorProps) {
                 <div className="grid gap-6 sm:grid-cols-2">
                     <div className="space-y-2">
                         <Label htmlFor="category" className="text-muted-foreground text-sm uppercase tracking-wider font-bold">Kategori</Label>
-                        <Select name="category" value={category} onValueChange={setCategory} required>
+                        <Select name="_category_select" value={category} onValueChange={(val) => { setCategory(val); if (val !== "__custom__") setCustomCategory(""); }} required>
                             <SelectTrigger className="h-12 bg-muted/30 border-none rounded-xl">
                                 <SelectValue placeholder="Kategori seçin" />
                             </SelectTrigger>
@@ -317,8 +325,25 @@ export function ArticleEditor({ article }: ArticleEditorProps) {
                                         ))}
                                     </SelectGroup>
                                 ))}
+                                <SelectGroup>
+                                    <SelectLabel>Diğer</SelectLabel>
+                                    <SelectItem value="__custom__">
+                                        ✏️ Elle kategori yaz...
+                                    </SelectItem>
+                                </SelectGroup>
                             </SelectContent>
                         </Select>
+                        {isCustomCategory && (
+                            <Input
+                                value={customCategory}
+                                onChange={(e) => setCustomCategory(e.target.value)}
+                                placeholder="Özel kategori adı girin..."
+                                className="h-12 bg-muted/30 border-none rounded-xl mt-2"
+                                autoFocus
+                            />
+                        )}
+                        {/* Hidden input carries the actual category value to FormData */}
+                        <input type="hidden" name="category" value={effectiveCategory} />
                     </div>
 
                     <div className="space-y-2">
