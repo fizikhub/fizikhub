@@ -10,6 +10,7 @@ import { m as motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Image from "next/image";
+import { ThemeSelector } from "./theme-selector";
 
 interface ProfileEditFormProps {
     user: any;
@@ -283,6 +284,11 @@ export function ProfileEditForm({ user, profile }: ProfileEditFormProps) {
                                             />
                                         </div>
                                     </div>
+                                </div>
+
+                                {/* THEME SELECTION */}
+                                <div className="pt-4 pb-2 border-t border-dashed border-zinc-700">
+                                    <ThemeSelector username={profile?.username} />
                                 </div>
 
                                 {/* ACTION BUTTONS */}

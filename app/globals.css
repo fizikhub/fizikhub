@@ -88,6 +88,70 @@
         --shadow-xl: 10px 10px 0px 0px var(--border);
         --shadow-2xl: 16px 16px 0px 0px #000;
     }
+
+    [data-theme="biology"] {
+        --background: 140 20% 8%;
+        --foreground: 140 10% 95%;
+        --card: 140 20% 6%;
+        --popover: 140 20% 6%;
+        --primary: 130 65% 45%;
+        --primary-hover: 130 65% 40%;
+        --secondary: 140 10% 16%;
+        --muted: 140 10% 16%;
+        --muted-foreground: 140 10% 60%;
+        --accent: 130 65% 45%;
+        --border: 140 30% 25%;
+        --input: 140 30% 25%;
+        --ring: 130 65% 45%;
+    }
+
+    [data-theme="chemistry"] {
+        --background: 25 20% 8%;
+        --foreground: 25 10% 95%;
+        --card: 25 20% 6%;
+        --popover: 25 20% 6%;
+        --primary: 32 95% 55%; 
+        --primary-hover: 32 95% 45%;
+        --secondary: 25 10% 16%;
+        --muted: 25 10% 16%;
+        --muted-foreground: 25 10% 60%;
+        --accent: 32 95% 55%;
+        --border: 25 30% 25%;
+        --input: 25 30% 25%;
+        --ring: 32 95% 55%;
+    }
+
+    [data-theme="math"] {
+        --background: 215 15% 10%;
+        --foreground: 215 10% 95%;
+        --card: 215 20% 8%;
+        --popover: 215 20% 8%;
+        --primary: 200 90% 60%;
+        --primary-hover: 200 90% 50%;
+        --secondary: 215 10% 18%;
+        --muted: 215 10% 18%;
+        --muted-foreground: 215 10% 60%;
+        --accent: 200 90% 60%;
+        --border: 215 30% 25%;
+        --input: 215 30% 25%;
+        --ring: 200 90% 60%;
+    }
+
+    [data-theme="astro"] {
+        --background: 260 20% 6%;
+        --foreground: 260 10% 95%;
+        --card: 260 25% 4%;
+        --popover: 260 25% 4%;
+        --primary: 280 85% 65%;
+        --primary-hover: 280 85% 55%;
+        --secondary: 260 15% 14%;
+        --muted: 260 15% 14%;
+        --muted-foreground: 260 10% 60%;
+        --accent: 280 85% 65%;
+        --border: 260 30% 28%;
+        --input: 260 30% 28%;
+        --ring: 280 85% 65%;
+    }
 }
 
 @layer base {
@@ -1015,4 +1079,54 @@ iframe {
 @keyframes badge-wiggle {
     0%, 100% { transform: rotate(-3deg); }
     50% { transform: rotate(1deg); }
+}
+
+/* ========== BIOLOGY THEME ANIMATIONS ========== */
+
+[data-theme="biology"] body::before,
+[data-theme="biology"] body::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.6;
+    background-image: 
+        radial-gradient(circle at 10% 20%, rgba(16, 185, 129, 0.03) 0%, transparent 30%),
+        radial-gradient(circle at 80% 40%, rgba(52, 211, 153, 0.04) 0%, transparent 40%),
+        radial-gradient(circle at 50% 80%, rgba(4, 120, 87, 0.03) 0%, transparent 50%);
+    animation: bioDrift 20s infinite alternate ease-in-out;
+    will-change: transform, opacity;
+}
+
+[data-theme="biology"] body::after {
+    background-image: 
+        radial-gradient(circle at 90% 80%, rgba(16, 185, 129, 0.03) 0%, transparent 40%),
+        radial-gradient(circle at 20% 60%, rgba(4, 120, 87, 0.04) 0%, transparent 30%);
+    animation: bioDrift 25s infinite alternate-reverse ease-in-out;
+}
+
+@keyframes bioDrift {
+    0% { transform: scale(1) translate(0, 0) rotate(0deg); opacity: 0.4; }
+    50% { opacity: 0.7; }
+    100% { transform: scale(1.1) translate(30px, -20px) rotate(2deg); opacity: 0.5; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    [data-theme="biology"] body::before,
+    [data-theme="biology"] body::after {
+        animation: none !important;
+    }
+}
+
+@media (max-width: 767px) {
+    /* Disable animation on mobile for performance */
+    [data-theme="biology"] body::before,
+    [data-theme="biology"] body::after {
+        animation: none !important;
+        opacity: 0.3; /* Static background instead */
+    }
 }

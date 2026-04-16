@@ -4,7 +4,7 @@ import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
-import { Moon, Heart, Rocket, Cpu, Biohazard } from "lucide-react";
+import { Moon, Leaf, FlaskConical, Pi, Star } from "lucide-react";
 
 interface ThemeSelectorProps {
     username?: string;
@@ -28,99 +28,81 @@ export function ThemeSelector({ username }: ThemeSelectorProps) {
         icon: any;
         color: string;
         special?: boolean;
-        restricted?: boolean;
     }
 
     const themes: ThemeOption[] = [
         {
             value: "dark",
-            label: "Karanlık",
+            label: "Fizik Klasik",
             icon: Moon,
-            color: "bg-zinc-950 border-zinc-800"
+            color: "bg-zinc-950 border-zinc-800 text-foreground"
         },
         {
-            value: "blood",
-            label: "Kan Kırmızısı",
-            icon: Heart,
-            color: "bg-red-900 border-red-800"
-        },
-        {
-            value: "pink",
-            label: "Pembe",
-            icon: Heart,
-            color: "bg-pink-500 border-pink-600"
-        },
-        {
-            value: "dark-pink",
-            label: "K. Pembe",
-            icon: Heart,
-            color: "bg-gradient-to-br from-zinc-900 via-pink-900 to-pink-700 border-pink-500"
-        },
-        {
-            value: "mars",
-            label: "Mars",
-            icon: Rocket,
-            color: "bg-gradient-to-br from-orange-600 via-red-700 to-orange-800 border-orange-900",
+            value: "biology",
+            label: "Biyoloji",
+            icon: Leaf,
+            color: "bg-emerald-950 border-emerald-500 text-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.2)]",
             special: true
         },
         {
-            value: "cybernetic",
-            label: "Sibernetik",
-            icon: Cpu,
-            color: "bg-cyan-950 border-cyan-500 shadow-[0_0_10px_rgba(6,182,212,0.5)]",
+            value: "chemistry",
+            label: "Kimya",
+            icon: FlaskConical,
+            color: "bg-amber-950 border-amber-500 text-amber-500 shadow-[0_0_15px_rgba(245,158,11,0.2)]",
             special: true
         },
         {
-            value: "slime",
-            label: "Sümük",
-            icon: Biohazard,
-            color: "bg-[#78FF32] border-[#0A3000] text-black shadow-[0_0_10px_#78FF32]",
-            special: true,
-            restricted: true
+            value: "math",
+            label: "Matematik",
+            icon: Pi,
+            color: "bg-slate-900 border-sky-400 text-sky-400 shadow-[0_0_15px_rgba(56,189,248,0.2)]",
+            special: true
+        },
+        {
+            value: "astro",
+            label: "Astrofizik",
+            icon: Star,
+            color: "bg-indigo-950 border-indigo-500 text-indigo-400 shadow-[0_0_15px_rgba(99,102,241,0.2)]",
+            special: true
         }
     ];
 
-    const allowedUsers = ["sulfiriikasit", "baranbozkurt"];
-    // Allow if explicitly allowed OR if currently selected (to prevent locking out)
-    const canSeeSlime = username && allowedUsers.includes(username);
-
-    const visibleThemes = themes.filter(t => !t.restricted || canSeeSlime || theme === t.value);
-
     return (
         <div className="space-y-3">
-            <Label>Görünüm</Label>
-            <div className="grid grid-cols-3 gap-2">
-                {visibleThemes.map((t) => {
-                    const isActive = theme === t.value;
+            <Label className="text-xs font-black uppercase tracking-wider text-zinc-500 ml-1">Bilimsel Temalar</Label>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
+                {themes.map((t) => {
+                    const isActive = theme === t.value || (theme === "system" && t.value === "dark");
                     const Icon = t.icon;
 
                     return (
                         <button
                             key={t.value}
+                            type="button"
                             onClick={() => setTheme(t.value)}
                             className={cn(
-                                "flex flex-col items-center gap-2 p-2 rounded-lg border-2 transition-all",
+                                "flex flex-col items-center gap-2 p-3 rounded-xl border-2 transition-all group",
                                 isActive
-                                    ? "border-primary bg-primary/5 text-primary"
-                                    : "border-transparent hover:bg-muted text-muted-foreground hover:text-foreground"
+                                    ? "border-primary bg-primary/5 text-primary scale-100 shadow-[4px_4px_0px_0px_#FFC800]"
+                                    : "border-black bg-zinc-900 hover:bg-zinc-800 text-muted-foreground hover:text-foreground hover:-translate-y-1 hover:shadow-[4px_4px_0px_0px_#000]"
                             )}
                         >
                             <div className={cn(
-                                "w-10 h-10 rounded-full border-2 flex items-center justify-center shadow-sm transition-all",
-                                isActive ? "scale-110" : "scale-100",
-                                t.color
+                                "w-12 h-12 rounded-full border-2 flex items-center justify-center transition-all",
+                                isActive ? "scale-110" : "scale-100 group-hover:scale-105",
+                                t.color,
+                                !isActive && "border-black opacity-80"
                             )}>
-                                <Icon className={cn(
-                                    "w-5 h-5",
-                                    (t.value === "pink" || t.value === "dark-pink" || t.special) && t.value !== "slime" ? "text-white" : "text-foreground",
-                                    t.value === "slime" && "text-black animate-pulse"
-                                )} />
+                                <Icon className="w-6 h-6" />
                             </div>
-                            <span className="text-xs font-medium">{t.label}</span>
+                            <span className="text-[10px] font-black tracking-wider uppercase text-center mt-1">{t.label}</span>
                         </button>
                     );
                 })}
             </div>
+            <p className="text-[10px] text-zinc-500 font-medium px-1 mt-2">
+                Bilim dalınıza uygun renk paleti ve animasyonlar anında uygulanır. Performans dostudur.
+            </p>
         </div>
     );
 }
