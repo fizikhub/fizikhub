@@ -39,8 +39,8 @@ export async function searchGlobal(query: string): Promise<SearchResult[]> {
             vectorData.forEach((item: any) => {
                 const type = item.source_type || 'article'; // Default if unknown
                 let url = '/';
-                if (type === 'question') url = `/forum/soru/${item.id}`;
-                else if (type === 'article') url = `/makale/${item.id}`; // using ID, or slug if available in item logic
+                if (type === 'question') url = `/forum/${item.id}`;
+                else if (type === 'article') url = `/makale/${item.slug || item.id}`;
                 else if (type === 'user') url = `/kullanici/${item.username}`;
 
                 // Avoid duplicates if we combine lists, but for now let's prioritize vector results
@@ -79,7 +79,7 @@ export async function searchGlobal(query: string): Promise<SearchResult[]> {
                     id: q.id,
                     title: q.title,
                     description: q.content.substring(0, 60) + '...',
-                    url: `/forum/soru/${q.id}`,
+                    url: `/forum/${q.id}`,
                     image: undefined
                 });
             }
@@ -89,7 +89,7 @@ export async function searchGlobal(query: string): Promise<SearchResult[]> {
     // 2. Search Articles
     const { data: articles } = await supabase
         .from('articles')
-        .select('id, title, content, slug, cover_image')
+        .select('id, title, content, slug, cover_url')
         .or(`title.ilike.${searchTerm},content.ilike.${searchTerm}`)
         .limit(3);
 
@@ -101,8 +101,8 @@ export async function searchGlobal(query: string): Promise<SearchResult[]> {
                     id: a.id,
                     title: a.title,
                     description: a.content.substring(0, 60) + '...',
-                    url: `/makale/${a.id}`,
-                    image: a.cover_image
+                    url: `/makale/${a.slug || a.id}`,
+                    image: a.cover_url
                 });
             }
         });

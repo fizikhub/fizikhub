@@ -1,5 +1,6 @@
 import { StoryEditor } from "@/components/stories/story-editor";
 import { createClient } from "@/lib/supabase-server";
+import { isAdminEmail } from "@/lib/admin-shared";
 import { redirect } from "next/navigation";
 
 export default async function StoryEditorPage() {
@@ -11,10 +12,9 @@ export default async function StoryEditorPage() {
         redirect("/login");
     }
 
-    // Check if admin (this logic should ideally be more robust with roles, but checking username works for now as per instructions)
-    const { data: profile } = await supabase.from('profiles').select('username').eq('id', user.id).single();
+    const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single();
 
-    if (profile?.username !== 'baranbozkurt') {
+    if (profile?.role !== 'admin' && !isAdminEmail(user.email)) {
         redirect("/");
     }
 

@@ -19,7 +19,7 @@ interface DarkNeoHeaderProps {
 
 export function DarkNeoHeader({ profile, user, stats, isOwnProfile, isFollowing }: DarkNeoHeaderProps) {
     const initial = profile?.full_name?.[0]?.toUpperCase() || "U";
-    const isAdmin = profile?.username === "baranbozkurt" || profile?.role === "admin";
+    const isAdmin = profile?.role === "admin";
     const isAuthorMode = isAdmin || profile?.role === "editor" || profile?.is_writer === true;
     const hasCoverPhoto = profile?.cover_url;
     const { playInteractSound } = useUiSounds();

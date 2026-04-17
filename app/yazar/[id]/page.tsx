@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase-server";
 import { redirect, notFound } from "next/navigation";
 import { ArticleEditor } from "@/components/writer/article-editor";
+import { isAdminEmail } from "@/lib/admin-shared";
 
 interface EditArticlePageProps {
     params: Promise<{
@@ -24,11 +25,11 @@ export default async function EditArticlePage({ params }: EditArticlePageProps) 
         .eq("id", user.id)
         .single();
 
-    if (!profile?.is_writer && profile?.role !== "admin" && profile?.username !== "baranbozkurt") {
+    if (!profile?.is_writer && profile?.role !== "admin" && !isAdminEmail(user.email)) {
         redirect("/");
     }
 
-    const isAdmin = profile?.role === "admin" || profile?.username === "baranbozkurt";
+    const isAdmin = profile?.role === "admin" || isAdminEmail(user.email);
 
     let query = supabase
         .from("articles")

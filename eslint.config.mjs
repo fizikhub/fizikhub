@@ -1,18 +1,28 @@
 import { defineConfig, globalIgnores } from "eslint/config";
 import nextVitals from "eslint-config-next/core-web-vitals";
 import nextTs from "eslint-config-next/typescript";
-import reactCompiler from "eslint-plugin-react-compiler";
+let reactCompiler = null;
+
+try {
+  ({ default: reactCompiler } = await import("eslint-plugin-react-compiler"));
+} catch {
+  reactCompiler = null;
+}
 
 const eslintConfig = defineConfig([
   ...nextVitals,
   ...nextTs,
   {
-    plugins: {
-      "react-compiler": reactCompiler,
-    },
-    rules: {
-      "react-compiler/react-compiler": "error",
-    },
+    plugins: reactCompiler
+      ? {
+          "react-compiler": reactCompiler,
+        }
+      : {},
+    rules: reactCompiler
+      ? {
+          "react-compiler/react-compiler": "error",
+        }
+      : {},
   },
   // Override default ignores of eslint-config-next.
   globalIgnores([

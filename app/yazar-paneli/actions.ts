@@ -5,6 +5,7 @@ import { revalidatePath, revalidateTag } from "next/cache";
 import { reviewArticleWithAI } from "@/lib/ai-review";
 import { cache } from "react";
 import { getAuthorizedProfile } from "@/lib/auth-helpers";
+import { isAdminEmail } from "@/lib/admin-shared";
 
 
 
@@ -108,7 +109,7 @@ export async function approveArticle(articleId: number) {
             .eq("id", user.id)
             .single();
 
-        const isStrictAdmin = adminProfile?.role === "admin" || adminProfile?.username === "baranbozkurt";
+        const isStrictAdmin = adminProfile?.role === "admin" || isAdminEmail(user.email);
 
         // Admin onaylarsa direkt yayına al, diğer yazarlar için 4 onay gerekli
         if (isStrictAdmin || (count && count >= 4)) {
@@ -214,7 +215,7 @@ export async function getArticleDetail(articleId: number) {
             .eq("id", user.id)
             .single();
             
-        const isAdminUser = profile?.role === "admin" || profile?.username === "baranbozkurt";
+        const isAdminUser = profile?.role === "admin" || isAdminEmail(user.email);
 
         return {
             article,

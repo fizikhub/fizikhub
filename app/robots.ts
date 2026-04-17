@@ -5,21 +5,21 @@ export default function robots(): MetadataRoute.Robots {
 
     const commonDisallow = [
         '/api/',
-        '/profil/',
-        '/login/',
-        '/forgot-password/',
-        '/reset-password/',
-        '/onboarding/',
-        '/admin/',
-        '/yazar/',
-        '/yazar-paneli/',
+        '/profil',
+        '/login',
+        '/forgot-password',
+        '/reset-password',
+        '/onboarding',
+        '/admin',
+        '/yazar',
+        '/yazar-paneli',
         '/makale/yeni',
-        '/mesajlar/',
-        '/notifications/',
-        '/kurulum/',
-        '/time-limit/',
-        '/yonetim/',
-        '/abs/',
+        '/mesajlar',
+        '/notifications',
+        '/kurulum',
+        '/time-limit',
+        '/yonetim',
+        '/abs',
         '/storage/',
         '/cdn-cgi/'
     ];
@@ -39,11 +39,14 @@ export default function robots(): MetadataRoute.Robots {
         'Applebot',
         'Meta-ExternalAgent',
         'Meta-ExternalFetcher',
+        'YandexBot',
+        'Twitterbot',
+        'LinkedInBot'
     ];
 
     const aiRules = aiBots.map(bot => ({
         userAgent: bot,
-        allow: ['/', '/makale/', '/forum/', '/sozluk/', '/llms.txt', '/testler/', '/simulasyonlar/'],
+        allow: ['/', '/makale/', '/forum/', '/sozluk/', '/llms.txt', '/testler/', '/simulasyonlar/', '/api/og'],
         disallow: commonDisallow,
         crawlDelay: 2, // Be kind to our servers, LLMs!
     }));

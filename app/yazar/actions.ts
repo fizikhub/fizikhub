@@ -5,6 +5,7 @@ import { revalidatePath, revalidateTag } from "next/cache";
 import { redirect } from "next/navigation";
 import { reviewArticleWithAI } from "@/lib/ai-review";
 import { getAuthorizedProfile } from "@/lib/auth-helpers";
+import { isAdminEmail } from "@/lib/admin-shared";
 
 
 // Helper: Save references for an article
@@ -186,7 +187,7 @@ export async function updateArticle(articleId: number, formData: FormData) {
         return { success: false, error: "Lütfen zorunlu alanları doldurun." };
     }
 
-    const isAdmin = profile?.role === "admin" || profile?.username === "baranbozkurt";
+    const isAdmin = profile?.role === "admin" || isAdminEmail(user.email);
 
     // Build update query - admins bypass author_id check (RLS policy handles permission)
     let updateQuery = supabase

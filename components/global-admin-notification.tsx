@@ -88,7 +88,7 @@ export default function GlobalAdminNotification() {
             await markAsRead(adminNotification.id);
             setIsVisible(false);
             if (adminNotification.resource_type === 'question') {
-                router.push(`/forum/soru/${adminNotification.resource_id}`);
+                router.push(`/forum/${adminNotification.resource_id}`);
             }
         }
     };
