@@ -14,6 +14,7 @@ const inter = Inter({
   subsets: ["latin"],
   variable: "--font-sans",
   display: "swap",
+  preload: true,
   fallback: ['system-ui', 'arial'],
   adjustFontFallback: true,
 });
@@ -22,7 +23,7 @@ const lora = Lora({
   subsets: ["latin"],
   variable: "--font-serif",
   display: "swap",
-  preload: false,
+  preload: true,
   fallback: ['Georgia', 'serif'],
 });
 
@@ -264,10 +265,15 @@ export default async function RootLayout({
     <html lang="tr" suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://cdn.jsdelivr.net" crossOrigin="anonymous" />
-        <link rel="preconnect" href={process.env.NEXT_PUBLIC_SUPABASE_URL!} />
+        <link rel="dns-prefetch" href="https://cdn.jsdelivr.net" />
+        <link rel="preconnect" href={process.env.NEXT_PUBLIC_SUPABASE_URL!} crossOrigin="anonymous" />
         <link rel="dns-prefetch" href={process.env.NEXT_PUBLIC_SUPABASE_URL!} />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+        {/* KaTeX and Highlight.js CSS - Preload to prevent CLS */}
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.25/dist/katex.min.css" precedence="default" crossOrigin="anonymous" />
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.11.1/styles/github-dark.min.css" precedence="default" crossOrigin="anonymous" />
       </head>
       <body suppressHydrationWarning className={`${inter.variable} ${lora.variable} font-sans min-h-[100dvh] flex flex-col pb-[68px] md:pb-0 bg-background text-foreground`}>
         <script

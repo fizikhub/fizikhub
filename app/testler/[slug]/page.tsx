@@ -1,4 +1,5 @@
 import { getQuizBySlug } from "../actions";
+import { createStaticClient } from "@/lib/supabase-static";
 import { QuizRunner } from "@/components/quiz/quiz-runner";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
@@ -8,6 +9,18 @@ interface Props {
     params: Promise<{
         slug: string;
     }>;
+}
+
+export async function generateStaticParams() {
+    const supabase = createStaticClient();
+    const { data: quizzes } = await supabase
+        .from('quizzes')
+        .select('slug')
+        .eq('is_published', true);
+
+    return (quizzes || []).map((quiz) => ({
+        slug: quiz.slug,
+    }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -25,7 +38,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
             url: `https://www.fizikhub.com/testler/${slug}`,
         },
         twitter: {
-            card: "summary",
+            card: "summary_large_image",
             title: `${quiz.title} — Fizikhub`,
             description: quiz.description || `${quiz.title} - Fizik bilgini test et!`,
         },

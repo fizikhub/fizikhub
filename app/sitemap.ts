@@ -1,78 +1,81 @@
 import { MetadataRoute } from 'next';
-import { createClient } from '@/lib/supabase-server';
+import { createStaticClient } from '@/lib/supabase-static';
 
 export const revalidate = 3600; // Revalidate sitemap every hour
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-    const supabase = await createClient();
+    const supabase = createStaticClient();
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.fizikhub.com';
+
+    // Base date for static pages to avoid continuous invalidation
+    const staticDate = new Date('2024-05-01').toISOString();
 
     // Static pages with all important routes
     const staticPages: MetadataRoute.Sitemap = [
         {
             url: baseUrl,
-            lastModified: new Date(),
+            lastModified: staticDate,
             changeFrequency: 'daily',
             priority: 1.0,
         },
         {
             url: `${baseUrl}/forum`,
-            lastModified: new Date(),
+            lastModified: staticDate,
             changeFrequency: 'hourly',
             priority: 0.9,
         },
 
         {
             url: `${baseUrl}/makale`,
-            lastModified: new Date(),
+            lastModified: staticDate,
             changeFrequency: 'daily',
             priority: 0.8,
         },
         {
             url: `${baseUrl}/sozluk`,
-            lastModified: new Date(),
+            lastModified: staticDate,
             changeFrequency: 'weekly',
             priority: 0.7,
         },
         {
             url: `${baseUrl}/testler`,
-            lastModified: new Date(),
+            lastModified: staticDate,
             changeFrequency: 'weekly',
             priority: 0.7,
         },
         {
             url: `${baseUrl}/simulasyonlar`,
-            lastModified: new Date(),
+            lastModified: staticDate,
             changeFrequency: 'monthly',
             priority: 0.6,
         },
         {
             url: `${baseUrl}/siralamalar`,
-            lastModified: new Date(),
+            lastModified: staticDate,
             changeFrequency: 'daily',
             priority: 0.5,
         },
         {
             url: `${baseUrl}/hakkimizda`,
-            lastModified: new Date(),
+            lastModified: staticDate,
             changeFrequency: 'monthly',
             priority: 0.3,
         },
         {
             url: `${baseUrl}/iletisim`,
-            lastModified: new Date(),
+            lastModified: staticDate,
             changeFrequency: 'monthly',
             priority: 0.3,
         },
         {
             url: `${baseUrl}/gizlilik-politikasi`,
-            lastModified: new Date(),
+            lastModified: staticDate,
             changeFrequency: 'yearly',
             priority: 0.2,
         },
         {
             url: `${baseUrl}/kullanim-sartlari`,
-            lastModified: new Date(),
+            lastModified: staticDate,
             changeFrequency: 'yearly',
             priority: 0.2,
         },

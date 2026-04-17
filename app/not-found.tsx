@@ -12,6 +12,8 @@ export default function NotFound() {
         // BG Color: RGB(41,41,41) => Hex #292929
         // NO texture/noise ("pütürcükler olmasın")
         <div className="min-h-screen bg-[#292929] text-white font-sans flex flex-col items-center justify-center p-4 selection:bg-[#FF0055] selection:text-white overflow-hidden relative">
+            <title>Sayfa Bulunamadı | Fizikhub</title>
+            <meta name="robots" content="noindex, follow" />
 
             {/* 
                 V8: PAVYON / DISCO THEME (RESTORED)

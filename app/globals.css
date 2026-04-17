@@ -539,6 +539,12 @@
     .no-scrollbar::-webkit-scrollbar {
         display: none;
     }
+
+    /* Content Visibility for heavy off-screen elements (lowers INP significantly) */
+    .content-visibility-auto {
+        content-visibility: auto;
+        contain-intrinsic-size: 0 500px; /* fallback size to prevent scrollbar jumping */
+    }
 }
 
 

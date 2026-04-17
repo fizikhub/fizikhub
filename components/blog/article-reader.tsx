@@ -2,8 +2,29 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import dynamic from "next/dynamic";
+const ArticleSkeleton = () => (
+    <div className="space-y-8 animate-pulse">
+        <div className="space-y-3">
+            <div className="h-4 w-1/3 bg-muted rounded" />
+            <div className="h-8 w-full bg-muted rounded" />
+            <div className="h-8 w-1/2 bg-muted rounded" />
+        </div>
+        <div className="space-y-4">
+            <div className="h-4 w-full bg-muted rounded opacity-80" />
+            <div className="h-4 w-full bg-muted rounded opacity-80" />
+            <div className="h-4 w-3/4 bg-muted rounded opacity-80" />
+        </div>
+        <div className="h-64 w-full bg-muted rounded-xl" />
+        <div className="space-y-4">
+            <div className="h-4 w-full bg-muted rounded opacity-80" />
+            <div className="h-4 w-full bg-muted rounded opacity-80" />
+            <div className="h-4 w-5/6 bg-muted rounded opacity-80" />
+        </div>
+    </div>
+);
+
 const MarkdownRenderer = dynamic(() => import("@/components/markdown-renderer").then(mod => mod.MarkdownRenderer), {
-    loading: () => <div className="h-96 w-full animate-pulse bg-muted rounded-xl" />
+    loading: () => <ArticleSkeleton />
 });
 import { cn } from "@/lib/utils";
 import { AnimatePresence, m as motion, useScroll, useMotionValueEvent, useTransform } from "framer-motion";
@@ -124,34 +145,39 @@ export function ArticleReader({
         return () => container.removeEventListener('click', handleImageClick);
     }, []);
 
-    // Code block copy buttons: inject after render
+    // Code block copy buttons: Use requestIdleCallback for better INP
     useEffect(() => {
         const container = contentRef.current;
         if (!container) return;
 
         let cleanupFns: (() => void)[] = [];
 
-        const timeout = setTimeout(() => {
+        // Use requestIdleCallback if available, fallback to setTimeout for Safari
+        const scheduler = (window as any).requestIdleCallback || ((cb: any) => setTimeout(cb, 100));
+
+        const handle = scheduler(() => {
             const codeBlocks = container.querySelectorAll('pre');
             codeBlocks.forEach((pre) => {
                 if (pre.querySelector('.code-copy-btn')) return;
                 
-                // Wrap in a container
-                const wrapper = document.createElement('div');
-                wrapper.className = 'code-block-wrapper';
-                pre.parentNode?.insertBefore(wrapper, pre);
-                wrapper.appendChild(pre);
+                // Ensure the pre has a relative position for the button
+                if (window.getComputedStyle(pre).position === 'static') {
+                    pre.style.position = 'relative';
+                }
 
-                // Create copy button
+                // Create copy button only if needed
                 const btn = document.createElement('button');
                 btn.className = 'code-copy-btn';
                 btn.textContent = 'Kopyala';
+                btn.setAttribute('aria-label', 'Kodu kopyala');
                 
-                const handleClick = () => {
+                const handleClick = (e: MouseEvent) => {
+                    e.preventDefault();
+                    e.stopPropagation();
                     const code = pre.querySelector('code');
                     const text = code?.textContent || pre.textContent || '';
                     navigator.clipboard.writeText(text).then(() => {
-                        btn.textContent = '✓ Kopyalandı';
+                        btn.textContent = '✓';
                         btn.classList.add('copied');
                         setTimeout(() => {
                             btn.textContent = 'Kopyala';
@@ -161,26 +187,21 @@ export function ArticleReader({
                 };
 
                 btn.addEventListener('click', handleClick);
-                wrapper.appendChild(btn);
+                pre.appendChild(btn);
 
-                // Register cleanup to prevent detached DOM memory leaks
                 cleanupFns.push(() => {
                     btn.removeEventListener('click', handleClick);
                     btn.remove();
-                    // Optional: revert wrapper
-                    if (wrapper.parentNode) {
-                        wrapper.parentNode.insertBefore(pre, wrapper);
-                        wrapper.remove();
-                    }
                 });
             });
-        }, 500);
+        });
 
         return () => {
-            clearTimeout(timeout);
+            if ((window as any).cancelIdleCallback) (window as any).cancelIdleCallback(handle);
+            else clearTimeout(handle);
             cleanupFns.forEach(fn => fn());
         };
-    }, [article.content]);
+    }, [article.content, article.id]);
 
     // Lightbox close on Escape
     useEffect(() => {
@@ -407,7 +428,7 @@ export function ArticleReader({
 
                         {/* Footer Section */}
                         {!isZenMode && (
-                            <div className="mt-10 sm:mt-12 space-y-10 sm:space-y-16 pb-32 sm:pb-40">
+                            <div className="content-visibility-auto mt-10 sm:mt-12 space-y-10 sm:space-y-16 pb-32 sm:pb-40">
                                 {/* Listen to Article — Bottom CTA */}
                                 {article.content && (
                                     <div className="flex justify-center">

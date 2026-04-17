@@ -197,10 +197,25 @@ const nextConfig: NextConfig = {
             key: 'Referrer-Policy',
             value: 'strict-origin-when-cross-origin',
           },
-          // Permissions Policy
+          // Permissions Policy (Daha katı ayarlar ve FLoC önleme)
           {
             key: 'Permissions-Policy',
-            value: 'camera=(), microphone=(), geolocation=()',
+            value: 'camera=(), microphone=(), geolocation=(), interest-cohort=()',
+          },
+          // Cross-Origin-Opener-Policy
+          {
+            key: 'Cross-Origin-Opener-Policy',
+            value: 'same-origin',
+          },
+          // Cross-Origin-Resource-Policy (Medya için esnek)
+          {
+            key: 'Cross-Origin-Resource-Policy',
+            value: 'cross-origin',
+          },
+          // X-Permitted-Cross-Domain-Policies
+          {
+            key: 'X-Permitted-Cross-Domain-Policies',
+            value: 'none',
           },
           // X-DNS-Prefetch-Control
           {
@@ -236,6 +251,14 @@ const withPWA = require("@ducanh2912/next-pwa").default({
     // Exclude external URLs from being cached by the SW
     navigateFallbackDenylist: [/^\/api\//],
     runtimeCaching: [
+      {
+        urlPattern: /^https:\/\/.*\.supabase\.co\/.*/i,
+        handler: 'NetworkOnly',
+      },
+      {
+        urlPattern: /^\/_next\/image\?url=.*supabase\.co/i,
+        handler: 'NetworkOnly',
+      },
       {
         urlPattern: /^https:\/\/lh3\.googleusercontent\.com\/.*/i,
         handler: 'NetworkOnly',

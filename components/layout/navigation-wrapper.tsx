@@ -47,7 +47,7 @@ export function NavigationWrapper({ children }: { children: React.ReactNode }) {
             <Navbar />
             <DesktopSidebar />
             
-            <div className="md:pl-[80px] lg:pl-[260px] flex flex-col min-h-[100dvh] transition-all duration-300">
+            <div className="md:pl-[80px] lg:pl-[260px] flex flex-col min-h-[100dvh]">
                 {children}
                 <Footer />
             </div>

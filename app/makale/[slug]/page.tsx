@@ -70,19 +70,37 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
                     url: coverUrl,
                     width: 1200,
                     height: 630,
-                    alt: article.title,
+                    alt: `${article.title} - Fizikhub`,
                 }
             ],
+            siteName: "Fizikhub",
+            locale: "tr_TR",
         },
         twitter: {
             card: "summary_large_image",
             title: article.title,
             description,
             images: [coverUrl],
+            site: "@fizikhub",
+            creator: "@fizikhub",
         },
         alternates: {
             canonical: `https://www.fizikhub.com/makale/${slug}`,
+            languages: {
+                'tr-TR': `https://www.fizikhub.com/makale/${slug}`,
+            }
         },
+        category: article.category || 'Science',
+        other: {
+            "article:published_time": article.created_at,
+            "article:modified_time": (article as any).updated_at || article.created_at,
+            "article:author": authorName,
+            "article:section": article.category || 'Science',
+            "twitter:label1": "Okuma Süresi",
+            "twitter:data1": calculateReadingTime(article.content || "") + " dk",
+            "twitter:label2": "Kategori",
+            "twitter:data2": article.category || "Bilim",
+        }
     };
 }
 
@@ -107,6 +125,8 @@ export async function generateStaticParams() {
     })) || [];
 }
 
+import ReactDOM from "react-dom";
+
 export default async function ArticlePage({ params }: PageProps) {
     const { slug } = await params;
     const supabase = createStaticClient();
@@ -115,6 +135,13 @@ export default async function ArticlePage({ params }: PageProps) {
     if (!article) {
         notFound();
     }
+
+    // Preload hero image for maximum LCP performance
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.fizikhub.com';
+    const fallbackOgUrl = new URL(`${baseUrl}/api/og`);
+    fallbackOgUrl.searchParams.set('title', article.title);
+    const coverUrl = article.cover_url && article.cover_url.length > 0 ? article.cover_url : fallbackOgUrl.toString();
+    ReactDOM.preload(coverUrl, { as: 'image', fetchPriority: 'high' });
 
     // Group all independent sequential queries into a Promise.all block
     // We only fetch public data to ensure this page remains statically cacheable.

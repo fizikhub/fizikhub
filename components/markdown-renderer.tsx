@@ -83,8 +83,7 @@ export function MarkdownRenderer({
             isZenMode ? "leading-loose" : "",
             className
         )} style={{ wordBreak: 'break-word', overflowWrap: 'anywhere' }}>
-            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.25/dist/katex.min.css" precedence="default" crossOrigin="anonymous" />
-            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.11.1/styles/github-dark.min.css" precedence="default" crossOrigin="anonymous" />
+            {/* CSS links removed - now handled in layout.tsx for better performance and zero CLS */}
             <ReactMarkdown
                 remarkPlugins={[remarkMath]}
                 rehypePlugins={[
@@ -140,7 +139,7 @@ export function MarkdownRenderer({
                             ['img', 'video', 'iframe'].includes(child.tagName)
                         );
                         if (hasBlockElement) {
-                            return <div>{children}</div>;
+                            return <div className="my-6">{children}</div>;
                         }
                         return <p {...props}>{children}</p>;
                     },
@@ -189,14 +188,13 @@ export function MarkdownRenderer({
                             <div className="flex flex-col items-center my-8 sm:my-12">
                                 <Dialog>
                                     <DialogTrigger asChild>
-                                        <div className="relative group cursor-zoom-in w-full flex justify-center">
+                                        <div className="relative group cursor-zoom-in w-full flex justify-center aspect-video overflow-hidden rounded-xl border-4 border-black dark:border-zinc-800 shadow-[6px_6px_0px_0px_#000] dark:shadow-[6px_6px_0px_0px_rgba(0,0,0,0.5)]">
                                             <Image
                                                 src={src}
                                                 alt={props.alt || "Makale görseli"}
-                                                width={1200}
-                                                height={675}
-                                                unoptimized
-                                                className="w-full h-auto rounded-xl shadow-lg border-4 border-black dark:border-zinc-800 shadow-[6px_6px_0px_0px_#000] dark:shadow-[6px_6px_0px_0px_rgba(0,0,0,0.5)] transition-transform duration-300 group-hover:scale-[1.01] max-h-[600px] object-contain"
+                                                fill
+                                                className="object-cover transition-transform duration-300 group-hover:scale-[1.01]"
+                                                sizes="(max-width: 768px) 100vw, 800px"
                                             />
                                             <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/20 rounded-xl">
                                                 <div className="bg-black/60 backdrop-blur-sm p-2.5 rounded-full text-white border-2 border-white/30">
