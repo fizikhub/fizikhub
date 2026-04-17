@@ -53,39 +53,53 @@ export function TTSReader({ content, title, className }: TTSReaderProps) {
     const [isPlaying, setIsPlaying] = useState(false);
     const [isPaused, setIsPaused] = useState(false);
     const [isReady, setIsReady] = useState(false);
-    const [voicesLoaded, setVoicesLoaded] = useState(false);
+    const [isSupported, setIsSupported] = useState(true);
 
     const synthRef = useRef<SpeechSynthesis | null>(null);
     const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
 
     // Initialize Speech Synthesis
     useEffect(() => {
-        if (typeof window !== 'undefined') {
-            synthRef.current = window.speechSynthesis;
+        if (typeof window === 'undefined') return;
 
-            // Handle cross-browser voice loading quirks
-            const handleVoicesChanged = () => {
-                setVoicesLoaded(true);
-                setIsReady(true);
-            };
+        const speechSynthesisApi = window.speechSynthesis;
+        const utteranceApi = window.SpeechSynthesisUtterance;
 
+        if (!speechSynthesisApi || !utteranceApi) {
+            setIsSupported(false);
+            setIsReady(true);
+            return;
+        }
+
+        synthRef.current = speechSynthesisApi;
+
+        // Handle cross-browser voice loading quirks
+        const handleVoicesChanged = () => {
+            setIsReady(true);
+        };
+
+        try {
             // Check if voices are already available
-            if (synthRef.current.getVoices().length > 0) {
+            if (speechSynthesisApi.getVoices().length > 0) {
                 handleVoicesChanged();
             } else {
-                synthRef.current.onvoiceschanged = handleVoicesChanged;
+                speechSynthesisApi.addEventListener("voiceschanged", handleVoicesChanged);
             }
+        } catch {
+            setIsSupported(false);
+            setIsReady(true);
         }
 
         return () => {
             if (synthRef.current) {
                 synthRef.current.cancel();
             }
+            speechSynthesisApi?.removeEventListener?.("voiceschanged", handleVoicesChanged);
         };
     }, []);
 
     const speak = () => {
-        if (!synthRef.current || !content) return;
+        if (!synthRef.current || !content || !isSupported || typeof window.SpeechSynthesisUtterance === "undefined") return;
 
         if (isPaused) {
             synthRef.current.resume();
@@ -96,7 +110,7 @@ export function TTSReader({ content, title, className }: TTSReaderProps) {
 
         const cleanText = `${title}. \n\n ${stripMarkdown(content)}`;
 
-        const utterance = new SpeechSynthesisUtterance(cleanText);
+        const utterance = new window.SpeechSynthesisUtterance(cleanText);
         utteranceRef.current = utterance;
 
         // Find a Turkish voice if available, fallback to default
@@ -151,6 +165,10 @@ export function TTSReader({ content, title, className }: TTSReaderProps) {
                 <span>Ses Motoru Yükleniyor...</span>
             </div>
         );
+    }
+
+    if (!isSupported) {
+        return null;
     }
 
     return (
