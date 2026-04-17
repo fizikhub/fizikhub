@@ -226,7 +226,7 @@ export default async function ArticlePage({ params }: PageProps) {
         ? article.excerpt.substring(0, 160)
         : (article.content || "").replace(/[#*`>\[\]]/g, "").substring(0, 160) + "...";
 
-    const jsonLd = [
+    const jsonLd: any[] = [
         {
             '@context': 'https://schema.org',
             '@type': 'Article',
