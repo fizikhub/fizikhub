@@ -175,6 +175,11 @@
             touch-action: manipulation;
         }
         
+        a, button, [role="button"] {
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        
         /* Instant physical feedback for ALL touch devices before JS even registers */
         a:active, button:active, [role="button"]:active {
             transform: scale(0.97);
