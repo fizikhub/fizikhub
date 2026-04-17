@@ -136,14 +136,14 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
                 <div className="flex-1 p-4 sm:p-5 flex flex-col gap-2.5 z-10 relative">
 
                     {/* Title */}
-                    <h3 className="font-[family-name:var(--font-outfit)] text-lg sm:text-2xl font-black text-black dark:text-zinc-50 leading-tight uppercase tracking-tight group-hover:text-[#FFBD2E] transition-colors duration-200 line-clamp-2">
+                    <h3 className="font-[family-name:var(--font-outfit)] text-lg sm:text-2xl font-black text-black dark:text-zinc-50 leading-tight uppercase tracking-tight group-hover:text-[#FFBD2E] transition-colors duration-200 line-clamp-2 min-h-[2.5em]">
                         {question.title}
                     </h3>
 
                     {/* Content Snippet */}
                     <div className="relative">
                         <p className={cn(
-                            "font-[family-name:var(--font-inter)] text-[13px] sm:text-sm font-medium text-neutral-600 dark:text-zinc-400 leading-relaxed",
+                            "font-[family-name:var(--font-inter)] text-[13px] sm:text-sm font-medium text-neutral-600 dark:text-zinc-400 leading-relaxed min-h-[5em]",
                             !isExpanded && "line-clamp-4"
                         )}>
                             {cleanContent}

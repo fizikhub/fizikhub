@@ -3,6 +3,7 @@
 import dynamic from "next/dynamic";
 import { useState } from "react";
 import { NeoArticleCard } from "@/components/articles/neo-article-card";
+import { cn } from "@/lib/utils";
 
 // Lazy load non-critical feed cards to minimize initial JS bundle size and TBT
 const QuestionCard = dynamic(() => import("@/components/forum/question-card").then(mod => mod.QuestionCard));
@@ -51,7 +52,7 @@ export function UnifiedFeed({ items, suggestedUsers = [] }: UnifiedFeedProps) {
                 {visibleItems.map((item, index) => (
                     <div
                         key={`${item.type}-${item.data.id}`}
-                        className="feed-item-appear will-change-transform"
+                        className={cn("feed-item-appear will-change-transform", index > 3 && "content-visibility-auto")}
                         style={{ animationDelay: index < 3 ? `${index * 50}ms` : undefined }}
                     >
                         {(item.type === 'article' || item.type === 'blog') && (

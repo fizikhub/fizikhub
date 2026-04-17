@@ -1,6 +1,6 @@
 // million-ignore
 import type { Metadata } from "next";
-import { Inter, Lora } from "next/font/google";
+import { Inter, Lora, Outfit } from "next/font/google";
 import "./globals.css";
 
 import { Navbar } from "@/components/layout/navbar";
@@ -9,10 +9,18 @@ import { BottomNav } from "@/components/layout/bottom-nav";
 import { ThemeProvider } from "@/components/theme-provider";
 import { FramerMotionProvider } from "@/components/providers/framer-motion-provider";
 
-// Single font only — eliminates 2 render-blocking CSS files
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-sans",
+  display: "swap",
+  preload: true,
+  fallback: ['system-ui', 'arial'],
+  adjustFontFallback: true,
+});
+
+const outfit = Outfit({
+  subsets: ["latin"],
+  variable: "--font-outfit",
   display: "swap",
   preload: true,
   fallback: ['system-ui', 'arial'],
@@ -275,7 +283,7 @@ export default async function RootLayout({
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.25/dist/katex.min.css" precedence="default" crossOrigin="anonymous" />
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.11.1/styles/github-dark.min.css" precedence="default" crossOrigin="anonymous" />
       </head>
-      <body suppressHydrationWarning className={`${inter.variable} ${lora.variable} font-sans min-h-[100dvh] flex flex-col pb-[68px] md:pb-0 bg-background text-foreground`}>
+      <body suppressHydrationWarning className={`${inter.variable} ${lora.variable} ${outfit.variable} font-sans min-h-[100dvh] flex flex-col pb-[68px] md:pb-0 bg-background text-foreground`}>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdOrg) }}
