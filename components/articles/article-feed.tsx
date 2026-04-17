@@ -61,14 +61,14 @@ export function ArticleFeed({ articles, categories, activeCategory, sortParam, n
         <div className="min-h-screen bg-background text-foreground pb-20">
             {newsItems && newsItems.length > 0 && <TrendingMarquee items={newsItems} />}
 
-            <main className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 mt-10">
+            <main className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 mt-4 sm:mt-10">
                 {/* ── NEO-BRUTALIST HEADER ── */}
-                <header className="mb-10 pt-4 flex flex-col md:flex-row md:items-end justify-between gap-6 border-b-2 border-foreground/10 pb-6">
+                <header className="mb-6 sm:mb-10 pt-2 sm:pt-4 flex flex-col md:flex-row md:items-end justify-between gap-4 sm:gap-6 border-b-2 border-foreground/10 pb-4 sm:pb-6">
                     <div>
                         <motion.h1
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
-                            className="font-heading text-4xl sm:text-5xl md:text-6xl font-black uppercase tracking-tighter"
+                            className="font-heading text-3xl sm:text-5xl md:text-6xl font-black uppercase tracking-tighter"
                         >
                             Bilim <span className="text-muted-foreground/50">&</span> Makale
                         </motion.h1>
@@ -88,7 +88,7 @@ export function ArticleFeed({ articles, categories, activeCategory, sortParam, n
                                 key={s}
                                 href={`/makale?sort=${s}${activeCategory ? `&category=${activeCategory}` : ''}`}
                                 className={cn(
-                                    "flex items-center gap-2 px-5 py-2.5 rounded-lg border-2 font-black text-xs uppercase tracking-wider transition-all duration-200",
+                                    "flex items-center gap-2 px-4 sm:px-5 py-2 sm:py-2.5 rounded-lg border-2 font-black text-[10px] sm:text-xs uppercase tracking-wider transition-all duration-200",
                                     sortParam === s
                                         ? "bg-foreground text-background border-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)]"
                                         : "bg-background text-muted-foreground border-foreground/20 hover:text-foreground hover:border-foreground hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)] hover:-translate-y-1 hover:-translate-x-1"
@@ -102,7 +102,7 @@ export function ArticleFeed({ articles, categories, activeCategory, sortParam, n
                 </header>
 
                 {/* ── NEO-BRUTALIST TABS ── */}
-                <div className="flex items-center gap-3 overflow-x-auto no-scrollbar pb-6 mb-8 -mx-4 px-4 sm:mx-0 sm:px-0">
+                <div className="flex items-center gap-2.5 sm:gap-3 overflow-x-auto no-scrollbar pb-4 sm:pb-6 mb-6 sm:mb-8 -mx-4 px-4 sm:mx-0 sm:px-0">
                     {TABS.map((tab) => {
                         const Icon = tab.icon;
                         const isAll = tab.id === 'TÜMÜ';
@@ -115,7 +115,7 @@ export function ArticleFeed({ articles, categories, activeCategory, sortParam, n
                                 key={tab.id}
                                 href={isAll ? '/makale' : `/makale?category=${tab.id}${sortParam !== 'latest' ? `&sort=${sortParam}` : ''}`}
                                 className={cn(
-                                    "relative flex items-center gap-2 px-5 py-2.5 rounded-lg border-2 outline-none font-black text-xs transition-all duration-200 whitespace-nowrap flex-shrink-0 group uppercase tracking-wider active:translate-y-0 active:translate-x-0 active:shadow-none",
+                                    "relative flex items-center gap-1.5 sm:gap-2 px-3.5 sm:px-5 py-2 sm:py-2.5 rounded-lg border-2 outline-none font-black text-[10px] sm:text-xs transition-all duration-200 whitespace-nowrap flex-shrink-0 group uppercase tracking-wider active:translate-y-0 active:translate-x-0 active:shadow-none",
                                     isActive
                                         ? `${tab.color} border-foreground dark:border-transparent shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)] -translate-y-1 -translate-x-1`
                                         : "bg-card border-foreground/20 text-muted-foreground hover:text-foreground hover:border-foreground hover:bg-card hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)] hover:-translate-y-1 hover:-translate-x-1"
@@ -130,7 +130,7 @@ export function ArticleFeed({ articles, categories, activeCategory, sortParam, n
 
                 {/* ── NEO-BRUTALIST CARDS GRID ── */}
                 {ARTICLES.length > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
                         {ARTICLES.map((article, index) => {
                             const isNew = new Date().getTime() - new Date(article.date).getTime() < 3 * 24 * 60 * 60 * 1000;
                             const isFeatured = index === 0 && !activeCategory; // Optional: Keep first item featured

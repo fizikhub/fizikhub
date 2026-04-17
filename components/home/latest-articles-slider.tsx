@@ -36,18 +36,19 @@ export function LatestArticlesSlider({ articles }: LatestArticlesSliderProps) {
                 </Link>
             </div>
 
-            {/* Horizontal Scroll */}
-            <div className="flex overflow-x-auto gap-3 pb-3 scrollbar-hide snap-x snap-mandatory px-4 sm:px-0" role="region" aria-label="Popüler yazılar karusel">
+            {/* Horizontal Scroll with fade edge */}
+            <div className="relative">
+                <div className="flex overflow-x-auto gap-3.5 pb-3 scrollbar-hide snap-x snap-mandatory px-4 sm:px-0 scroll-fade-x" role="region" aria-label="Popüler yazılar karusel">
                 {articles.slice(0, 6).map((article, index) => {
                     const isNew = new Date().getTime() - new Date(article.created_at).getTime() < 3 * 24 * 60 * 60 * 1000;
 
                     return (
                         <article
                             key={article.id}
-                            className="flex-shrink-0 w-[215px] sm:w-[275px] snap-start"
+                            className="flex-shrink-0 w-[230px] sm:w-[275px] snap-start"
                         >
                             <Link href={`/makale/${article.slug}`} prefetch={false}>
-                                <div className="group relative bg-zinc-950 border-2 border-zinc-800 hover:border-yellow-400/60 shadow-[3px_3px_0px_0px_rgba(39,39,42,0.8)] hover:shadow-[4px_4px_0px_0px_rgba(250,204,21,0.4)] active:shadow-none active:translate-x-[2px] active:translate-y-[2px] transition-all duration-300 rounded-2xl overflow-hidden aspect-[16/10] flex flex-col">
+                                <div className="group relative bg-zinc-950 border-[1.5px] sm:border-2 border-zinc-800 hover:border-yellow-400/60 shadow-[2px_2px_0px_0px_rgba(39,39,42,0.8)] hover:shadow-[4px_4px_0px_0px_rgba(250,204,21,0.4)] active:shadow-none active:translate-x-[2px] active:translate-y-[2px] transition-all duration-300 rounded-2xl overflow-hidden aspect-[16/10] flex flex-col">
                                     {/* Image Container */}
                                     <div className="absolute inset-0 z-0">
                                         {article.image ? (
@@ -55,7 +56,7 @@ export function LatestArticlesSlider({ articles }: LatestArticlesSliderProps) {
                                                 src={article.image}
                                                 alt={article.title}
                                                 fill
-                                                sizes="(max-width: 640px) 215px, 275px"
+                                                sizes="(max-width: 640px) 230px, 275px"
                                                 className="object-cover group-hover:scale-[1.04] transition-transform duration-700 ease-out"
                                                 priority={index < 3}
                                             />
@@ -71,8 +72,8 @@ export function LatestArticlesSlider({ articles }: LatestArticlesSliderProps) {
                                     {/* Content Overlay */}
                                     <div className="absolute inset-0 z-10 p-3.5 sm:p-4 flex flex-col justify-end">
                                         {/* Category Badge + New Indicator */}
-                                        <div className="flex items-center gap-2 mb-1.5">
-                                            <span className="px-2 py-0.5 bg-yellow-400 text-zinc-900 text-[7px] sm:text-[8px] font-black uppercase tracking-wider rounded-md border border-yellow-500/50 shadow-[1px_1px_0px_0px_rgba(0,0,0,0.3)]">
+                                        <div className="flex items-center gap-2 mb-2">
+                                            <span className="px-2 py-0.5 bg-yellow-400 text-zinc-900 text-[8px] sm:text-[8px] font-black uppercase tracking-wider rounded-md border border-yellow-500/50 shadow-[1px_1px_0px_0px_rgba(0,0,0,0.3)]">
                                                 {article.category}
                                             </span>
                                             {isNew && (
@@ -84,12 +85,12 @@ export function LatestArticlesSlider({ articles }: LatestArticlesSliderProps) {
                                         </div>
 
                                         {/* Title */}
-                                        <h3 className="text-[13px] sm:text-sm font-bold text-white leading-snug mb-1.5 group-hover:text-yellow-300 transition-colors line-clamp-2">
+                                        <h3 className="text-[14px] sm:text-sm font-bold text-white leading-snug mb-1.5 group-hover:text-yellow-300 transition-colors line-clamp-2">
                                             {article.title}
                                         </h3>
 
                                         {/* Reading Time */}
-                                        <div className="flex items-center gap-1.5 text-white/40 text-[8px] font-medium tracking-wide pt-1.5 border-t border-white/10">
+                                        <div className="flex items-center gap-1.5 text-white/40 text-[9px] font-medium tracking-wide pt-1.5 border-t border-white/10">
                                             <Clock className="w-2.5 h-2.5" />
                                             <span>{article.reading_time || 5} dk okuma</span>
                                         </div>
@@ -99,6 +100,7 @@ export function LatestArticlesSlider({ articles }: LatestArticlesSliderProps) {
                         </article>
                     );
                 })}
+            </div>
             </div>
         </section>
     );

@@ -52,7 +52,7 @@ export function NexusStories({ initialStories = [], initialGroups = [] }: NexusS
     }
 
     return (
-        <section className="w-full pt-4 pb-0 mt-[-8px] mb-0 sm:mb-4">
+        <section className="w-full pt-3 pb-0 mt-0 mb-0 sm:mb-4">
             <div className="flex overflow-x-auto gap-3 sm:gap-6 px-4 sm:px-0 scrollbar-hide snap-x snap-mandatory touch-pan-x">
                 {groupsWithStories.map((group, index) => {
                     // Check if this group has updates (stories)
@@ -70,7 +70,7 @@ export function NexusStories({ initialStories = [], initialGroups = [] }: NexusS
                             {/* Outer Gradient Ring */}
                             <div
                                 className={cn(
-                                    "w-[82px] h-[82px] rounded-full p-[2px]",
+                                    "w-[70px] h-[70px] sm:w-[82px] sm:h-[82px] rounded-full p-[2px]",
                                     !group.ring_color && "bg-gradient-to-tr from-purple-500 via-pink-500 to-orange-500",
                                     "border-[1.5px] border-black shadow-[3px_3px_0px_0px_#000] sm:shadow-[4px_4px_0px_0px_#000] active:shadow-none transition-shadow duration-200"
                                 )}
@@ -92,7 +92,7 @@ export function NexusStories({ initialStories = [], initialGroups = [] }: NexusS
                                 </div>
                             </div>
 
-                            <span className="text-[11px] sm:text-[12px] font-black uppercase tracking-tighter text-zinc-600 dark:text-zinc-400 max-w-[80px] truncate text-center">
+                            <span className="text-[10px] sm:text-[12px] font-black uppercase tracking-tighter text-zinc-600 dark:text-zinc-400 max-w-[70px] sm:max-w-[80px] truncate text-center">
                                 {group.name}
                             </span>
                         </div>

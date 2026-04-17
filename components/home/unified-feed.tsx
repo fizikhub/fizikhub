@@ -46,8 +46,8 @@ export function UnifiedFeed({ items, suggestedUsers = [] }: UnifiedFeedProps) {
     const hasMore = visibleCount < items.length;
 
     return (
-        <div className="flex flex-col gap-4 sm:gap-6">
-            <div className="flex flex-col gap-4 sm:gap-6">
+        <div className="flex flex-col gap-5 sm:gap-6">
+            <div className="flex flex-col gap-5 sm:gap-6">
                 {visibleItems.map((item, index) => (
                     <div
                         key={`${item.type}-${item.data.id}`}

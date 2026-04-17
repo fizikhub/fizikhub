@@ -15,6 +15,7 @@ const inter = Inter({
   variable: "--font-sans",
   display: "swap",
   fallback: ['system-ui', 'arial'],
+  adjustFontFallback: true,
 });
 
 const lora = Lora({
@@ -31,7 +32,7 @@ export const viewport = {
   maximumScale: 5,
   userScalable: true,
   themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#0a0a0a' },
+    { media: '(prefers-color-scheme: light)', color: '#ffffff' },
     { media: '(prefers-color-scheme: dark)', color: '#0a0a0a' },
   ],
   viewportFit: 'cover',
@@ -45,7 +46,11 @@ export const metadata: Metadata = {
     template: "%s | Fizikhub"
   },
   alternates: {
-    canonical: './',
+    canonical: 'https://www.fizikhub.com',
+    languages: {
+      'tr-TR': 'https://www.fizikhub.com',
+      'tr': 'https://www.fizikhub.com',
+    },
     types: {
       'application/rss+xml': '/feed.xml',
     },
@@ -259,8 +264,12 @@ export default async function RootLayout({
     <html lang="tr" suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://cdn.jsdelivr.net" crossOrigin="anonymous" />
+        <link rel="preconnect" href={process.env.NEXT_PUBLIC_SUPABASE_URL!} />
+        <link rel="dns-prefetch" href={process.env.NEXT_PUBLIC_SUPABASE_URL!} />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </head>
-      <body suppressHydrationWarning className={`${inter.variable} ${lora.variable} font-sans min-h-[100dvh] flex flex-col pb-16 md:pb-0 bg-background text-foreground`}>
+      <body suppressHydrationWarning className={`${inter.variable} ${lora.variable} font-sans min-h-[100dvh] flex flex-col pb-[68px] md:pb-0 bg-background text-foreground`}>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdOrg) }}

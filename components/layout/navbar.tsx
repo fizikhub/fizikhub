@@ -79,7 +79,7 @@ export function Navbar() {
                 - Height: h-14 (56px) - Optimized for Mobile
                 - Style: Dark Glass Neo-Brutalist
             */}
-            <header className="fixed top-0 left-0 right-0 z-50 h-[53px] sm:h-16 md:hidden" role="banner">
+            <header className="fixed top-0 left-0 right-0 z-50 h-[56px] sm:h-16 md:hidden" role="banner">
                 <div
                     className={cn(
                         "h-full",
@@ -90,7 +90,7 @@ export function Navbar() {
                     )}
                 >
                     {/* PHYSICS RAIN BACKGROUND (FLOWING UP) - REDUCED OPACITY & CLIPPED */}
-                    <div className="absolute inset-0 overflow-hidden pointer-events-none select-none opacity-30 rounded-b-xl">
+                    <div className="absolute inset-0 overflow-hidden pointer-events-none select-none opacity-[0.12] rounded-b-xl">
                         {raindrops.map((drop, i) => (
                             <div
                                 key={i}
@@ -107,16 +107,8 @@ export function Navbar() {
                         ))}
                     </div>
 
-                    {/* RULER TICKS - CSS ONLY (0 DOM Elements) */}
-                    <div 
-                        className="absolute bottom-0 left-0 right-0 h-1.5 pointer-events-none opacity-20 mix-blend-overlay"
-                        style={{
-                            background: `
-                                repeating-linear-gradient(to right, white 0px, white 1px, transparent 1px, transparent 1.666%) bottom / 100% 50% no-repeat,
-                                repeating-linear-gradient(to right, white 0px, white 1px, transparent 1px, transparent 16.666%) bottom / 100% 100% no-repeat
-                            `
-                        }}
-                    />
+                    {/* Subtle bottom accent line */}
+                    <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent pointer-events-none" />
 
                     {/* LEFT: BRAND */}
                     <div className="relative z-50 flex-shrink-0 pt-0.5 hover:scale-105 transition-transform duration-300">
@@ -126,7 +118,7 @@ export function Navbar() {
                     </div>
 
                     {/* RIGHT: COMPACT CONTROLS */}
-                    <div className="relative z-50 flex items-center gap-2">
+                    <div className="relative z-50 flex items-center gap-2.5">
 
                         {/* Desktop Links (Will be hidden anyway since parent is md:hidden, but kept for structural purity) */}
                         <nav className="hidden md:flex items-center gap-2 mr-6" aria-label="Ana navigasyon">
@@ -174,7 +166,7 @@ export function Navbar() {
                 </div>
             </header >
 
-            <div className="h-[53px] sm:h-[64px] md:hidden" />
+            <div className="h-[56px] sm:h-[64px] md:hidden" />
             <CommandPalette isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
             <PhysicsFactModal open={isFactOpen} onOpenChange={setIsFactOpen} />
         </>

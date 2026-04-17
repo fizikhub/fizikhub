@@ -510,7 +510,36 @@
 
 }
 
-@layer utilities {}
+@layer utilities {
+    /* Horizontal scroll fade mask — shows content continues to right */
+    .scroll-fade-x {
+        mask-image: linear-gradient(to right, black 85%, transparent 100%);
+        -webkit-mask-image: linear-gradient(to right, black 85%, transparent 100%);
+    }
+
+    /* Hide scrollbar across browsers */
+    .scrollbar-hide {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+    .scrollbar-hide::-webkit-scrollbar {
+        display: none;
+    }
+
+    /* Bottom safe area padding for iOS notch/home indicator */
+    .pb-safe {
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    /* No scrollbar for category tabs etc */
+    .no-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+    .no-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
+}
 
 
 /* VIEW TRANSITIONS API */

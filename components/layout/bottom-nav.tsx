@@ -68,9 +68,14 @@ export function BottomNav() {
             className="fixed bottom-0 left-0 right-0 z-[50] md:hidden font-sans"
         >
             <nav aria-label="Mobil navigasyon" className={cn(
-                "w-full transition-all duration-500 h-[50px] bg-white/80 dark:bg-[#121212]/80 backdrop-blur-xl border-t border-black/10 dark:border-white/10 flex items-center justify-around px-2 pb-safe relative shadow-[0_-4px_16px_rgba(0,0,0,0.05)]"
+                "w-full h-[60px]",
+                "bg-[#0a0a0b]/90 backdrop-blur-2xl",
+                "border-t border-white/[0.08]",
+                "flex items-center justify-around",
+                "px-1 pb-safe relative",
+                "shadow-[0_-2px_20px_rgba(0,0,0,0.3)]"
             )}>
-                <div className="flex items-center justify-around w-full">
+                <div className="flex items-center justify-around w-full max-w-md mx-auto">
                     <NavItem
                         id="nav-item-home"
                         href="/"
@@ -89,7 +94,7 @@ export function BottomNav() {
                         onInteract={vibrate}
                     />
 
-                    <div className="relative -top-3.5 z-20">
+                    <div className="relative -top-4 z-20">
                         <Link
                             prefetch={false}
                             id="nav-item-share"
@@ -106,18 +111,19 @@ export function BottomNav() {
                                 whileTap={{ scale: 0.9, rotate: 15 }}
                                 className="
                                     flex items-center justify-center
-                                    w-11 h-11
+                                    w-[52px] h-[52px]
                                     bg-[#FACC15]
-                                    border-2 border-black dark:border-white
+                                    border-[2.5px] border-black
                                     rounded-full
-                                    shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]
-                                    dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.5)]
+                                    shadow-[0_4px_20px_rgba(250,204,21,0.4),3px_3px_0px_0px_rgba(0,0,0,1)]
                                     group
                                     relative
                                     overflow-hidden
                                 "
                             >
-                                <Plus className="w-5 h-5 text-black stroke-[3px] group-hover:rotate-90 group-hover:scale-110 transition-transform duration-300 relative z-10" />
+                                {/* Glow ring */}
+                                <div className="absolute inset-[-3px] rounded-full border-2 border-[#FACC15]/30 pointer-events-none" />
+                                <Plus className="w-6 h-6 text-black stroke-[3px] group-hover:rotate-90 group-hover:scale-110 transition-transform duration-300 relative z-10" />
                             </m.div>
                         </Link>
                     </div>
@@ -163,47 +169,51 @@ function NavItem({ id, href, icon: Icon, label, isActive, onInteract }: { id?: s
             aria-label={label}
             aria-current={isActive ? 'page' : undefined}
             className={cn(
-                "flex flex-col items-center justify-center min-w-[55px] h-full relative group z-10",
-                isActive ? "text-black dark:text-white" : "text-zinc-500 dark:text-zinc-500"
+                "flex flex-col items-center justify-center min-w-[56px] h-full relative group z-10 py-1",
+                isActive ? "text-white" : "text-zinc-500"
             )}
         >
             <m.div
                 whileTap={{ scaleX: 1.25, scaleY: 0.85 }}
                 transition={{ type: "spring", stiffness: 400, damping: 15 }}
-                className="flex flex-col items-center gap-0.5 relative"
+                className="flex flex-col items-center gap-1 relative"
             >
-                {isActive && (
-                    <m.div
-                        layoutId="nav-item-background"
-                        className="
-                            absolute inset-0 
-                            bg-black/5 dark:bg-white/10 
-                            border border-black/5 dark:border-white/5 
-                            rounded-lg
-                            shadow-inner dark:shadow-[inset_0_1px_4px_rgba(0,0,0,0.2)]
-                        "
-                        transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                    />
-                )}
-
                 <div className={cn(
-                    "p-1.5 rounded-lg transition-all duration-200 relative z-10",
-                    !isActive && "group-hover:bg-black/5 dark:group-hover:bg-white/5"
+                    "p-1.5 rounded-xl transition-all duration-200 relative z-10",
+                    isActive && "bg-white/[0.08]",
+                    !isActive && "group-active:bg-white/5"
                 )}>
                     <m.div
                         initial={false}
-                        animate={isActive ? { scale: 1.1 } : { scale: 1 }}
+                        animate={isActive ? { scale: 1.05 } : { scale: 1 }}
                         transition={{ type: "spring", stiffness: 500, damping: 15 }}
                     >
                         <Icon
                             fill={isActive ? "currentColor" : "none"}
                             className={cn(
-                                "w-5 h-5 transition-all duration-200",
-                                isActive ? "stroke-[2.75px]" : "stroke-[2px]"
+                                "w-[22px] h-[22px] transition-all duration-200",
+                                isActive ? "stroke-[2.5px]" : "stroke-[1.75px]"
                             )}
                         />
                     </m.div>
                 </div>
+
+                {/* Label text */}
+                <span className={cn(
+                    "text-[9px] font-bold uppercase tracking-wide transition-all duration-200 leading-none",
+                    isActive ? "text-white opacity-100" : "text-zinc-600 opacity-0 group-hover:opacity-70"
+                )}>
+                    {label.length > 6 ? label.slice(0, 6) : label}
+                </span>
+
+                {/* Active indicator dot */}
+                {isActive && (
+                    <m.div
+                        layoutId="nav-active-dot"
+                        className="absolute -bottom-0.5 w-1 h-1 rounded-full bg-[#FACC15]"
+                        transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                    />
+                )}
             </m.div>
         </Link>
     );

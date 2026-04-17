@@ -125,9 +125,9 @@ export function NeoArticleCard({
                     // COLOR PALETTE: Dark Mode = #27272a (Zinc 800) - Lighter than background
                     "bg-white dark:bg-[#27272a]",
                     // BORDER: Softer on mobile, full on desktop
-                    "border-2 sm:border-[3px] border-black rounded-[10px] sm:rounded-[8px]",
+                    "border-[1.5px] sm:border-[3px] border-black/80 sm:border-black rounded-[14px] sm:rounded-[10px]",
                     // SHADOW: Lighter on mobile
-                    "shadow-[3px_3px_0px_0px_#000] sm:shadow-neo border-black",
+                    "shadow-[2px_2px_0px_0px_rgba(0,0,0,0.6)] sm:shadow-neo",
                     // HOVER
                     "transition-all duration-200 hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_#000]",
                     className
@@ -139,7 +139,7 @@ export function NeoArticleCard({
                 />
 
                 {/* 1. IMAGE SECTION */}
-                <div className="relative aspect-[16/9] w-full border-b-2 sm:border-b-[3px] border-black bg-[#FFC800] z-10">
+                <div className="relative aspect-[16/9] w-full border-b-[1.5px] sm:border-b-[3px] border-black/80 sm:border-black bg-[#FFC800] z-10">
                     <OptimizedImage
                         src={article.image_url || "/images/placeholder-article.webp"}
                         alt={article.title}
@@ -158,7 +158,7 @@ export function NeoArticleCard({
                 </div>
 
                 {/* 2. CONTENT SECTION */}
-                <div className="flex flex-col flex-1 p-3 sm:p-5 gap-2 sm:gap-3 z-10 relative">
+                <div className="flex flex-col flex-1 p-3.5 sm:p-5 gap-2 sm:gap-3 z-10 relative">
 
                     {/* Title - High Contrast White in Dark Mode */}
                     <h3 className="font-[family-name:var(--font-outfit)] text-[17px] sm:text-2xl font-black text-black dark:text-zinc-50 leading-[1.1] uppercase tracking-tighter mb-0.5 sm:mb-1">
@@ -168,7 +168,7 @@ export function NeoArticleCard({
                     </h3>
 
                     {/* Preview Text - Lighter Grey for Contrast */}
-                    <p className="font-[family-name:var(--font-inter)] text-[13px] sm:text-sm font-medium text-neutral-600 dark:text-zinc-400 line-clamp-3 sm:line-clamp-4 leading-relaxed tracking-normal">
+                    <p className="font-[family-name:var(--font-inter)] text-[13px] sm:text-sm font-medium text-neutral-600 dark:text-zinc-400 line-clamp-2 sm:line-clamp-3 leading-relaxed tracking-normal">
                         {previewText}
                     </p>
 
@@ -192,7 +192,7 @@ export function NeoArticleCard({
                                 />
                             </div>
                             <div className="flex flex-col leading-none gap-0.5 min-w-0">
-                                <span className="text-[11px] sm:text-xs font-black uppercase text-black dark:text-zinc-100 truncate tracking-wide max-w-[80px] sm:max-w-none">
+                                <span className="text-[11px] sm:text-xs font-black uppercase text-black dark:text-zinc-100 truncate tracking-wide max-w-[100px] sm:max-w-none">
                                     {authorName}
                                 </span>
                                 <span className="text-[9px] sm:text-[10px] font-bold text-neutral-500 dark:text-zinc-400 uppercase tracking-wide">
@@ -202,7 +202,7 @@ export function NeoArticleCard({
                         </div>
 
                         {/* Actions Code - Pure Black Borders */}
-                        <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
+                        <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
                             {/* Like */}
                             <button
                                 onClick={handleLike}
