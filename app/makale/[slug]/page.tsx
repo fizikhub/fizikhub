@@ -187,6 +187,39 @@ export default async function ArticlePage({ params }: PageProps) {
     const readingTime = calculateReadingTime(article.content || "");
     const formattedReadingTime = formatReadingTime(readingTime);
 
+    // Dynamic FAQ Extractor for SEO Rich Snippets
+    const extractFAQ = (content: string) => {
+        const faqSchema: any[] = [];
+        if (!content) return faqSchema;
+        
+        // Match Markdown headers (## or ###) containing a question mark, and the immediate following text
+        const regex = /(?:^|\n)#{2,3}\s+([^?\n]+\?[^\n]*)\n+([\s\S]*?)(?=(?:\n#{2,3}\s)|$)/g;
+        let match;
+        while ((match = regex.exec(content)) !== null) {
+            let question = match[1].trim().replace(/[*_`]/g, ''); // Strip inline markdown
+            
+            // Get first paragraph or short text
+            let rawAnswer = match[2].trim().split('\n\n')[0] || match[2].trim();
+            // Strip HTML/Markdown from answer so it's clean for JSON-LD
+            let answer = rawAnswer.replace(/<[^>]+>/g, '').replace(/[*_`#]/g, '').trim();
+            
+            if (question && answer.length > 20) {
+                faqSchema.push({
+                    '@type': 'Question',
+                    name: question,
+                    acceptedAnswer: {
+                        '@type': 'Answer',
+                        text: answer.substring(0, 400) + (answer.length > 400 ? '...' : '')
+                    }
+                });
+            }
+            if (faqSchema.length >= 5) break; // Limit to max 5 FAQs for performance
+        }
+        return faqSchema;
+    };
+
+    const faqs = extractFAQ(article.content || "");
+
     // JSON-LD structured data for Article — full E-E-A-T signals
     const articleTags = (article as any).tags as string[] | undefined;
     const articleDescription = article.excerpt
@@ -239,6 +272,10 @@ export default async function ArticlePage({ params }: PageProps) {
                 '@id': 'https://www.fizikhub.com/#website',
                 name: 'Fizikhub',
             },
+            speakable: {
+                '@type': 'SpeakableSpecification',
+                cssSelector: [".article-body-wrapper header h1", ".article-body-wrapper .prose > p:first-of-type"]
+            }
         },
         {
             '@context': 'https://schema.org',
@@ -250,6 +287,14 @@ export default async function ArticlePage({ params }: PageProps) {
             ],
         },
     ];
+
+    if (faqs.length > 0) {
+        jsonLd.push({
+            '@context': 'https://schema.org',
+            '@type': 'FAQPage',
+            mainEntity: faqs
+        });
+    }
 
     return (
         <>
