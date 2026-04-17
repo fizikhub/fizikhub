@@ -1,10 +1,13 @@
-import { createClient } from "@/lib/supabase-server";
+import { createClient } from "@supabase/supabase-js";
 
 // ISR: Cache for 1 hour to keep it fresh for AI crawlers without hitting DB every request
 export const revalidate = 3600;
 
 export async function GET() {
-    const supabase = await createClient();
+    const supabase = createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    );
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.fizikhub.com';
 
     // Fetch latest 5 published articles

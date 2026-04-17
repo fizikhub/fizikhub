@@ -14,16 +14,17 @@ interface ArticleFeedProps {
     articles: {
         id: string;
         title: string;
-        excerpt?: string;
-        summary?: string;
-        image_url?: string;
-        cover_url?: string;
-        category?: string;
+        excerpt?: string | null;
+        summary?: string | null;
+        image_url?: string | null;
+        cover_url?: string | null;
+        category?: string | null;
         created_at: string;
         slug: string;
         content?: string;
-        author?: { full_name?: string };
-        profiles?: { full_name?: string };
+        reading_time?: number;
+        author?: { full_name?: string | null } | null;
+        profiles?: { full_name?: string | null } | null;
         [key: string]: unknown;
     }[];
     categories: string[];
@@ -53,7 +54,7 @@ export function ArticleFeed({ articles, categories, activeCategory, sortParam, n
         date: a.created_at,
         author: a.author?.full_name || a.profiles?.full_name || "FizikHub Editör",
         slug: a.slug,
-        readingTime: Math.max(1, Math.ceil((a.content?.split(/\s+/).length || 500) / 200))
+        readingTime: a.reading_time || Math.max(3, Math.ceil(((a.summary || a.excerpt || '').split(/\s+/).filter(Boolean).length || 120) / 45))
     }));
 
     return (

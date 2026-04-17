@@ -29,8 +29,9 @@ export async function GET() {
         .select(`
             title,
             slug,
-            content,
+            excerpt,
             image_url,
+            cover_url,
             category,
             created_at,
             updated_at,
@@ -56,9 +57,8 @@ export async function GET() {
 
         const articleUrl = `${baseUrl}/${urlPrefix}/${article.slug}`;
 
-        // Get first 300 chars of content as description, strip HTML
-        const description = article.content
-            ? escapeXml(stripHtml(article.content).substring(0, 300) + '...')
+        const description = article.excerpt
+            ? escapeXml(stripHtml(article.excerpt).substring(0, 320))
             : escapeXml(article.title);
 
         // Category mapping for RSS
@@ -77,8 +77,8 @@ export async function GET() {
       <description>${description}</description>
       <author>${escapeXml(authorName)}</author>
       <category>${escapeXml(rssCategory)}</category>
-      <pubDate>${new Date(article.created_at).toUTCString()}</pubDate>${article.image_url ? `
-      <enclosure url="${escapeXml(article.image_url)}" type="image/jpeg" />` : ''}
+      <pubDate>${new Date(article.created_at).toUTCString()}</pubDate>${(article.cover_url || article.image_url) ? `
+      <enclosure url="${escapeXml(article.cover_url || article.image_url)}" type="image/jpeg" />` : ''}
     </item>`;
     });
 

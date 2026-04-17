@@ -3,6 +3,7 @@ import { ArticleFeed } from "@/components/articles/article-feed";
 import type { Metadata } from "next";
 import { getScienceNews } from "@/lib/rss";
 import { unstable_cache } from "next/cache";
+import Script from "next/script";
 
 export const metadata: Metadata = {
     title: "Fizik Makaleleri, Bilimsel Yazılar ve Araştırmalar | Fizikhub",
@@ -32,13 +33,50 @@ const getPublicClient = () => createBrowserClient(
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
 
+const BASE_URL = "https://www.fizikhub.com";
+
+interface MakaleListItem {
+    id: string;
+    title: string;
+    slug: string;
+    excerpt?: string | null;
+    summary?: string | null;
+    created_at: string;
+    category?: string | null;
+    image_url?: string | null;
+    cover_url?: string | null;
+    author_id?: string | null;
+    status: string;
+    author?: {
+        id: string;
+        full_name?: string | null;
+        username?: string | null;
+        avatar_url?: string | null;
+        is_verified?: boolean | null;
+        is_writer?: boolean | null;
+    } | {
+        id: string;
+        full_name?: string | null;
+        username?: string | null;
+        avatar_url?: string | null;
+        is_verified?: boolean | null;
+        is_writer?: boolean | null;
+    }[] | null;
+}
+
+function estimateListingReadingTime(excerpt?: string | null) {
+    const words = excerpt?.trim().split(/\s+/).filter(Boolean).length || 0;
+    if (words === 0) return 5;
+    return Math.max(3, Math.ceil(words / 45));
+}
+
 // Cache articles for better performance
 const getCachedArticles = (category?: string, sort?: string) => unstable_cache(
     async () => {
         const supabase = getPublicClient();
         let query = supabase
             .from('articles')
-            .select('id, title, slug, excerpt, content, created_at, category, image_url, cover_url, author_id, status, author:profiles!articles_author_id_fkey(id, full_name, username, avatar_url, is_verified, is_writer)')
+            .select('id, title, slug, excerpt, created_at, category, image_url, cover_url, author_id, status, author:profiles!articles_author_id_fkey(id, full_name, username, avatar_url, is_verified, is_writer)')
             .eq('status', 'published');
 
         if (category) {
@@ -57,9 +95,11 @@ const getCachedArticles = (category?: string, sort?: string) => unstable_cache(
             console.error("Supabase Error fetching articles in Makale feed:", error, "Query details:", { category, sort });
             return [];
         }
-        return data?.map((article: any) => ({
+        return (data as unknown as MakaleListItem[] | null)?.map((article) => ({
             ...article,
-            summary: article.excerpt || article.summary
+            author: Array.isArray(article.author) ? article.author[0] : article.author,
+            summary: article.excerpt || article.summary,
+            reading_time: estimateListingReadingTime(article.excerpt)
         })) || [];
     },
     ['makale-feed', category || 'all', sort || 'latest'],
@@ -86,6 +126,12 @@ const getCachedCategories = unstable_cache(
     { revalidate: 3600, tags: ['articles'] }
 );
 
+const getCachedScienceNews = unstable_cache(
+    async () => getScienceNews(),
+    ['science-news'],
+    { revalidate: 1800, tags: ['science-news'] }
+);
+
 interface PageProps {
     searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
@@ -100,16 +146,46 @@ export default async function MakalePage({ searchParams }: PageProps) {
         getCachedCategories()
     ]);
 
-    // Fetch RSS News (Server Side)
-    const newsItems = await getScienceNews();
+    const newsItems = await getCachedScienceNews();
+    const collectionUrl = `${BASE_URL}/makale${category ? `?category=${encodeURIComponent(category)}` : ''}${sort !== 'latest' ? `${category ? '&' : '?'}sort=${encodeURIComponent(sort)}` : ''}`;
+    const itemListSchema = {
+        "@context": "https://schema.org",
+        "@type": "CollectionPage",
+        name: category ? `${category} makaleleri` : "Fizik makaleleri",
+        description: "Fizik, uzay, teknoloji, biyoloji ve modern bilim üzerine Türkçe makaleler.",
+        url: collectionUrl,
+        isPartOf: {
+            "@type": "WebSite",
+            name: "Fizikhub",
+            url: BASE_URL
+        },
+        mainEntity: {
+            "@type": "ItemList",
+            itemListOrder: "https://schema.org/ItemListOrderDescending",
+            numberOfItems: articles.length,
+            itemListElement: articles.slice(0, 12).map((article, index) => ({
+                "@type": "ListItem",
+                position: index + 1,
+                url: `${BASE_URL}/makale/${article.slug}`,
+                name: article.title
+            }))
+        }
+    };
 
     return (
-        <ArticleFeed
-            articles={articles || []}
-            categories={cats}
-            activeCategory={category}
-            sortParam={sort}
-            newsItems={newsItems}
-        />
+        <>
+            <Script
+                id="makale-list-jsonld"
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListSchema) }}
+            />
+            <ArticleFeed
+                articles={articles || []}
+                categories={cats}
+                activeCategory={category}
+                sortParam={sort}
+                newsItems={newsItems}
+            />
+        </>
     );
 }
