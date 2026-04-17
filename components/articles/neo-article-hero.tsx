@@ -6,6 +6,7 @@ import { format } from "date-fns";
 import { tr } from "date-fns/locale";
 import { Article } from "@/lib/api";
 import { ArrowLeft, Calendar, Clock, Tag } from "lucide-react";
+import { m as motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 
 interface NeoArticleHeroProps {
     article: Article;
@@ -15,6 +16,33 @@ interface NeoArticleHeroProps {
 export function NeoArticleHero({ article, readingTime }: NeoArticleHeroProps) {
     const authorName = article.author?.full_name || article.author?.username || "FizikHub Editörü";
     const authorAvatar = article.author?.avatar_url || "/images/default-avatar.png";
+
+    // 3D Parallax State
+    const x = useMotionValue(0);
+    const y = useMotionValue(0);
+
+    const mouseXSpring = useSpring(x, { stiffness: 150, damping: 20 });
+    const mouseYSpring = useSpring(y, { stiffness: 150, damping: 20 });
+
+    const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["5deg", "-5deg"]);
+    const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-5deg", "5deg"]);
+
+    const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+        const rect = e.currentTarget.getBoundingClientRect();
+        const width = rect.width;
+        const height = rect.height;
+        const mouseX = e.clientX - rect.left;
+        const mouseY = e.clientY - rect.top;
+        const xPct = mouseX / width - 0.5;
+        const yPct = mouseY / height - 0.5;
+        x.set(xPct);
+        y.set(yPct);
+    };
+
+    const handleMouseLeave = () => {
+        x.set(0);
+        y.set(0);
+    };
 
     return (
         <div className="w-full mb-8 sm:mb-16 relative overflow-hidden">
@@ -35,19 +63,37 @@ export function NeoArticleHero({ article, readingTime }: NeoArticleHeroProps) {
                     </Link>
                 </div>
 
-                {/* 2. HERO IMAGE — Neo Brutalist Frame */}
+                {/* 2. HERO IMAGE — Neo Brutalist Frame with 3D Parallax */}
                 {(article.cover_url || (article as { image_url?: string }).image_url) && (
-                    <div className="relative w-full aspect-[16/9] rounded-lg sm:rounded-2xl border-[3px] sm:border-4 border-black dark:border-zinc-700 overflow-hidden shadow-[4px_4px_0px_0px_#000] sm:shadow-[8px_8px_0px_0px_#000] dark:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.6)] sm:dark:shadow-[8px_8px_0px_0px_rgba(0,0,0,0.8)] bg-zinc-100 group mb-6 sm:mb-10">
+                    <motion.div 
+                        onMouseMove={handleMouseMove}
+                        onMouseLeave={handleMouseLeave}
+                        style={{
+                            rotateX,
+                            rotateY,
+                            transformPerspective: 1200,
+                        }}
+                        className="relative w-full aspect-[16/9] rounded-lg sm:rounded-2xl border-[3px] sm:border-4 border-black dark:border-zinc-700 overflow-hidden shadow-[4px_4px_0px_0px_#000] sm:shadow-[8px_8px_0px_0px_#000] dark:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.6)] sm:dark:shadow-[8px_8px_0px_0px_rgba(0,0,0,0.8)] bg-zinc-100 group mb-6 sm:mb-10 cursor-crosshair will-change-transform"
+                    >
                         <Image
                             src={article.cover_url || (article as { image_url?: string }).image_url || ''}
                             alt={article.title}
                             fill
-                            className="object-cover group-hover:scale-[1.02] transition-transform duration-500"
+                            className="object-cover group-hover:scale-[1.05] transition-transform duration-700 pointer-events-none"
                             priority
                             fetchPriority="high"
                             sizes="(max-width: 768px) 100vw, (max-width: 1024px) 768px, 1200px"
                         />
-                    </div>
+                        {/* Dynamic Glare Effect */}
+                        <motion.div 
+                            className="absolute inset-0 z-10 opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity duration-500"
+                            style={{
+                                background: useTransform(
+                                    () => `radial-gradient(circle at ${mouseXSpring.get() * 100 + 50}% ${mouseYSpring.get() * 100 + 50}%, rgba(255, 255, 255, 0.15) 0%, transparent 60%)`
+                                )
+                            }}
+                        />
+                    </motion.div>
                 )}
 
                 {/* 3. CATEGORY + TITLE + META — Clean Premium Layout */}

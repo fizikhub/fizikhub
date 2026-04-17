@@ -45,6 +45,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { createClient } from "@/lib/supabase";
+import confetti from "canvas-confetti";
 
 interface ArticleReaderProps {
     article: any;
@@ -78,6 +79,7 @@ export function ArticleReader({
     const [fontFamily, setFontFamily] = useState<'sans' | 'serif'>('sans');
     const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
     const [showScrollTop, setShowScrollTop] = useState(false);
+    const [hasExploded, setHasExploded] = useState(false);
     const contentRef = useRef<HTMLDivElement>(null);
 
     const [userContext, setUserContext] = useState({
@@ -124,6 +126,28 @@ export function ArticleReader({
             setShowScrollTop(true);
         } else if (latest <= 0.3 && showScrollTop) {
             setShowScrollTop(false);
+        }
+
+        // EASTER EGG: Confetti when reading complete (99% scroll)
+        if (latest >= 0.99 && !hasExploded) {
+            setHasExploded(true);
+            const duration = 3000;
+            const animationEnd = Date.now() + duration;
+            const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 9999 };
+
+            const randomInRange = (min: number, max: number) => Math.random() * (max - min) + min;
+
+            const interval: any = setInterval(function() {
+                const timeLeft = animationEnd - Date.now();
+                if (timeLeft <= 0) {
+                    return clearInterval(interval);
+                }
+                const particleCount = 50 * (timeLeft / duration);
+                
+                // Fire from both sides
+                confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } }));
+                confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } }));
+            }, 250);
         }
     });
 
