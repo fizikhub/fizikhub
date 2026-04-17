@@ -88,7 +88,7 @@ export function AdminArticleApproval({ pendingArticles }: AdminArticleApprovalPr
                                     <span>Kategori: {article.category}</span>
                                 </div>
                             </div>
-                            <Link prefetch={false} href={`/makale/${article.slug}`} target="_blank">
+                            <Link  href={`/makale/${article.slug}`} target="_blank">
                                 <Button variant="ghost" size="icon">
                                     <ExternalLink className="h-4 w-4" />
                                 </Button>

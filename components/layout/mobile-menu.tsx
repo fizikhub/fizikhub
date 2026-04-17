@@ -131,7 +131,7 @@ export function MobileMenu() {
                                             </div>
                                         </button>
                                     ) : (
-                                        <Link prefetch={false} href={item.href!}
+                                        <Link  href={item.href!}
                                             onClick={() => setOpen(false)}
                                             className="block"
                                         >
@@ -181,14 +181,14 @@ export function MobileMenu() {
 
                         <div className="pt-5 mt-5 border-t border-white/[0.06]">
                             {user ? (
-                                <Link prefetch={false} href="/profil" onClick={() => setOpen(false)}>
+                                <Link  href="/profil" onClick={() => setOpen(false)}>
                                     <button className="w-full py-3.5 font-black text-base border-[2px] border-black bg-[#FACC15] text-black shadow-[3px_3px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none active:translate-y-[3px] transition-all rounded-2xl uppercase flex items-center justify-center gap-2 group">
                                         <User className="w-5 h-5 stroke-[3px]" />
                                         Profil
                                     </button>
                                 </Link>
                             ) : (
-                                <Link prefetch={false} href="/login" onClick={() => setOpen(false)}>
+                                <Link  href="/login" onClick={() => setOpen(false)}>
                                     <button className="w-full py-3.5 font-black text-base border-[2px] border-black bg-white text-black shadow-[3px_3px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none active:translate-y-[3px] transition-all rounded-2xl uppercase flex items-center justify-center gap-2 group">
                                         <User className="w-5 h-5 stroke-[3px]" />
                                         Giriş Yap

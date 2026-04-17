@@ -168,6 +168,21 @@
         font-feature-settings: "rlig" 1, "calt" 1;
     }
 
+    /* Mobile Touch Optimization (Buttery Fluidity) */
+    @media (max-width: 768px) {
+        a, button, [role="button"], input, select, textarea {
+            -webkit-tap-highlight-color: transparent !important;
+            touch-action: manipulation;
+        }
+        
+        /* Instant physical feedback for ALL touch devices before JS even registers */
+        a:active, button:active, [role="button"]:active {
+            transform: scale(0.97);
+            opacity: 0.9;
+            transition: transform 0.05s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.05s linear !important;
+        }
+    }
+
     ::selection {
         background-color: #FFC800;
         color: #000;

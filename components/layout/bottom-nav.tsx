@@ -96,7 +96,7 @@ export function BottomNav() {
 
                     <div className="relative -top-4 z-20">
                         <Link
-                            prefetch={false}
+                            
                             id="nav-item-share"
                             href="/paylas"
                             className="relative block"
@@ -162,7 +162,7 @@ function NavItem({ id, href, icon: Icon, label, isActive, onInteract }: { id?: s
 
     return (
         <Link
-            prefetch={false}
+            
             id={id}
             href={href}
             onClick={handleNavItemClick}

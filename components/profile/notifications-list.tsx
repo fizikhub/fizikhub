@@ -125,7 +125,7 @@ export function NotificationsList({ userId }: { userId: string }) {
     return (
         <div className="space-y-4">
             {notifications.map((notification) => (
-                <Link prefetch={false} href={getNotificationLink(notification)} key={notification.id} className="block">
+                <Link  href={getNotificationLink(notification)} key={notification.id} className="block">
                     <Card className={cn(
                         "transition-colors hover:bg-muted/50",
                         !notification.is_read && "bg-primary/5 border-primary/20"

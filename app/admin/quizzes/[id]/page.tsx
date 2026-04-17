@@ -33,7 +33,7 @@ export default async function QuizManagePage({ params }: { params: Promise<{ id:
     return (
         <div className="space-y-6">
             <div className="flex items-center gap-4">
-                <Link prefetch={false} href="/admin/quizzes">
+                <Link  href="/admin/quizzes">
                     <Button variant="outline" size="sm">
                         <ArrowLeft className="h-4 w-4 mr-2" /> Geri
                     </Button>

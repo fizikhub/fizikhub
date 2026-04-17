@@ -119,7 +119,7 @@ export function AdminReportsList({ initialReports }: AdminReportsListProps) {
                                 <TableCell className="text-right">
                                     <div className="flex items-center justify-end gap-2">
                                         <Button variant="ghost" size="icon" asChild title="İçeriğe Git">
-                                            <Link prefetch={false} href={getResourceLink(report)} target="_blank">
+                                            <Link  href={getResourceLink(report)} target="_blank">
                                                 <ExternalLink className="h-4 w-4" />
                                             </Link>
                                         </Button>

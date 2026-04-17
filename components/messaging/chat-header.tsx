@@ -23,14 +23,14 @@ export function ChatHeader({ otherUser, onSearch }: ChatHeaderProps) {
         <div className="bg-[#0a0a0a]/95 backdrop-blur-xl border-b border-white/[0.06] px-4 py-3 flex items-center justify-between sticky top-0 z-50">
             <div className="flex items-center gap-3">
                 {/* Back Button */}
-                <Link prefetch={false} href="/mesajlar" className="md:hidden">
+                <Link  href="/mesajlar" className="md:hidden">
                     <button className="h-9 w-9 bg-zinc-900 border border-zinc-800 flex items-center justify-center rounded-xl hover:bg-zinc-800 active:scale-95 transition-all text-zinc-300">
                         <ArrowLeft className="h-4.5 w-4.5 stroke-[2.5px]" />
                     </button>
                 </Link>
 
                 {/* Desktop back */}
-                <Link prefetch={false} href="/mesajlar" className="hidden md:block">
+                <Link  href="/mesajlar" className="hidden md:block">
                     <button className="h-9 w-9 bg-zinc-900 border border-zinc-800 flex items-center justify-center rounded-xl hover:bg-zinc-800 hover:border-[#FACC15]/30 active:scale-95 transition-all text-zinc-300 hover:text-[#FACC15]">
                         <ArrowLeft className="h-4.5 w-4.5 stroke-[2.5px]" />
                     </button>

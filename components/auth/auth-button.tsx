@@ -59,7 +59,7 @@ export function AuthButton() {
 
     if (!user) {
         return (
-            <Link href="/login" prefetch={false}>
+            <Link href="/login" >
                 <Button variant="default" size="sm" className="gap-2">
                     <LogIn className="h-4 w-4" /> Giriş Yap
                 </Button>
@@ -95,7 +95,7 @@ export function AuthButton() {
                 {isAdmin && (
                     <>
                         <DropdownMenuItem asChild>
-                            <Link prefetch={false} href="/admin" className="cursor-pointer text-red-500 font-bold">
+                            <Link  href="/admin" className="cursor-pointer text-red-500 font-bold">
                                 <Shield className="mr-2 h-4 w-4" />
                                 Admin Paneli
                             </Link>
@@ -104,7 +104,7 @@ export function AuthButton() {
                     </>
                 )}
                 <DropdownMenuItem asChild>
-                    <Link prefetch={false} href="/profil" className="cursor-pointer">
+                    <Link  href="/profil" className="cursor-pointer">
                         <UserIcon className="mr-2 h-4 w-4" />
                         Profilim
                     </Link>

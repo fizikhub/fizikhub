@@ -68,7 +68,7 @@ export function LeaderboardCard({ user, currentUserId }: LeaderboardCardProps) {
                 animate={{ opacity: 1 }}
                 transition={{ delay: user.rank * 0.05, duration: 0.3 }}
             >
-                <Link prefetch={false} href={`/kullanici/${user.username}`}>
+                <Link  href={`/kullanici/${user.username}`}>
                     <div className={cn(
                         "flex items-center gap-3 sm:gap-4 p-4 rounded-xl border-[3px] transition-all duration-300 group relative overflow-hidden",
                         // Base Shadow (Hard Black)

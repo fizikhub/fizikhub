@@ -120,7 +120,7 @@ export function ProfileTabs({
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {questions.length > 0 ? (
                         questions.map((question) => (
-                            <Link prefetch={false} href={`/forum/${question.id}`} key={question.id}>
+                            <Link  href={`/forum/${question.id}`} key={question.id}>
                                 <div className="bg-black/60 backdrop-blur-sm border border-amber-500/20 p-4 hover:border-amber-500/60 transition-all group relative overflow-hidden rounded-xl">
                                     <div className="absolute top-0 left-0 w-1 h-full bg-amber-500/20 group-hover:bg-amber-500 transition-colors" />
                                     <div className="pl-4">
@@ -183,7 +183,7 @@ export function ProfileTabs({
                 <div className="space-y-2">
                     {conversations && conversations.length > 0 ? (
                         conversations.map((conv) => (
-                            <Link prefetch={false} key={conv.id}
+                            <Link  key={conv.id}
                                 href={`/mesajlar?c=${conv.id}`}
                                 className="flex items-center gap-3 p-4 bg-black/60 backdrop-blur-sm border border-amber-500/20 rounded-xl hover:border-amber-500/60 transition-all group"
                             >
@@ -231,13 +231,13 @@ export function ProfileTabs({
                                 <div className="border border-dashed border-white/10 p-12 text-center bg-black/20 rounded-xl">
                                     <Bookmark className="h-12 w-12 mx-auto mb-4 text-white/20" />
                                     <p className="text-white/30 font-mono uppercase mb-4">Arşiv boş.</p>
-                                    <Link prefetch={false} href="/makale">
+                                    <Link  href="/makale">
                                         <Button variant="outline" className="border-amber-500/50 text-amber-400 hover:bg-amber-500/10">KEŞFET</Button>
                                     </Link>
                                 </div>
                             ) : (
                                 bookmarkedArticles.map((item: any) => (
-                                    <Link prefetch={false} key={item.articles.id} href={`/makale/${item.articles.slug}`}>
+                                    <Link  key={item.articles.id} href={`/makale/${item.articles.slug}`}>
                                         <div className="bg-black/40 border border-white/10 p-6 rounded-xl hover:border-amber-500/50 transition-all hover:bg-amber-950/20 group">
                                             <h3 className="font-black uppercase mb-2 text-lg text-white group-hover:text-amber-400 transition-colors">{item.articles.title}</h3>
                                             <p className="text-sm text-gray-400 line-clamp-2 mb-3 font-mono text-xs">{item.articles.excerpt}</p>
@@ -257,13 +257,13 @@ export function ProfileTabs({
                                 <div className="border border-dashed border-white/10 p-12 text-center bg-black/20 rounded-xl">
                                     <Bookmark className="h-12 w-12 mx-auto mb-4 text-white/20" />
                                     <p className="text-white/30 font-mono uppercase mb-4">Soru arşivi boş.</p>
-                                    <Link prefetch={false} href="/forum">
+                                    <Link  href="/forum">
                                         <Button variant="outline" className="border-amber-500/50 text-amber-400 hover:bg-amber-500/10">KEŞFET</Button>
                                     </Link>
                                 </div>
                             ) : (
                                 bookmarkedQuestions.map((item: any) => (
-                                    <Link prefetch={false} key={item.questions.id} href={`/forum/${item.questions.id}`}>
+                                    <Link  key={item.questions.id} href={`/forum/${item.questions.id}`}>
                                         <div className="bg-black/40 border border-white/10 p-6 rounded-xl hover:border-amber-500/50 transition-all hover:bg-amber-950/20 group">
                                             <div className="flex items-center justify-between mb-3">
                                                 <Badge variant="outline" className="rounded border-white/20 text-gray-400">{item.questions.category || "GENEL"}</Badge>

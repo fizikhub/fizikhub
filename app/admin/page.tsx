@@ -92,7 +92,7 @@ export default async function AdminDashboard() {
                             {recentQuestions?.map((question) => (
                                 <div key={question.id} className="flex items-center justify-between border-b pb-2 last:border-0 last:pb-0">
                                     <div className="space-y-1">
-                                        <Link prefetch={false} href={`/forum/${question.id}`} className="font-medium hover:underline line-clamp-1">
+                                        <Link  href={`/forum/${question.id}`} className="font-medium hover:underline line-clamp-1">
                                             {question.title}
                                         </Link>
                                         <div className="text-xs text-muted-foreground flex items-center gap-2">
