@@ -99,12 +99,12 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
             <ViewTransitionLink
                 href={`/forum/${question.id}`}
                 className={cn(
-                    "relative flex flex-col w-full h-full overflow-hidden transition-all duration-200 cursor-pointer group rounded-[10px]",
+                    "relative flex flex-col w-full h-full overflow-hidden transition-all duration-200 cursor-pointer group rounded-[14px]",
                     // CONTAINER STYLE
                     "bg-white dark:bg-[#1e1e21]",
-                    "border-[3px] border-black dark:border-zinc-700",
-                    "shadow-[4px_4px_0px_0px_#000] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.15)]",
-                    "hover:shadow-[2px_2px_0px_0px_#000] dark:hover:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.1)] hover:translate-x-[2px] hover:translate-y-[2px]"
+                    "border-2 sm:border-[2.5px] border-black dark:border-zinc-700",
+                    "shadow-[2px_2px_0px_0px_#000] sm:shadow-[4px_4px_0px_0px_#000] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.15)] sm:dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.15)]",
+                    "hover:shadow-[1px_1px_0px_0px_#000] sm:hover:shadow-[2px_2px_0px_0px_#000] dark:hover:shadow-[1px_1px_0px_0px_rgba(255,255,255,0.1)] sm:dark:hover:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.1)] hover:translate-x-[2px] hover:translate-y-[2px]"
                 )}
             >
                 {/* NOISE TEXTURE */}
@@ -113,10 +113,10 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
                 />
 
                 {/* Hover accent line on left */}
-                <div className="absolute left-0 top-0 bottom-0 w-[4px] bg-[#FFBD2E] opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20 rounded-l-[10px]" />
+                <div className="absolute left-0 top-0 bottom-0 w-[4px] bg-[#FFBD2E] opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20 rounded-l-[14px]" />
 
                 {/* 1. Header Bar (Yellow Theme) */}
-                <div className="flex items-center justify-between px-4 py-2.5 border-b-[3px] border-black dark:border-zinc-700 bg-gradient-to-r from-[#FFBD2E] to-[#FFD466] z-10 relative">
+                <div className="flex items-center justify-between px-4 py-2.5 border-b-2 sm:border-b-[2.5px] border-black dark:border-zinc-700 bg-gradient-to-r from-[#FFBD2E] to-[#FFD466] z-10 relative">
                     <span className="font-black text-[11px] uppercase tracking-[0.15em] text-black">
                         {question.category || "GENEL"}
                     </span>
@@ -184,7 +184,7 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
                 </div>
 
                 {/* 3. Footer */}
-                <div className="mt-auto px-4 sm:px-5 py-2.5 border-t-[3px] border-black dark:border-zinc-700 bg-neutral-50 dark:bg-[#161618] flex items-center justify-between z-10 relative">
+                <div className="mt-auto px-4 sm:px-5 py-2.5 border-t-2 sm:border-t-[2.5px] border-black dark:border-zinc-700 bg-neutral-50 dark:bg-[#161618] flex items-center justify-between z-10 relative">
 
                     {/* Author (Left) */}
                     <div className="flex items-center gap-2.5 z-20">

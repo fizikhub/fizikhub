@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase-server";
+import { createStaticClient } from "@/lib/supabase-static";
 import { notFound } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -42,7 +43,7 @@ export const revalidate = 30;
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
     const { id } = await params;
-    const supabase = await createClient();
+    const supabase = createStaticClient();
 
     const { data: question } = await supabase
         .from('questions')
@@ -302,7 +303,7 @@ export default async function QuestionPage({ params }: PageProps) {
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
             />
 
-            <div className="container max-w-7xl mx-auto py-2 sm:py-6 md:py-8 px-0 sm:px-4 md:px-6 relative z-10">
+            <div className="container max-w-7xl mx-auto py-2 sm:py-6 md:py-8 px-3 sm:px-4 md:px-6 relative z-10">
                 <div className="grid grid-cols-1 lg:grid-cols-[1fr_350px] gap-6 lg:gap-8 items-start">
 
                     {/* Main Content Column */}
@@ -322,9 +323,9 @@ export default async function QuestionPage({ params }: PageProps) {
                         <div className={cn(
                             "relative overflow-hidden transition-all duration-200",
                             "bg-white dark:bg-[#1e1e21]",
-                            "border-[2.5px] border-black dark:border-zinc-700 rounded-[10px]",
-                            "shadow-[4px_4px_0px_0px_#000] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)]",
-                            "-mx-2 sm:mx-0"
+                            "border-2 sm:border-[2.5px] border-black dark:border-zinc-700 rounded-[14px]",
+                            "shadow-[2px_2px_0px_0px_#000] sm:shadow-[4px_4px_0px_0px_#000] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.1)] sm:dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)]",
+                            "mx-0"
                         )}>
                             {/* Noise Texture */}
                             <div className="absolute inset-0 opacity-[0.02] dark:opacity-[0.04] pointer-events-none mix-blend-multiply z-0"
@@ -332,7 +333,7 @@ export default async function QuestionPage({ params }: PageProps) {
                             />
 
                             {/* 1. Yellow Neo-Brutalist Header Bar */}
-                            <div className="flex items-center justify-between px-4 sm:px-5 py-2.5 border-b-[2.5px] border-black dark:border-zinc-700 bg-gradient-to-r from-[#FFBD2E] to-[#FFD466] z-10 relative">
+                            <div className="flex items-center justify-between px-4 sm:px-5 py-2.5 border-b-2 sm:border-b-[2.5px] border-black dark:border-zinc-700 bg-gradient-to-r from-[#FFBD2E] to-[#FFD466] z-10 relative">
                                 <span className="font-black text-xs sm:text-sm uppercase tracking-widest text-black">
                                     {question.category || "GENEL"}
                                 </span>
@@ -419,7 +420,7 @@ export default async function QuestionPage({ params }: PageProps) {
                             </div>
 
                             {/* 4. Stats & Actions Combined */}
-                            <div className="flex items-center justify-between px-4 sm:px-6 py-3 border-t-[2.5px] border-black dark:border-zinc-700 bg-neutral-50 dark:bg-[#161618] relative z-10">
+                            <div className="flex items-center justify-between px-4 sm:px-6 py-3 border-t-2 sm:border-t-[2.5px] border-black dark:border-zinc-700 bg-neutral-50 dark:bg-[#161618] relative z-10">
                                 {/* Left: Stats + Actions */}
                                 <div className="flex items-center gap-3 sm:gap-4">
                                     <VoteButton
@@ -497,7 +498,7 @@ export default async function QuestionPage({ params }: PageProps) {
                     {/* Stats Sidebar (Desktop) */}
                     <aside className="hidden lg:block space-y-6 w-full sticky top-24 pt-10">
                         {/* Explore Sidebar */}
-                        <div className="bg-white dark:bg-[#1e1e21] border-[2.5px] border-black dark:border-zinc-700 rounded-[10px] p-5 shadow-[4px_4px_0_0_#000] dark:shadow-[4px_4px_0_0_rgba(255,255,255,0.08)]">
+                        <div className="bg-white dark:bg-[#1e1e21] border-2 sm:border-[2.5px] border-black dark:border-zinc-700 rounded-[14px] p-5 shadow-[4px_4px_0_0_#000] dark:shadow-[4px_4px_0_0_rgba(255,255,255,0.08)]">
                             <h3 className="font-[family-name:var(--font-outfit)] text-lg font-black mb-4 flex items-center gap-2 uppercase tracking-tight">
                                 <Flame className="h-5 w-5 text-[#FFBD2E]" />
                                 Keşfet
@@ -521,7 +522,7 @@ export default async function QuestionPage({ params }: PageProps) {
                         </div>
 
                         {(isAdmin || user?.id === question.author_id) && (
-                            <div className="border-[2.5px] border-red-400 dark:border-red-500/40 bg-red-50 dark:bg-red-950/20 rounded-[10px] p-5 shadow-[3px_3px_0_0_rgba(239,68,68,0.3)]">
+                            <div className="border-2 sm:border-[2.5px] border-red-400 dark:border-red-500/40 bg-red-50 dark:bg-red-950/20 rounded-[14px] p-5 shadow-[3px_3px_0_0_rgba(239,68,68,0.3)]">
                                 <h3 className="font-black text-sm text-red-700 dark:text-red-400 uppercase tracking-wider mb-3">Yönetim</h3>
                                 <div className="space-y-3">
                                     <DeleteQuestionButton questionId={question.id} authorId={question.author_id} />

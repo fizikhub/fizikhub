@@ -270,7 +270,7 @@ export function AnswerList({ questionId, initialAnswers, questionAuthorId, curre
                             </h3>
 
                             <form onSubmit={handleSubmit} className="space-y-3">
-                                <div className="border-[2.5px] border-black dark:border-zinc-700 bg-white dark:bg-[#1a1a1d] rounded-[10px] overflow-hidden focus-within:shadow-[4px_4px_0_0_#000] dark:focus-within:shadow-[4px_4px_0_0_rgba(255,255,255,0.08)] transition-all shadow-[2px_2px_0_0_#000] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.06)]">
+                                <div className="border-2 sm:border-[2.5px] border-black dark:border-zinc-700 bg-white dark:bg-[#1a1a1d] rounded-[14px] overflow-hidden focus-within:shadow-[4px_4px_0_0_#000] dark:focus-within:shadow-[4px_4px_0_0_rgba(255,255,255,0.08)] transition-all shadow-[2px_2px_0_0_#000] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.06)]">
                                     <Suspense fallback={<div className="p-4 text-black dark:text-zinc-400 font-medium text-sm">Editör yükleniyor...</div>}>
                                         <MarkdownEditor
                                             value={newAnswer}
@@ -285,7 +285,7 @@ export function AnswerList({ questionId, initialAnswers, questionAuthorId, curre
                                         <Button
                                             type="submit"
                                             disabled={isSubmitting || !newAnswer.trim()}
-                                            className="w-full px-8 py-5 rounded-[10px] font-black uppercase tracking-widest bg-[#FFBD2E] text-black border-[2.5px] border-black dark:border-zinc-700 shadow-[4px_4px_0_0_#000] dark:shadow-[4px_4px_0_0_rgba(255,255,255,0.08)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0_0_#000] transition-all text-sm"
+                                            className="w-full px-8 py-5 rounded-[14px] font-black uppercase tracking-widest bg-[#FFBD2E] text-black border-[2.5px] border-black dark:border-zinc-700 shadow-[4px_4px_0_0_#000] dark:shadow-[4px_4px_0_0_rgba(255,255,255,0.08)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0_0_#000] transition-all text-sm"
                                         >
                                             {isSubmitting ? "GÖNDERİLİYOR..." : "YANITLA"}
                                         </Button>
@@ -296,7 +296,7 @@ export function AnswerList({ questionId, initialAnswers, questionAuthorId, curre
                     </div>
                 </div>
             ) : (
-                <div className="mb-8 p-6 bg-white dark:bg-[#1e1e21] border-[2.5px] border-black dark:border-zinc-700 rounded-[10px] text-center shadow-[4px_4px_0_0_#000] dark:shadow-[4px_4px_0_0_rgba(255,255,255,0.08)]">
+                <div className="mb-8 p-6 bg-white dark:bg-[#1e1e21] border-2 sm:border-[2.5px] border-black dark:border-zinc-700 rounded-[14px] text-center shadow-[4px_4px_0_0_#000] dark:shadow-[4px_4px_0_0_rgba(255,255,255,0.08)]">
                     <div className="max-w-sm mx-auto space-y-4">
                         <h3 className="font-[family-name:var(--font-outfit)] text-xl sm:text-2xl font-black uppercase text-black dark:text-white">Tartışmaya Katıl</h3>
                         <p className="text-neutral-500 dark:text-zinc-400 font-medium text-sm">Bu soruya cevap vermek veya yorum yapmak için giriş yapmalısın.</p>
@@ -314,7 +314,7 @@ export function AnswerList({ questionId, initialAnswers, questionAuthorId, curre
                         <button
                             onClick={() => setSortBy("newest")}
                             className={cn(
-                                "flex flex-shrink-0 items-center gap-2 px-4 sm:px-6 font-black uppercase text-xs sm:text-sm tracking-wider border-[2.5px] border-black dark:border-zinc-700 rounded-t-[10px] transition-all",
+                                "flex flex-shrink-0 items-center gap-2 px-4 sm:px-6 font-black uppercase text-xs sm:text-sm tracking-wider border-2 sm:border-[2.5px] border-black dark:border-zinc-700 rounded-t-[14px] transition-all",
                                 sortBy === "newest"
                                     ? "bg-[#FFBD2E] text-black border-b-transparent pt-3 pb-3 sm:pt-3.5 sm:pb-3.5 z-10"
                                     : "bg-neutral-200 dark:bg-[#1e1e21] text-neutral-500 dark:text-zinc-500 hover:bg-neutral-300 dark:hover:bg-zinc-800 border-b-black dark:border-b-zinc-700 pt-2 sm:pt-2.5 pb-2 sm:pb-2.5 z-0"
@@ -326,7 +326,7 @@ export function AnswerList({ questionId, initialAnswers, questionAuthorId, curre
                         <button
                             onClick={() => setSortBy("popular")}
                             className={cn(
-                                "flex flex-shrink-0 items-center gap-2 px-4 sm:px-6 font-black uppercase text-xs sm:text-sm tracking-wider border-[2.5px] border-black dark:border-zinc-700 rounded-t-[10px] transition-all -ml-[2.5px]",
+                                "flex flex-shrink-0 items-center gap-2 px-4 sm:px-6 font-black uppercase text-xs sm:text-sm tracking-wider border-2 sm:border-[2.5px] border-black dark:border-zinc-700 rounded-t-[14px] transition-all -ml-[2.5px]",
                                 sortBy === "popular"
                                     ? "bg-neo-pink text-white border-b-transparent pt-3 pb-3 sm:pt-3.5 sm:pb-3.5 z-10"
                                     : "bg-neutral-200 dark:bg-[#1e1e21] text-neutral-500 dark:text-zinc-500 hover:bg-neutral-300 dark:hover:bg-zinc-800 border-b-black dark:border-b-zinc-700 pt-2 sm:pt-2.5 pb-2 sm:pb-2.5 z-0"
@@ -348,7 +348,7 @@ export function AnswerList({ questionId, initialAnswers, questionAuthorId, curre
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, scale: 0.95 }}
-                            className="py-12 bg-white dark:bg-[#1e1e21] border-[2.5px] border-dashed border-black/30 dark:border-zinc-600 rounded-[10px] text-center"
+                            className="py-12 bg-white dark:bg-[#1e1e21] border-2 sm:border-[2.5px] border-dashed border-black/30 dark:border-zinc-600 rounded-[14px] text-center"
                         >
                             <div className="bg-[#FFBD2E]/20 border-[2px] border-black dark:border-zinc-600 w-14 h-14 rounded-xl flex items-center justify-center mx-auto mb-4 shadow-[2px_2px_0_0_#000] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.08)] -rotate-3">
                                 <MessageSquare className="h-6 w-6 text-black dark:text-zinc-300 stroke-[2.5px]" />
@@ -371,7 +371,7 @@ export function AnswerList({ questionId, initialAnswers, questionAuthorId, curre
                                 whileDrag={{ scale: 0.98, zIndex: 10 }}
                                 id={`answer-${answer.id}`}
                                 className={cn(
-                                    "group relative transition-all duration-300 mb-5 bg-white dark:bg-[#1e1e21] border-[2.5px] border-black dark:border-zinc-700 rounded-[10px] shadow-[3px_3px_0_0_#000] dark:shadow-[3px_3px_0_0_rgba(255,255,255,0.06)]",
+                                    "group relative transition-all duration-300 mb-5 bg-white dark:bg-[#1e1e21] border-2 sm:border-[2.5px] border-black dark:border-zinc-700 rounded-[14px] shadow-[2px_2px_0_0_#000] sm:shadow-[3px_3px_0_0_#000] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.06)]",
                                     answer.is_accepted && "bg-[#E5F5E0] dark:bg-emerald-950/30 border-emerald-500 dark:border-emerald-600/60"
                                 )}
                             >
@@ -484,7 +484,7 @@ export function AnswerList({ questionId, initialAnswers, questionAuthorId, curre
                                                     <Button
                                                         variant="secondary"
                                                         onClick={() => toggleAnswerExpand(answer.id)}
-                                                        className="rounded-lg bg-[#FFBD2E] border-[2.5px] border-black dark:border-zinc-700 shadow-[3px_3px_0_0_#000] dark:shadow-[3px_3px_0_0_rgba(255,255,255,0.06)] font-black uppercase text-black hover:text-black hover:bg-[#FFD268] px-6 h-10 transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_0_#000] z-20 text-sm"
+                                                        className="rounded-[10px] bg-[#FFBD2E] border-2 sm:border-[2.5px] border-black dark:border-zinc-700 shadow-[2px_2px_0_0_#000] sm:shadow-[3px_3px_0_0_#000] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.06)] font-black uppercase text-black hover:text-black hover:bg-[#FFD268] px-6 h-11 sm:h-10 transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0_0_#000] z-20 text-xs sm:text-sm"
                                                     >
                                                         Devamını Oku
                                                     </Button>
@@ -505,7 +505,7 @@ export function AnswerList({ questionId, initialAnswers, questionAuthorId, curre
                                         </div>
 
                                         {/* Action Bar (Neo-brutalist) */}
-                                        <div className="flex items-center justify-between sm:justify-start gap-2.5 mt-3 sm:mt-0 pt-3 border-t-[2.5px] border-black dark:border-zinc-700 mx-[-16px] px-4 sm:mx-[0] sm:px-0 sm:border-none sm:pt-0">
+                                        <div className="flex items-center justify-between sm:justify-start gap-2.5 mt-3 sm:mt-0 pt-3 border-t-2 sm:border-t-[2.5px] border-black dark:border-zinc-700 mx-[-16px] px-4 sm:mx-[0] sm:px-0 sm:border-none sm:pt-0">
                                             <div className="flex items-center group/like">
                                                 <AnswerLikeButton answerId={answer.id} initialLikeCount={answer.likeCount || 0} initialIsLiked={answer.isLiked || false} isLoggedIn={!!user} />
                                             </div>
@@ -515,7 +515,7 @@ export function AnswerList({ questionId, initialAnswers, questionAuthorId, curre
                                                 <Button
                                                     variant="ghost"
                                                     size="sm"
-                                                    className="flex items-center gap-1.5 px-3 h-9 border-[2px] border-black dark:border-zinc-600 bg-white dark:bg-zinc-800 rounded-lg font-bold uppercase tracking-wider text-[10px] text-black dark:text-zinc-300 shadow-[2px_2px_0_0_#000] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.06)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0_0_#000] hover:bg-[#FFBD2E] hover:text-black transition-all"
+                                                    className="flex items-center gap-1.5 px-3 h-10 sm:h-9 border-2 md:border-[2.5px] border-black dark:border-zinc-600 bg-white dark:bg-zinc-800 rounded-[10px] font-bold uppercase tracking-wider text-[10px] sm:text-[11px] text-black dark:text-zinc-300 shadow-[2px_2px_0_0_#000] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.06)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0_0_#000] hover:bg-[#FFBD2E] hover:text-black transition-all"
                                                     onClick={() => toggleComments(answer.id)}
                                                 >
                                                     <MessageSquare className="h-3.5 w-3.5 stroke-[2.5px]" />
@@ -532,7 +532,7 @@ export function AnswerList({ questionId, initialAnswers, questionAuthorId, curre
                                                 url={`${process.env.NEXT_PUBLIC_APP_URL || 'https://fizikhub.com'}/forum/${questionId}#answer-${answer.id}`}
                                                 title={`FizikHub'da bir yanıt`}
                                             >
-                                                <Button variant="ghost" size="icon" className="h-9 w-9 border-[2px] border-black dark:border-zinc-600 bg-neutral-50 dark:bg-zinc-800 rounded-lg text-black dark:text-zinc-400 shadow-[2px_2px_0_0_#000] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.06)] hover:bg-[#FFBD2E] hover:text-black hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0_0_#000] transition-all pointer-events-auto">
+                                                <Button variant="ghost" size="icon" className="h-10 w-10 sm:h-9 sm:w-9 border-2 sm:border-[2.5px] border-black dark:border-zinc-600 bg-neutral-50 dark:bg-zinc-800 rounded-[10px] text-black dark:text-zinc-400 shadow-[2px_2px_0_0_#000] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.06)] hover:bg-[#FFBD2E] hover:text-black hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0_0_#000] transition-all pointer-events-auto">
                                                     <Share2 className="h-3.5 w-3.5 stroke-[2.5px]" />
                                                 </Button>
                                             </ShareDrawer>

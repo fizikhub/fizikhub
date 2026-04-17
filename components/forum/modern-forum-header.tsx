@@ -122,9 +122,9 @@ export function ModernForumHeader() {
             {/* CHALKBOARD HERO CARD */}
             <div className={cn(
                 "relative rounded-xl overflow-hidden w-full",
-                "bg-[#15201b] border-[4px] border-[#d4b483] shadow-[4px_4px_0_0_#1a1a1a]", // Dark Green Chalkboard + Wood Frame Border
+                "bg-[#15201b] border-[2.5px] sm:border-[3px] border-[#d4b483] shadow-[2px_2px_0_0_#1a1a1a] sm:shadow-[4px_4px_0_0_#1a1a1a]", // Dark Green Chalkboard + Wood Frame Border
                 "min-h-[140px] flex flex-col items-center justify-center p-6 sm:p-8 gap-6 transition-all",
-                "hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0_0_#1a1a1a]"
+                "hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[1px_1px_0_0_#1a1a1a] sm:hover:shadow-[2px_2px_0_0_#1a1a1a]"
             )}>
                 {/* Custom SVG Chalkboard Background */}
                 <div className="absolute inset-0 bg-[#2A3335] pointer-events-none" />
@@ -364,7 +364,7 @@ export function ModernForumHeader() {
                                     key={category}
                                     onClick={() => handleCategoryChange(category)}
                                     className={cn(
-                                        "px-4 py-2 text-[11px] sm:text-xs font-black uppercase tracking-wider border-[2.5px] transition-all duration-200 rounded-full relative",
+                                        "px-4 py-2 text-[11px] sm:text-xs font-black uppercase tracking-wider border-2 sm:border-[2.5px] transition-all duration-200 rounded-full relative",
                                         isActive
                                             ? "bg-[#FFBD2E] text-black border-black shadow-[3px_3px_0px_0px_#000] translate-x-[-1px] translate-y-[-1px]"
                                             : "bg-card text-foreground border-black dark:border-zinc-600 hover:border-black hover:bg-[#FFBD2E]/10 hover:shadow-[2px_2px_0px_0px_#000] dark:hover:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.3)] hover:translate-x-[-1px] hover:translate-y-[-1px]"
@@ -378,7 +378,7 @@ export function ModernForumHeader() {
                 </div>
 
                 {/* Sort */}
-                <div className="flex items-center gap-1 bg-card p-1 rounded-xl border-[2.5px] border-black dark:border-zinc-600 w-full md:w-auto shadow-[2px_2px_0px_0px_#000] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.2)]">
+                <div className="flex items-center gap-1 bg-card p-1 rounded-xl border-2 sm:border-[2.5px] border-black dark:border-zinc-600 w-full md:w-auto shadow-[2px_2px_0px_0px_#000] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.2)]">
                     <button
                         onClick={() => handleSortChange("newest")}
                         className={cn(
