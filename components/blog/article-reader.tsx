@@ -1,10 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import dynamic from "next/dynamic";
-const MarkdownRenderer = dynamic(() => import("@/components/markdown-renderer").then(mod => mod.MarkdownRenderer), {
-    loading: () => <div className="h-96 w-full animate-pulse bg-muted rounded-xl" />
-});
+import { MarkdownRenderer } from "@/components/markdown-renderer";
 import { cn } from "@/lib/utils";
 import { AnimatePresence, m as motion, useScroll, useMotionValueEvent, useTransform } from "framer-motion";
 import { AuthorCard } from "@/components/blog/author-card";

@@ -141,7 +141,7 @@ export function AnswerList({ questionId, initialAnswers, questionAuthorId, curre
                             )
                         `)
                         .eq('id', payload.new.id)
-                        .single();
+                        .maybeSingle();
 
                     if (newAnswer) {
                         setAnswers((current) => {

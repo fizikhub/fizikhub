@@ -16,27 +16,31 @@ export function HubGPTWidget() {
     useEffect(() => {
         // Fetch user profile on mount
         const fetchUser = async () => {
-            const { createClient } = await import('@/lib/supabase');
-            const supabase = createClient();
-            const { data: { user } } = await supabase.auth.getUser();
+            try {
+                const { createClient } = await import('@/lib/supabase');
+                const supabase = createClient();
+                const { data: { user } } = await supabase.auth.getUser();
 
-            if (user) {
-                const { data: profile } = await supabase
-                    .from('profiles')
-                    .select('full_name, username')
-                    .eq('id', user.id)
-                    .single();
+                if (user) {
+                    const { data: profile } = await supabase
+                        .from('profiles')
+                        .select('full_name, username')
+                        .eq('id', user.id)
+                        .maybeSingle();
 
-                if (profile) {
-                    setUserProfile(profile);
-                    // Update initial message to include name if available
-                    setMessages(prev => {
-                        if (prev.length === 1 && prev[0].role === 'ai') {
-                            return [{ role: 'ai', content: `Selam ${profile.full_name?.split(' ')[0] || profile.username}! Ben HubGPT. Evrenin sırlarını çözmeye hazır mısın? Veya sadece sitede mi kayboldun?` }];
-                        }
-                        return prev;
-                    });
+                    if (profile) {
+                        setUserProfile(profile);
+                        // Update initial message to include name if available
+                        setMessages(prev => {
+                            if (prev.length === 1 && prev[0].role === 'ai') {
+                                return [{ role: 'ai', content: `Selam ${profile.full_name?.split(' ')[0] || profile.username}! Ben HubGPT. Evrenin sırlarını çözmeye hazır mısın? Veya sadece sitede mi kayboldun?` }];
+                            }
+                            return prev;
+                        });
+                    }
                 }
+            } catch {
+                // Silently fail in restricted environments (e.g. Instagram WebView)
             }
         };
         fetchUser();

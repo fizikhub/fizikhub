@@ -84,7 +84,7 @@ export function RapidScienceEditorModal({ isOpen, onClose }: RapidScienceEditorM
             if (!user) throw new Error("Giriş yapmalısın.");
 
             // Get profile id
-            const { data: profile } = await supabase.from('profiles').select('id, is_writer').eq('id', user.id).single();
+            const { data: profile } = await supabase.from('profiles').select('id, is_writer').eq('id', user.id).maybeSingle();
             if (!profile?.is_writer) throw new Error("Yazar yetkiniz yok. Bu araya nasıl ulaştın? Ulaşmaman lazımdı.");
 
             const { error: insertError } = await supabase

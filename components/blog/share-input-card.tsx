@@ -38,14 +38,18 @@ export function ShareInputCard({ user: initialUser }: ShareInputCardProps) {
 
     useEffect(() => {
         const fetchUser = async () => {
-            const { data: { user: authUser } } = await supabase.auth.getUser();
-            if (authUser) {
-                const { data: profile } = await supabase
-                    .from("profiles")
-                    .select("*")
-                    .eq("id", authUser.id)
-                    .single();
-                if (profile) setUser(profile);
+            try {
+                const { data: { user: authUser } } = await supabase.auth.getUser();
+                if (authUser) {
+                    const { data: profile } = await supabase
+                        .from("profiles")
+                        .select("*")
+                        .eq("id", authUser.id)
+                        .maybeSingle();
+                    if (profile) setUser(profile);
+                }
+            } catch {
+                // Silently fail in restricted environments
             }
         };
         if (!initialUser) fetchUser();

@@ -40,7 +40,7 @@ export function AuthButton() {
                         .from('profiles')
                         .select('role')
                         .eq('id', session.user.id)
-                        .single();
+                        .maybeSingle();
 
                     setIsAdmin(profile?.role === 'admin');
                 }

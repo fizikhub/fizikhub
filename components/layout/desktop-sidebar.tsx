@@ -38,9 +38,13 @@ export function DesktopSidebar() {
         let isMounted = true;
         
         const fetchProfile = async (userId: string) => {
-            const { data } = await supabase.from('profiles').select('full_name, username, avatar_url').eq('id', userId).single();
-            if (isMounted && data) {
-                setUserProfile(data);
+            try {
+                const { data } = await supabase.from('profiles').select('full_name, username, avatar_url').eq('id', userId).maybeSingle();
+                if (isMounted && data) {
+                    setUserProfile(data);
+                }
+            } catch {
+                // Silently fail in restricted environments
             }
         };
 
