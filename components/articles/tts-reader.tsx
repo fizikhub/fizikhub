@@ -60,7 +60,7 @@ export function TTSReader({ content, title, className }: TTSReaderProps) {
 
     // Initialize Speech Synthesis
     useEffect(() => {
-        if (typeof window !== 'undefined') {
+        if (typeof window !== 'undefined' && window.speechSynthesis) {
             synthRef.current = window.speechSynthesis;
 
             // Handle cross-browser voice loading quirks
@@ -70,16 +70,25 @@ export function TTSReader({ content, title, className }: TTSReaderProps) {
             };
 
             // Check if voices are already available
-            if (synthRef.current.getVoices().length > 0) {
-                handleVoicesChanged();
-            } else {
-                synthRef.current.onvoiceschanged = handleVoicesChanged;
+            try {
+                if (synthRef.current.getVoices().length > 0) {
+                    handleVoicesChanged();
+                } else {
+                    synthRef.current.onvoiceschanged = handleVoicesChanged;
+                }
+            } catch (e) {
+                console.warn("SpeechSynthesis error:", e);
+                // Gracefully fail instead of crashing
+                setIsReady(false);
             }
+        } else {
+            // Speech synthesis not supported
+            setIsReady(false);
         }
 
         return () => {
             if (synthRef.current) {
-                synthRef.current.cancel();
+                try { synthRef.current.cancel(); } catch (e) {}
             }
         };
     }, []);
