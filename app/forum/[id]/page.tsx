@@ -14,8 +14,7 @@ import { isAdminEmail } from "@/lib/admin";
 import { AnswerList } from "@/components/forum/answer-list";
 import { DeleteQuestionButton } from "@/components/forum/delete-question-button";
 import { ScrollToAnswerButton } from "@/components/forum/scroll-to-answer-button";
-import dynamic from "next/dynamic";
-const MarkdownRenderer = dynamic(() => import("@/components/markdown-renderer").then(mod => mod.MarkdownRenderer));
+import { MarkdownRenderer } from "@/components/markdown-renderer";
 import { VoteButton } from "@/components/forum/vote-button";
 import { ViewTracker } from "@/components/forum/view-tracker";
 import { BookmarkButton } from "@/components/bookmark-button";
@@ -131,7 +130,7 @@ export default async function QuestionPage({ params }: PageProps) {
             .select('vote_type')
             .eq('question_id', id)
             .eq('user_id', user.id)
-            .single() : Promise.resolve({ data: null }),
+            .maybeSingle() : Promise.resolve({ data: null }),
 
         // 3. Check if user has bookmarked (only if logged in)
         user ? supabase
@@ -139,7 +138,7 @@ export default async function QuestionPage({ params }: PageProps) {
             .select('id')
             .eq('question_id', id)
             .eq('user_id', user.id)
-            .single() : Promise.resolve({ data: null })
+            .maybeSingle() : Promise.resolve({ data: null })
     ]);
 
     const hasVoted = userVote?.vote_type === 1;

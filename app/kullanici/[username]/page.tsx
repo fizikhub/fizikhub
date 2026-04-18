@@ -62,7 +62,7 @@ export default async function PublicProfilePage({ params }: PageProps) {
         { data: profile },
         { data: { user } }
     ] = await Promise.all([
-        supabase.from('profiles').select('*').eq('username', username).single(),
+        supabase.from('profiles').select('*').eq('username', username).maybeSingle(),
         supabase.auth.getUser()
     ]);
 

@@ -8,11 +8,9 @@ import { format } from "date-fns";
 import { tr } from "date-fns/locale";
 import { Button } from "@/components/ui/button";
 import { m as motion } from "framer-motion";
-import dynamic from "next/dynamic";
 
-const MarkdownRenderer = dynamic(() => import("@/components/markdown-renderer").then(mod => mod.MarkdownRenderer), {
-    loading: () => <div className="animate-pulse h-40 bg-muted/20 rounded-xl" />
-});
+
+import { MarkdownRenderer } from "@/components/markdown-renderer";
 
 interface TermDetailProps {
     article: any;
