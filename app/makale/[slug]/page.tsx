@@ -10,6 +10,7 @@ import { Metadata } from "next";
 import { ArticleReader } from "@/components/blog/article-reader";
 import { BookReviewDetail } from "@/components/book-review/book-review-detail";
 import { TermDetail } from "@/components/term/term-detail";
+import { ArticleErrorBoundary } from "@/components/blog/article-error-boundary";
 
 interface PageProps {
     params: Promise<{ slug: string }>;
@@ -233,35 +234,14 @@ export default async function ArticlePage({ params }: PageProps) {
                     dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
                 />
             ))}
-            <ReadingProgress />
+            <ArticleErrorBoundary>
+                <ReadingProgress />
+            </ArticleErrorBoundary>
 
             <div className="min-h-screen bg-background pb-20">
-                {article.category === 'Kitap İncelemesi' ? (
-                    <BookReviewDetail
-                        article={article}
-                        readingTime={formattedReadingTime}
-                        likeCount={likeCount || 0}
-                        initialLiked={false}
-                        initialBookmarked={false}
-                        comments={comments || []}
-                        isLoggedIn={false}
-                        userAvatar={undefined}
-                    />
-                ) : article.category === 'Terim' ? (
-                    <TermDetail
-                        article={article}
-                        readingTime={formattedReadingTime}
-                        likeCount={likeCount || 0}
-                        initialLiked={false}
-                        initialBookmarked={false}
-                    />
-                ) : (
-                    <>
-                        {/* Immersive Neo Hero */}
-                        <NeoArticleHero article={article} readingTime={formattedReadingTime} />
-
-                        {/* State-managed Article Reader */}
-                        <ArticleReader
+                <ArticleErrorBoundary>
+                    {article.category === 'Kitap İncelemesi' ? (
+                        <BookReviewDetail
                             article={article}
                             readingTime={formattedReadingTime}
                             likeCount={likeCount || 0}
@@ -269,13 +249,38 @@ export default async function ArticlePage({ params }: PageProps) {
                             initialBookmarked={false}
                             comments={comments || []}
                             isLoggedIn={false}
-                            isAdmin={false}
                             userAvatar={undefined}
-                            relatedArticles={relatedArticles || []}
-                            references={references || []}
                         />
-                    </>
-                )}
+                    ) : article.category === 'Terim' ? (
+                        <TermDetail
+                            article={article}
+                            readingTime={formattedReadingTime}
+                            likeCount={likeCount || 0}
+                            initialLiked={false}
+                            initialBookmarked={false}
+                        />
+                    ) : (
+                        <>
+                            {/* Immersive Neo Hero */}
+                            <NeoArticleHero article={article} readingTime={formattedReadingTime} />
+
+                            {/* State-managed Article Reader */}
+                            <ArticleReader
+                                article={article}
+                                readingTime={formattedReadingTime}
+                                likeCount={likeCount || 0}
+                                initialLiked={false}
+                                initialBookmarked={false}
+                                comments={comments || []}
+                                isLoggedIn={false}
+                                isAdmin={false}
+                                userAvatar={undefined}
+                                relatedArticles={relatedArticles || []}
+                                references={references || []}
+                            />
+                        </>
+                    )}
+                </ArticleErrorBoundary>
             </div>
         </>
     );

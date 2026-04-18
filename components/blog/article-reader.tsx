@@ -69,27 +69,32 @@ export function ArticleReader({
 
     useEffect(() => {
         const fetchUserData = async () => {
-            const supabase = createClient();
-            const { data: { user } } = await supabase.auth.getUser();
-            
-            if (!user) return;
-            
-            const isUserAdmin = isAdminEmail(user.email);
-            const baseAvatar = user.user_metadata?.avatar_url;
+            try {
+                const supabase = createClient();
+                const { data: { user } } = await supabase.auth.getUser();
+                
+                if (!user) return;
+                
+                const isUserAdmin = isAdminEmail(user.email);
+                const baseAvatar = user.user_metadata?.avatar_url;
 
-            const [likesRes, bookmarksRes, profileRes] = await Promise.all([
-                supabase.from('article_likes').select('id').eq('article_id', article.id).eq('user_id', user.id).single(),
-                supabase.from('article_bookmarks').select('id').eq('article_id', article.id).eq('user_id', user.id).single(),
-                supabase.from('profiles').select('avatar_url').eq('id', user.id).single()
-            ]);
+                const [likesRes, bookmarksRes, profileRes] = await Promise.all([
+                    supabase.from('article_likes').select('id').eq('article_id', article.id).eq('user_id', user.id).maybeSingle(),
+                    supabase.from('article_bookmarks').select('id').eq('article_id', article.id).eq('user_id', user.id).maybeSingle(),
+                    supabase.from('profiles').select('avatar_url').eq('id', user.id).maybeSingle()
+                ]);
 
-            setUserContext({
-                isLiked: !!likesRes.data,
-                isBookmarked: !!bookmarksRes.data,
-                isLoggedIn: true,
-                isAdmin: isUserAdmin,
-                userAvatar: profileRes.data?.avatar_url || baseAvatar
-            });
+                setUserContext({
+                    isLiked: !!likesRes.data,
+                    isBookmarked: !!bookmarksRes.data,
+                    isLoggedIn: true,
+                    isAdmin: isUserAdmin,
+                    userAvatar: profileRes.data?.avatar_url || baseAvatar
+                });
+            } catch (err) {
+                // Silently fail — user context is non-critical and defaults are already set
+                console.error('Failed to fetch user context:', err);
+            }
         };
         fetchUserData();
     }, [article.id]);
@@ -147,17 +152,32 @@ export function ArticleReader({
                 btn.className = 'code-copy-btn';
                 btn.textContent = 'Kopyala';
                 
-                const handleClick = () => {
+                const handleClick = async () => {
                     const code = pre.querySelector('code');
                     const text = code?.textContent || pre.textContent || '';
-                    navigator.clipboard.writeText(text).then(() => {
+                    try {
+                        if (navigator?.clipboard?.writeText) {
+                            await navigator.clipboard.writeText(text);
+                        } else {
+                            // Fallback for WebViews without clipboard API
+                            const textArea = document.createElement('textarea');
+                            textArea.value = text;
+                            textArea.style.position = 'fixed';
+                            textArea.style.opacity = '0';
+                            document.body.appendChild(textArea);
+                            textArea.select();
+                            document.execCommand('copy');
+                            document.body.removeChild(textArea);
+                        }
                         btn.textContent = '✓ Kopyalandı';
                         btn.classList.add('copied');
                         setTimeout(() => {
                             btn.textContent = 'Kopyala';
                             btn.classList.remove('copied');
                         }, 2000);
-                    });
+                    } catch {
+                        // Silently fail in restricted WebView environments
+                    }
                 };
 
                 btn.addEventListener('click', handleClick);
