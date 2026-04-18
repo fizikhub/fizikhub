@@ -151,6 +151,15 @@ export async function middleware(request: NextRequest) {
         }
     }
 
+    // Bypass session management for social media bots/crawlers
+    // These bots don't have cookies and only need the HTML for OG meta tags
+    const userAgent = request.headers.get('user-agent') || '';
+    const isSocialBot = /facebookexternalhit|Facebot|Twitterbot|LinkedInBot|WhatsApp|Slackbot|TelegramBot|Instagram|Pinterest|Discordbot/i.test(userAgent);
+
+    if (isSocialBot) {
+        return NextResponse.next();
+    }
+
     const response = await updateSession(request);
 
     return response;

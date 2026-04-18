@@ -157,11 +157,8 @@ const nextConfig: NextConfig = {
             key: 'X-Content-Type-Options',
             value: 'nosniff',
           },
-          // Clickjacking protection
-          {
-            key: 'X-Frame-Options',
-            value: 'SAMEORIGIN',
-          },
+          // Clickjacking protection — handled by CSP frame-ancestors below
+          // X-Frame-Options removed to allow Instagram WebView to load pages
           // XSS protection
           {
             key: 'X-XSS-Protection',
@@ -188,7 +185,7 @@ const nextConfig: NextConfig = {
               "object-src 'none'",
               "base-uri 'self'",
               "form-action 'self'",
-              "frame-ancestors 'self'",
+              "frame-ancestors 'self' https://*.instagram.com https://*.facebook.com",
               "upgrade-insecure-requests",
             ].join('; '),
           },
