@@ -141,7 +141,7 @@ export function Footer() {
                                                 <span className="group-hover:translate-x-1 transition-transform">{link.label}</span>
                                                 <ArrowRight className="w-4 h-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-neo-yellow" />
                                             </Link>
-                                        </li>
+                                        </motion.li>
                                     ))}
                                 </ul>
                             </div>
