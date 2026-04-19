@@ -33,33 +33,37 @@ export function MarkdownRenderer({
     // The tiptap-markdown extension serializes math as $latex$ (always inline)
     // ReactMarkdown + remarkMath only understands $...$ / $$...$$ in markdown
     const processedContent = useMemo(() => {
+        if (!content) return "";
         let c = content;
 
-        // Step 0: Normalize — remove zero-width spaces, trim excessive blank lines
+        // Step 0: Normalize — remove zero-width spaces, normalize line endings
         c = c.replace(/[\u200B\u200C\u200D\uFEFF]/g, '');
+        c = c.replace(/\r\n/g, '\n');
 
-        // Step 1: Convert <p> containing ONLY a math span → block math $$...$$
+        // Step 1: Ensure headers starts on a new line with proper spacing
+        // This fixes "### Header" appearing as literal text if previous line ended poorly
+        c = c.replace(/^([ \t]*)#{1,6}[ \t]+/gm, (match) => `\n\n${match.trim()}\n\n`);
+
+        // Step 2: Convert <p> containing ONLY a math span → block math $$...$$
         c = c.replace(/<p>\s*<span[^>]*data-type="math"[^>]*data-latex="([^"]*)"[^>]*>[^<]*<\/span>\s*<\/p>/gi, (_, latex) => `\n\n$$\n${latex.trim()}\n$$\n\n`);
         c = c.replace(/<p>\s*<span[^>]*data-latex="([^"]*)"[^>]*data-type="math"[^>]*>[^<]*<\/span>\s*<\/p>/gi, (_, latex) => `\n\n$$\n${latex.trim()}\n$$\n\n`);
 
-        // Step 2: Remaining inline math spans (mixed with text in a paragraph)
+        // Step 3: Remaining inline math spans (mixed with text in a paragraph)
         c = c.replace(/<span[^>]*data-type="math"[^>]*data-latex="([^"]*)"[^>]*>[^<]*<\/span>/gi, (_, latex) => `$${latex.trim()}$`);
         c = c.replace(/<span[^>]*data-latex="([^"]*)"[^>]*data-type="math"[^>]*>[^<]*<\/span>/gi, (_, latex) => `$${latex.trim()}$`);
 
-        // Step 3: Self-closing math spans (some editors output <span ... />)
+        // Step 4: Self-closing math spans
         c = c.replace(/<span[^>]*data-type="math"[^>]*data-latex="([^"]*)"[^>]*\/>/gi, (_, latex) => `$${latex.trim()}$`);
 
-        // Step 4: Auto-promote standalone $...$ on their own line to block $$...$$
-        c = c.replace(/^[ \t]*\$([^$\n]+)\$[ \t]*$/gm, (_, latex) => `\n$$\n${latex}\n$$\n`);
-        c = c.replace(/^[ \t]*\$\$([^$\n]+)\$\$[ \t]*$/gm, (_, latex) => `\n$$\n${latex}\n$$\n`);
+        // Step 5: Auto-promote standalone $...$ on their own line to block $$...$$
+        c = c.replace(/^[ \t]*\$([^$\n]+)\$[ \t]*$/gm, (_, latex) => `\n\n$$\n${latex}\n$$\n\n`);
+        c = c.replace(/^[ \t]*\$\$([^$\n]+)\$\$[ \t]*$/gm, (_, latex) => `\n\n$$\n${latex}\n$$\n\n`);
 
-        // Step 5: Strip 4+ leading spaces (prevents markdown code block interpretation)
-        c = c.replace(/^\s{4,}(\$\$[^$]+\$\$)$/gm, '$1');
-
-        // Step 6: Collapse 3+ consecutive newlines into 2 (clean up excess whitespace)
+        // Step 6: Collapse multiple newlines — but ensure at least 2 between logical blocks
         c = c.replace(/\n{3,}/g, '\n\n');
-
-        return c;
+        
+        // Final trim to avoid leading/trailing garbage
+        return c.trim();
     }, [content]);
 
     const proseSizeClasses = {
