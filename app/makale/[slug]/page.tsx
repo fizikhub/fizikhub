@@ -11,6 +11,7 @@ import { ArticleReader } from "@/components/blog/article-reader";
 import { BookReviewDetail } from "@/components/book-review/book-review-detail";
 import { TermDetail } from "@/components/term/term-detail";
 import { ArticleErrorBoundary } from "@/components/blog/article-error-boundary";
+import { MarkdownRenderer } from "@/components/markdown-renderer";
 
 interface PageProps {
     params: Promise<{ slug: string }>;
@@ -241,7 +242,9 @@ export default async function ArticlePage({ params }: PageProps) {
                     <ArticleErrorBoundary fallback={
                         <div className="container max-w-4xl mx-auto px-4 py-10">
                             <h1 className="text-3xl font-black mb-4">{article.title}</h1>
-                            <div className="prose dark:prose-invert max-w-none whitespace-pre-wrap">{article.content}</div>
+                            <div className="prose dark:prose-invert max-w-none">
+                                <MarkdownRenderer content={article.content} />
+                            </div>
                         </div>
                     }>
                         <BookReviewDetail
@@ -259,7 +262,9 @@ export default async function ArticlePage({ params }: PageProps) {
                     <ArticleErrorBoundary fallback={
                         <div className="container max-w-4xl mx-auto px-4 py-10">
                             <h1 className="text-3xl font-black mb-4">{article.title}</h1>
-                            <div className="prose dark:prose-invert max-w-none whitespace-pre-wrap">{article.content}</div>
+                            <div className="prose dark:prose-invert max-w-none">
+                                <MarkdownRenderer content={article.content} />
+                            </div>
                         </div>
                     }>
                         <TermDetail
@@ -278,7 +283,9 @@ export default async function ArticlePage({ params }: PageProps) {
                         {/* Only interactive reader is wrapped — fallback shows plain article text */}
                         <ArticleErrorBoundary fallback={
                             <div className="container max-w-4xl mx-auto px-4 py-10">
-                                <div className="prose dark:prose-invert max-w-none whitespace-pre-wrap">{article.content}</div>
+                                <div className="prose dark:prose-invert max-w-none">
+                                    <MarkdownRenderer content={article.content} />
+                                </div>
                             </div>
                         }>
                             <ArticleReader
