@@ -22,6 +22,7 @@ export default async function ProfilePage() {
         { data: articles },
         { data: questions },
         { data: answers },
+        followStats,
         { data: drafts },
         unreadMessagesCount,
         { data: bookmarkedArticles },
