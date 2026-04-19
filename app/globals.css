@@ -160,7 +160,9 @@
     }
 
     html {
-        scroll-behavior: smooth;
+        /* scroll-behavior: smooth REMOVED — it causes jank on mobile by fighting
+           native momentum scrolling. JS scrollTo({behavior:'smooth'}) is used
+           for programmatic smooth-scroll instead (e.g. scroll-to-top button). */
     }
 
     body {
@@ -394,28 +396,12 @@
     }
 
     /* ============================================
-       SCROLL REVEAL — Content sections fade in
+       SCROLL REVEAL — REMOVED
+       The animation: articleReveal 0.5s ease-out both rule caused
+       text to flash invisible (opacity:0) for 0.5s on every scroll
+       because animation-fill-mode:both sets initial opacity to 0.
+       On low-end phones this created visible content disappearing.
        ============================================ */
-    .article-content > * {
-        animation: articleReveal 0.5s ease-out both;
-    }
-    @keyframes articleReveal {
-        from {
-            opacity: 0;
-            transform: translateY(12px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    /* Stagger delay for first few elements */
-    .article-content > *:nth-child(1) { animation-delay: 0s; }
-    .article-content > *:nth-child(2) { animation-delay: 0.05s; }
-    .article-content > *:nth-child(3) { animation-delay: 0.1s; }
-    .article-content > *:nth-child(4) { animation-delay: 0.15s; }
-    .article-content > *:nth-child(5) { animation-delay: 0.2s; }
 
     /* ============================================
        IMAGE CAPTIONS — Neo-Brutalist Style
@@ -664,11 +650,12 @@ select,
     touch-action: manipulation;
 }
 
-/* Cards and interactive containers */
+/* Cards and interactive containers
+   NOTE: 'article' and 'section>div' removed — they match article body content,
+   forcing the browser to set up transition tracking on every paragraph/heading
+   inside the reader, causing recalc-on-scroll jank (the "bounce back" effect). */
 .card,
 [class*="card"],
-article,
-section>div,
 .group {
     transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1),
         box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1),
@@ -728,10 +715,13 @@ select {
     -webkit-overflow-scrolling: touch;
 }
 
-/* Content stability */
+/* Content stability — SCOPED. 
+   'contain: paint' on <main> hid content during fast scrolling
+   because the browser skipped painting off-viewport children.
+   Changed to 'contain: layout style' only (no paint containment). */
 main,
 .content {
-    contain: layout style paint;
+    contain: layout style;
 }
 
 /* ========== ANIMATION OPTIMIZATIONS ========== */

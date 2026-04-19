@@ -53,7 +53,6 @@ const nextConfig: NextConfig = {
       'canvas-confetti',
 
       'html2canvas',
-      'lenis',
       'sonner',
       'react-hook-form',
       '@supabase/supabase-js',
