@@ -4,20 +4,15 @@ import Link from "next/link";
 import { DankLogo } from "@/components/brand/dank-logo";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { ArrowRight } from "lucide-react";
+import { Ghost, Sparkles, Zap, BookOpen } from "lucide-react";
 
 // ═══════════════════════════════════════════════════════════════
-// FOOTER v9 — TYPOGRAPHIC NEO-BRUTALISM
-// Extreme Compactness. Zero background blocks.
-// Hidden emoji interactions. The ultimate "cool" factor.
+// FOOTER v10 — THE "HAFİF MEŞREP" (PLAYFUL) PREMIUM EDITION
+// Compact, Fun, Highly Interactive. 
+// Uses "Pill" brutalism, scattered angles, and vibrant hover states.
 // ═══════════════════════════════════════════════════════════════
 
-const TAPE_MESSAGES = [
-    "BİLİMİ Tİ YEYİP YUTUYORUZ", "ENTROPİYE KARŞI KOYAMAZSIN",
-    "FİZİKHUB 2026", "E = mc²", "TEORİK AMA PRATİKTE KOMİK"
-];
-
-const MARQUEE_TEXT = Array(8).fill(TAPE_MESSAGES.join(" • ")).join(" • ");
+const TapeRepeater = () => Array(8).fill("BİLİMİ Tİ YEYİP YUTUYORUZ • 🪐 • E=MC² • 🧪 • ").join("");
 
 export function Footer() {
     const pathname = usePathname();
@@ -29,95 +24,113 @@ export function Footer() {
     return (
         <footer role="contentinfo" aria-label="Site bilgileri"
             className={cn(
-                "relative bg-[#F5F5F5] dark:bg-[#070707] flex flex-col justify-end border-t border-black/20 dark:border-white/10",
-                isWriterPanel ? "min-h-[120px]" : "min-h-[auto]"
+                "relative border-t-[3px] md:border-t-4 border-black dark:border-zinc-800 bg-[#fbfbfb] dark:bg-[#0c0c0c] overflow-hidden flex flex-col justify-end",
+                isWriterPanel ? "min-h-[150px]" : "min-h-[auto]"
             )}
         >
-            {/* INVISIBLE ACCENT GLOW (Only on dark mode for premium feel) */}
-            <div className="absolute inset-0 pointer-events-none opacity-0 dark:opacity-10" style={{ background: 'radial-gradient(ellipse at bottom, #FFC800 0%, transparent 50%)' }} />
+            {/* Playful Dotted Background */}
+             <div 
+                className="absolute inset-0 opacity-[0.10] dark:opacity-[0.05] pointer-events-none" 
+                style={{ 
+                    backgroundImage: 'radial-gradient(#000 2px, transparent 2px)', 
+                    backgroundSize: '20px 20px',
+                    backgroundPosition: '0 0, 10px 10px'
+                }} 
+            />
 
             {!isWriterPanel && (
                 <>
-                    {/* ULTRA-THIN CAUTION TAPE MARQUEE */}
-                    <div className="w-full bg-[#FFC800] border-b border-black py-1.5 z-20 flex whitespace-nowrap overflow-hidden">
-                        <div className="animate-marquee flex gap-6 items-center text-black font-black text-[10px] md:text-[11px] tracking-[0.2em] uppercase">
-                            <span>{MARQUEE_TEXT}</span>
-                            <span>{MARQUEE_TEXT}</span>
+                    {/* Wavy/Diagonal Marquee Tape */}
+                    <div className="absolute top-0 left-0 w-full bg-[#FFC800] border-b-[3px] md:border-b-4 border-black text-black font-black text-[10px] md:text-sm py-1.5 md:py-2.5 overflow-hidden shadow-[0_4px_0_0_#000] z-20">
+                        <div className="animate-marquee whitespace-nowrap flex tracking-widest uppercase">
+                            <span><TapeRepeater /></span>
+                            <span><TapeRepeater /></span>
                         </div>
                     </div>
 
-                    <div className="container relative z-30 pt-12 md:pt-24 pb-8 md:pb-16 px-4 md:px-8 flex flex-col md:flex-row gap-12 lg:gap-24">
+                    <div className="container relative z-30 pt-16 md:pt-24 pb-16 md:pb-20 flex flex-col items-center text-center gap-8 md:gap-12 px-4">
                         
-                        {/* BRAND / LOGO AREA - Hyper Minimal */}
-                        <div className="flex flex-col gap-4 max-w-[280px]">
-                            <div className="scale-[0.8] origin-left -ml-2">
+                        {/* Logo & Quirky Text */}
+                        <div className="flex flex-col items-center gap-4">
+                            <div className="transform -rotate-2 hover:rotate-2 hover:scale-105 transition-all duration-300">
                                 <DankLogo />
                             </div>
-                            <p className="text-xs font-bold text-zinc-500 dark:text-zinc-400 leading-relaxed max-w-[200px]">
-                                Türkiye'nin ilk ve tek bilimi ti'ye alan araştırma-geliştirme ağı.<br />
-                            </p>
+                            <div className="bg-black text-white dark:bg-[#FFC800] dark:text-black font-black text-[10px] md:text-xs px-3 py-1 rounded-sm uppercase tracking-wide transform rotate-1 shadow-[2px_2px_0px_0px_#FFC800] dark:shadow-[2px_2px_0px_0px_#fff]">
+                                CİDDİYET SEVİYESİ: %0.01
+                            </div>
                         </div>
 
-                        {/* LIST BASED TYPOGRAPHY NAVIGATION */}
-                        <div className="flex-1 w-full">
-                            <ul className="flex flex-col border-t-2 border-black/10 dark:border-white/10">
-                                <TypographicLink href="/makale" label="Blog" emoji="⚛️" />
-                                <TypographicLink href="/simulasyonlar" label="Simülasyonlar" emoji="🚀" />
-                                <TypographicLink href="/sözlük" label="Sözlük" emoji="📚" />
-                            </ul>
+                        {/* Playful Pill Links */}
+                        <div className="flex flex-wrap justify-center gap-3 md:gap-5 w-full max-w-3xl">
+                            <PillLink href="/makale" label="Blog" color="bg-[#FF90E8]" icon={<BookOpen strokeWidth={2.5} className="w-4 h-4 md:w-5 md:h-5"/>} rotate="-rotate-2" />
+                            <PillLink href="/simulasyonlar" label="Simülasyonlar" color="bg-[#23A9FA]" icon={<Zap strokeWidth={2.5} className="w-4 h-4 md:w-5 md:h-5"/>} rotate="rotate-2" />
+                            <PillLink href="/sözlük" label="Fizik Sözlüğü" color="bg-[#10B981]" icon={<Sparkles strokeWidth={2.5} className="w-4 h-4 md:w-5 md:h-5"/>} rotate="-rotate-1" />
+                            <PillLink href="/hakkimizda" label="Biz Kimiz?" color="bg-[#FFC800]" icon={<Ghost strokeWidth={2.5} className="w-4 h-4 md:w-5 md:h-5"/>} rotate="rotate-3" />
                         </div>
+
                     </div>
                 </>
             )}
 
-            {/* RECEIPT STYLE BOTTOM BAR */}
-            <div className="relative z-40 w-full border-t border-black/10 dark:border-zinc-800 bg-[#F5F5F5] dark:bg-[#070707] py-4">
-                <div className="container flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left px-4 md:px-8">
-                    
-                    <div className="flex items-center gap-4 text-[10px] md:text-xs font-bold uppercase tracking-widest text-zinc-400 dark:text-zinc-500">
-                        <span>FİZİKHUB &copy; 2026</span>
-                        <span className="w-1.5 h-1.5 rounded-full bg-[#FFC800]"></span>
-                        <span>ALL INTELLECTUAL PROPERTY SECURED</span>
-                    </div>
-
-                    <div className="flex gap-4 md:gap-6 text-[10px] font-black uppercase text-zinc-600 dark:text-zinc-400">
-                        <Link href="/hakkimizda" className="hover:text-black dark:hover:text-white transition-colors">Hakkımızda</Link>
-                        <Link href="/iletisim" className="hover:text-black dark:hover:text-white transition-colors">İletişim</Link>
-                        <Link href="/kullanim-sartlari" className="hover:text-black dark:hover:text-white transition-colors border-l border-zinc-300 dark:border-zinc-700 pl-4 md:pl-6">Terms</Link>
-                        <Link href="/gizlilik-politikasi" className="hover:text-black dark:hover:text-white transition-colors">Privacy</Link>
+            {/* Sub Menu & Legal - Receipt Style but colorful */}
+            <div className="relative z-40 w-full border-t-[3px] md:border-t-4 border-black dark:border-zinc-800 bg-[#FFC800] py-3 md:py-4 shadow-[0_-4px_0_0_#000] md:shadow-[0_-8px_0_0_#000]">
+                <div className="container flex flex-col md:flex-row items-center justify-between gap-4 px-4 md:px-8">
+                    <p className="text-[10px] md:text-xs font-black uppercase tracking-widest text-black">
+                        &copy; 2026 FİZİKHUB • Uzay-Zaman Sürekliliği Sağlandı
+                    </p>
+                    <div className="flex flex-wrap justify-center gap-4 md:gap-6 text-[10px] md:text-xs font-black text-black uppercase">
+                        <Link href="/iletisim" className="hover:underline decoration-2 underline-offset-4">İletişim</Link>
+                        <span className="opacity-20">•</span>
+                        <Link href="/kullanim-sartlari" className="hover:underline decoration-2 underline-offset-4">Şartlar</Link>
+                        <span className="opacity-20">•</span>
+                        <Link href="/gizlilik-politikasi" className="hover:underline decoration-2 underline-offset-4">Gizlilik</Link>
+                        <span className="opacity-20">•</span>
+                        <Link href="/kvkk" className="hover:underline decoration-2 underline-offset-4">KVKK</Link>
                     </div>
                 </div>
             </div>
+            
+            {/* The "Schrodinger's Box" Eastern Egg */}
+            {!isWriterPanel && (
+                <div 
+                    className="group absolute bottom-12 md:bottom-14 left-4 md:left-8 w-12 h-10 md:w-16 md:h-12 border-[3px] border-black bg-[#E5E7EB] dark:bg-zinc-800 rounded-t-lg flex items-end justify-center overflow-hidden hover:h-16 md:hover:h-24 transition-all duration-300 cursor-pointer z-30"
+                    title="Schrödinger'in Kutusu"
+                >
+                    <span className="text-2xl md:text-4xl translate-y-6 md:translate-y-8 group-hover:-translate-y-1 md:group-hover:translate-y-1 transition-transform duration-300 ease-out delay-75">🐈</span>
+                    <span className="absolute bottom-1 md:bottom-2 text-[6px] md:text-[8px] font-black text-black dark:text-white pointer-events-none tracking-widest">KUTU</span>
+                </div>
+            )}
+
         </footer>
     );
 }
 
-function TypographicLink({ href, label, emoji }: { href: string, label: string, emoji: string }) {
+function PillLink({href, label, color, icon, rotate}: {href: string, label: string, color: string, icon: React.ReactNode, rotate: string}) {
     return (
-        <li className="border-b-2 border-black/10 dark:border-white/10">
-            <Link 
-                href={href}
-                prefetch={false}
-                className="group flex items-center justify-between py-4 md:py-6 overflow-hidden relative"
-            >
-                {/* Text Effect */}
-                <div className="flex items-center gap-4 relative z-10 transition-transform duration-300 ease-out group-hover:translate-x-3 md:group-hover:translate-x-6">
-                    <span className="text-2xl md:text-5xl lg:text-6xl font-black uppercase tracking-tight text-black dark:text-zinc-100 group-hover:text-[#FFC800] transition-colors duration-300">
-                        {label}
-                    </span>
-                    <span className="text-2xl md:text-4xl opacity-0 -translate-x-4 group-hover:translate-x-0 group-hover:opacity-100 transition-all duration-300 ease-[cubic-bezier(0.175,0.885,0.32,1.275)]">
-                        {emoji}
-                    </span>
-                </div>
-                
-                {/* Arrow Icon Effect */}
-                <span className="relative z-10 p-2 border-2 border-black/0 group-hover:border-black dark:group-hover:border-white rounded-full transition-colors duration-300">
-                    <ArrowRight className="w-5 h-5 md:w-8 md:h-8 stroke-[3px] text-zinc-400 group-hover:text-black dark:group-hover:text-white -translate-x-4 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all duration-300 ease-out" />
-                </span>
-
-                {/* Glitch Line Hover Background */}
-                <div className="absolute inset-0 bg-transparent group-hover:bg-zinc-100 dark:group-hover:bg-zinc-900/50 -z-0 transition-colors duration-200" />
-            </Link>
-        </li>
+        <Link 
+            href={href} 
+            prefetch={false}
+            className={cn(
+                "group relative flex items-center justify-between gap-3 px-5 py-2.5 md:py-4 md:px-8 rounded-full border-[3px] md:border-4 border-black dark:border-zinc-700 text-black dark:text-zinc-100 font-black uppercase text-xs md:text-sm",
+                "shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] md:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]",
+                "hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] md:hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px]",
+                "active:shadow-none active:translate-x-[3px] active:translate-y-[3px] md:active:translate-x-[4px] md:active:translate-y-[4px]",
+                "transition-all duration-150 ease-out bg-white dark:bg-zinc-900 overflow-hidden",
+                rotate
+            )}
+        >
+            {/* Colorful inner background triggered on hover */}
+            <div className={cn("absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-0", color)}></div>
+            
+            {/* Label */}
+            <span className="relative z-10 dark:group-hover:text-black transition-colors duration-200 tracking-wider">
+                {label}
+            </span>
+            
+            {/* Icon Box */}
+            <span className="relative z-10 dark:text-white dark:group-hover:text-black transition-colors duration-200 transform group-hover:scale-110 group-hover:rotate-12">
+                {icon}
+            </span>
+        </Link>
     );
 }
