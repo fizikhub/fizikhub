@@ -243,7 +243,7 @@ export default async function ArticlePage({ params }: PageProps) {
                         <div className="container max-w-4xl mx-auto px-4 py-10">
                             <h1 className="text-3xl font-black mb-4">{article.title}</h1>
                             <div className="prose dark:prose-invert max-w-none">
-                                <MarkdownRenderer content={article.content} />
+                                <MarkdownRenderer content={article.content || ""} />
                             </div>
                         </div>
                     }>
@@ -263,7 +263,7 @@ export default async function ArticlePage({ params }: PageProps) {
                         <div className="container max-w-4xl mx-auto px-4 py-10">
                             <h1 className="text-3xl font-black mb-4">{article.title}</h1>
                             <div className="prose dark:prose-invert max-w-none">
-                                <MarkdownRenderer content={article.content} />
+                                <MarkdownRenderer content={article.content || ""} />
                             </div>
                         </div>
                     }>
@@ -284,7 +284,7 @@ export default async function ArticlePage({ params }: PageProps) {
                         <ArticleErrorBoundary fallback={
                             <div className="container max-w-4xl mx-auto px-4 py-10">
                                 <div className="prose dark:prose-invert max-w-none">
-                                    <MarkdownRenderer content={article.content} />
+                                    <MarkdownRenderer content={article.content || ""} />
                                 </div>
                             </div>
                         }>
