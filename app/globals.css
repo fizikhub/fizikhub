@@ -496,7 +496,22 @@
 
 }
 
-@layer utilities {}
+@layer utilities {
+    .animate-marquee {
+        animation: marquee 30s linear infinite;
+        will-change: transform;
+    }
+    
+    .animate-marquee-slow {
+        animation: marquee 45s linear infinite;
+        will-change: transform;
+    }
+    
+    @keyframes marquee {
+        0% { transform: translateX(0); }
+        100% { transform: translateX(-50%); }
+    }
+}
 
 
 /* VIEW TRANSITIONS API */

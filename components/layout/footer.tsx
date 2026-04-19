@@ -4,145 +4,145 @@ import Link from "next/link";
 import { DankLogo } from "@/components/brand/dank-logo";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { ArrowUpRight } from "lucide-react";
 
 // ═══════════════════════════════════════════════════════════════
-// FOOTER v7 — Lightweight Cosmic CSS (No WebGL)
-// Replaced 160-step ray-traced black hole with pure CSS gradient
-// ~6,700x lighter on GPU while maintaining cosmic aesthetic
+// FOOTER v8 — NEO-BRUTALIST HIGH PERFORMANCE
+// No WebGL, No JS loops. 100% CSS.
+// Zero layout shifts. High contrast. Maximum impact.
 // ═══════════════════════════════════════════════════════════════
+
+const TAPE_MESSAGES = [
+    "BİLİMİ Tİ'YE ALIYORUZ AMA CİDDİLİ ŞEKİLDE", "E = mc²",
+    "FİZİK KURALLARI İHLAL EDİLEMEZ", "F = ma",
+    "KARADELİĞE DÜŞERSEN GERİ DÖNEMEZSİN", "ΔxΔp ≥ ℏ/2",
+    "ENTROPİ SÜREKLİ ARTAR", "∇ × E = -∂B/∂t",
+    "KEDİ HEM CANLI HEM ÖLÜ", "S = k log W"
+];
+
+const MARQUEE_TEXT = Array(4).fill(TAPE_MESSAGES.join(" • ")).join(" • ");
 
 export function Footer() {
     const pathname = usePathname();
     const isChatPage = pathname?.match(/\/mesajlar\/.+/);
     const isWriterPanel = pathname?.startsWith('/yazar-paneli') || pathname?.startsWith('/yazar/');
 
+    if (isChatPage) return null;
+
     return (
         <footer role="contentinfo" aria-label="Site bilgileri"
             className={cn(
-                "relative bg-black overflow-hidden flex flex-col justify-end",
-                isChatPage ? "hidden" : "flex",
-                isWriterPanel ? "min-h-[200px] md:min-h-[200px]" : "min-h-[520px] md:min-h-[650px]"
+                "relative bg-[#EDEDED] dark:bg-[#0A0A0A] overflow-hidden flex flex-col justify-end border-t-4 border-black dark:border-zinc-800",
+                isWriterPanel ? "min-h-[200px]" : "min-h-[400px] sm:min-h-[500px]"
             )}
         >
-            {/* COSMIC CSS BACKGROUND — Ultra-lightweight replacement */}
+            {/* RAW GRID BACKGROUND */}
+            <div 
+                className="absolute inset-0 pointer-events-none opacity-20 dark:opacity-10"
+                style={{
+                    backgroundImage: `
+                        linear-gradient(to right, #000 1px, transparent 1px),
+                        linear-gradient(to bottom, #000 1px, transparent 1px)
+                    `,
+                    backgroundSize: '40px 40px',
+                }}
+            />
+
             {!isWriterPanel && (
-                <div className="absolute inset-0 z-0">
-                    {/* Deep space radial gradient */}
-                    <div
-                        className="absolute inset-0"
-                        style={{
-                            background: `
-                                radial-gradient(ellipse 60% 50% at 50% 60%, rgba(20, 10, 40, 0.9) 0%, transparent 70%),
-                                radial-gradient(ellipse 40% 35% at 50% 65%, rgba(40, 15, 10, 0.6) 0%, transparent 60%),
-                                radial-gradient(ellipse 25% 20% at 50% 70%, rgba(60, 25, 5, 0.4) 0%, transparent 50%),
-                                radial-gradient(ellipse 8% 6% at 50% 72%, rgba(255, 200, 100, 0.08) 0%, transparent 100%),
-                                linear-gradient(180deg, transparent 0%, rgba(5, 2, 15, 0.95) 40%, #000 100%)
-                            `,
-                        }}
-                    />
+                <>
+                    {/* CAUTION TAPE MARQUEE - PURE CSS */}
+                    <div className="absolute top-0 left-0 w-full bg-[#FFC800] border-b-4 border-black overflow-hidden py-3 sm:py-4 z-20 flex whitespace-nowrap shadow-[0_8px_0_0_rgba(0,0,0,1)] dark:shadow-[0_8px_0_0_#1a1a1a]">
+                        <div className="animate-marquee flex gap-8 items-center text-black font-black text-xl sm:text-2xl tracking-widest uppercase">
+                            <span>{MARQUEE_TEXT}</span>
+                            <span>{MARQUEE_TEXT}</span>
+                        </div>
+                    </div>
 
-                    {/* Subtle CSS stars via box-shadow (0 GPU compute, pure raster) */}
-                    <div
-                        className="absolute inset-0 opacity-40"
-                        style={{
-                            backgroundImage: `
-                                radial-gradient(1px 1px at 10% 20%, rgba(255,255,255,0.8), transparent),
-                                radial-gradient(1px 1px at 25% 35%, rgba(255,255,255,0.6), transparent),
-                                radial-gradient(1px 1px at 40% 15%, rgba(255,255,255,0.7), transparent),
-                                radial-gradient(1.5px 1.5px at 55% 45%, rgba(255,220,180,0.9), transparent),
-                                radial-gradient(1px 1px at 70% 25%, rgba(255,255,255,0.5), transparent),
-                                radial-gradient(1px 1px at 85% 55%, rgba(255,255,255,0.6), transparent),
-                                radial-gradient(1px 1px at 15% 65%, rgba(255,255,255,0.4), transparent),
-                                radial-gradient(1.5px 1.5px at 30% 80%, rgba(180,200,255,0.7), transparent),
-                                radial-gradient(1px 1px at 60% 70%, rgba(255,255,255,0.5), transparent),
-                                radial-gradient(1px 1px at 80% 40%, rgba(255,255,255,0.4), transparent),
-                                radial-gradient(1px 1px at 5% 45%, rgba(255,255,255,0.3), transparent),
-                                radial-gradient(1px 1px at 92% 15%, rgba(255,255,255,0.6), transparent),
-                                radial-gradient(2px 2px at 48% 68%, rgba(255,180,100,0.5), transparent),
-                                radial-gradient(1px 1px at 75% 85%, rgba(255,255,255,0.4), transparent),
-                                radial-gradient(1px 1px at 35% 50%, rgba(200,220,255,0.5), transparent)
-                            `,
-                            backgroundSize: '100% 100%',
-                        }}
-                    />
+                    <div className="container relative z-30 pt-32 sm:pt-40 pb-16 px-4 md:px-8">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-12 lg:gap-16 items-start">
+                            
+                            {/* BRAND COLUMN */}
+                            <div className="flex flex-col gap-6">
+                                <div className="p-6 bg-white dark:bg-zinc-900 border-4 border-black dark:border-zinc-700 rounded-xl shadow-[8px_8px_0px_0px_#000] dark:shadow-[8px_8px_0px_0px_#FFC800] transform -rotate-2 hover:rotate-0 transition-transform duration-300 w-fit">
+                                    <div className="scale-[0.8] origin-left -my-4">
+                                        <DankLogo />
+                                    </div>
+                                    <p className="mt-6 text-sm sm:text-base font-bold text-zinc-800 dark:text-zinc-200 uppercase tracking-wide leading-relaxed">
+                                        Türkiye'nin İlk ve Tek<br/>
+                                        <span className="bg-[#FFC800] text-black px-1.5 py-0.5 ml-0.5">Ti'ye Alan</span> Bilim Platformu
+                                    </p>
+                                </div>
+                            </div>
 
-                    {/* Faint accretion disk hint — pure CSS, no animation */}
-                    <div
-                        className="absolute left-1/2 -translate-x-1/2 opacity-[0.07]"
-                        style={{
-                            bottom: '35%',
-                            width: '80%',
-                            maxWidth: '600px',
-                            height: '3px',
-                            background: 'linear-gradient(90deg, transparent 0%, rgba(255,150,50,0.8) 20%, rgba(255,220,150,1) 50%, rgba(255,150,50,0.8) 80%, transparent 100%)',
-                            borderRadius: '50%',
-                            filter: 'blur(6px)',
-                        }}
-                    />
+                            {/* CHUNKY LINKS GRID */}
+                            <div className="lg:col-span-2 grid grid-cols-2 sm:grid-cols-3 gap-4 sm:gap-6">
+                                <FooterBlockLink href="/makale" label="Blog" color="bg-[#23A9FA]" />
+                                <FooterBlockLink href="/simulasyonlar" label="Simülasyonlar" color="bg-[#FFC800]" />
+                                <FooterBlockLink href="/sözlük" label="Sözlük" color="bg-[#10B981]" />
+                                <FooterBlockLink href="/hakkimizda" label="Hakkımızda" color="bg-white dark:bg-zinc-800" />
+                                <FooterBlockLink href="/iletisim" label="İletişim" color="bg-white dark:bg-zinc-800" />
+                                <div className="space-y-3 col-span-2 sm:col-span-1 border-4 border-dashed border-black/20 dark:border-white/20 p-4 flex flex-col justify-center bg-white/50 dark:bg-black/50">
+                                    <Link href="/gizlilik-politikasi" className="text-sm font-black uppercase text-zinc-600 dark:text-zinc-400 hover:text-[#FFC800] hover:underline underline-offset-4 decoration-2">Gizlilik</Link>
+                                    <Link href="/kullanim-sartlari" className="text-sm font-black uppercase text-zinc-600 dark:text-zinc-400 hover:text-[#FFC800] hover:underline underline-offset-4 decoration-2">Şartlar</Link>
+                                    <Link href="/kvkk" className="text-sm font-black uppercase text-zinc-600 dark:text-zinc-400 hover:text-[#FFC800] hover:underline underline-offset-4 decoration-2">KVKK</Link>
+                                </div>
+                            </div>
 
-                    {/* Event horizon hint — dark circle */}
-                    <div
-                        className="absolute left-1/2 -translate-x-1/2 rounded-full"
-                        style={{
-                            bottom: '30%',
-                            width: '60px',
-                            height: '60px',
-                            background: 'radial-gradient(circle, #000 40%, rgba(0,0,0,0.8) 60%, transparent 100%)',
-                            boxShadow: '0 0 40px 15px rgba(255,150,50,0.04), 0 0 80px 30px rgba(100,50,150,0.03)',
-                        }}
-                    />
-                </div>
+                        </div>
+                    </div>
+                </>
             )}
 
-            {/* SMOOTH GRADIENT TRANSITION — shrunken on mobile to avoid covering the hole */}
-            <div className="absolute inset-x-0 top-0 z-10 pointer-events-none h-[150px] md:h-[400px] bg-gradient-to-b from-background via-background/80 to-background/0" />
-
-            {/* CLEAN INLINE LINKS */}
-            <div className="relative z-30 mt-auto pb-3 pt-6">
-                <nav aria-label="Footer bağlantıları" className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 px-4">
-                    <Link prefetch={false} href="/hakkimizda" className="text-xs font-bold text-zinc-200 hover:text-white transition-colors duration-300 uppercase tracking-widest drop-shadow-md">Hakkımızda</Link>
-                    <span className="text-zinc-500 text-[8px]">•</span>
-                    <Link prefetch={false} href="/iletisim" className="text-xs font-bold text-zinc-200 hover:text-white transition-colors duration-300 uppercase tracking-widest drop-shadow-md">İletişim</Link>
-                    <span className="text-zinc-500 text-[8px]">•</span>
-                    <Link prefetch={false} href="/makale" className="text-xs font-bold text-zinc-200 hover:text-white transition-colors duration-300 uppercase tracking-widest drop-shadow-md">Blog</Link>
-                    <span className="text-zinc-500 text-[8px]">•</span>
-                    <Link prefetch={false} href="/gizlilik-politikasi" className="text-xs font-bold text-zinc-200 hover:text-white transition-colors duration-300 uppercase tracking-widest drop-shadow-md">Gizlilik</Link>
-                    <span className="text-zinc-500 text-[8px]">•</span>
-                    <Link prefetch={false} href="/kullanim-sartlari" className="text-xs font-bold text-zinc-200 hover:text-white transition-colors duration-300 uppercase tracking-widest drop-shadow-md">Şartlar</Link>
-                    <span className="text-zinc-500 text-[8px]">•</span>
-                    <Link prefetch={false} href="/kvkk" className="text-xs font-bold text-zinc-200 hover:text-white transition-colors duration-300 uppercase tracking-widest drop-shadow-md">KVKK</Link>
-                </nav>
-            </div>
-
-            {/* COPYRIGHT BAR — Desktop only, mobile handled by BottomNav */}
-            <div className="hidden md:block relative z-40 w-full border-t border-white/[0.06] bg-black/60 backdrop-blur-sm pb-4 pt-3 mt-auto">
-                <div className="container flex flex-col items-center justify-center gap-1.5 text-center">
-                    <div className="scale-[0.55] origin-center -my-2">
-                        <DankLogo />
+            {/* COPYRIGHT BAR */}
+            <div className="relative z-40 w-full border-t-4 border-black dark:border-zinc-800 bg-[#FFC800] dark:bg-[#FFC800] py-4 mt-auto shadow-[0_-8px_0_0_#000] dark:shadow-[0_-8px_0_0_#1a1a1a]">
+                <div className="container flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left px-4">
+                    <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-6">
+                        <p className="text-sm sm:text-base font-black text-black uppercase tracking-widest pointer-events-none select-none">
+                            &copy; 2026 FİZİKHUB
+                        </p>
+                        <span className="hidden sm:inline text-black/30 font-black">•</span>
+                        <p className="text-xs sm:text-sm font-bold text-black border-2 border-black px-2 py-0.5 transform -rotate-1 bg-white cursor-default shadow-[2px_2px_0px_0px_#000] hover:translate-y-[2px] hover:translate-x-[2px] transition-transform hover:shadow-none">
+                            İZİNSİZ KOPYALAYANI KARADELİĞE ATARIZ.
+                        </p>
                     </div>
-                    <p className="text-[10px] font-mono text-zinc-500">&copy; 2025 FİZİKHUB.</p>
-                    <span
-                        className="font-black text-[11px] tracking-[0.25em] uppercase"
-                        style={{
-                            background: 'linear-gradient(90deg, #f97316, #ef4444, #f97316)',
-                            backgroundSize: '200% 100%',
-                            WebkitBackgroundClip: 'text',
-                            WebkitTextFillColor: 'transparent',
-                            textShadow: 'none',
-                            filter: 'drop-shadow(0 0 8px rgba(249,115,22,0.4))',
-                            animation: 'shimmer 3s ease-in-out infinite',
-                        }}
-                    >
-                        İzinsiz kopyalayanı kara deliğe atarız.
-                    </span>
-                    <style>{`
-                        @keyframes shimmer {
-                            0%, 100% { background-position: 0% 50%; }
-                            50% { background-position: 100% 50%; }
-                        }
-                    `}</style>
+                    {/* Fake Barcode Stamp */}
+                    <div className="hidden lg:flex items-center gap-1 opacity-60 mix-blend-multiply">
+                        <div className="w-1 h-8 bg-black"></div>
+                        <div className="w-2 h-8 bg-black"></div>
+                        <div className="w-1 h-8 bg-black"></div>
+                        <div className="w-0.5 h-8 bg-black"></div>
+                        <div className="w-3 h-8 bg-black"></div>
+                        <div className="w-1 h-8 bg-black"></div>
+                        <div className="w-2 h-8 bg-black"></div>
+                        <div className="w-0.5 h-8 bg-black"></div>
+                        <div className="text-[10px] font-black text-black ml-2 tabular-nums">100%<br/>RAW</div>
+                    </div>
                 </div>
             </div>
         </footer>
+    );
+}
+
+function FooterBlockLink({ href, label, color }: { href: string, label: string, color: string }) {
+    return (
+        <Link 
+            href={href}
+            prefetch={false}
+            className={cn(
+                "group relative border-4 border-black dark:border-zinc-700 p-4 sm:p-6 flex flex-col items-start justify-between min-h-[100px]",
+                "shadow-[6px_6px_0px_0px_#000] dark:shadow-[6px_6px_0px_0px_#000]",
+                "hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[4px_4px_0px_0px_#000] dark:hover:shadow-[4px_4px_0px_0px_#000]",
+                "active:translate-x-[6px] active:translate-y-[6px] active:shadow-none dark:active:shadow-none",
+                "transition-all duration-150 ease-out",
+                color
+            )}
+        >
+            <span className="text-base sm:text-lg font-black uppercase text-black dark:text-foreground group-hover:underline underline-offset-4 decoration-[3px]">
+                {label}
+            </span>
+            <div className="absolute bottom-4 right-4 bg-black text-white p-1 rounded-full opacity-0 group-hover:opacity-100 -translate-x-4 group-hover:translate-x-0 transition-all">
+                <ArrowUpRight className="w-4 h-4 sm:w-5 sm:h-5 stroke-[3px]" />
+            </div>
+        </Link>
     );
 }
