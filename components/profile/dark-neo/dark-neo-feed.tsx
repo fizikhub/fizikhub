@@ -51,15 +51,25 @@ export function DarkNeoFeed({
     const feedItems = useMemo(() => {
         let items: FeedItem[] = [];
         if (activeTab === 'posts') {
-            const articleItems = articles.map(a => ({
-                type: 'article',
-                data: {
-                    ...a,
-                    summary: a.summary || a.excerpt,
-                    author: a.author || a.profiles
-                },
-                sortDate: a.created_at
-            } as FeedItem));
+            const articleItems = articles.map(a => {
+                // Map category to type for UnifiedFeed
+                let type: FeedItem['type'] = 'article';
+                if (a.category === 'Blog') type = 'blog';
+                else if (a.category === 'Deney') type = 'experiment';
+                else if (a.category === 'Kitap İncelemesi') type = 'book-review';
+                else if (a.category === 'Terim') type = 'term';
+
+                return {
+                    type,
+                    data: {
+                        ...a,
+                        summary: a.summary || a.excerpt,
+                        author: a.author || a.profiles
+                    },
+                    sortDate: a.created_at
+                };
+            });
+
             const questionItems = questions.map(q => ({
                 type: 'question',
                 data: {
@@ -68,14 +78,22 @@ export function DarkNeoFeed({
                 },
                 sortDate: q.created_at
             } as FeedItem));
-            items = [...articleItems, ...questionItems];
+            items = [...articleItems as FeedItem[], ...questionItems];
         } else if (activeTab === 'saved') {
             const savedArticles = bookmarkedArticles
                 .filter(b => b.articles)
                 .map(b => {
                     const a = Array.isArray(b.articles) ? b.articles[0] : b.articles;
+                    
+                    // Map category to type for UnifiedFeed
+                    let type: FeedItem['type'] = 'article';
+                    if (a?.category === 'Blog') type = 'blog';
+                    else if (a?.category === 'Deney') type = 'experiment';
+                    else if (a?.category === 'Kitap İncelemesi') type = 'book-review';
+                    else if (a?.category === 'Terim') type = 'term';
+
                     return {
-                        type: 'article',
+                        type,
                         data: {
                             ...a,
                             summary: a?.summary || a?.excerpt,

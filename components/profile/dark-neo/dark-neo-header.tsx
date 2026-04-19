@@ -39,25 +39,25 @@ export function DarkNeoHeader({ profile, user, stats, isOwnProfile, isFollowing 
             <div className="relative overflow-hidden bg-background border-[1.5px] sm:border-2 border-black dark:border-zinc-800 rounded-xl shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] sm:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_0px_rgba(0,0,0,0.5)] dark:sm:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.5)]">
 
                 {/* COVER BANNER */}
-                <div className="relative h-44 sm:h-52 md:h-60 overflow-visible border-b-[2px] border-black bg-zinc-900">
+                <div className="relative h-32 sm:h-52 md:h-60 overflow-visible border-b-[2.5px] border-black bg-zinc-900 shadow-inner">
                     {/* Cover photo or pattern */}
                     {hasCoverPhoto ? (
                         <Image
                             src={profile.cover_url}
                             alt="Kapak fotoğrafı"
                             fill
-                            className="object-cover opacity-90"
+                            className="object-cover opacity-95 group-hover:scale-105 transition-transform duration-700"
                             priority
                             fetchPriority="high"
                         />
                     ) : (
                         <>
                             {/* Vivid Gradient Background */}
-                            <div className="absolute inset-0 bg-gradient-to-tr from-[#FFC800]/20 via-purple-500/10 to-blue-500/20 opacity-100" />
-                            <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20" />
+                            <div className="absolute inset-0 bg-gradient-to-tr from-[#FFC800]/20 via-blue-600/10 to-emerald-500/20 opacity-100" />
+                            <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-25" />
 
                             {/* Geometric Accents */}
-                            <div className="absolute top-0 right-0 p-8 opacity-30 pointer-events-none">
+                            <div className="absolute top-0 right-0 p-8 opacity-30 pointer-events-none overflow-hidden h-full">
                                 <div className="w-64 h-64 border-2 border-white/10 rounded-full" />
                                 <div className="w-48 h-48 border-2 border-white/10 rounded-full absolute top-8 right-8" />
                             </div>
@@ -65,73 +65,71 @@ export function DarkNeoHeader({ profile, user, stats, isOwnProfile, isFollowing 
                     )}
 
                     {/* Gradient overlay for readability */}
-                    <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background/90" />
+                    <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-background/40" />
 
                     {/* FOLLOWER/FOLLOWING - Vivid Cards - Repositioned for mobile */}
-                    <div className="absolute top-4 right-4 sm:top-auto sm:bottom-4 sm:right-6 flex flex-col sm:flex-row gap-2 sm:gap-3 z-20">
+                    <div className="absolute bottom-2 right-2 sm:bottom-4 sm:right-6 flex flex-row gap-1.5 sm:gap-3 z-20">
                         <motion.div
                             initial={{ y: -20, opacity: 0 }}
                             animate={{ y: 0, opacity: 1 }}
                             transition={{ delay: 0.2 }}
-                            className="bg-white border-[1.5px] sm:border-2 border-black min-w-[56px] sm:min-w-[72px] py-1 px-1.5 sm:py-1.5 sm:px-3 shadow-[1.5px_1.5px_0px_0px_#000] sm:shadow-[2px_2px_0px_0px_#000] rounded-lg text-center group hover:-translate-y-1 hover:shadow-[4px_4px_0px_0px_#000] transition-all cursor-default"
+                            className="bg-white border-2 border-black min-w-[50px] sm:min-w-[72px] py-1 px-2 sm:py-1.5 sm:px-3 shadow-[2px_2px_0px_0px_#000] rounded-lg text-center group hover:-translate-y-1 hover:shadow-[4px_4px_0px_0px_#000] transition-all cursor-default"
                         >
-                            <p className="text-[7.5px] sm:text-[9px] font-black uppercase tracking-wider text-black/60 mb-0.5 sm:mb-1">Takipçi</p>
-                            <h3 className="text-sm sm:text-lg font-black text-black leading-none">{formatNumber(stats.followersCount)}</h3>
+                            <p className="text-[7px] sm:text-[9px] font-black uppercase tracking-wider text-black/60">Takipçi</p>
+                            <h3 className="text-xs sm:text-lg font-black text-black leading-tight">{formatNumber(stats.followersCount)}</h3>
                         </motion.div>
 
                         <motion.div
                             initial={{ y: -20, opacity: 0 }}
                             animate={{ y: 0, opacity: 1 }}
                             transition={{ delay: 0.3 }}
-                            className="bg-zinc-900 border-[1.5px] sm:border-2 border-black min-w-[56px] sm:min-w-[72px] py-1 px-1.5 sm:py-1.5 sm:px-3 shadow-[1.5px_1.5px_0px_0px_#000] sm:shadow-[2px_2px_0px_0px_#000] rounded-lg text-center group hover:-translate-y-1 hover:shadow-[4px_4px_0px_0px_#000] transition-all cursor-default"
+                            className="bg-zinc-900 border-2 border-black min-w-[50px] sm:min-w-[72px] py-1 px-2 sm:py-1.5 sm:px-3 shadow-[2px_2px_0px_0px_#000] rounded-lg text-center group hover:-translate-y-1 hover:shadow-[4px_4px_0px_0px_#000] transition-all cursor-default"
                         >
-                            <p className="text-[7.5px] sm:text-[9px] font-black uppercase tracking-wider text-white/60 mb-0.5 sm:mb-1">Takip</p>
-                            <h3 className="text-sm sm:text-lg font-black text-white leading-none">{formatNumber(stats.followingCount)}</h3>
+                            <p className="text-[7px] sm:text-[9px] font-black uppercase tracking-wider text-white/60">Takip</p>
+                            <h3 className="text-xs sm:text-lg font-black text-white leading-tight">{formatNumber(stats.followingCount)}</h3>
                         </motion.div>
                     </div>
                 </div>
 
                 {/* INFO SECTION */}
-                <div className="relative pt-16 sm:pt-20 pb-6 px-4 sm:px-6">
+                <div className="relative pt-12 sm:pt-20 pb-5 px-4 sm:px-6">
 
                     {/* FLOATING AVATAR */}
-                    <div className="absolute -top-12 left-4 sm:left-6">
+                    <div className="absolute -top-10 sm:-top-14 left-4 sm:left-6">
                         <motion.div
                             initial={{ scale: 0.9, opacity: 0 }}
                             animate={{ scale: 1, opacity: 1 }}
                             className="relative group"
                         >
-                            <div className="w-[72px] h-[72px] sm:w-28 sm:h-28 bg-background p-[3px] sm:p-1 rounded-2xl shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] sm:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] border-[1.5px] sm:border-2 border-black dark:border-zinc-800 overflow-hidden relative z-10">
+                            <div className="w-[84px] h-[84px] sm:w-32 sm:h-32 bg-background p-1 rounded-2xl shadow-[4px_4px_0px_0px_#000] border-2 border-black dark:border-zinc-800 overflow-hidden relative z-10 transition-transform group-hover:scale-[1.02]">
                                 <Avatar className="w-full h-full rounded-xl border border-black/10 dark:border-white/10">
-                                    <AvatarImage src={profile?.avatar_url} className="object-cover" />
+                                    <AvatarImage src={profile?.avatar_url} className="object-cover scale-110" />
                                     <AvatarFallback className="text-3xl font-black bg-[#FFC800] text-black rounded-none">
                                         {initial}
                                     </AvatarFallback>
                                 </Avatar>
                             </div>
                             {/* Verified badge - Neo Pop */}
-                            <div className="absolute -bottom-1 -right-1 bg-[#23A9FA] text-white p-0.5 sm:p-1 border-[1.5px] sm:border-2 border-black rounded-full shadow-[1.5px_1.5px_0px_0px_#000] sm:shadow-[2px_2px_0px_0px_#000] z-20">
-                                <ShieldCheck className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[3px]" />
+                            <div className="absolute -bottom-1 -right-1 bg-[#23A9FA] text-white p-1 border-2 border-black rounded-full shadow-[2px_2px_0px_0px_#000] z-20">
+                                <ShieldCheck className="w-3.5 h-3.5 sm:w-5 sm:h-5 stroke-[2.5px]" />
                             </div>
                         </motion.div>
                     </div>
 
                     {/* NAME & HANDLE */}
-                    <div className="mb-5 mt-2 sm:mt-0">
-                        <h1 className="text-2xl sm:text-3xl font-black text-foreground tracking-tight leading-tight mb-1 drop-shadow-md">
-                            <span className="bg-gradient-to-r from-transparent to-transparent hover:from-[#FFC800]/20 hover:to-[#FFC800]/20 transition-all duration-300 rounded px-1 -ml-1">
-                                {profile?.full_name || "New User"}
-                            </span>
+                    <div className="mb-4 mt-3 sm:mt-0 flex flex-col items-start gap-1">
+                        <h1 className="text-xl sm:text-3xl font-black text-foreground tracking-tight leading-tight drop-shadow-sm">
+                            {profile?.full_name || "Yeni Kullanıcı"}
                         </h1>
-                        <span className="inline-block text-[11px] font-bold bg-zinc-900 text-zinc-400 px-2.5 py-0.5 rounded-md border border-zinc-700/50 hover:bg-black hover:text-[#FFC800] hover:border-[#FFC800] transition-all cursor-pointer">
-                            @{profile?.username || "username"}
+                        <span className="inline-block text-[10px] sm:text-[11px] font-bold bg-zinc-900 text-zinc-400 px-2 py-0.5 rounded-md border border-black/50 hover:bg-black hover:text-[#FFC800] transition-all cursor-pointer">
+                            @{profile?.username || "kullaniciadi"}
                         </span>
                     </div>
 
                     {/* BIO */}
                     {profile?.bio && (
-                        <div className="mb-6 max-w-2xl">
-                            <p className="text-zinc-300 text-sm leading-relaxed font-medium">
+                        <div className="mb-5 max-w-2xl">
+                            <p className="text-zinc-300 text-xs sm:text-sm leading-relaxed font-medium">
                                 {profile.bio}
                             </p>
                         </div>

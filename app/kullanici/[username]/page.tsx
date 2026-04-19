@@ -77,7 +77,6 @@ export default async function PublicProfilePage({ params }: PageProps) {
     const [
         followStatus,
         followStats,
-        { data: userBadges },
         { data: articles },
         { data: questions },
         { data: answers }
@@ -87,13 +86,6 @@ export default async function PublicProfilePage({ params }: PageProps) {
 
         // 2. Follow stats
         getFollowStats(profile.id),
-
-        // 3. User badges
-        supabase
-            .from('user_badges')
-            .select('awarded_at, badges(id, name, description, icon, category)')
-            .eq('user_id', profile.id)
-            .order('awarded_at', { ascending: false }),
 
         // 4. User articles
         supabase
@@ -132,11 +124,6 @@ export default async function PublicProfilePage({ params }: PageProps) {
         answersCount: answers?.length || 0,
     };
 
-    // Fix for BadgeDisplay type mismatch
-    const formattedBadges = userBadges?.map((ub: any) => ({
-        awarded_at: ub.awarded_at,
-        badges: Array.isArray(ub.badges) ? ub.badges[0] : ub.badges
-    }))?.filter(ub => ub.badges) || [];
 
     // JSON-LD for E-E-A-T Profile
     const jsonLd = {
@@ -208,7 +195,7 @@ export default async function PublicProfilePage({ params }: PageProps) {
                             profile={profile}
                             user={user || { created_at: profile.created_at }}
                             stats={stats}
-                            userBadges={formattedBadges}
+                            userBadges={[]}
                         />
                     </div>
 

@@ -41,15 +41,15 @@ export function DarkNeoSidebar({ profile, user, stats, userBadges }: DarkNeoSide
                 </h3>
 
                 <div className="space-y-3 font-bold relative z-10">
-                    <StatRow icon={BookOpen} label="Makale" value={stats.articlesCount} color="text-zinc-400 group-hover:text-white transition-colors" />
-                    <StatRow icon={HelpCircle} label="Soru" value={stats.questionsCount} color="text-zinc-400 group-hover:text-white transition-colors" />
-                    <StatRow icon={MessageCircle} label="Cevap" value={stats.answersCount} color="text-zinc-400 group-hover:text-white transition-colors" />
+                    <StatRow icon={BookOpen} label="Yayınlar" value={stats.articlesCount} color="text-zinc-400 group-hover:text-white transition-colors" />
+                    <StatRow icon={HelpCircle} label="Sorular" value={stats.questionsCount} color="text-zinc-400 group-hover:text-white transition-colors" />
+                    <StatRow icon={MessageCircle} label="Cevaplar" value={stats.answersCount} color="text-zinc-400 group-hover:text-white transition-colors" />
                 </div>
 
                 {profile?.level !== undefined && profile?.xp_current !== undefined && (
                     <div className="mt-5 pt-3 border-t-2 border-black/20 relative z-10">
                         <div className="flex justify-between items-center mb-2">
-                            <p className="text-[10px] font-black text-zinc-500 uppercase tracking-wider">Seviye</p>
+                            <p className="text-[10px] font-black text-zinc-500 uppercase tracking-wider">Deneyim Seviyesi</p>
                             <p className="text-xl font-black text-white drop-shadow-md">LVL {profile.level}</p>
                         </div>
                         <div className="w-full h-3 bg-black rounded-lg overflow-hidden border-2 border-black shadow-inner">
@@ -61,65 +61,6 @@ export function DarkNeoSidebar({ profile, user, stats, userBadges }: DarkNeoSide
                     </div>
                 )}
             </div>
-
-            {/* BADGES CARD - Vivid Grid */}
-            <div className="bg-background border-[1.5px] sm:border-2 border-black dark:border-zinc-800 p-4 sm:p-5 relative shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] sm:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_0px_rgba(0,0,0,0.5)] dark:sm:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.5)] rounded-xl group hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.5)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all">
-                <div className="absolute top-0 left-0 w-full h-1 bg-[#23A9FA] transform scale-x-100 transition-transform" />
-
-                <Link prefetch={false} href="/rozetler" onClick={handleInteract} className="h-[2px] w-full block absolute bottom-0 left-0 hover:bg-[#23A9FA] transition-colors z-20"></Link>
-                <Link prefetch={false} href="/rozetler" onClick={handleInteract} className="font-black text-xs mb-4 flex items-center justify-between uppercase tracking-tight text-white/50 border-b-2 border-dashed border-black/20 pb-2 relative z-10 hover:text-white transition-colors group active:scale-[0.98] origin-left">
-                    <div className="flex items-center gap-2">
-                        <span className="w-6 h-6 bg-[#23A9FA] text-white flex items-center justify-center border-2 border-black rounded shadow-[2px_2px_0px_0px_#000] group-hover:bg-white group-hover:text-[#23A9FA] transition-colors">
-                            <Award className="w-3.5 h-3.5 stroke-[3px]" />
-                        </span>
-                        Rozetler
-                    </div>
-                    <span className="text-[9px] opacity-0 group-hover:opacity-100 transition-opacity bg-white/10 px-2 py-0.5 rounded text-white">Tümünü Gör →</span>
-                </Link>
-
-                {userBadges && userBadges.length > 0 ? (
-                    <div className="grid grid-cols-4 gap-3 relative z-10">
-                        {userBadges.map((badgeObj: any, index: number) => {
-                            const badge = badgeObj.badges;
-                            return (
-                                <Link prefetch={false} href="/rozetler"
-                                    key={index}
-                                    onClick={handleInteract}
-                                    className="relative flex justify-center group/badge active:scale-95 transition-transform"
-                                >
-                                    {/* Tooltip Hover Area */}
-                                    <div className="absolute -top-2 left-1/2 -translate-x-1/2 -translate-y-full w-48 bg-zinc-900 border-2 border-zinc-700 text-white p-3 rounded-xl opacity-0 invisible group-hover/badge:opacity-100 group-hover/badge:visible transition-all pointer-events-none z-50 shadow-[4px_4px_0_0_#000] flex flex-col gap-1.5 bottom-full origin-bottom">
-                                        <div className="font-black text-[11px] uppercase text-[#23A9FA] flex items-center gap-1.5 border-b-2 border-dashed border-zinc-700 pb-1.5 mb-1">
-                                            <Award className="w-4 h-4 stroke-[2.5px]" />
-                                            {badge.name}
-                                        </div>
-                                        <div className="text-[10px] leading-snug text-zinc-300 font-medium whitespace-pre-wrap">
-                                            {badge.description || "Gizemli rozet... Nasıl kazanılacağını kimse bilmiyor."}
-                                        </div>
-                                        {/* Tooltip Arrow */}
-                                        <div className="absolute -bottom-[6px] left-1/2 -translate-x-1/2 w-3 h-3 bg-zinc-900 border-b-2 border-r-2 border-zinc-700 rotate-45" />
-                                    </div>
-                                    <div className="w-full aspect-square flex items-center justify-center">
-                                        <CustomBadgeIcon name={badge.name} size={28} className="!shadow-[2px_2px_0_0_#000] hover:!shadow-[4px_4px_0_0_#000] active:translate-y-0.5 active:translate-x-0.5" />
-                                    </div>
-                                </Link>
-                            );
-                        })}
-                        {Array.from({ length: Math.max(0, 8 - userBadges.length) }).map((_, i) => (
-                            <div key={`empty-${i}`} className="aspect-square bg-zinc-100/50 dark:bg-zinc-900/50 border-2 border-dashed border-black/20 dark:border-white/20 rounded-xl flex items-center justify-center">
-                                <div className="w-1.5 h-1.5 bg-black/20 dark:bg-white/20 rounded-full" />
-                            </div>
-                        ))}
-                    </div>
-                ) : (
-                    <div className="text-center py-6 border-2 border-dashed border-black/20 rounded-xl relative z-10 bg-black/5">
-                        <div className="w-10 h-10 bg-zinc-800 flex items-center justify-center mx-auto mb-2 rounded-full border-2 border-black shadow-[2px_2px_0px_0px_#000]">
-                            <AlertCircle className="w-5 h-5 text-zinc-500 stroke-[2.5px]" />
-                        </div>
-                        <p className="text-[10px] font-black text-zinc-500 uppercase">Henüz rozet yok.</p>
-                    </div>
-                )}
-            </div >
         </motion.div >
     );
 }

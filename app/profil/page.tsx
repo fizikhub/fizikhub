@@ -22,8 +22,6 @@ export default async function ProfilePage() {
         { data: articles },
         { data: questions },
         { data: answers },
-        { data: userBadges },
-        followStats,
         { data: drafts },
         unreadMessagesCount,
         { data: bookmarkedArticles },
@@ -33,7 +31,6 @@ export default async function ProfilePage() {
         supabase.from('articles').select('*, profiles(full_name, avatar_url, username)').eq('author_id', user.id).neq('status', 'draft').order('created_at', { ascending: false }).limit(20),
         supabase.from('questions').select('*, profiles(full_name, avatar_url, username)').eq('author_id', user.id).order('created_at', { ascending: false }).limit(20),
         supabase.from('answers').select('id, content, created_at, questions(id, title, slug)').eq('author_id', user.id).order('created_at', { ascending: false }).limit(20),
-        supabase.from('user_badges').select('awarded_at, badges(id, name, description, icon, category)').eq('user_id', user.id).order('awarded_at', { ascending: false }),
         getFollowStats(user.id),
         supabase.from('articles').select('*, profiles(full_name, avatar_url, username)').eq('author_id', user.id).eq('status', 'draft').order('created_at', { ascending: false }).limit(20),
         getTotalUnreadCount(),
@@ -50,11 +47,6 @@ export default async function ProfilePage() {
         answersCount: answers?.length || 0,
     };
 
-    // Fix for BadgeDisplay type mismatch
-    const formattedBadges = userBadges?.map((ub: any) => ({
-        awarded_at: ub.awarded_at,
-        badges: Array.isArray(ub.badges) ? ub.badges[0] : ub.badges
-    }))?.filter(ub => ub.badges) || [];
 
     return (
         <main className="min-h-screen bg-background relative selection:bg-primary/30">
@@ -96,7 +88,7 @@ export default async function ProfilePage() {
                             profile={profile}
                             user={user}
                             stats={stats}
-                            userBadges={formattedBadges}
+                            userBadges={[]}
                         />
                     </div>
 
