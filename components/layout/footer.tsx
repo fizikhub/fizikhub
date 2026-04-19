@@ -5,6 +5,17 @@ import { DankLogo } from "@/components/brand/dank-logo";
 import { usePathname } from "next/navigation";
 import { Rocket } from "lucide-react";
 
+const TapeBanner = () => {
+    // The animated marquee tape
+    return (
+        <div className="w-full bg-[#FACC15] text-black border-t border-b-[3px] border-black flex overflow-hidden whitespace-nowrap cursor-default select-none relative z-20 py-3">
+            <div className="animate-marquee font-black uppercase tracking-widest text-sm md:text-base" style={{ minWidth: "200%", fontFamily: "var(--font-outfit)" }}>
+                {Array(20).fill("BİLİMİ Tİ'YE ALIYORUZ AMA CİDDİLİ ŞEKİLDE • E=mc² • ΔS ≥ 0 • ").join("")}
+            </div>
+        </div>
+    );
+};
+
 export function Footer() {
     const pathname = usePathname();
     const isChatPage = pathname?.match(/\/mesajlar\/.+/);
@@ -12,98 +23,100 @@ export function Footer() {
     if (isChatPage) return null;
 
     return (
-        <footer className="w-full bg-[#fcfcfc] dark:bg-[#0A0A0A] border-t border-zinc-200 dark:border-white/5 relative z-10 font-sans">
-            <div className="container max-w-[1250px] mx-auto px-6 py-16 md:py-24">
-                
-                {/* Main Content Grid */}
-                <div className="flex flex-col lg:flex-row justify-between gap-16 lg:gap-10">
+        <footer className="w-full bg-[#fdfdfd] dark:bg-[#09090b] relative z-10 font-sans mt-12">
+            
+            {/* 1. FAT YELLOW TAPE BANNER */}
+            <TapeBanner />
+
+            {/* 2. PUNK-SCIENCE HEAVY GRID */}
+            <div className="container max-w-[1300px] mx-auto px-6 py-20 lg:py-28">
+                <div className="flex flex-col lg:flex-row justify-between gap-20 lg:gap-12">
                     
-                    {/* Brand Column */}
-                    <div className="flex flex-col gap-6 lg:max-w-[340px]">
-                        <div className="w-fit mix-blend-difference dark:mix-blend-normal hover:scale-[1.02] transition-transform duration-500 origin-left">
+                    {/* LEFT BRANDING: NO MOUSE-TRAPS, JUST PURE WEIGHT */}
+                    <div className="flex flex-col gap-10 lg:w-1/3">
+                        <div className="w-fit mix-blend-difference dark:mix-blend-normal transform scale-[1.15] md:scale-125 origin-left">
                             <DankLogo />
                         </div>
-                        <p className="text-[13.5px] sm:text-[14px] leading-relaxed text-zinc-600 dark:text-zinc-400 font-medium">
-                            Bilimi ti'ye alıyoruz ama ciddi şekilde. Türkiye'nin ilk ve tek punk-science araştırma ve geliştirme platformu.
+                        
+                        <p className="text-lg md:text-xl font-black leading-snug text-black dark:text-white uppercase tracking-tight" style={{ fontFamily: "var(--font-outfit)" }}>
+                            Türkiye'nin <span className="text-[#FACC15]">Punk-Science</span> topluluğu.
+                            <br />
+                            <span className="opacity-50 dark:opacity-30">Kozmosun dilini çözüyoruz.</span>
                         </p>
-                        <div className="flex items-center gap-2.5 mt-2 text-[12px] font-semibold tracking-wide text-zinc-500">
-                            <span className="relative flex h-2 w-2">
+                        
+                        <div className="flex items-center gap-3 mt-4">
+                            <span className="relative flex h-4 w-4">
                                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                                <span className="relative inline-flex rounded-full h-4 w-4 bg-emerald-500 border border-black dark:border-transparent"></span>
                             </span>
-                            SİSTEMLER ÇEVRİMİÇİ
+                            <span className="font-black text-sm md:text-base uppercase tracking-widest text-black dark:text-white" style={{ fontFamily: "var(--font-outfit)" }}>
+                                SİSTEMLER ÇEVRİMİÇİ
+                            </span>
                         </div>
                     </div>
 
-                    {/* Navigation Columns */}
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-x-8 gap-y-12 lg:w-[65%]">
-                        {/* 1 */}
-                        <div className="flex flex-col gap-5">
-                            <h4 className="font-bold text-[13px] text-zinc-900 dark:text-zinc-100 uppercase tracking-widest" style={{ fontFamily: "var(--font-outfit)" }}>
-                                LABORATUVAR
+                    {/* RIGHT: MASSIVE IN-YOUR-FACE LINKS */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-16 gap-y-16 lg:w-[60%]">
+                        <div className="flex flex-col gap-8">
+                            <h4 className="font-black text-sm text-zinc-400 dark:text-zinc-600 uppercase tracking-[0.25em]" style={{ fontFamily: "var(--font-outfit)" }}>
+                                // LABORATUVAR
                             </h4>
-                            <div className="flex flex-col gap-3 font-medium text-[14px]">
+                            <div className="flex flex-col gap-4">
                                 <FooterLink href="/makale">Kütüphane</FooterLink>
                                 <FooterLink href="/simulasyonlar">Simülasyonlar</FooterLink>
-                                <FooterLink href="/deneysel">Deneysel Alan</FooterLink>
                                 <FooterLink href="/sözlük">Fizik Sözlüğü</FooterLink>
                             </div>
                         </div>
 
-                        {/* 2 */}
-                        <div className="flex flex-col gap-5">
-                            <h4 className="font-bold text-[13px] text-zinc-900 dark:text-zinc-100 uppercase tracking-widest" style={{ fontFamily: "var(--font-outfit)" }}>
-                                KOZMOS
+                        <div className="flex flex-col gap-8">
+                            <h4 className="font-black text-sm text-zinc-400 dark:text-zinc-600 uppercase tracking-[0.25em]" style={{ fontFamily: "var(--font-outfit)" }}>
+                                // KOZMOS
                             </h4>
-                            <div className="flex flex-col gap-3 font-medium text-[14px]">
+                            <div className="flex flex-col gap-4">
                                 <FooterLink href="/forum">Tartışma</FooterLink>
                                 <FooterLink href="/siralamalar">Hiyerarşi</FooterLink>
                                 <FooterLink href="/rozetler">Rozetler</FooterLink>
                             </div>
                         </div>
 
-                        {/* 3 */}
-                        <div className="flex flex-col gap-5">
-                            <h4 className="font-bold text-[13px] text-zinc-900 dark:text-zinc-100 uppercase tracking-widest" style={{ fontFamily: "var(--font-outfit)" }}>
-                                AĞ
+                        <div className="flex flex-col gap-8">
+                            <h4 className="font-black text-sm text-zinc-400 dark:text-zinc-600 uppercase tracking-[0.25em]" style={{ fontFamily: "var(--font-outfit)" }}>
+                                // SİNYAL AĞI
                             </h4>
-                            <div className="flex flex-col gap-3 font-medium text-[14px]">
-                                <FooterLink href="/kurallar">Evren Yasaları</FooterLink>
-                                <FooterLink href="/hakkimizda">Biz Kimiz?</FooterLink>
+                            <div className="flex flex-col gap-4">
                                 <FooterLink href="/iletisim">Sinyal Gönder</FooterLink>
+                                <FooterLink href="/hakkimizda">Biz Kimiz?</FooterLink>
+                                <FooterLink href="/kurallar">Yıldız Yasaları</FooterLink>
                             </div>
                         </div>
 
-                        {/* 4 */}
-                        <div className="flex flex-col gap-5">
-                            <h4 className="font-bold text-[13px] text-zinc-900 dark:text-zinc-100 uppercase tracking-widest" style={{ fontFamily: "var(--font-outfit)" }}>
-                                YASAL
+                        <div className="flex flex-col gap-8">
+                            <h4 className="font-black text-sm text-zinc-400 dark:text-zinc-600 uppercase tracking-[0.25em]" style={{ fontFamily: "var(--font-outfit)" }}>
+                                // PROTOKOL
                             </h4>
-                            <div className="flex flex-col gap-3 font-medium text-[14px]">
+                            <div className="flex flex-col gap-4">
                                 <FooterLink href="/kvkk">K.V.K.K.</FooterLink>
                                 <FooterLink href="/gizlilik-politikasi">Gizlilik</FooterLink>
-                                <FooterLink href="/cerezler">Çerezler</FooterLink>
+                                <FooterLink href="/sartlar">Çerezler</FooterLink>
                             </div>
                         </div>
                     </div>
-
                 </div>
 
-                {/* Subfooter */}
-                <div className="flex flex-col md:flex-row items-center justify-between gap-6 pt-8 mt-16 border-t border-zinc-200 dark:border-white/5">
-                    <p className="text-[12px] text-zinc-500 font-medium">
-                        &copy; 2026 FIZIKHUB INC. TÜM HAKLARI SAKLIDIR.
+                {/* BOTTOM CLOSER STICKER */}
+                <div className="flex flex-col-reverse md:flex-row items-start md:items-center justify-between gap-10 mt-28 pt-10 border-t-[3px] border-black dark:border-white/10">
+                    <p className="font-black text-sm md:text-base tracking-widest uppercase text-black dark:text-zinc-500" style={{ fontFamily: "var(--font-outfit)" }}>
+                        &copy; 2026 FIZIKHUB INC.
                     </p>
-                    
-                    {/* Very Dainty Small Brutalist Badge */}
-                    <div className="flex items-center gap-1.5 px-3 py-1 bg-[#FACC15] border-[1.5px] border-black rounded-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.2)] group select-none cursor-default transform rotate-[-1deg] hover:rotate-0 transition-transform">
-                        <Rocket className="w-3 h-3 text-black stroke-[2.5px] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-                        <span className="text-[10px] font-black tracking-widest uppercase text-black" style={{ fontFamily: "var(--font-outfit)" }}>
-                            UZAY-ZAMAN DEVREDE
+
+                    {/* Massive Bold "POPÜLER BİLİM" Sticker */}
+                    <div className="flex items-center gap-2.5 bg-[#FACC15] text-black border-[3px] border-black px-5 py-2.5 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)] transform hover:rotate-[-2deg] transition-transform select-none cursor-default group">
+                        <Rocket className="w-5 h-5 stroke-[2.5px] group-hover:-translate-y-1 group-hover:translate-x-1 transition-transform" />
+                        <span className="font-black text-sm md:text-[15px] tracking-widest uppercase" style={{ fontFamily: "var(--font-outfit)" }}>
+                            UZAy-ZAMAN DEVREDE
                         </span>
                     </div>
                 </div>
-
             </div>
         </footer>
     );
@@ -111,9 +124,14 @@ export function Footer() {
 
 function FooterLink({ href, children }: { href: string, children: React.ReactNode }) {
     return (
-        <Link href={href} className="group relative w-fit text-zinc-500 dark:text-zinc-500 hover:text-black dark:hover:text-white transition-colors duration-300">
-            {children}
-            <span className="absolute left-0 -bottom-1 w-full h-[1px] bg-zinc-300 dark:bg-zinc-600 scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-300 ease-out"></span>
+        <Link 
+            href={href} 
+            className="group relative w-fit font-black text-2xl md:text-[32px] text-black dark:text-white uppercase tracking-tight transition-transform hover:translate-x-2 block"
+            style={{ fontFamily: "var(--font-outfit)" }}
+        >
+            <span className="relative z-10">{children}</span>
+            {/* The punk massive yellow highlight block from behind */}
+            <span className="absolute left-0 bottom-[10%] w-[105%] h-[35%] bg-[#FACC15] scale-x-0 origin-left transition-transform duration-300 ease-out group-hover:scale-x-100 z-[-1]"></span>
         </Link>
     );
 }
