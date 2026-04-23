@@ -79,7 +79,7 @@ function FooterCard({
                 "bg-white dark:bg-[#27272a]",
                 "shadow-[4px_4px_0px_0px_#000] dark:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.55)]",
                 "transition-all duration-200 hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_#000]",
-                compact ? "col-span-2" : ""
+                compact ? "sm:col-span-2 lg:col-span-3" : ""
             )}
         >
             <div className="absolute inset-0 opacity-[0.03] pointer-events-none mix-blend-multiply dark:mix-blend-screen"
@@ -90,7 +90,7 @@ function FooterCard({
                 <div className="flex items-center justify-between gap-3">
                     <div className="flex items-center gap-3">
                         <span className={cn("h-9 w-3 rounded-full border-2 border-black", accent)} />
-                        <h3 className="text-lg font-black uppercase tracking-tight text-black dark:text-white sm:text-[1.35rem]">
+                        <h3 className="min-w-0 text-base font-black uppercase tracking-tight text-black dark:text-white sm:text-[1.1rem] lg:text-[1.35rem]">
                             {title}
                         </h3>
                     </div>
@@ -116,7 +116,7 @@ function FooterCard({
                         )}
                     >
                         <span>{link.label}</span>
-                        <ArrowUpRight className="h-4 w-4 stroke-[2.5px] transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+                        <ArrowUpRight className="hidden h-4 w-4 stroke-[2.5px] transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 sm:block" />
                     </Link>
                 ))}
             </div>
@@ -166,10 +166,10 @@ export function Footer() {
             </div>
 
             <div className="container relative mx-auto max-w-[1250px]">
-                <div className="grid grid-cols-2 gap-4 lg:grid-cols-12 lg:gap-5">
+                <div className="grid grid-cols-1 gap-4 lg:grid-cols-12 lg:gap-5">
                     <section
                         className={cn(
-                            "col-span-2 overflow-hidden rounded-[24px] border-[3px] border-black dark:border-zinc-800",
+                            "overflow-hidden rounded-[24px] border-[3px] border-black dark:border-zinc-800",
                             "bg-white dark:bg-[#27272a]",
                             "shadow-[4px_4px_0px_0px_#000] dark:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.55)]",
                             "lg:col-span-5"
@@ -208,16 +208,12 @@ export function Footer() {
                             </div>
 
                             <div className="relative mt-4 space-y-3">
-                                <div className="inline-flex -rotate-1 items-center gap-2 border-[2px] border-black bg-[#FACC15] px-3 py-1.5 text-[11px] font-black uppercase tracking-[0.18em] text-black shadow-[2px_2px_0px_0px_#000]">
-                                    Footer İstasyonu
-                                </div>
-
                                 <div className="space-y-2">
-                                    <h2 className="max-w-[18ch] text-[1.65rem] font-black uppercase leading-[0.95] tracking-[-0.05em] text-black dark:text-white sm:text-[2rem]">
-                                        Bilim burada da karakter sahibi.
+                                    <h2 className="max-w-[18ch] text-[1.5rem] font-black uppercase leading-[0.95] tracking-[-0.05em] text-black dark:text-white sm:text-[1.8rem] lg:text-[2rem]">
+                                        Bilimi Ti&apos;ye Alıyoruz Ama Ciddili Şekilde.
                                     </h2>
-                                    <p className="max-w-[42ch] text-sm font-medium leading-6 text-zinc-600 dark:text-zinc-300">
-                                        Kısa yol, net kartlar, az laf. FizikHub&apos;ın akışına yakışan çıkış noktası.
+                                    <p className="max-w-[34ch] text-sm font-medium leading-6 text-zinc-600 dark:text-zinc-300">
+                                        Yazı, forum, sözlük ve simülasyonlar. Hepsi düzenli, kısa ve ulaşılır.
                                     </p>
                                 </div>
                             </div>
@@ -244,14 +240,14 @@ export function Footer() {
                                 ))}
                             </div>
 
-                            <div className="flex flex-wrap gap-2.5">
+                            <div className="flex flex-wrap gap-2">
                                 {UTILITY_LINKS.map((link) => (
                                     <Link
                                         key={link.label}
                                         href={link.href}
                                         className={cn(
-                                            "rounded-full border-[2px] border-black px-3 py-2",
-                                            "bg-[#f4f4f5] text-[11px] font-black uppercase tracking-[0.14em] text-black",
+                                            "rounded-full border-[2px] border-black px-3 py-1.5",
+                                            "bg-[#f4f4f5] text-[10px] font-black uppercase tracking-[0.12em] text-black sm:text-[11px]",
                                             "transition-all duration-200 hover:bg-[#FACC15]",
                                             "dark:border-zinc-700 dark:bg-[#1e1e21] dark:text-zinc-200 dark:hover:bg-[#FACC15] dark:hover:text-black"
                                         )}
@@ -263,14 +259,14 @@ export function Footer() {
                         </div>
                     </section>
 
-                    <div className="col-span-2 grid grid-cols-2 gap-4 lg:col-span-7 lg:grid-cols-7 lg:gap-5">
-                        <div className="col-span-1 lg:col-span-2">
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:col-span-7 lg:grid-cols-7 lg:gap-5">
+                        <div className="lg:col-span-2">
                             <FooterCard {...FOOTER_LINKS[0]} />
                         </div>
-                        <div className="col-span-1 lg:col-span-2">
+                        <div className="lg:col-span-2">
                             <FooterCard {...FOOTER_LINKS[1]} />
                         </div>
-                        <div className="col-span-2 lg:col-span-3">
+                        <div className="lg:col-span-3">
                             <FooterCard {...FOOTER_LINKS[2]} />
                         </div>
                     </div>
@@ -281,7 +277,7 @@ export function Footer() {
                         FizikHub © {year}
                     </p>
                     <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-zinc-400">
-                        Bilimi ciddi alıp karakteri bozmuyoruz.
+                        İzinsiz kullananı kara deliğe atarız.
                     </p>
                 </div>
             </div>
