@@ -98,15 +98,17 @@ export function Footer() {
                     }
                 }
 
-                @keyframes footerAuraShift {
-                    0%,
-                    100% {
-                        transform: translate3d(0, 0, 0) scale(1);
-                        opacity: 0.3;
+                @keyframes footerSweep {
+                    0% {
+                        transform: translate3d(-120%, 0, 0);
+                        opacity: 0;
                     }
                     50% {
-                        transform: translate3d(-10px, 8px, 0) scale(1.08);
-                        opacity: 0.52;
+                        opacity: 1;
+                    }
+                    100% {
+                        transform: translate3d(120%, 0, 0);
+                        opacity: 0;
                     }
                 }
 
@@ -129,6 +131,15 @@ export function Footer() {
                         transform: translateY(-2px);
                     }
                 }
+
+                @keyframes footerRailSlide {
+                    0% {
+                        background-position: 0% 50%;
+                    }
+                    100% {
+                        background-position: 200% 50%;
+                    }
+                }
             `}</style>
 
             <div className="pointer-events-none absolute inset-x-0 top-0 h-[86px] overflow-hidden">
@@ -137,7 +148,7 @@ export function Footer() {
                 {FORMULAS.map((formula, index) => (
                     <span
                         key={formula}
-                        className="absolute top-4 font-mono text-[11px] font-bold tracking-wide text-black/10 dark:text-white/10"
+                        className="absolute top-4 font-mono text-[11px] font-bold tracking-normal text-black/10 dark:text-white/10"
                         style={{
                             left: `${5 + index * 15.5}%`,
                             animation: reduceMotion
@@ -150,12 +161,12 @@ export function Footer() {
                 ))}
             </div>
 
-            <div className="container relative mx-auto max-w-[1320px]">
+            <div className="relative mx-auto w-full max-w-[1400px]">
                 <section
                     className={cn(
-                        "relative overflow-hidden rounded-[28px] border-[3px] border-black dark:border-zinc-800",
+                        "relative overflow-hidden rounded-[30px] border-[3px] border-black dark:border-zinc-800",
                         "bg-[#27272a] text-white",
-                        "shadow-[4px_4px_0px_0px_#000] dark:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.6)]"
+                        "shadow-[5px_5px_0px_0px_#000] dark:shadow-[5px_5px_0px_0px_rgba(0,0,0,0.62)]"
                     )}
                     style={{
                         animation: reduceMotion ? "none" : "footerShellFloat 6.4s ease-in-out infinite",
@@ -169,20 +180,22 @@ export function Footer() {
                         }}
                     />
                     <div
-                        className="pointer-events-none absolute -right-10 top-0 h-44 w-44 rounded-full bg-[#FACC15]/18 blur-3xl"
+                        className="pointer-events-none absolute inset-y-0 left-0 w-1/2 bg-[linear-gradient(105deg,transparent_0%,transparent_35%,rgba(255,255,255,0.07)_50%,transparent_65%,transparent_100%)]"
                         style={{
-                            animation: reduceMotion ? "none" : "footerAuraShift 7.2s ease-in-out infinite",
+                            animation: reduceMotion ? "none" : "footerSweep 8s ease-in-out infinite",
                         }}
                     />
-                    <div
-                        className="pointer-events-none absolute -left-12 bottom-10 h-36 w-36 rounded-full bg-[#23A9FA]/12 blur-3xl"
+                    <div className="pointer-events-none absolute inset-x-0 top-0 h-1.5 bg-[linear-gradient(90deg,#FACC15,#23A9FA,#34D399,#FACC15)] bg-[length:200%_100%]"
                         style={{
-                            animation: reduceMotion ? "none" : "footerAuraShift 8.4s ease-in-out -1.6s infinite",
+                            animation: reduceMotion ? "none" : "footerRailSlide 6s linear infinite",
                         }}
                     />
-                    <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(250,204,21,0.14),transparent_28%)]" />
+                    <div className="pointer-events-none absolute bottom-6 right-4 hidden text-[6.5rem] font-black uppercase leading-none tracking-normal text-white/[0.035] sm:block lg:text-[8rem]">
+                        FizikHub
+                    </div>
+                    <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.035),transparent_42%,rgba(0,0,0,0.1))]" />
 
-                    <div className="relative border-b-[3px] border-black/70 px-5 py-5 dark:border-zinc-800 sm:px-6 sm:py-6">
+                    <div className="relative border-b-[3px] border-black/70 px-5 py-6 dark:border-zinc-800 sm:px-7 sm:py-7">
                         <div className="flex items-start justify-between gap-3 sm:gap-4">
                             <Link
                                 href="/"
@@ -196,7 +209,7 @@ export function Footer() {
                                 <DankLogo />
                             </Link>
 
-                            <div className="flex shrink-0 gap-1.5 sm:gap-2">
+                            <div className="flex shrink-0 gap-1.5 sm:gap-2.5">
                                 {SOCIAL_LINKS.map((social, index) => (
                                     <a
                                         key={social.label}
@@ -205,8 +218,8 @@ export function Footer() {
                                         rel="noopener noreferrer"
                                         aria-label={social.label}
                                         className={cn(
-                                            "flex h-9 w-9 items-center justify-center rounded-[12px] border-[2px] border-black sm:h-10 sm:w-10",
-                                            "bg-white text-black shadow-[2px_2px_0px_0px_#000]",
+                                            "flex h-9 w-9 items-center justify-center rounded-[12px] border-[2px] border-black sm:h-11 sm:w-11",
+                                            "bg-white text-black shadow-[3px_3px_0px_0px_#000]",
                                             "transition-all duration-200 hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none",
                                             "dark:border-zinc-700 dark:bg-[#1b1b1f] dark:text-white"
                                         )}
@@ -222,24 +235,24 @@ export function Footer() {
                             </div>
                         </div>
 
-                        <div className="mt-5 max-w-[620px] sm:mt-6">
+                        <div className="mt-6 max-w-[720px] sm:mt-7">
                             <div
-                                className="mb-3 h-3 w-28 rounded-full bg-[#FACC15] shadow-[2px_2px_0px_0px_#000]"
+                                className="mb-4 h-3 w-32 rounded-full bg-[#FACC15] shadow-[2px_2px_0px_0px_#000] sm:w-40"
                                 style={{
                                     animation: reduceMotion ? "none" : "footerLinePulse 4s ease-in-out infinite",
                                     transformOrigin: "left center",
                                 }}
                             />
-                            <h2 className="max-w-[15ch] text-[1.52rem] font-black uppercase leading-[0.9] tracking-[-0.055em] text-white sm:max-w-[16ch] sm:text-[1.95rem] lg:text-[2.2rem]">
+                            <h2 className="max-w-[19ch] text-[1.55rem] font-black uppercase leading-[0.92] tracking-normal text-white sm:max-w-[22ch] sm:text-[2rem] lg:text-[2.25rem]">
                                 Bilimi Ti&apos;ye Alıyoruz Ama Ciddili Şekilde.
                             </h2>
-                            <p className="mt-2.5 text-[0.82rem] font-black uppercase tracking-[0.12em] text-zinc-400 sm:text-[0.9rem]">
+                            <p className="mt-3 text-[0.82rem] font-black uppercase tracking-normal text-zinc-400 sm:text-[0.92rem]">
                                 İzinsiz kullananı kara deliğe atarız.
                             </p>
                         </div>
                     </div>
 
-                    <div className="relative grid grid-cols-2 gap-x-6 gap-y-4 px-5 py-5 sm:px-6 sm:py-6 md:gap-x-10">
+                    <div className="relative grid grid-cols-2 gap-x-7 gap-y-5 px-5 py-5 sm:px-7 sm:py-6 md:gap-x-14">
                         {NAV_SECTIONS.map((section) => (
                             <div key={section.title} className="min-w-0">
                                 <div className="mb-3.5 flex items-center gap-3">
@@ -250,7 +263,7 @@ export function Footer() {
                                             transformOrigin: "center",
                                         }}
                                     />
-                                    <h3 className="text-[0.84rem] font-black uppercase tracking-[0.1em] text-zinc-300 sm:text-[0.98rem] sm:tracking-[0.12em]">
+                                    <h3 className="text-[0.84rem] font-black uppercase tracking-normal text-zinc-300 sm:text-[0.98rem]">
                                         {section.title}
                                     </h3>
                                 </div>
@@ -261,14 +274,14 @@ export function Footer() {
                                             key={link.label}
                                             href={link.href}
                                             className={cn(
-                                                "group flex items-center justify-between gap-3 border-b border-white/10 py-3",
-                                                "text-[0.9rem] font-black uppercase tracking-tight text-white transition-colors sm:text-[1.02rem]",
+                                                "group flex items-center justify-between gap-3 border-b border-white/10 py-3.5",
+                                                "text-[0.92rem] font-black uppercase tracking-normal text-white transition-colors sm:text-[1.08rem]",
                                                 "hover:border-white/30",
                                                 section.hover
                                             )}
                                         >
                                             <span>{link.label}</span>
-                                            <ArrowUpRight className="h-4 w-4 shrink-0 stroke-[2.4px] text-zinc-500 transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-current" />
+                                            <ArrowUpRight className="hidden h-4 w-4 shrink-0 stroke-[2.4px] text-zinc-500 transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-current sm:block" />
                                         </Link>
                                     ))}
                                 </div>
@@ -276,8 +289,8 @@ export function Footer() {
                         ))}
                     </div>
 
-                    <div className="relative border-t-[3px] border-black/70 px-5 py-4 sm:px-6 dark:border-zinc-800">
-                        <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-[0.74rem] font-black uppercase tracking-[0.13em] text-zinc-400 sm:text-[0.76rem]">
+                    <div className="relative border-t-[3px] border-black/70 px-5 py-4 sm:px-7 dark:border-zinc-800">
+                        <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-[0.76rem] font-black uppercase tracking-normal text-zinc-400 sm:text-[0.8rem]">
                             {UTILITY_LINKS.map((link) => (
                                 <Link
                                     key={link.label}
@@ -292,10 +305,10 @@ export function Footer() {
                 </section>
 
                 <div className="mt-4 flex flex-col gap-1.5 border-t-[3px] border-black/10 px-1 pt-3 text-center sm:flex-row sm:items-center sm:justify-between sm:text-left dark:border-white/10">
-                    <p className="text-[11px] font-black uppercase tracking-[0.22em] text-zinc-500">
+                    <p className="text-[11px] font-black uppercase tracking-normal text-zinc-500">
                         FizikHub © {year}
                     </p>
-                    <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-zinc-400 sm:text-[11px]">
+                    <p className="text-[10px] font-bold uppercase tracking-normal text-zinc-400 sm:text-[11px]">
                         Bilim karakterini kaybetmeden.
                     </p>
                 </div>
