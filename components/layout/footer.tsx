@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useReducedMotion } from "framer-motion";
-import { ArrowUpRight, Github, Instagram, Twitter, Youtube } from "lucide-react";
+import { ArrowUpRight, ChevronDown, Github, Instagram, Twitter, Youtube } from "lucide-react";
 import { DankLogo } from "@/components/brand/dank-logo";
 import { cn } from "@/lib/utils";
 
@@ -252,41 +252,85 @@ export function Footer() {
                         </div>
                     </div>
 
-                    <div className="relative grid grid-cols-2 gap-x-7 gap-y-5 px-5 py-5 sm:px-7 sm:py-6 md:gap-x-14">
-                        {NAV_SECTIONS.map((section) => (
-                            <div key={section.title} className="min-w-0">
-                                <div className="mb-3.5 flex items-center gap-3">
-                                    <span
-                                        className={cn("h-9 w-3 shrink-0 rounded-full border-[2px] border-black", section.accent)}
-                                        style={{
-                                            animation: reduceMotion ? "none" : "footerLinePulse 4.4s ease-in-out infinite",
-                                            transformOrigin: "center",
-                                        }}
-                                    />
-                                    <h3 className="text-[0.84rem] font-black uppercase tracking-normal text-zinc-300 sm:text-[0.98rem]">
-                                        {section.title}
-                                    </h3>
-                                </div>
+                    <div className="relative px-5 py-5 sm:px-7 sm:py-6">
+                        <div className="space-y-2 md:hidden">
+                            {NAV_SECTIONS.map((section) => (
+                                <details
+                                    key={section.title}
+                                    className="group rounded-[18px] border-[2px] border-black/70 bg-[#1f1f23] shadow-[3px_3px_0px_0px_#000]"
+                                >
+                                    <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-3 px-3.5 py-3 [&::-webkit-details-marker]:hidden">
+                                        <span className="flex items-center gap-3">
+                                            <span
+                                                className={cn("h-7 w-2.5 shrink-0 rounded-full border-[2px] border-black", section.accent)}
+                                                style={{
+                                                    animation: reduceMotion ? "none" : "footerLinePulse 4.4s ease-in-out infinite",
+                                                    transformOrigin: "center",
+                                                }}
+                                            />
+                                            <span className="text-[0.95rem] font-black uppercase tracking-normal text-white">
+                                                {section.title}
+                                            </span>
+                                        </span>
+                                        <ChevronDown className="h-5 w-5 shrink-0 stroke-[2.5px] text-zinc-400 transition-transform duration-200 group-open:rotate-180" />
+                                    </summary>
 
-                                <div className="space-y-1">
-                                    {section.links.map((link) => (
-                                        <Link
-                                            key={link.label}
-                                            href={link.href}
-                                            className={cn(
-                                                "group flex items-center justify-between gap-3 border-b border-white/10 py-3.5",
-                                                "text-[0.92rem] font-black uppercase tracking-normal text-white transition-colors sm:text-[1.08rem]",
-                                                "hover:border-white/30",
-                                                section.hover
-                                            )}
-                                        >
-                                            <span>{link.label}</span>
-                                            <ArrowUpRight className="hidden h-4 w-4 shrink-0 stroke-[2.4px] text-zinc-500 transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-current sm:block" />
-                                        </Link>
-                                    ))}
+                                    <div className="border-t border-white/10 px-3.5 py-2">
+                                        {section.links.map((link) => (
+                                            <Link
+                                                key={link.label}
+                                                href={link.href}
+                                                className={cn(
+                                                    "group/link flex min-h-11 items-center justify-between gap-3 border-b border-white/10 py-2.5 last:border-b-0",
+                                                    "text-[0.9rem] font-black uppercase tracking-normal text-white transition-colors",
+                                                    section.hover
+                                                )}
+                                            >
+                                                <span>{link.label}</span>
+                                                <ArrowUpRight className="h-4 w-4 shrink-0 stroke-[2.4px] text-zinc-500 transition-transform duration-200 group-hover/link:-translate-y-0.5 group-hover/link:translate-x-0.5 group-hover/link:text-current" />
+                                            </Link>
+                                        ))}
+                                    </div>
+                                </details>
+                            ))}
+                        </div>
+
+                        <div className="hidden grid-cols-2 gap-x-14 gap-y-5 md:grid">
+                            {NAV_SECTIONS.map((section) => (
+                                <div key={section.title} className="min-w-0">
+                                    <div className="mb-3.5 flex items-center gap-3">
+                                        <span
+                                            className={cn("h-9 w-3 shrink-0 rounded-full border-[2px] border-black", section.accent)}
+                                            style={{
+                                                animation: reduceMotion ? "none" : "footerLinePulse 4.4s ease-in-out infinite",
+                                                transformOrigin: "center",
+                                            }}
+                                        />
+                                        <h3 className="text-[0.98rem] font-black uppercase tracking-normal text-zinc-300">
+                                            {section.title}
+                                        </h3>
+                                    </div>
+
+                                    <div className="space-y-1">
+                                        {section.links.map((link) => (
+                                            <Link
+                                                key={link.label}
+                                                href={link.href}
+                                                className={cn(
+                                                    "group flex items-center justify-between gap-3 border-b border-white/10 py-3.5",
+                                                    "text-[1.08rem] font-black uppercase tracking-normal text-white transition-colors",
+                                                    "hover:border-white/30",
+                                                    section.hover
+                                                )}
+                                            >
+                                                <span>{link.label}</span>
+                                                <ArrowUpRight className="h-4 w-4 shrink-0 stroke-[2.4px] text-zinc-500 transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-current" />
+                                            </Link>
+                                        ))}
+                                    </div>
                                 </div>
-                            </div>
-                        ))}
+                            ))}
+                        </div>
                     </div>
 
                     <div className="relative border-t-[3px] border-black/70 px-5 py-4 sm:px-7 dark:border-zinc-800">
