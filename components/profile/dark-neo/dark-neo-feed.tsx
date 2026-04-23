@@ -135,7 +135,8 @@ export function DarkNeoFeed({
     return (
         <div className="w-full space-y-6">
             {/* TABS - Vivid & Chunky & Sticky */}
-            <div className="sticky top-[88px] z-40 bg-background/95 backdrop-blur-sm pt-2 pb-3 mb-2 flex items-center gap-3 overflow-x-auto no-scrollbar border-b-2 border-dashed border-black/20">
+            <div className="sticky top-[88px] z-40 mb-3 border-b-2 border-dashed border-black/20 bg-background/95 pt-2 pb-3 backdrop-blur-sm">
+                <div className="grid grid-cols-2 gap-2 sm:flex sm:items-center sm:gap-3">
                 {tabs.map((tab) => {
                     const Icon = tab.icon;
                     const isActive = activeTab === tab.id;
@@ -150,17 +151,17 @@ export function DarkNeoFeed({
                             key={tab.id}
                             onClick={handleTabClick}
                             className={cn(
-                                "relative flex items-center gap-2 px-4 py-2 border-2 rounded-xl font-black text-xs transition-all whitespace-nowrap flex-shrink-0 active:scale-95 group",
+                                "relative flex min-h-11 min-w-0 items-center justify-center gap-2 px-3 py-2 border-2 rounded-xl font-black text-xs transition-all active:scale-95 group sm:flex-shrink-0 sm:justify-start sm:px-4",
                                 isActive
                                     ? `${tab.color} border-black shadow-[2px_2px_0px_0px_#000] translate-x-[-1px] translate-y-[-1px]`
                                     : "bg-background border-black dark:border-zinc-800 text-zinc-500 hover:text-foreground hover:shadow-[2px_2px_0px_0px_#000] hover:translate-x-[-1px] hover:translate-y-[-1px]"
                             )}
                         >
                             <Icon className={cn("w-3.5 h-3.5 stroke-[2.5px]", isActive && "stroke-current")} />
-                            {tab.label}
+                            <span className="truncate">{tab.label}</span>
                             {counts[tab.id as keyof typeof counts] > 0 && (
                                 <span className={cn(
-                                    "text-[9px] px-1.5 py-0.5 rounded-md ml-1.5 font-black border border-black/10",
+                                    "text-[9px] px-1.5 py-0.5 rounded-md font-black border border-black/10",
                                     isActive ? "bg-black/20 text-current" : "bg-black/5 text-zinc-500 group-hover:text-zinc-400 group-hover:bg-black/20"
                                 )}>
                                     {counts[tab.id as keyof typeof counts]}
@@ -169,6 +170,7 @@ export function DarkNeoFeed({
                         </button>
                     );
                 })}
+                </div>
             </div>
 
             {/* CONTENT */}
