@@ -3,23 +3,31 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useReducedMotion } from "framer-motion";
-import {
-    ArrowUpRight,
-    Github,
-    Instagram,
-    Twitter,
-    Youtube,
-} from "lucide-react";
+import { ArrowUpRight, Github, Instagram, Twitter, Youtube } from "lucide-react";
 import { DankLogo } from "@/components/brand/dank-logo";
 import { cn } from "@/lib/utils";
 
-const NAV_LINKS = [
-    { label: "Kütüphane", href: "/makale", color: "bg-[#FACC15]" },
-    { label: "Forum", href: "/forum", color: "bg-[#23A9FA]" },
-    { label: "Simülasyon", href: "/simulasyonlar", color: "bg-[#34D399]" },
-    { label: "Sıralama", href: "/siralamalar", color: "bg-[#F97316]" },
-    { label: "Sözlük", href: "/sozluk", color: "bg-[#A78BFA]" },
-    { label: "Hakkımızda", href: "/hakkimizda", color: "bg-[#F472B6]" },
+const NAV_SECTIONS = [
+    {
+        title: "İçerik",
+        accent: "bg-[#FACC15]",
+        hover: "hover:text-[#FACC15]",
+        links: [
+            { label: "Kütüphane", href: "/makale" },
+            { label: "Simülasyon", href: "/simulasyonlar" },
+            { label: "Sözlük", href: "/sozluk" },
+        ],
+    },
+    {
+        title: "Topluluk",
+        accent: "bg-[#23A9FA]",
+        hover: "hover:text-[#23A9FA]",
+        links: [
+            { label: "Forum", href: "/forum" },
+            { label: "Sıralama", href: "/siralamalar" },
+            { label: "Hakkımızda", href: "/hakkimizda" },
+        ],
+    },
 ];
 
 const UTILITY_LINKS = [
@@ -78,14 +86,14 @@ export function Footer() {
                     }
                 }
 
-                @keyframes footerBarPulse {
+                @keyframes footerLinePulse {
                     0%,
                     100% {
                         transform: scaleX(1);
-                        opacity: 0.85;
+                        opacity: 0.9;
                     }
                     50% {
-                        transform: scaleX(1.03);
+                        transform: scaleX(1.04);
                         opacity: 1;
                     }
                 }
@@ -102,7 +110,7 @@ export function Footer() {
                             left: `${6 + index * 15}%`,
                             animation: reduceMotion
                                 ? "none"
-                                : `footerFormulaDrift ${10 + index * 1.2}s ease-in-out ${index * -0.8}s infinite`,
+                                : `footerFormulaDrift ${10 + index * 1.15}s ease-in-out ${index * -0.85}s infinite`,
                         }}
                     >
                         {formula}
@@ -110,34 +118,38 @@ export function Footer() {
                 ))}
             </div>
 
-            <div className="container relative mx-auto max-w-[1180px]">
+            <div className="container relative mx-auto max-w-[1120px]">
                 <section
                     className={cn(
                         "relative overflow-hidden rounded-[24px] border-[3px] border-black dark:border-zinc-800",
-                        "bg-[#f4f4f5] dark:bg-[#27272a]",
-                        "shadow-[4px_4px_0px_0px_#000] dark:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.52)]"
+                        "bg-[#27272a] text-white",
+                        "shadow-[4px_4px_0px_0px_#000] dark:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.58)]"
                     )}
                 >
-                    <div className="absolute inset-0 opacity-[0.025] pointer-events-none mix-blend-multiply dark:mix-blend-screen"
-                        style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 250 250' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E\")" }}
+                    <div
+                        className="absolute inset-0 opacity-[0.04] pointer-events-none mix-blend-screen"
+                        style={{
+                            backgroundImage:
+                                "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 250 250' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E\")",
+                        }}
                     />
+                    <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(250,204,21,0.14),transparent_28%)]" />
 
-                    <div className="grid gap-0 lg:grid-cols-[0.95fr_1.25fr]">
-                        <div className="border-b-[3px] border-black p-4 dark:border-zinc-800 sm:p-5 lg:border-b-0 lg:border-r-[3px]">
-                            <div className="flex items-start justify-between gap-4">
-                                <Link
-                                    href="/"
-                                    className="inline-flex"
-                                    aria-label="FizikHub ana sayfa"
-                                    style={{
-                                        animation: reduceMotion ? "none" : "footerLogoFloat 4s ease-in-out infinite",
-                                        transformOrigin: "left center",
-                                    }}
-                                >
-                                    <DankLogo />
-                                </Link>
+                    <div className="relative border-b-[3px] border-black/70 px-4 py-4 sm:px-5 sm:py-5 dark:border-zinc-800">
+                        <div className="flex items-start justify-between gap-4">
+                            <Link
+                                href="/"
+                                className="inline-flex shrink-0"
+                                aria-label="FizikHub ana sayfa"
+                                style={{
+                                    animation: reduceMotion ? "none" : "footerLogoFloat 4s ease-in-out infinite",
+                                    transformOrigin: "left center",
+                                }}
+                            >
+                                <DankLogo />
+                            </Link>
 
-                                <div className="flex gap-1.5">
+                                <div className="flex shrink-0 gap-1">
                                     {SOCIAL_LINKS.map((social) => (
                                         <a
                                             key={social.label}
@@ -146,73 +158,73 @@ export function Footer() {
                                             rel="noopener noreferrer"
                                             aria-label={social.label}
                                             className={cn(
-                                                "flex h-9 w-9 items-center justify-center rounded-[12px] border-[2px] border-black",
+                                                "flex h-8 w-8 items-center justify-center rounded-[11px] border-[2px] border-black sm:h-9 sm:w-9 sm:rounded-[12px]",
                                                 "bg-white text-black shadow-[2px_2px_0px_0px_#000]",
                                                 "transition-all duration-200 hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none",
-                                                "dark:border-zinc-700 dark:bg-[#1e1e21] dark:text-white"
+                                                "dark:border-zinc-700 dark:bg-[#1b1b1f] dark:text-white"
                                             )}
                                         >
-                                            <social.icon className="h-4 w-4 stroke-[2.4px]" />
+                                            <social.icon className="h-[15px] w-[15px] stroke-[2.4px] sm:h-4 sm:w-4" />
                                         </a>
                                     ))}
                                 </div>
-                            </div>
-
-                            <div className="mt-5 space-y-3">
-                                <div
-                                    className="h-2.5 w-24 rounded-full bg-[#FACC15] shadow-[2px_2px_0px_0px_#000]"
-                                    style={{
-                                        animation: reduceMotion ? "none" : "footerBarPulse 3.8s ease-in-out infinite",
-                                        transformOrigin: "left center",
-                                    }}
-                                />
-                                <h2 className="max-w-[13ch] text-[1.42rem] font-black uppercase leading-[0.92] tracking-[-0.05em] text-black dark:text-white sm:text-[1.78rem]">
-                                    Bilimi Ti&apos;ye Alıyoruz Ama Ciddili Şekilde.
-                                </h2>
-                                <p className="text-[0.8rem] font-black uppercase tracking-[0.12em] text-zinc-500 dark:text-zinc-400">
-                                    İzinsiz kullananı kara deliğe atarız.
-                                </p>
-                            </div>
                         </div>
 
-                        <div className="p-4 sm:p-5">
-                            <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3">
-                                {NAV_LINKS.map((link) => (
-                                    <Link
-                                        key={link.label}
-                                        href={link.href}
-                                        className={cn(
-                                            "group relative overflow-hidden rounded-[18px] border-[2px] border-black dark:border-zinc-700",
-                                            "bg-white px-3 py-3.5 shadow-[3px_3px_0px_0px_#000]",
-                                            "transition-all duration-200 hover:-translate-y-[2px] hover:shadow-[5px_5px_0px_0px_#000]",
-                                            "dark:bg-[#1e1e21] dark:text-white dark:shadow-[3px_3px_0px_0px_rgba(0,0,0,0.45)] dark:hover:shadow-[5px_5px_0px_0px_rgba(0,0,0,0.55)]"
-                                        )}
-                                    >
-                                        <span className={cn("absolute left-3 top-3 h-2.5 w-2.5 rounded-full border border-black", link.color)} />
-                                        <div className="flex min-h-[54px] flex-col justify-between gap-3 pt-5">
-                                            <span className="text-[0.84rem] font-black uppercase leading-none tracking-tight text-black dark:text-white sm:text-[0.95rem]">
-                                                {link.label}
-                                            </span>
-                                            <ArrowUpRight className="h-4 w-4 stroke-[2.5px] text-zinc-500 transition-all duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-black dark:text-zinc-400 dark:group-hover:text-white" />
-                                        </div>
-                                    </Link>
-                                ))}
-                            </div>
+                        <div className="mt-5 max-w-[440px]">
+                            <div
+                                className="mb-3 h-2.5 w-20 rounded-full bg-[#FACC15] shadow-[2px_2px_0px_0px_#000]"
+                                style={{
+                                    animation: reduceMotion ? "none" : "footerLinePulse 4s ease-in-out infinite",
+                                    transformOrigin: "left center",
+                                }}
+                            />
+                            <h2 className="max-w-[12ch] text-[1.34rem] font-black uppercase leading-[0.92] tracking-[-0.05em] text-white sm:text-[1.75rem]">
+                                Bilimi Ti&apos;ye Alıyoruz Ama Ciddili Şekilde.
+                            </h2>
+                            <p className="mt-2 text-[0.78rem] font-black uppercase tracking-[0.12em] text-zinc-400">
+                                İzinsiz kullananı kara deliğe atarız.
+                            </p>
                         </div>
                     </div>
 
-                    <div className="border-t-[3px] border-black px-4 py-3 dark:border-zinc-800 sm:px-5">
-                        <div className="flex flex-wrap gap-1.5">
+                    <div className="relative grid grid-cols-2 gap-4 px-4 py-4 sm:px-5 sm:py-5 md:gap-8">
+                        {NAV_SECTIONS.map((section) => (
+                            <div key={section.title} className="min-w-0">
+                                <div className="mb-3 flex items-center gap-3">
+                                    <span className={cn("h-8 w-3 shrink-0 rounded-full border-[2px] border-black", section.accent)} />
+                                    <h3 className="text-[0.8rem] font-black uppercase tracking-[0.1em] text-zinc-300 sm:text-[0.92rem] sm:tracking-[0.12em]">
+                                        {section.title}
+                                    </h3>
+                                </div>
+
+                                <div className="space-y-1">
+                                    {section.links.map((link) => (
+                                        <Link
+                                            key={link.label}
+                                            href={link.href}
+                                            className={cn(
+                                                "group flex items-center justify-between gap-3 border-b border-white/10 py-2.5",
+                                                "text-[0.83rem] font-black uppercase tracking-tight text-white transition-colors sm:text-[0.97rem]",
+                                                "hover:border-white/30",
+                                                section.hover
+                                            )}
+                                        >
+                                            <span>{link.label}</span>
+                                            <ArrowUpRight className="h-4 w-4 shrink-0 stroke-[2.4px] text-zinc-500 transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-current" />
+                                        </Link>
+                                    ))}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+
+                    <div className="relative border-t-[3px] border-black/70 px-4 py-3 sm:px-5 dark:border-zinc-800">
+                        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-[0.7rem] font-black uppercase tracking-[0.13em] text-zinc-400">
                             {UTILITY_LINKS.map((link) => (
                                 <Link
                                     key={link.label}
                                     href={link.href}
-                                    className={cn(
-                                        "rounded-full border-[2px] border-black bg-white px-3 py-1.5",
-                                        "text-[0.66rem] font-black uppercase tracking-[0.1em] text-black shadow-[2px_2px_0px_0px_#000]",
-                                        "transition-all duration-200 hover:bg-[#FACC15] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none",
-                                        "dark:border-zinc-700 dark:bg-[#1e1e21] dark:text-zinc-100 dark:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.45)]"
-                                    )}
+                                    className="transition-colors hover:text-[#FACC15]"
                                 >
                                     {link.label}
                                 </Link>
