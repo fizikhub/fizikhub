@@ -120,21 +120,20 @@ export function Footer() {
                 }}
             />
 
-            {/* Wobbly UFO Animation */}
+            {/* Wobbly UFO Animation (Soft & Natural) */}
             <motion.div
-                initial={{ left: "-200px" }}
-                whileInView={{ 
-                    left: "calc(100% + 200px)",
-                    y: [0, -35, 15, -25, 0], 
-                    rotate: [-6, 6, -4, 4, -5] 
+                initial={{ x: "-20vw", y: 0 }}
+                animate={{ 
+                    x: ["-20vw", "120vw"],
+                    y: [0, -15, 10, -10, 0], 
+                    rotate: [-3, 3, -2, 2, -3] 
                 }}
-                viewport={{ once: false, margin: "50px" }}
                 transition={{
-                    left: { duration: 15, ease: "linear", repeat: Infinity },
-                    y: { duration: 3.5, ease: "easeInOut", repeat: Infinity },
-                    rotate: { duration: 2.8, ease: "easeInOut", repeat: Infinity }
+                    x: { duration: 35, ease: "linear", repeat: Infinity },
+                    y: { duration: 6, ease: "easeInOut", repeat: Infinity },
+                    rotate: { duration: 8, ease: "easeInOut", repeat: Infinity }
                 }}
-                className="absolute top-16 z-10 pointer-events-none"
+                className="absolute top-10 sm:top-20 z-0 pointer-events-none opacity-40 dark:opacity-30"
             >
                 <UFOAlien />
             </motion.div>
