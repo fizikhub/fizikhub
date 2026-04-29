@@ -6,9 +6,6 @@ export default function robots(): MetadataRoute.Robots {
     const commonDisallow = [
         '/api/',
         '/profil/',
-        '/login/',
-        '/forgot-password/',
-        '/reset-password/',
         '/onboarding/',
         '/admin/',
         '/yazar/',

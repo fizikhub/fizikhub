@@ -75,22 +75,12 @@ const nextConfig: NextConfig = {
     removeConsole: process.env.NODE_ENV === "production",
   },
 
-  // Redirects for broken links (e.g. arXiv links) and old blog slugs
+  // Redirects for broken links (e.g. arXiv links)
   async redirects() {
     return [
       {
         source: '/kesfet',
         destination: '/ara',
-        permanent: true,
-      },
-      {
-        source: '/blog',
-        destination: '/makale',
-        permanent: true,
-      },
-      {
-        source: '/blog/:slug*',
-        destination: '/makale/:slug*',
         permanent: true,
       },
     ];
@@ -136,6 +126,10 @@ const nextConfig: NextConfig = {
             key: 'Cache-Control',
             value: 'public, max-age=31536000, immutable',
           },
+          {
+            key: 'X-Robots-Tag',
+            value: 'noindex, nofollow',
+          },
         ],
       },
       // PWA Files (Service Worker & Manifest)
@@ -145,8 +139,25 @@ const nextConfig: NextConfig = {
           {
             key: 'Cache-Control',
             value: 'public, max-age=0, must-revalidate',
+          },
+          {
+            key: 'X-Robots-Tag',
+            value: 'noindex, nofollow',
           }
         ]
+      },
+      {
+        source: '/favicon.ico',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+          {
+            key: 'X-Robots-Tag',
+            value: 'noindex, nofollow',
+          },
+        ],
       },
       // Global security headers for all routes
       {

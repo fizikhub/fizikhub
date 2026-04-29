@@ -9,32 +9,53 @@ import { ForumHeaderFallback } from "@/components/forum/forum-header-fallback";
 import { Ghost } from "lucide-react";
 import { BreadcrumbJsonLd } from "@/lib/breadcrumbs";
 import { sanitizeSearchQuery } from "@/lib/security";
+import type { Metadata } from "next";
 
 // Revalidate every 2 minutes for active active forum
 export const revalidate = 120;
 
-export const metadata = {
-    title: "Bilim Forumu | Fizikhub",
-    description: "Fizik sorularını sor, tartışmalara katıl ve topluluktan öğren. TYT/AYT fizik, kuantum, astrofizik ve daha fazlası.",
-    keywords: ["fizik forumu", "bilim soruları", "fizik soru cevap", "TYT fizik soruları", "bilimsel tartışma"],
-    openGraph: {
-        title: "Bilim Forumu — Fizikhub",
-        description: "Fizik sorularını sor, tartışmalara katıl ve topluluktan öğren.",
-        type: "website",
-        url: "https://www.fizikhub.com/forum",
-        images: [{ url: "/og-image.jpg", width: 1200, height: 630, alt: "Fizikhub Bilim Forumu" }],
-    },
-    twitter: {
-        card: "summary_large_image",
-        title: "Bilim Forumu — Fizikhub",
-        description: "Fizik sorularını sor, tartışmalara katıl ve topluluktan öğren.",
-        images: ["/og-image.jpg"],
-    },
-    alternates: { canonical: "https://www.fizikhub.com/forum" },
-};
-
 interface ForumPageProps {
     searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}
+
+export async function generateMetadata({ searchParams }: ForumPageProps): Promise<Metadata> {
+    const params = await searchParams;
+    const category = typeof params.category === 'string' && params.category !== 'Tümü' ? params.category : undefined;
+    const sort = typeof params.sort === 'string' ? params.sort : undefined;
+    const filter = typeof params.filter === 'string' ? params.filter : undefined;
+    const query = typeof params.q === 'string' ? params.q : undefined;
+    const page = typeof params.page === 'string' ? params.page : undefined;
+    const hasLowValueParams = Boolean(query || filter || page || (sort && sort !== 'newest'));
+    const canonicalUrl = category
+        ? `https://www.fizikhub.com/forum?category=${encodeURIComponent(category)}`
+        : "https://www.fizikhub.com/forum";
+    const title = category ? `${category} Soruları ve Bilim Forumu` : "Bilim Forumu";
+    const description = category
+        ? `${category} hakkında fizik ve bilim soruları, cevaplar ve topluluk tartışmaları.`
+        : "Fizik sorularını sor, tartışmalara katıl ve topluluktan öğren. TYT/AYT fizik, kuantum, astrofizik ve daha fazlası.";
+
+    return {
+        title,
+        description,
+        keywords: ["fizik forumu", "bilim soruları", "fizik soru cevap", "TYT fizik soruları", "bilimsel tartışma", category || "fizik"],
+        robots: hasLowValueParams
+            ? { index: false, follow: true }
+            : { index: true, follow: true },
+        openGraph: {
+            title: category ? `${category} Soruları — Fizikhub` : "Bilim Forumu — Fizikhub",
+            description,
+            type: "website",
+            url: canonicalUrl,
+            images: [{ url: "/og-image.jpg", width: 1200, height: 630, alt: "Fizikhub Bilim Forumu" }],
+        },
+        twitter: {
+            card: "summary_large_image",
+            title: category ? `${category} Soruları — Fizikhub` : "Bilim Forumu — Fizikhub",
+            description,
+            images: ["/og-image.jpg"],
+        },
+        alternates: { canonical: canonicalUrl },
+    };
 }
 
 export default async function ForumPage({ searchParams }: ForumPageProps) {

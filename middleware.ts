@@ -77,6 +77,25 @@ export async function middleware(request: NextRequest) {
         return NextResponse.redirect(url, 301);
     }
 
+    // Legacy blog URLs were replaced by /makale. Normalize them in one hop so
+    // Search Console sees a single canonical destination.
+    if (pathname === '/blog' || pathname.startsWith('/blog/')) {
+        const url = request.nextUrl.clone();
+        url.pathname = pathname.replace(/^\/blog/, '/makale');
+
+        const kategori = url.searchParams.get('kategori');
+        if (kategori) {
+            url.searchParams.delete('kategori');
+            url.searchParams.set('category', kategori);
+        }
+
+        if (url.searchParams.get('sort') === 'latest') {
+            url.searchParams.delete('sort');
+        }
+
+        return NextResponse.redirect(url, 301);
+    }
+
     // Clean up URLs broken by markdown parsing bugs (trailing characters after closed parenthesis)
     // E.g. /abs/123) or /storage/...blob)olay
     if (pathname.includes(')')) {
@@ -98,13 +117,23 @@ export async function middleware(request: NextRequest) {
         }
     }
 
-    // Normalize query params for /makale to fix Canonical tag warnings (kategori -> category)
+    // Normalize query params for /makale to fix canonical tag warnings.
     if (pathname === '/makale') {
         const url = request.nextUrl.clone();
+        let changed = false;
         const kategori = url.searchParams.get('kategori');
         if (kategori) {
             url.searchParams.delete('kategori');
             url.searchParams.set('category', kategori);
+            changed = true;
+        }
+
+        if (url.searchParams.get('sort') === 'latest') {
+            url.searchParams.delete('sort');
+            changed = true;
+        }
+
+        if (changed) {
             return NextResponse.redirect(url, 301);
         }
     }
