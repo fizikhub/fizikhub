@@ -5,6 +5,7 @@ const nextConfig: NextConfig = {
     formats: ['image/avif', 'image/webp'],
     deviceSizes: [400, 500, 640, 750, 828, 1080, 1200, 1920],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+    qualities: [50, 60, 75, 85],
     minimumCacheTTL: 31536000, // 1 year cache
     remotePatterns: [
       {
@@ -221,7 +222,19 @@ const withPWA = require("@ducanh2912/next-pwa").default({
   register: true,
   skipWaiting: true,
   cacheOnFrontEndNav: true,
+  cacheStartUrl: false,
   reloadOnOnline: true,
+  publicExcludes: [
+    "!assets/**/*",
+    "!audio/**/*",
+    "!badges/**/*",
+    "!cats/**/*",
+    "!img/**/*",
+    "!retro/**/*",
+    "!rive/**/*",
+    "!stories/**/*",
+    "!images/galileo-error.jpg",
+  ],
   fallbacks: {
     document: "/~offline",
   },

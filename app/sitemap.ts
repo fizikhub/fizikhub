@@ -1,7 +1,14 @@
 import { MetadataRoute } from 'next';
 import { createClient } from '@/lib/supabase-server';
+import { simulations } from '@/components/simulations/data';
 
 export const revalidate = 3600; // Revalidate sitemap every hour
+
+const STATIC_LAST_MODIFIED = new Date('2026-04-17T00:00:00.000Z');
+
+function toLastModified(value?: string | null) {
+    return value ? new Date(value) : STATIC_LAST_MODIFIED;
+}
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const supabase = await createClient();
@@ -11,84 +18,84 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const staticPages: MetadataRoute.Sitemap = [
         {
             url: baseUrl,
-            lastModified: new Date(),
+            lastModified: STATIC_LAST_MODIFIED,
             changeFrequency: 'daily',
             priority: 1.0,
         },
         {
             url: `${baseUrl}/forum`,
-            lastModified: new Date(),
+            lastModified: STATIC_LAST_MODIFIED,
             changeFrequency: 'hourly',
             priority: 0.9,
         },
 
         {
             url: `${baseUrl}/makale`,
-            lastModified: new Date(),
+            lastModified: STATIC_LAST_MODIFIED,
             changeFrequency: 'daily',
             priority: 0.8,
         },
         {
             url: `${baseUrl}/sozluk`,
-            lastModified: new Date(),
+            lastModified: STATIC_LAST_MODIFIED,
             changeFrequency: 'weekly',
             priority: 0.7,
         },
         {
             url: `${baseUrl}/testler`,
-            lastModified: new Date(),
+            lastModified: STATIC_LAST_MODIFIED,
             changeFrequency: 'weekly',
             priority: 0.7,
         },
         {
             url: `${baseUrl}/simulasyonlar`,
-            lastModified: new Date(),
+            lastModified: STATIC_LAST_MODIFIED,
             changeFrequency: 'monthly',
             priority: 0.6,
         },
         {
             url: `${baseUrl}/siralamalar`,
-            lastModified: new Date(),
+            lastModified: STATIC_LAST_MODIFIED,
             changeFrequency: 'daily',
             priority: 0.5,
         },
         {
             url: `${baseUrl}/hakkimizda`,
-            lastModified: new Date(),
+            lastModified: STATIC_LAST_MODIFIED,
             changeFrequency: 'monthly',
             priority: 0.3,
         },
         {
             url: `${baseUrl}/iletisim`,
-            lastModified: new Date(),
+            lastModified: STATIC_LAST_MODIFIED,
             changeFrequency: 'monthly',
             priority: 0.3,
         },
         {
             url: `${baseUrl}/gizlilik-politikasi`,
-            lastModified: new Date(),
+            lastModified: STATIC_LAST_MODIFIED,
             changeFrequency: 'yearly',
             priority: 0.2,
         },
         {
             url: `${baseUrl}/kullanim-sartlari`,
-            lastModified: new Date(),
+            lastModified: STATIC_LAST_MODIFIED,
             changeFrequency: 'yearly',
             priority: 0.2,
         },
     ];
 
     // Fetch all data in parallel for speed
-    const [questionsResult, articlesResult, profilesResult, termsResult, quizzesResult, simulationsResult] = await Promise.all([
+    const [questionsResult, articlesResult, profilesResult, quizzesResult] = await Promise.all([
         supabase
             .from('questions')
-            .select('id, updated_at')
+            .select('id, created_at')
             .order('created_at', { ascending: false })
             .limit(1000),
 
         supabase
             .from('articles')
-            .select('slug, updated_at, category, cover_url')
+            .select('slug, created_at, category, cover_url')
             .eq('status', 'published')
             .order('created_at', { ascending: false })
             .limit(1000),
@@ -101,30 +108,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
             .limit(500),
 
         supabase
-            .from('dictionary_terms')
-            .select('slug, updated_at')
-            .order('created_at', { ascending: false })
-            .limit(500),
-
-        supabase
             .from('quizzes')
-            .select('slug, updated_at')
-            .eq('is_published', true)
+            .select('slug, created_at')
             .order('created_at', { ascending: false })
             .limit(200),
-
-
-        supabase
-            .from('simulations')
-            .select('slug, updated_at')
-            .eq('is_published', true)
-            .order('created_at', { ascending: false })
-            .limit(100),
     ]);
 
     const questionPages: MetadataRoute.Sitemap = (questionsResult.data || []).map((question) => ({
         url: `${baseUrl}/forum/${question.id}`,
-        lastModified: new Date(question.updated_at),
+        lastModified: toLastModified(question.created_at),
         changeFrequency: 'weekly' as const,
         priority: 0.8,
     }));
@@ -137,7 +129,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
         return {
             url: `${baseUrl}/${urlPrefix}/${article.slug}`,
-            lastModified: new Date(article.updated_at),
+            lastModified: toLastModified(article.created_at),
             changeFrequency: 'weekly' as const,
             priority: 0.9,
             ...(article.cover_url ? { images: [article.cover_url] } : { images: [`${baseUrl}/api/og?title=${encodeURIComponent(article.slug)}`] }),
@@ -146,7 +138,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
     const profilePages: MetadataRoute.Sitemap = (profilesResult.data || []).map((profile) => ({
         url: `${baseUrl}/kullanici/${profile.username}`,
-        lastModified: new Date(profile.updated_at),
+        lastModified: toLastModified(profile.updated_at),
         changeFrequency: 'monthly' as const,
         priority: 0.6,
         ...(profile.avatar_url ? { images: [profile.avatar_url] } : {}),
@@ -156,14 +148,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
     const quizPages: MetadataRoute.Sitemap = (quizzesResult.data || []).map((quiz) => ({
         url: `${baseUrl}/testler/${quiz.slug}`,
-        lastModified: new Date(quiz.updated_at),
+        lastModified: toLastModified(quiz.created_at),
         changeFrequency: 'monthly' as const,
         priority: 0.5,
     }));
 
-    const simulationPages: MetadataRoute.Sitemap = (simulationsResult?.data || []).map((sim: any) => ({
+    const simulationPages: MetadataRoute.Sitemap = simulations.map((sim) => ({
         url: `${baseUrl}/simulasyonlar/${sim.slug}`,
-        lastModified: new Date(sim.updated_at),
+        lastModified: STATIC_LAST_MODIFIED,
         changeFrequency: 'monthly' as const,
         priority: 0.6,
     }));

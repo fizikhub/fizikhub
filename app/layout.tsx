@@ -3,9 +3,6 @@ import type { Metadata } from "next";
 import { Inter, Lora } from "next/font/google";
 import "./globals.css";
 
-import { Navbar } from "@/components/layout/navbar";
-import { Footer } from "@/components/layout/footer";
-import { BottomNav } from "@/components/layout/bottom-nav";
 import { ThemeProvider } from "@/components/theme-provider";
 import { FramerMotionProvider } from "@/components/providers/framer-motion-provider";
 
@@ -178,16 +175,14 @@ const jsonLdWebsite = {
 
 import { Toaster } from "sonner";
 import { NavigationWrapper } from "@/components/layout/navigation-wrapper";
-import { UserActivityTracker } from "@/components/analytics/user-activity-tracker";
 import { TimeLimitProvider } from "@/components/time-limit/time-limit-provider";
 import { MaintenanceAudioPlayer } from "@/components/maintenance/audio-player";
 
 
 import { Analytics } from "@vercel/analytics/react";
-import { OnboardingCheck } from "@/components/auth/onboarding-check";
-import { Suspense } from "react";
 import { QueryProvider } from "@/components/providers/query-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { RuntimeEffects } from "@/components/layout/runtime-effects";
 
 export default async function RootLayout({
   children,
@@ -277,7 +272,6 @@ export default async function RootLayout({
           İçeriğe atla
         </a>
 
-        <UserActivityTracker />
         <QueryProvider>
           <ThemeProvider
             attribute="class"
@@ -288,9 +282,7 @@ export default async function RootLayout({
             <TimeLimitProvider>
               <FramerMotionProvider>
                 <NavigationWrapper>
-                  <Suspense fallback={null}>
-                    <OnboardingCheck />
-                  </Suspense>
+                  <RuntimeEffects />
                   <TooltipProvider>
                     <main id="main-content" role="main">
                       {children}

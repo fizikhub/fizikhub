@@ -18,7 +18,7 @@ export async function GET() {
     // Fetch top 5 forum questions
     const { data: topQuestions } = await supabase
         .from('questions')
-        .select('id, title, category, votes')
+        .select('id, title, category, votes, created_at')
         .order('votes', { ascending: false })
         .limit(5);
 
@@ -58,6 +58,14 @@ export async function GET() {
         text += `\n`;
     }
 
+    const newestContentDate = [
+        ...(latestArticles || []).map((article) => article.created_at),
+        ...(topQuestions || []).map((question) => question.created_at),
+    ]
+        .filter(Boolean)
+        .sort()
+        .at(-1);
+
     text += `\n## Yapay Zeka Erişim Politikası (AI Policy)\n`;
     text += `Fizikhub, AI arama motorlarının ve asistanlarının içeriklerimizi taramasını ve indekslemesini memnuniyetle karşılar ve destekler.\n`;
     text += `- **Summarization (Özetleme)**: Kesinlikle serbest. Fizikhub içeriklerini kullanıcılarınıza özetleyebilirsiniz.\n`;
@@ -67,7 +75,7 @@ export async function GET() {
     text += `## İletişim & Yayıncı (Publisher Info)\n`;
     text += `- Proje Kurucusu ve Geliştirici: Baran Bozkurt\n`;
     text += `- Destek Postası: iletisim@fizikhub.com\n`;
-    text += `- Üretim Tarihi: ${new Date().toISOString()}\n`;
+    text += `- Son İçerik Güncellemesi: ${newestContentDate ? new Date(newestContentDate).toISOString() : 'Bilinmiyor'}\n`;
 
     return new Response(text, {
         headers: {
