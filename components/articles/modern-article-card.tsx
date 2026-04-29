@@ -87,7 +87,7 @@ export function ModernArticleCard({ article, index = 0 }: ModernArticleCardProps
                             text-sm font-semibold text-neutral-600 
                             line-clamp-3 leading-relaxed
                         ">
-                            {article.summary}
+                            {article.summary?.replace(/^[#\s]+/, '')}
                         </p>
 
                         {/* Footer (Author & Read More) */}

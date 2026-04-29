@@ -177,7 +177,7 @@ export function SocialArticleCard({
 
                         {!isCompact && (
                             <p className="flex-1 text-xs sm:text-sm font-medium text-zinc-600 dark:text-zinc-300 line-clamp-3 leading-relaxed font-mono break-words">
-                                {article.summary}
+                                {article.summary?.replace(/^[#\s]+/, '')}
                             </p>
                         )}
 

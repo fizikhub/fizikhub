@@ -105,11 +105,11 @@ export function NeoArticleCard({
     };
 
     const getPreviewText = (htmlContent: string | null | undefined, summary: string | null | undefined) => {
-        if (htmlContent) {
-            const plainText = htmlContent.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
-            if (plainText.length > 20) return plainText;
-        }
-        return summary || "Bu makale için içerik önizlemesi bulunmuyor.";
+        const text = htmlContent 
+            ? htmlContent.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim() 
+            : (summary || "Bu makale için içerik önizlemesi bulunmuyor.");
+            
+        return text.replace(/^[#\s]+/, '');
     };
 
     const previewText = getPreviewText(article.content, article.summary);

@@ -22,10 +22,7 @@ const DesktopSidebar = dynamic(
     () => import("@/components/layout/desktop-sidebar").then(mod => mod.DesktopSidebar)
 );
 
-const HubGPTButton = dynamic(
-    () => import("@/components/ai/hub-gpt-button").then(mod => mod.HubGPTButton),
-    { ssr: false }
-);
+
 
 const BottomNav = dynamic(
     () => import("@/components/layout/bottom-nav").then(mod => mod.BottomNav)
@@ -53,7 +50,6 @@ export function NavigationWrapper({ children }: { children: React.ReactNode }) {
             </div>
             
             <BottomNav />
-            <HubGPTButton />
         </>
     );
 }

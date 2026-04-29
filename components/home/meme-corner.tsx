@@ -10,33 +10,7 @@ const MemeCornerCanvas = dynamic(() => import("@/components/home/meme-corner-can
 });
 
 export function MemeCorner() {
-    const [load3D, setLoad3D] = useState(false);
-
-    useEffect(() => {
-        // Fallback: Load automatically after 4 seconds (passes Lighthouse TTI window)
-        const timer = setTimeout(() => setLoad3D(true), 4000);
-
-        const handleInteraction = () => {
-            setLoad3D(true);
-            cleanup();
-        };
-
-        const cleanup = () => {
-            window.removeEventListener("pointermove", handleInteraction);
-            window.removeEventListener("touchstart", handleInteraction);
-            window.removeEventListener("scroll", handleInteraction);
-        };
-
-        // If user interacts, load immediately
-        window.addEventListener("pointermove", handleInteraction, { once: true, passive: true });
-        window.addEventListener("touchstart", handleInteraction, { once: true, passive: true });
-        window.addEventListener("scroll", handleInteraction, { once: true, passive: true });
-
-        return () => {
-            clearTimeout(timer);
-            cleanup();
-        };
-    }, []);
+    const [load3D, setLoad3D] = useState(true);
 
     return (
         <div className="w-full relative group min-h-[180px] sm:min-h-[240px]">
