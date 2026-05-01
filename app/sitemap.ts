@@ -10,9 +10,13 @@ function toLastModified(value?: string | null) {
     return value ? new Date(value) : STATIC_LAST_MODIFIED;
 }
 
+function getBaseUrl() {
+    return (process.env.NEXT_PUBLIC_APP_URL || 'https://www.fizikhub.com').replace(/\/+$/, '');
+}
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const supabase = await createClient();
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.fizikhub.com';
+    const baseUrl = getBaseUrl();
 
     // Static pages with all important routes
     const staticPages: MetadataRoute.Sitemap = [
@@ -52,6 +56,24 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
             lastModified: STATIC_LAST_MODIFIED,
             changeFrequency: 'monthly',
             priority: 0.6,
+        },
+        {
+            url: `${baseUrl}/ara`,
+            lastModified: STATIC_LAST_MODIFIED,
+            changeFrequency: 'monthly',
+            priority: 0.5,
+        },
+        {
+            url: `${baseUrl}/basvuru/yazar`,
+            lastModified: STATIC_LAST_MODIFIED,
+            changeFrequency: 'monthly',
+            priority: 0.4,
+        },
+        {
+            url: `${baseUrl}/puanlar-nedir`,
+            lastModified: STATIC_LAST_MODIFIED,
+            changeFrequency: 'monthly',
+            priority: 0.4,
         },
         {
             url: `${baseUrl}/siralamalar`,
@@ -95,7 +117,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
         supabase
             .from('articles')
-            .select('slug, created_at, category, cover_url')
+            .select('slug, created_at, updated_at, category, cover_url')
             .eq('status', 'published')
             .order('created_at', { ascending: false })
             .limit(1000),
@@ -129,7 +151,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
         return {
             url: `${baseUrl}/${urlPrefix}/${article.slug}`,
-            lastModified: toLastModified(article.created_at),
+            lastModified: toLastModified(article.updated_at || article.created_at),
             changeFrequency: 'weekly' as const,
             priority: 0.9,
             ...(article.cover_url ? { images: [article.cover_url] } : { images: [`${baseUrl}/api/og?title=${encodeURIComponent(article.slug)}`] }),
@@ -137,7 +159,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     });
 
     const profilePages: MetadataRoute.Sitemap = (profilesResult.data || []).map((profile) => ({
-        url: `${baseUrl}/kullanici/${profile.username}`,
+        url: `${baseUrl}/kullanici/${encodeURIComponent(profile.username)}`,
         lastModified: toLastModified(profile.updated_at),
         changeFrequency: 'monthly' as const,
         priority: 0.6,

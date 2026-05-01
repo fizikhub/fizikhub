@@ -38,7 +38,7 @@ export function LatestArticlesSlider({ articles }: LatestArticlesSliderProps) {
 
             {/* Horizontal Scroll */}
             <div className="flex overflow-x-auto gap-3 pb-3 scrollbar-hide snap-x snap-mandatory px-4 sm:px-0" role="region" aria-label="Popüler yazılar karusel">
-                {articles.slice(0, 6).map((article, index) => {
+                {articles.slice(0, 6).map((article) => {
                     const isNew = new Date().getTime() - new Date(article.created_at).getTime() < 3 * 24 * 60 * 60 * 1000;
 
                     return (
@@ -57,7 +57,7 @@ export function LatestArticlesSlider({ articles }: LatestArticlesSliderProps) {
                                                 fill
                                                 sizes="(max-width: 640px) 215px, 275px"
                                                 className="object-cover group-hover:scale-[1.04] transition-transform duration-700 ease-out"
-                                                priority={index === 0}
+                                                priority={false}
                                             />
                                         ) : (
                                             <div className="w-full h-full bg-zinc-900 flex items-center justify-center">

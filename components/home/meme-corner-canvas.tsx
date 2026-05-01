@@ -5,6 +5,23 @@ import { Canvas, useFrame } from "@react-three/fiber";
 import { EffectComposer, Bloom } from "@react-three/postprocessing";
 import * as THREE from "three";
 
+type RenderQuality = "pending" | "disabled" | "mobile" | "desktop";
+
+function getRenderQuality(): RenderQuality {
+    if (typeof window === "undefined") return "pending";
+
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const isMobile = window.innerWidth <= 768;
+    const hardwareConcurrency = navigator.hardwareConcurrency || 4;
+    const deviceMemory = (navigator as Navigator & { deviceMemory?: number }).deviceMemory || 4;
+
+    if (prefersReducedMotion || (isMobile && (hardwareConcurrency < 4 || deviceMemory < 4))) {
+        return "disabled";
+    }
+
+    return isMobile ? "mobile" : "desktop";
+}
+
 // --- TEXTURES ---
 
 // 1. STAR TEXTURE: Hard center for visibility
@@ -360,51 +377,49 @@ function BackgroundStars({ count = 2000 }) {
 }
 
 export default function MemeCornerCanvas() {
-    const [isLowEnd, setIsLowEnd] = useState(false);
-    const [mounted, setMounted] = useState(false);
+    const [quality, setQuality] = useState<RenderQuality>(() => getRenderQuality());
 
     useEffect(() => {
-        setMounted(true);
-        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        const isMobile = window.innerWidth <= 768;
-        const hardwareConcurrency = navigator.hardwareConcurrency || 4;
-        // @ts-ignore
-        const deviceMemory = navigator.deviceMemory || 4;
+        const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+        const updateQuality = () => setQuality(getRenderQuality());
 
-        if (prefersReducedMotion || (isMobile && (hardwareConcurrency < 4 || deviceMemory < 4))) {
-            setIsLowEnd(true);
-        }
+        motionQuery.addEventListener("change", updateQuality);
+        return () => motionQuery.removeEventListener("change", updateQuality);
     }, []);
 
-    if (!mounted || isLowEnd) {
+    if (quality === "pending" || quality === "disabled") {
         // Return a lightweight empty div maintaining dimensions if necessary, or null.
         return null; 
     }
+
+    const isMobile = quality === "mobile";
 
     return (
         <Canvas
             camera={{ position: [0, 5, 7], fov: 50 }}
             gl={{
-                antialias: true,
-                powerPreference: "high-performance",
+                antialias: !isMobile,
+                powerPreference: isMobile ? "default" : "high-performance",
                 alpha: true
             }}
-            dpr={[1, 2.5]}
+            dpr={isMobile ? [1, 1.25] : [1, 2]}
         >
             <group>
-                <BackgroundStars />
-                <GalaxyDust />
-                <MainStars />
-                <NebulaClouds />
+                <BackgroundStars count={isMobile ? 700 : 2000} />
+                <GalaxyDust count={isMobile ? 5000 : 30000} />
+                <MainStars count={isMobile ? 2500 : 10000} />
+                <NebulaClouds count={isMobile ? 1200 : 8000} />
             </group>
 
-            <EffectComposer enableNormalPass={false} multisampling={8}>
-                <Bloom
-                    luminanceThreshold={0.6} // Higher threshold = Only brightest stars glow
-                    intensity={1.0}
-                    radius={0.2} // Sharper glow
-                />
-            </EffectComposer>
+            {!isMobile && (
+                <EffectComposer enableNormalPass={false} multisampling={4}>
+                    <Bloom
+                        luminanceThreshold={0.6} // Higher threshold = Only brightest stars glow
+                        intensity={1.0}
+                        radius={0.2} // Sharper glow
+                    />
+                </EffectComposer>
+            )}
         </Canvas>
     );
 }

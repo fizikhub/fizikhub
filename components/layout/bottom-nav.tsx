@@ -2,24 +2,28 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, BookOpen, MessageCircle, User, Plus } from "lucide-react";
+import { Home, BookOpen, MessageCircle, User, Plus, type LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useEffect, useState, useRef } from "react";
-import { m, AnimatePresence, useScroll, useVelocity, useMotionValueEvent, useMotionValue, animate } from "framer-motion";
-
-import { DankLogo } from "@/components/brand/dank-logo";
+import { useRef } from "react";
+import { m, useReducedMotion, useScroll, useVelocity, useMotionValueEvent, useMotionValue, animate } from "framer-motion";
 
 export function BottomNav() {
     const pathname = usePathname();
     const { scrollY, scrollYProgress } = useScroll();
     const scrollVelocity = useVelocity(scrollY);
+    const shouldReduceMotion = useReducedMotion();
 
     // Pure MotionValues instead of React State to avoid re-renders during scroll
     const navY = useMotionValue(0);
     const targetYRef = useRef(0);
+    const frameRef = useRef<number | null>(null);
 
     useMotionValueEvent(scrollY, "change", (latest) => {
-        requestAnimationFrame(() => {
+        if (shouldReduceMotion) return;
+        if (frameRef.current !== null) return;
+
+        frameRef.current = requestAnimationFrame(() => {
+            frameRef.current = null;
             const velocity = scrollVelocity.get();
             const previous = scrollY.getPrevious() || 0;
             const diff = latest - previous;
@@ -68,7 +72,7 @@ export function BottomNav() {
             className="fixed bottom-0 left-0 right-0 z-[50] md:hidden font-sans"
         >
             <nav aria-label="Mobil navigasyon" className={cn(
-                "w-full transition-all duration-500 h-[50px] bg-white/80 dark:bg-[#121212]/80 backdrop-blur-xl border-t border-black/10 dark:border-white/10 flex items-center justify-around px-2 pb-safe relative shadow-[0_-4px_16px_rgba(0,0,0,0.05)]"
+                "w-full h-[calc(56px+env(safe-area-inset-bottom))] bg-white/88 dark:bg-[#121212]/88 backdrop-blur-md border-t border-black/10 dark:border-white/10 flex items-start justify-around px-2 pt-1 pb-[env(safe-area-inset-bottom)] relative shadow-[0_-4px_16px_rgba(0,0,0,0.08)]"
             )}>
                 <div className="flex items-center justify-around w-full">
                     <NavItem
@@ -106,7 +110,7 @@ export function BottomNav() {
                                 whileTap={{ scale: 0.9, rotate: 15 }}
                                 className="
                                     flex items-center justify-center
-                                    w-11 h-11
+                                    w-12 h-12
                                     bg-[#FACC15]
                                     border-2 border-black dark:border-white
                                     rounded-full
@@ -145,7 +149,7 @@ export function BottomNav() {
     );
 }
 
-function NavItem({ id, href, icon: Icon, label, isActive, onInteract }: { id?: string; href: string; icon: any; label: string; isActive: boolean; onInteract: () => void }) {
+function NavItem({ id, href, icon: Icon, label, isActive, onInteract }: { id?: string; href: string; icon: LucideIcon; label: string; isActive: boolean; onInteract: () => void }) {
     const handleNavItemClick = (e: React.MouseEvent) => {
         onInteract();
         if (isActive) {
@@ -163,7 +167,7 @@ function NavItem({ id, href, icon: Icon, label, isActive, onInteract }: { id?: s
             aria-label={label}
             aria-current={isActive ? 'page' : undefined}
             className={cn(
-                "flex flex-col items-center justify-center min-w-[55px] h-full relative group z-10",
+                "flex flex-col items-center justify-center min-w-[56px] min-h-[48px] relative group z-10",
                 isActive ? "text-black dark:text-white" : "text-zinc-500 dark:text-zinc-500"
             )}
         >

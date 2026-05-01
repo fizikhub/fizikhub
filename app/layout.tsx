@@ -37,12 +37,13 @@ export const viewport = {
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.fizikhub.com'),
+  applicationName: "Fizikhub",
   title: {
     default: "Fizikhub | Fizik, Uzay ve Bilim Platformu",
     template: "%s | Fizikhub"
   },
   alternates: {
-    canonical: './',
+    canonical: 'https://www.fizikhub.com',
     types: {
       'application/rss+xml': '/feed.xml',
     },
@@ -61,6 +62,14 @@ export const metadata: Metadata = {
   creator: "Fizikhub",
   publisher: "Fizikhub",
   manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    title: "Fizikhub",
+    statusBarStyle: "black-translucent",
+  },
+  formatDetection: {
+    telephone: false,
+  },
   icons: {
     icon: "/favicon.svg",
     apple: "/apple-icon.png",
@@ -129,7 +138,7 @@ const jsonLdOrg = {
   areaServed: 'TR',
   knowsAbout: [
     'Fizik', 'Kuantum Fizigi', 'Astrofizik', 'Termodinamik', 'Klasik Mekanik',
-    'Nükler Fizik', 'Optik', 'Elektromanyetizma', 'Kozmoloji', 'Bilim Tarihi',
+    'Nükleer Fizik', 'Optik', 'Elektromanyetizma', 'Kozmoloji', 'Bilim Tarihi',
     'TYT Fizik', 'AYT Fizik', 'Astronomi', 'Kimya', 'Biyofizik'
   ],
   hasOfferCatalog: {
@@ -284,9 +293,9 @@ export default async function RootLayout({
                 <NavigationWrapper>
                   <RuntimeEffects />
                   <TooltipProvider>
-                    <main id="main-content" role="main">
+                    <div id="main-content" className="flex-1">
                       {children}
-                    </main>
+                    </div>
                   </TooltipProvider>
                 </NavigationWrapper>
               </FramerMotionProvider>

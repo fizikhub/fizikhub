@@ -1,10 +1,8 @@
 "use client";
 
-import Link from "next/link";
 import { ViewTransitionLink } from "@/components/ui/view-transition-link";
 import { useState, useEffect } from "react";
 import { Search, Zap } from "lucide-react";
-import { AuthButton } from "@/components/auth/auth-button";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { DankLogo } from "@/components/brand/dank-logo";
@@ -27,20 +25,17 @@ const physicsTicker = [
 export function Navbar() {
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [isFactOpen, setIsFactOpen] = useState(false);
-    const [mounted, setMounted] = useState(false);
     const pathname = usePathname();
 
     const [raindrops, setRaindrops] = useState<{ left: number; duration: number; delay: number; formula: string; scale: number; opacity?: number }[]>([]);
 
     useEffect(() => {
-        setMounted(true);
-
         const generateRain = () => {
             const isMobile = window.innerWidth < 768;
-            const laneCount = isMobile ? 6 : 12;
-            const dropCount = isMobile ? 12 : 30;
+            const laneCount = isMobile ? 4 : 12;
+            const dropCount = isMobile ? 6 : 30;
 
-            const drops = Array.from({ length: dropCount }).map((_, i) => {
+            const drops = Array.from({ length: dropCount }).map(() => {
                 const lane = Math.floor(Math.random() * laneCount);
                 const laneWidth = 80 / laneCount;
                 const left = 10 + (lane * laneWidth) + (Math.random() * (laneWidth * 0.8));

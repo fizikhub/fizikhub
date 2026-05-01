@@ -65,7 +65,7 @@ const ArticleCard = memo(({ article }: { article: any }) => {
 
             <div className="flex-1 mb-6">
                 <h3 className="text-xl font-black mb-3 line-clamp-2 leading-tight group-hover:text-primary transition-colors">
-                    <Link target="_blank" href={`/makale/${article.slug}`} className="hover:underline underline-offset-4 decoration-2">
+                    <Link target="_blank" rel="noopener noreferrer" href={`/makale/${article.slug}`} className="hover:underline underline-offset-4 decoration-2">
                         {article.title}
                     </Link>
                 </h3>

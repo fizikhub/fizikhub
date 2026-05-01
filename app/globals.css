@@ -168,6 +168,8 @@
     body {
         @apply bg-background text-foreground;
         font-feature-settings: "rlig" 1, "calt" 1;
+        text-size-adjust: 100%;
+        -webkit-text-size-adjust: 100%;
     }
 
     ::selection {
@@ -742,9 +744,12 @@ select {
    'contain: paint' on <main> hid content during fast scrolling
    because the browser skipped painting off-viewport children.
    Changed to 'contain: layout style' only (no paint containment). */
-main,
 .content {
     contain: layout style;
+}
+
+.safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
 }
 
 /* ========== ANIMATION OPTIMIZATIONS ========== */

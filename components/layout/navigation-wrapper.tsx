@@ -35,7 +35,7 @@ export function NavigationWrapper({ children }: { children: React.ReactNode }) {
     const shouldHideNav = pathname?.startsWith("/onboarding") || pathname?.startsWith("/auth");
 
     if (shouldHideNav) {
-        return <main className="flex-1">{children}</main>;
+        return <div className="flex-1">{children}</div>;
     }
 
     return (

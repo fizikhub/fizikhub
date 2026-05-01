@@ -73,17 +73,17 @@ export function ProfileHero({
                 {/* Top Right Actions (Desktop) */}
                 <div className="flex justify-end pt-4 mb-10 md:mb-12 gap-2">
                     {socialLinks.twitter && (
-                        <a href={`https://twitter.com/${socialLinks.twitter}`} target="_blank" className="p-2 rounded-lg hover:bg-zinc-100 transition-colors text-zinc-600 hover:text-black">
+                        <a href={`https://twitter.com/${socialLinks.twitter}`} target="_blank" rel="noopener noreferrer" className="p-2 rounded-lg hover:bg-zinc-100 transition-colors text-zinc-600 hover:text-black">
                             <Twitter className="w-5 h-5" />
                         </a>
                     )}
                     {socialLinks.github && (
-                        <a href={`https://github.com/${socialLinks.github}`} target="_blank" className="p-2 rounded-lg hover:bg-zinc-100 transition-colors text-zinc-600 hover:text-black">
+                        <a href={`https://github.com/${socialLinks.github}`} target="_blank" rel="noopener noreferrer" className="p-2 rounded-lg hover:bg-zinc-100 transition-colors text-zinc-600 hover:text-black">
                             <Github className="w-5 h-5" />
                         </a>
                     )}
                     {profile?.website && (
-                        <a href={profile.website} target="_blank" className="p-2 rounded-lg hover:bg-zinc-100 transition-colors text-zinc-600 hover:text-black">
+                        <a href={profile.website} target="_blank" rel="noopener noreferrer" className="p-2 rounded-lg hover:bg-zinc-100 transition-colors text-zinc-600 hover:text-black">
                             <LinkIcon className="w-5 h-5" />
                         </a>
                     )}

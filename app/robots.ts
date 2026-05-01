@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next';
 
 export default function robots(): MetadataRoute.Robots {
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.fizikhub.com';
+    const baseUrl = (process.env.NEXT_PUBLIC_APP_URL || 'https://www.fizikhub.com').replace(/\/+$/, '');
 
     const commonDisallow = [
         '/api/',
@@ -40,7 +40,7 @@ export default function robots(): MetadataRoute.Robots {
 
     const aiRules = aiBots.map(bot => ({
         userAgent: bot,
-        allow: ['/', '/makale/', '/forum/', '/sozluk/', '/llms.txt', '/testler/', '/simulasyonlar/'],
+        allow: ['/', '/makale/', '/forum/', '/sozluk/', '/llms.txt', '/feed.xml', '/testler/', '/simulasyonlar/'],
         disallow: commonDisallow,
         crawlDelay: 2, // Be kind to our servers, LLMs!
     }));
@@ -61,7 +61,7 @@ export default function robots(): MetadataRoute.Robots {
             },
             {
                 userAgent: '*',
-                allow: ['/', '/llms.txt'],
+                allow: ['/', '/llms.txt', '/feed.xml'],
                 disallow: commonDisallow,
                 crawlDelay: 1,
             },
