@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Home, BookOpen, Atom, Trophy, Book, Zap, Plus, User, LogIn, MessageCircle, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -9,8 +8,8 @@ import { ViewTransitionLink } from "@/components/ui/view-transition-link";
 import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
-import Image from "next/image";
 import dynamic from "next/dynamic";
+import { OptimizedAvatar } from "@/components/ui/optimized-image";
 
 const PhysicsFactModal = dynamic(() => import("@/components/ui/physics-fact-modal").then(mod => mod.PhysicsFactModal), { ssr: false });
 const CommandPalette = dynamic(() => import("@/components/ui/command-palette").then(mod => mod.CommandPalette), { ssr: false });
@@ -154,7 +153,12 @@ export function DesktopSidebar() {
                             <div className="relative z-10 flex items-center justify-center lg:justify-start gap-3 p-2 lg:p-3 rounded-xl border-[3px] border-transparent hover:border-black hover:bg-neutral-100 dark:hover:bg-[#27272a] hover:shadow-[4px_4px_0px_0px_#000] dark:hover:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all group cursor-pointer w-full">
                                 <div className="w-10 h-10 rounded-[8px] border-[3px] border-black bg-[#FACC15] flex items-center justify-center shrink-0 overflow-hidden shadow-[2px_2px_0px_0px_#000]">
                                      {userProfile?.avatar_url || user.user_metadata?.avatar_url ? (
-                                        <Image src={userProfile?.avatar_url || user.user_metadata?.avatar_url} alt="Profile" width={40} height={40} className="w-full h-full object-cover" />
+                                        <OptimizedAvatar
+                                            src={userProfile?.avatar_url || user.user_metadata?.avatar_url}
+                                            alt={userProfile?.full_name || userProfile?.username || "Profil"}
+                                            size={40}
+                                            className="h-full w-full rounded-[4px]"
+                                        />
                                      ) : (
                                          <User className="w-5 h-5 text-black stroke-[3px]" />
                                      )}

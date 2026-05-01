@@ -1,8 +1,8 @@
 import { notFound } from "next/navigation";
 import { type Metadata } from "next";
+import type { ComponentType } from "react";
 import { simulations } from "@/components/simulations/data";
-import { ViewTransitionLink } from "@/components/ui/view-transition-link";
-import { ArrowLeft } from "lucide-react";
+import { BreadcrumbJsonLd } from "@/lib/breadcrumbs";
 
 // Import simulation components
 import { ProjectileSim } from "@/components/simulations/ProjectileSim";
@@ -14,6 +14,28 @@ import { ElectricFieldSim } from "@/components/simulations/ElectricFieldSim";
 import { ParticleCollisionSim } from "@/components/simulations/ParticleCollisionSim";
 // Note: Solar System remains in subdirectory as it might be complex/3D
 import SolarSystemSim from "@/components/simulations/solar-system/solar-system-sim";
+
+type SerializableSimulation = Omit<(typeof simulations)[number], "icon">;
+type SimulationComponent = ComponentType<{ simData: SerializableSimulation }>;
+
+function ComingSoonSimulation() {
+    return <div className="p-8 text-center text-white">Bu simülasyon henüz yapım aşamasında.</div>;
+}
+
+function serializeSimulation(sim: (typeof simulations)[number]): SerializableSimulation {
+    return {
+        id: sim.id,
+        slug: sim.slug,
+        title: sim.title,
+        description: sim.description,
+        color: sim.color,
+        formula: sim.formula,
+        difficulty: sim.difficulty,
+        tags: sim.tags,
+        seo: sim.seo,
+        content: sim.content,
+    };
+}
 
 export function generateStaticParams() {
     return simulations.map((sim) => ({
@@ -68,7 +90,7 @@ export default async function SimulationPage({ params }: { params: Promise<{ slu
     }
 
     // Map slug to component
-    let Component;
+    let Component: SimulationComponent;
     switch (sim.id) {
         case "projectile":
             Component = ProjectileSim;
@@ -95,17 +117,61 @@ export default async function SimulationPage({ params }: { params: Promise<{ slu
             Component = ParticleCollisionSim;
             break;
         default:
-            Component = () => <div className="p-8 text-center text-white">Bu simülasyon henüz yapım aşamasında.</div>;
+            Component = ComingSoonSimulation;
     }
 
-    // Cast to any to allow passing new props (simData) to components
-    const SimComponent = Component as React.ComponentType<any>;
-
-    // Strip functions to prevent Next.js serialization error
-    const { icon, ...serializableSim } = sim;
+    const SimComponent = Component;
+    const serializableSim = serializeSimulation(sim);
+    const canonical = `https://www.fizikhub.com/simulasyonlar/${sim.slug}`;
+    const jsonLd = [
+        {
+            "@context": "https://schema.org",
+            "@type": "LearningResource",
+            "@id": `${canonical}#learning-resource`,
+            name: sim.title,
+            description: sim.description,
+            learningResourceType: "Simulation",
+            educationalLevel: sim.difficulty,
+            teaches: sim.tags,
+            url: canonical,
+            inLanguage: "tr-TR",
+            isAccessibleForFree: true,
+            provider: {
+                "@type": "Organization",
+                name: "Fizikhub",
+                url: "https://www.fizikhub.com",
+            },
+        },
+        {
+            "@context": "https://schema.org",
+            "@type": "SoftwareApplication",
+            "@id": `${canonical}#app`,
+            name: sim.title,
+            description: sim.description,
+            applicationCategory: "EducationalApplication",
+            operatingSystem: "Web",
+            url: canonical,
+            offers: {
+                "@type": "Offer",
+                price: "0",
+                priceCurrency: "TRY",
+            },
+        },
+    ];
 
     return (
         <div className="min-h-[100dvh] bg-black">
+            {jsonLd.map((schema) => (
+                <script
+                    key={schema["@id"]}
+                    type="application/ld+json"
+                    dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+                />
+            ))}
+            <BreadcrumbJsonLd items={[
+                { name: "Simülasyonlar", href: "/simulasyonlar" },
+                { name: sim.title, href: `/simulasyonlar/${sim.slug}` },
+            ]} />
             <SimComponent simData={serializableSim} />
         </div>
     );

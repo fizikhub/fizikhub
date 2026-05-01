@@ -1,6 +1,7 @@
 import { MetadataRoute } from 'next';
 import { createClient } from '@/lib/supabase-server';
 import { simulations } from '@/components/simulations/data';
+import { slugify } from '@/lib/slug';
 
 export const revalidate = 3600; // Revalidate sitemap every hour
 
@@ -108,7 +109,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ];
 
     // Fetch all data in parallel for speed
-    const [questionsResult, articlesResult, profilesResult, quizzesResult] = await Promise.all([
+    const [questionsResult, articlesResult, profilesResult, quizzesResult, termsResult] = await Promise.all([
         supabase
             .from('questions')
             .select('id, created_at')
@@ -134,6 +135,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
             .select('slug, created_at')
             .order('created_at', { ascending: false })
             .limit(200),
+
+        supabase
+            .from('dictionary_terms')
+            .select('term, created_at')
+            .order('term', { ascending: true })
+            .limit(1000),
     ]);
 
     const questionPages: MetadataRoute.Sitemap = (questionsResult.data || []).map((question) => ({
@@ -166,7 +173,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         ...(profile.avatar_url ? { images: [profile.avatar_url] } : {}),
     }));
 
-    // Removed termPages because /sozluk/[slug] does not exist; terms are listed on /sozluk
+    const termPages: MetadataRoute.Sitemap = (termsResult.data || []).map((term) => ({
+        url: `${baseUrl}/sozluk/${slugify(term.term)}`,
+        lastModified: toLastModified(term.created_at),
+        changeFrequency: 'monthly' as const,
+        priority: 0.65,
+    }));
 
     const quizPages: MetadataRoute.Sitemap = (quizzesResult.data || []).map((quiz) => ({
         url: `${baseUrl}/testler/${quiz.slug}`,
@@ -187,6 +199,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         ...questionPages,
         ...articlePages,
         ...profilePages,
+        ...termPages,
         ...quizPages,
         ...simulationPages,
     ];

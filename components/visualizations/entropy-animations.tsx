@@ -153,10 +153,8 @@ function Particle({ index, barrierRemoved }: { index: number; barrierRemoved: bo
     setMounted(true);
   }, []);
 
-  if (!mounted) return null;
-
   useEffect(() => {
-    let interval: NodeJS.Timeout;
+    let interval: ReturnType<typeof setInterval> | undefined;
 
     if (barrierRemoved) {
       // Engel kalktı: Rastgele hareket (Brownian motion simülasyonu)
@@ -174,8 +172,12 @@ function Particle({ index, barrierRemoved }: { index: number; barrierRemoved: bo
       });
     }
 
-    return () => clearInterval(interval);
+    return () => {
+      if (interval) clearInterval(interval);
+    };
   }, [barrierRemoved]);
+
+  if (!mounted) return null;
 
   return (
     <motion.div

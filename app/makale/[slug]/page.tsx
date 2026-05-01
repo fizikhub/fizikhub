@@ -17,6 +17,16 @@ interface PageProps {
     params: Promise<{ slug: string }>;
 }
 
+function toAbsoluteUrl(url: string | null | undefined, baseUrl: string) {
+    if (!url) return null;
+
+    try {
+        return new URL(url).toString();
+    } catch {
+        return new URL(url, baseUrl).toString();
+    }
+}
+
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
     const { slug } = await params;
     const supabase = createStaticClient();
@@ -37,9 +47,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     fallbackOgUrl.searchParams.set('author', authorName);
     fallbackOgUrl.searchParams.set('category', category);
 
-    const coverUrl = article.cover_url && article.cover_url.length > 0
-        ? article.cover_url
-        : fallbackOgUrl.toString();
+    const coverUrl = toAbsoluteUrl(article.cover_url, baseUrl) || fallbackOgUrl.toString();
 
     // Use excerpt if available for a better meta description, fallback to content snippet
     const description = (article.excerpt || (article as any).summary || "") 
@@ -177,7 +185,7 @@ export default async function ArticlePage({ params }: PageProps) {
             description: articleDescription,
             image: {
                 '@type': 'ImageObject',
-                url: article.cover_url || 'https://www.fizikhub.com/og-image.png',
+                url: toAbsoluteUrl(article.cover_url, 'https://www.fizikhub.com') || 'https://www.fizikhub.com/og-image.jpg',
                 width: 1200,
                 height: 630,
             },

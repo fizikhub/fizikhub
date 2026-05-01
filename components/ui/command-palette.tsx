@@ -1,11 +1,10 @@
 import * as React from "react";
 import { Command } from "cmdk";
-import { Search, FileText, MessageCircle, User, ArrowRight, Loader2 } from "lucide-react";
+import { Atom, BookOpen, BrainCircuit, Search, FileText, MessageCircle, User, ArrowRight, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { searchGlobal, type SearchResult } from "@/app/search/actions";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
-import { useDebounce } from "@/hooks/use-debounce";
 
 export function CommandPalette({
     isOpen: externalIsOpen,
@@ -72,6 +71,15 @@ export function CommandPalette({
         handleClose();
     };
 
+    const resultIcon = (result: SearchResult) => {
+        if (result.type === "question") return <MessageCircle className="h-4 w-4" />;
+        if (result.type === "article") return <FileText className="h-4 w-4" />;
+        if (result.type === "user") return <User className="h-4 w-4" />;
+        if (result.type === "dictionary") return <BookOpen className="h-4 w-4" />;
+        if (result.type === "quiz") return <BrainCircuit className="h-4 w-4" />;
+        return <Atom className="h-4 w-4" />;
+    };
+
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogContent className="p-0 overflow-hidden shadow-2xl max-w-2xl bg-white dark:bg-[#050505] border-2 border-black/10 dark:border-white/10">
@@ -112,10 +120,11 @@ export function CommandPalette({
                                                 result.type === 'question' && "bg-orange-100 text-orange-600 dark:bg-orange-900/20",
                                                 result.type === 'article' && "bg-blue-100 text-blue-600 dark:bg-blue-900/20",
                                                 result.type === 'user' && "bg-green-100 text-green-600 dark:bg-green-900/20",
+                                                result.type === 'dictionary' && "bg-violet-100 text-violet-600 dark:bg-violet-900/20",
+                                                result.type === 'quiz' && "bg-red-100 text-red-600 dark:bg-red-900/20",
+                                                result.type === 'simulation' && "bg-cyan-100 text-cyan-600 dark:bg-cyan-900/20",
                                             )}>
-                                                {result.type === 'question' && <MessageCircle className="h-4 w-4" />}
-                                                {result.type === 'article' && <FileText className="h-4 w-4" />}
-                                                {result.type === 'user' && <User className="h-4 w-4" />}
+                                                {resultIcon(result)}
                                             </div>
                                             <div className="flex flex-col">
                                                 <span className="font-medium">{result.title}</span>

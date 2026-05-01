@@ -3,132 +3,266 @@
 import { createClient } from "@/lib/supabase-server";
 import { generateEmbedding } from "@/lib/gemini";
 import { sanitizeSearchQuery } from "@/lib/security";
+import { slugify } from "@/lib/slug";
+import { simulations } from "@/components/simulations/data";
+
+export type SearchResultType = "article" | "question" | "user" | "dictionary" | "quiz" | "simulation";
 
 export type SearchResult = {
-    type: 'question' | 'article' | 'user';
+    type: SearchResultType;
     id: string | number;
     title: string;
     description?: string;
     url: string;
     image?: string;
+    category?: string;
     similarity?: number;
 };
 
-export async function searchGlobal(query: string): Promise<SearchResult[]> {
-    if (!query || query.trim().length < 2) return [];
+type VectorSearchRow = {
+    id?: string | number;
+    source_id?: string | number;
+    source_type?: string;
+    title?: string;
+    content?: string | null;
+    slug?: string | null;
+    username?: string | null;
+    cover_image?: string | null;
+    image_url?: string | null;
+    similarity?: number;
+};
+
+type ArticleSearchRow = {
+    id: number;
+    title: string;
+    slug: string;
+    excerpt: string | null;
+    content: string | null;
+    cover_url?: string | null;
+    image_url?: string | null;
+    category?: string | null;
+};
+
+type QuestionSearchRow = {
+    id: number;
+    title: string;
+    content: string | null;
+    category?: string | null;
+};
+
+type ProfileSearchRow = {
+    id: string;
+    username: string | null;
+    full_name: string | null;
+    avatar_url: string | null;
+};
+
+type DictionarySearchRow = {
+    id: number;
+    term: string;
+    definition: string;
+    category: string | null;
+};
+
+type QuizSearchRow = {
+    id: string;
+    title: string;
+    slug: string;
+    description: string | null;
+};
+
+const MAX_QUERY_LENGTH = 80;
+const RESULT_LIMIT = 24;
+
+function normalizeQuery(query: string): string {
+    return query.replace(/\s+/g, " ").trim().slice(0, MAX_QUERY_LENGTH);
+}
+
+function toSnippet(value: string | null | undefined, maxLength = 140): string | undefined {
+    if (!value) return undefined;
+    const clean = value
+        .replace(/<!--meta .*? -->/g, " ")
+        .replace(/<[^>]*>/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+
+    if (!clean) return undefined;
+    return clean.length > maxLength ? `${clean.slice(0, maxLength - 1)}...` : clean;
+}
+
+function buildSearchTerm(query: string): string {
+    const safeQuery = sanitizeSearchQuery(query).replace(/[(),]/g, " ");
+    return `%${safeQuery}%`;
+}
+
+function getVectorUrl(item: VectorSearchRow): string | null {
+    const type = item.source_type;
+    const id = item.source_id ?? item.id;
+
+    if (type === "question" && id) return `/forum/${id}`;
+    if (type === "article") return `/makale/${item.slug || id}`;
+    if (type === "user" && item.username) return `/kullanici/${item.username}`;
+    if (type === "dictionary" && item.slug) return `/sozluk/${item.slug}`;
+    if (type === "quiz" && item.slug) return `/testler/${item.slug}`;
+
+    return null;
+}
+
+function addResult(results: SearchResult[], result: SearchResult) {
+    const exists = results.some((item) => item.type === result.type && item.id === result.id);
+    if (!exists) results.push(result);
+}
+
+export async function searchGlobal(rawQuery: string): Promise<SearchResult[]> {
+    const query = normalizeQuery(rawQuery);
+    if (query.length < 2) return [];
 
     const supabase = await createClient();
     const results: SearchResult[] = [];
 
-    // --- STRATEGY 1: SEMANTIC SEARCH (Vector) ---
-    // Try to generate embedding
     const embedding = await generateEmbedding(query);
-
     if (embedding) {
-        // Call RPC function 'match_documents'
-        // Assumes user has setup:
-        // function match_documents (query_embedding vector(768), match_threshold float, match_count int)
-        const { data: vectorData, error } = await supabase.rpc('match_documents', {
+        const { data: vectorData } = await supabase.rpc("match_documents", {
             query_embedding: embedding,
-            match_threshold: 0.5, // Customizable threshold
-            match_count: 5
+            match_threshold: 0.52,
+            match_count: 8,
         });
 
-        if (!error && vectorData && vectorData.length > 0) {
-            // Map vector results
-            vectorData.forEach((item: any) => {
-                const type = item.source_type || 'article'; // Default if unknown
-                let url = '/';
-                if (type === 'question') url = `/forum/soru/${item.id}`;
-                else if (type === 'article') url = `/makale/${item.id}`; // using ID, or slug if available in item logic
-                else if (type === 'user') url = `/kullanici/${item.username}`;
+        const vectorRows = Array.isArray(vectorData) ? (vectorData as VectorSearchRow[]) : [];
+        for (const item of vectorRows) {
+            const type = item.source_type as SearchResultType | undefined;
+            const id = item.source_id ?? item.id;
+            const url = getVectorUrl(item);
 
-                // Avoid duplicates if we combine lists, but for now let's prioritize vector results
-                results.push({
-                    type: type as SearchResult['type'],
-                    id: item.id,
-                    title: item.title,
-                    description: item.content?.substring(0, 100) + '...',
-                    url: url,
-                    image: item.cover_image,
-                    similarity: item.similarity
-                });
+            if (!type || !id || !item.title || !url) continue;
+
+            addResult(results, {
+                type,
+                id,
+                title: item.title,
+                description: toSnippet(item.content),
+                url,
+                image: item.cover_image || item.image_url || undefined,
+                similarity: item.similarity,
             });
-
-            // If we got good semantic results, we might return here or blend.
-            // For this implementation, let's Append text search results to ensure specific keywords aren't missed.
         }
     }
 
-    // --- STRATEGY 2: KEYWORD SEARCH (Fallback/Augment) ---
-    const sanitized = sanitizeSearchQuery(query);
-    const searchTerm = `%${sanitized}%`;
+    const searchTerm = buildSearchTerm(query);
 
-    // 1. Search Questions
-    const { data: questions } = await supabase
-        .from('questions')
-        .select('id, title, content, category')
-        .or(`title.ilike.${searchTerm},content.ilike.${searchTerm}`)
-        .limit(3);
+    const [questionsRes, articlesRes, profilesRes, dictionaryRes, quizzesRes] = await Promise.all([
+        supabase
+            .from("questions")
+            .select("id, title, content, category")
+            .or(`title.ilike.${searchTerm},content.ilike.${searchTerm},category.ilike.${searchTerm}`)
+            .order("created_at", { ascending: false })
+            .limit(5),
+        supabase
+            .from("articles")
+            .select("id, title, slug, excerpt, content, cover_url, image_url, category")
+            .eq("status", "published")
+            .or(`title.ilike.${searchTerm},excerpt.ilike.${searchTerm},content.ilike.${searchTerm},category.ilike.${searchTerm}`)
+            .order("created_at", { ascending: false })
+            .limit(6),
+        supabase
+            .from("profiles")
+            .select("id, username, full_name, avatar_url")
+            .or(`username.ilike.${searchTerm},full_name.ilike.${searchTerm}`)
+            .limit(4),
+        supabase
+            .from("dictionary_terms")
+            .select("id, term, definition, category")
+            .or(`term.ilike.${searchTerm},definition.ilike.${searchTerm},category.ilike.${searchTerm}`)
+            .order("term", { ascending: true })
+            .limit(5),
+        supabase
+            .from("quizzes")
+            .select("id, title, slug, description")
+            .or(`title.ilike.${searchTerm},description.ilike.${searchTerm}`)
+            .order("created_at", { ascending: false })
+            .limit(4),
+    ]);
 
-    if (questions) {
-        questions.forEach(q => {
-            if (!results.find(r => r.type === 'question' && r.id === q.id)) { // Dedup
-                results.push({
-                    type: 'question',
-                    id: q.id,
-                    title: q.title,
-                    description: q.content.substring(0, 60) + '...',
-                    url: `/forum/soru/${q.id}`,
-                    image: undefined
-                });
-            }
+    for (const question of (questionsRes.data || []) as QuestionSearchRow[]) {
+        addResult(results, {
+            type: "question",
+            id: question.id,
+            title: question.title,
+            description: toSnippet(question.content),
+            url: `/forum/${question.id}`,
+            category: question.category || "Forum",
         });
     }
 
-    // 2. Search Articles
-    const { data: articles } = await supabase
-        .from('articles')
-        .select('id, title, content, slug, cover_image')
-        .or(`title.ilike.${searchTerm},content.ilike.${searchTerm}`)
-        .limit(3);
-
-    if (articles) {
-        articles.forEach(a => {
-            if (!results.find(r => r.type === 'article' && r.id === a.id)) { // Dedup
-                results.push({
-                    type: 'article',
-                    id: a.id,
-                    title: a.title,
-                    description: a.content.substring(0, 60) + '...',
-                    url: `/makale/${a.id}`,
-                    image: a.cover_image
-                });
-            }
+    for (const article of (articlesRes.data || []) as ArticleSearchRow[]) {
+        addResult(results, {
+            type: "article",
+            id: article.id,
+            title: article.title,
+            description: toSnippet(article.excerpt || article.content),
+            url: `/makale/${article.slug || article.id}`,
+            image: article.cover_url || article.image_url || undefined,
+            category: article.category || "Makale",
         });
     }
 
-    // 3. Search Users
-    const { data: profiles } = await supabase
-        .from('profiles')
-        .select('id, username, full_name, avatar_url')
-        .or(`username.ilike.${searchTerm},full_name.ilike.${searchTerm}`)
-        .limit(3);
-
-    if (profiles) {
-        profiles.forEach(p => {
-            if (!results.find(r => r.type === 'user' && r.id === p.id)) { // Dedup
-                results.push({
-                    type: 'user',
-                    id: p.id,
-                    title: p.full_name || p.username,
-                    description: `@${p.username}`,
-                    url: `/kullanici/${p.username}`,
-                    image: p.avatar_url || undefined
-                });
-            }
+    for (const profile of (profilesRes.data || []) as ProfileSearchRow[]) {
+        const username = profile.username || profile.id;
+        addResult(results, {
+            type: "user",
+            id: profile.id,
+            title: profile.full_name || profile.username || "FizikHub üyesi",
+            description: profile.username ? `@${profile.username}` : "Kullanıcı profili",
+            url: `/kullanici/${username}`,
+            image: profile.avatar_url || undefined,
+            category: "Kullanıcı",
         });
     }
 
-    return results;
+    for (const term of (dictionaryRes.data || []) as DictionarySearchRow[]) {
+        addResult(results, {
+            type: "dictionary",
+            id: term.id,
+            title: term.term,
+            description: toSnippet(term.definition),
+            url: `/sozluk/${slugify(term.term)}`,
+            category: term.category || "Sözlük",
+        });
+    }
+
+    for (const quiz of (quizzesRes.data || []) as QuizSearchRow[]) {
+        addResult(results, {
+            type: "quiz",
+            id: quiz.id,
+            title: quiz.title,
+            description: toSnippet(quiz.description),
+            url: `/testler/${quiz.slug}`,
+            category: "Test",
+        });
+    }
+
+    const lowerQuery = query.toLocaleLowerCase("tr-TR");
+    for (const simulation of simulations) {
+        const haystack = [
+            simulation.title,
+            simulation.description,
+            simulation.formula,
+            simulation.difficulty,
+            ...simulation.tags,
+            ...(simulation.seo?.keywords || []),
+        ].join(" ").toLocaleLowerCase("tr-TR");
+
+        if (!haystack.includes(lowerQuery)) continue;
+
+        addResult(results, {
+            type: "simulation",
+            id: simulation.id,
+            title: simulation.title,
+            description: simulation.description,
+            url: `/simulasyonlar/${simulation.slug}`,
+            category: `Simülasyon • ${simulation.difficulty}`,
+        });
+    }
+
+    return results.slice(0, RESULT_LIMIT);
 }

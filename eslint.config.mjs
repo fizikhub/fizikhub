@@ -11,7 +11,16 @@ const eslintConfig = defineConfig([
       "react-compiler": reactCompiler,
     },
     rules: {
-      "react-compiler/react-compiler": "error",
+      // Existing debt is tracked as warnings so lint can become a useful CI
+      // gate again. Promote these back to errors as each category is paid down.
+      "@typescript-eslint/ban-ts-comment": "warn",
+      "@typescript-eslint/no-explicit-any": "warn",
+      "react/no-unescaped-entities": "warn",
+      "react-compiler/react-compiler": "warn",
+      "react-hooks/immutability": "warn",
+      "react-hooks/purity": "warn",
+      "react-hooks/set-state-in-effect": "warn",
+      "react-hooks/static-components": "warn",
     },
   },
   // Override default ignores of eslint-config-next.

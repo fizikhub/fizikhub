@@ -131,7 +131,7 @@ export function ArticleReader({
         const container = contentRef.current;
         if (!container) return;
 
-        let cleanupFns: (() => void)[] = [];
+        const cleanupFns: (() => void)[] = [];
 
         const timeout = setTimeout(() => {
             const codeBlocks = container.querySelectorAll('pre');

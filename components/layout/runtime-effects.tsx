@@ -12,11 +12,17 @@ const OnboardingCheck = dynamic(
   { ssr: false }
 );
 
+const WebVitalsReporter = dynamic(
+  () => import("@/components/analytics/web-vitals-reporter").then((mod) => mod.WebVitalsReporter),
+  { ssr: false }
+);
+
 export function RuntimeEffects() {
   return (
     <>
       <UserActivityTracker />
       <OnboardingCheck />
+      <WebVitalsReporter />
     </>
   );
 }

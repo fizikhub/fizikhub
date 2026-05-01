@@ -10,7 +10,10 @@ const MAX_REQUESTS_API = 30; // Max 30 API requests per minute
 const MAX_REQUESTS_PASSWORD_RESET = 3; // Max 3 password reset requests per minute
 const MAX_MAP_SIZE = 10000; // Prevent unbounded memory growth
 const CLEANUP_INTERVAL = 30 * 1000; // Cleanup every 30 seconds
+const RATE_LIMIT_TTL_SECONDS = RATE_LIMIT_WINDOW / 1000;
 let lastCleanup = Date.now();
+
+type UpstashPipelineResult = Array<{ result?: unknown; error?: string }>;
 
 function getClientIP(request: NextRequest): string {
     const forwarded = request.headers.get('x-forwarded-for');
@@ -32,7 +35,41 @@ function cleanupExpiredEntries() {
     keysToDelete.forEach(key => rateLimitMap.delete(key));
 }
 
-function isRateLimited(ip: string, maxRequests: number): boolean {
+async function incrementExternalRateLimit(key: string): Promise<number | null> {
+    const redisUrl = process.env.UPSTASH_REDIS_REST_URL;
+    const redisToken = process.env.UPSTASH_REDIS_REST_TOKEN;
+
+    if (!redisUrl || !redisToken) return null;
+
+    try {
+        const response = await fetch(`${redisUrl.replace(/\/+$/, '')}/pipeline`, {
+            method: 'POST',
+            headers: {
+                Authorization: `Bearer ${redisToken}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify([
+                ['INCR', key],
+                ['EXPIRE', key, String(RATE_LIMIT_TTL_SECONDS)],
+            ]),
+        });
+
+        if (!response.ok) return null;
+
+        const data = await response.json() as UpstashPipelineResult;
+        const count = Number(data[0]?.result);
+        return Number.isFinite(count) ? count : null;
+    } catch {
+        return null;
+    }
+}
+
+async function isRateLimited(ip: string, maxRequests: number): Promise<boolean> {
+    const externalCount = await incrementExternalRateLimit(ip);
+    if (externalCount !== null) {
+        return externalCount > maxRequests;
+    }
+
     const now = Date.now();
 
     // Periodic cleanup
@@ -66,7 +103,7 @@ function rateLimitResponse(): NextResponse {
     );
 }
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
     const pathname = request.nextUrl.pathname;
     const ip = getClientIP(request);
 
@@ -161,21 +198,21 @@ export async function middleware(request: NextRequest) {
 
     // Rate limit auth endpoints (login, register, password reset)
     if (pathname.startsWith('/login') || pathname.startsWith('/register') || pathname.startsWith('/auth')) {
-        if (request.method === 'POST' && isRateLimited(`auth:${ip}`, MAX_REQUESTS_AUTH)) {
+        if (request.method === 'POST' && await isRateLimited(`auth:${ip}`, MAX_REQUESTS_AUTH)) {
             return rateLimitResponse();
         }
     }
 
     // Rate limit password reset (stricter limit to prevent email enumeration)
     if (pathname.startsWith('/forgot-password') || pathname.startsWith('/reset-password')) {
-        if (request.method === 'POST' && isRateLimited(`pwreset:${ip}`, MAX_REQUESTS_PASSWORD_RESET)) {
+        if (request.method === 'POST' && await isRateLimited(`pwreset:${ip}`, MAX_REQUESTS_PASSWORD_RESET)) {
             return rateLimitResponse();
         }
     }
 
     // Rate limit API endpoints
     if (pathname.startsWith('/api')) {
-        if (isRateLimited(`api:${ip}`, MAX_REQUESTS_API)) {
+        if (await isRateLimited(`api:${ip}`, MAX_REQUESTS_API)) {
             return rateLimitResponse();
         }
     }

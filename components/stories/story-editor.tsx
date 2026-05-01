@@ -424,7 +424,7 @@ function StoryCreator({ groups, onPublish }: { groups: StoryGroup[], onPublish: 
                 >
                     {image ? (
                         <div className="w-full h-full" style={{ transform: `scale(${scale})` }}>
-                            <img src={image} className="w-full h-full object-cover pointer-events-none" />
+                            <img src={image} alt="Hikaye tuvali" className="w-full h-full object-cover pointer-events-none" />
                         </div>
                     ) : (
                         <div
@@ -743,6 +743,7 @@ function StoryManager({ groups, onUpdate }: { groups: StoryGroup[], onUpdate: ()
                                 <div className="aspect-square relative">
                                     <img
                                         src={group.cover_url || "/placeholder.png"}
+                                        alt={`${group.title} kapak görseli`}
                                         className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity"
                                     />
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/90 to-transparent" />
@@ -790,7 +791,7 @@ function StoryManager({ groups, onUpdate }: { groups: StoryGroup[], onUpdate: ()
                             {stories.map(story => (
                                 <div key={story.id} className="bg-[#1a1a1a] rounded-xl overflow-hidden border border-white/10 hover:border-[#23A9FA] transition-all">
                                     <div className="aspect-[9/16] relative bg-black">
-                                        <img src={story.media_url} className="w-full h-full object-cover" />
+                                        <img src={story.media_url} alt="Hikaye görseli" className="w-full h-full object-cover" />
                                         <div className="absolute top-2 right-2 flex gap-1">
                                             <button
                                                 onClick={() => openEditStory(story)}
@@ -836,7 +837,7 @@ function StoryManager({ groups, onUpdate }: { groups: StoryGroup[], onUpdate: ()
                                 <div className="flex justify-center">
                                     <div className="w-24 h-24 rounded-full bg-black border border-white/10 overflow-hidden relative cursor-pointer group" onClick={() => document.getElementById('group-cover-input')?.click()}>
                                         {previewCover ? (
-                                            <img src={previewCover} className="w-full h-full object-cover" />
+                                            <img src={previewCover} alt="Kart kapak önizlemesi" className="w-full h-full object-cover" />
                                         ) : (
                                             <div className="flex items-center justify-center w-full h-full bg-zinc-900">
                                                 <Upload className="w-6 h-6 text-zinc-500" />

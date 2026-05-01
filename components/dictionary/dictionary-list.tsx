@@ -6,6 +6,8 @@ import { Search } from "lucide-react";
 import { m as motion, AnimatePresence } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 import { DictionaryTerm } from "@/lib/api";
+import Link from "next/link";
+import { slugify } from "@/lib/slug";
 
 interface DictionaryListProps {
     initialTerms: DictionaryTerm[];
@@ -50,7 +52,10 @@ export function DictionaryList({ initialTerms }: DictionaryListProps) {
                             transition={{ duration: 0.3, delay: index * 0.05 }}
                             className="group flex flex-col h-full"
                         >
-                            <div className="h-full flex flex-col bg-white dark:bg-zinc-900 border-[3px] border-black rounded-xl shadow-[4px_4px_0px_0px_#000] hover:shadow-[2px_2px_0px_0px_#000] hover:translate-x-[2px] hover:translate-y-[2px] transition-all p-5 sm:p-6 relative overflow-hidden">
+                            <Link
+                                href={`/sozluk/${slugify(item.term)}`}
+                                className="h-full flex flex-col bg-white dark:bg-zinc-900 border-[3px] border-black rounded-xl shadow-[4px_4px_0px_0px_#000] hover:shadow-[2px_2px_0px_0px_#000] hover:translate-x-[2px] hover:translate-y-[2px] transition-all p-5 sm:p-6 relative overflow-hidden"
+                            >
 
                                 {/* Header */}
                                 <div className="flex items-start justify-between mb-4 relative z-10">
@@ -69,7 +74,7 @@ export function DictionaryList({ initialTerms }: DictionaryListProps) {
 
                                 {/* Decoration */}
                                 <div className="absolute -bottom-10 -right-10 w-24 h-24 bg-gradient-to-br from-gray-100 to-transparent dark:from-zinc-800 rounded-full z-0 opacity-50 group-hover:scale-150 transition-transform duration-500" />
-                            </div>
+                            </Link>
                         </motion.div>
                     ))}
                 </AnimatePresence>
