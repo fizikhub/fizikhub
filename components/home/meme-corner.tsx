@@ -10,23 +10,7 @@ const MemeCornerCanvas = dynamic(() => import("@/components/home/meme-corner-can
 });
 
 export function MemeCorner() {
-    const [load3D, setLoad3D] = useState(false);
-
-    useEffect(() => {
-        const load = () => setLoad3D(true);
-        const idleWindow = window as Window & typeof globalThis & {
-            requestIdleCallback?: (callback: IdleRequestCallback, options?: IdleRequestOptions) => number;
-            cancelIdleCallback?: (handle: number) => void;
-        };
-
-        if (idleWindow.requestIdleCallback && idleWindow.cancelIdleCallback) {
-            const idleId = idleWindow.requestIdleCallback(load, { timeout: 700 });
-            return () => idleWindow.cancelIdleCallback?.(idleId);
-        }
-
-        const timeoutId = globalThis.setTimeout(load, 300);
-        return () => globalThis.clearTimeout(timeoutId);
-    }, []);
+    const [load3D, setLoad3D] = useState(true);
 
     return (
         <div className="w-full relative group min-h-[180px] sm:min-h-[240px]">
@@ -64,7 +48,7 @@ export function MemeCorner() {
                             filter: 'drop-shadow(0px 4px 12px rgba(0,0,0,0.9))'
                         }}
                     >
-                        Tİ&apos;YE ALIYORUZ
+                        Tİ'YE ALIYORUZ
                     </p>
 
                     <div className="mt-2 sm:mt-3 transform origin-center animate-[badge-wiggle_3s_ease-in-out_infinite]">
