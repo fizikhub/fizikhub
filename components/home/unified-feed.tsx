@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { NeoArticleCard } from "@/components/articles/neo-article-card";
 
 // Lazy load non-critical feed cards to minimize initial JS bundle size and TBT
@@ -40,7 +40,7 @@ interface UnifiedFeedProps {
 }
 
 export function UnifiedFeed({ items, suggestedUsers = [] }: UnifiedFeedProps) {
-    const [visibleCount, setVisibleCount] = useState(10);
+    const [visibleCount, setVisibleCount] = useState(6);
     
     const visibleItems = items.slice(0, visibleCount);
     const hasMore = visibleCount < items.length;
@@ -96,14 +96,20 @@ export function UnifiedFeed({ items, suggestedUsers = [] }: UnifiedFeedProps) {
                             </div>
                         )}
 
-                        {index === 2 && <div className="mt-6"><CommunityInviteBanner /></div>}
+                        {index === 2 && (
+                            <LazyMount className="mt-6 min-h-40">
+                                <CommunityInviteBanner />
+                            </LazyMount>
+                        )}
                         {index === 8 && (
-                            <div className="mt-6 rounded-[10px] bg-gradient-to-br from-[#FFBD2E] to-[#FFD466] p-6 border-[3px] border-black shadow-[4px_4px_0px_0px_#000]">
-                                <h3 className="font-black text-sm uppercase tracking-widest text-black mb-4 text-center">
-                                    Haftanın Sorusu
-                                </h3>
-                                <QuestionOfTheWeek />
-                            </div>
+                            <LazyMount className="mt-6 min-h-40 rounded-[10px] bg-gradient-to-br from-[#FFBD2E] to-[#FFD466] p-6 border-[3px] border-black shadow-[4px_4px_0px_0px_#000]">
+                                <div>
+                                    <h3 className="font-black text-sm uppercase tracking-widest text-black mb-4 text-center">
+                                        Haftanın Sorusu
+                                    </h3>
+                                    <QuestionOfTheWeek />
+                                </div>
+                            </LazyMount>
                         )}
                     </div>
                 ))}
@@ -111,7 +117,7 @@ export function UnifiedFeed({ items, suggestedUsers = [] }: UnifiedFeedProps) {
 
             {hasMore && (
                 <button
-                    onClick={() => setVisibleCount(prev => prev + 10)}
+                    onClick={() => setVisibleCount(prev => prev + 6)}
                     className="w-full py-4 mt-2 font-black text-sm uppercase tracking-widest bg-[#FFBD2E] text-black border-[3px] border-black rounded-[8px] sm:rounded-[10px] shadow-[4px_4px_0px_0px_#000] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_#000] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all"
                 >
                     Daha Fazla Göster
@@ -124,6 +130,46 @@ export function UnifiedFeed({ items, suggestedUsers = [] }: UnifiedFeedProps) {
                 </h3>
                 <SuggestedUsersCard users={suggestedUsers} />
             </div>
+        </div>
+    );
+}
+
+function LazyMount({
+    children,
+    className,
+}: {
+    children: React.ReactNode;
+    className?: string;
+}) {
+    const ref = useRef<HTMLDivElement>(null);
+    const [isVisible, setIsVisible] = useState(false);
+
+    useEffect(() => {
+        const node = ref.current;
+        if (!node || isVisible) return;
+
+        if (!("IntersectionObserver" in window)) {
+            setIsVisible(true);
+            return;
+        }
+
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                if (entry.isIntersecting) {
+                    setIsVisible(true);
+                    observer.disconnect();
+                }
+            },
+            { rootMargin: "180px 0px" }
+        );
+
+        observer.observe(node);
+        return () => observer.disconnect();
+    }, [isVisible]);
+
+    return (
+        <div ref={ref} className={className}>
+            {isVisible ? children : <div className="h-40 rounded-[10px] bg-muted/20 animate-pulse" />}
         </div>
     );
 }

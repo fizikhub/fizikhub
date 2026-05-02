@@ -2,6 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import { Navbar } from "@/components/layout/navbar";
+import { BottomNav } from "@/components/layout/bottom-nav";
 
 
 
@@ -22,11 +23,6 @@ const DesktopSidebar = dynamic(
     () => import("@/components/layout/desktop-sidebar").then(mod => mod.DesktopSidebar)
 );
 
-
-
-const BottomNav = dynamic(
-    () => import("@/components/layout/bottom-nav").then(mod => mod.BottomNav)
-);
 
 
 export function NavigationWrapper({ children }: { children: React.ReactNode }) {

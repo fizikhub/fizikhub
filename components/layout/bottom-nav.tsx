@@ -4,75 +4,71 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Home, BookOpen, MessageCircle, User, Plus, type LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useRef } from "react";
-import { m, useReducedMotion, useScroll, useVelocity, useMotionValueEvent, useMotionValue, animate } from "framer-motion";
+import { useEffect, useRef } from "react";
 
 export function BottomNav() {
     const pathname = usePathname();
-    const { scrollY, scrollYProgress } = useScroll();
-    const scrollVelocity = useVelocity(scrollY);
-    const shouldReduceMotion = useReducedMotion();
-
-    // Pure MotionValues instead of React State to avoid re-renders during scroll
-    const navY = useMotionValue(0);
-    const targetYRef = useRef(0);
+    const navRef = useRef<HTMLDivElement>(null);
+    const lastScrollYRef = useRef(0);
+    const hiddenRef = useRef(false);
     const frameRef = useRef<number | null>(null);
 
-    useMotionValueEvent(scrollY, "change", (latest) => {
-        if (shouldReduceMotion) return;
-        if (frameRef.current !== null) return;
+    useEffect(() => {
+        const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+        if (motionQuery.matches) return;
 
-        frameRef.current = requestAnimationFrame(() => {
-            frameRef.current = null;
-            const velocity = scrollVelocity.get();
-            const previous = scrollY.getPrevious() || 0;
-            const diff = latest - previous;
-            let targetY = navY.get();
-            let targetDuration = 0.4;
+        const setHidden = (hidden: boolean) => {
+            if (hiddenRef.current === hidden) return;
+            hiddenRef.current = hidden;
+            navRef.current?.classList.toggle("translate-y-full", hidden);
+        };
 
-            // Detect if at bottom using scrollYProgress 
-            // We NO LONGER update React state (isAtBottom) here to prevent DOM thrashing
-            const isNearBottom = scrollYProgress.get() > 0.95;
+        const onScroll = () => {
+            if (frameRef.current !== null) return;
 
-            if (isNearBottom) {
-                targetY = 0;
-            } else {
-                if (latest < 50) {
-                    targetY = 0;
-                } else if (diff > 5) {
-                    targetY = 120;
-                } else if (diff < -5) {
-                    targetY = 0;
+            frameRef.current = requestAnimationFrame(() => {
+                frameRef.current = null;
+
+                const latest = window.scrollY;
+                const previous = lastScrollYRef.current;
+                const diff = latest - previous;
+                const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+                const isNearBottom = maxScroll > 0 && latest / maxScroll > 0.95;
+
+                lastScrollYRef.current = latest;
+
+                if (latest < 48 || isNearBottom) {
+                    setHidden(false);
+                    return;
                 }
-            }
 
-            const absVelocity = Math.abs(velocity);
-            targetDuration = Math.max(0.15, Math.min(0.6, 800 / (absVelocity + 1)));
+                if (diff > 8) setHidden(true);
+                if (diff < -8) setHidden(false);
+            });
+        };
 
-            if (targetYRef.current !== targetY) {
-                targetYRef.current = targetY;
-                animate(navY, targetY, {
-                    duration: targetDuration,
-                    ease: [0.32, 0.72, 0, 1]
-                });
-            }
-        });
-    });
+        lastScrollYRef.current = window.scrollY;
+        window.addEventListener("scroll", onScroll, { passive: true });
 
-    // Haptic feedback helper
+        return () => {
+            window.removeEventListener("scroll", onScroll);
+            if (frameRef.current !== null) cancelAnimationFrame(frameRef.current);
+        };
+    }, []);
+
     const vibrate = () => {
         if (typeof navigator !== "undefined" && navigator.vibrate) {
-            navigator.vibrate(10); // Ultra light vibration
+            navigator.vibrate(6);
         }
     };
 
     return (
-        <m.div
-            style={{ y: navY }}
-            className="fixed bottom-0 left-0 right-0 z-[50] md:hidden font-sans"
+        <div
+            ref={navRef}
+            className="fixed bottom-0 left-0 right-0 z-[50] md:hidden font-sans translate-y-0 transition-transform duration-200 ease-out transform-gpu"
         >
             <nav aria-label="Mobil navigasyon" className={cn(
-                "w-full h-[calc(56px+env(safe-area-inset-bottom))] bg-white/88 dark:bg-[#121212]/88 backdrop-blur-md border-t border-black/10 dark:border-white/10 flex items-start justify-around px-2 pt-1 pb-[env(safe-area-inset-bottom)] relative shadow-[0_-4px_16px_rgba(0,0,0,0.08)]"
+                "w-full h-[calc(56px+env(safe-area-inset-bottom))] bg-white/92 dark:bg-[#121212]/92 backdrop-blur-sm border-t border-black/10 dark:border-white/10 flex items-start justify-around px-2 pt-1 pb-[env(safe-area-inset-bottom)] relative shadow-[0_-4px_16px_rgba(0,0,0,0.08)]"
             )}>
                 <div className="flex items-center justify-around w-full">
                     <NavItem
@@ -95,19 +91,12 @@ export function BottomNav() {
 
                     <div className="relative -top-3.5 z-20">
                         <Link
-                            prefetch={false}
                             id="nav-item-share"
                             href="/paylas"
-                            className="relative block"
-                            onClick={vibrate}
+                            className="relative block touch-manipulation"
+                            onPointerDown={vibrate}
                         >
-                            <m.div
-                                animate={{ scale: 1 }}
-                                transition={{
-                                    duration: 0.3,
-                                    ease: "easeInOut"
-                                }}
-                                whileTap={{ scale: 0.9, rotate: 15 }}
+                            <div
                                 className="
                                     flex items-center justify-center
                                     w-12 h-12
@@ -119,10 +108,12 @@ export function BottomNav() {
                                     group
                                     relative
                                     overflow-hidden
+                                    transition-transform duration-150
+                                    active:scale-90 active:rotate-[15deg]
                                 "
                             >
                                 <Plus className="w-5 h-5 text-black stroke-[3px] group-hover:rotate-90 group-hover:scale-110 transition-transform duration-300 relative z-10" />
-                            </m.div>
+                            </div>
                         </Link>
                     </div>
 
@@ -145,13 +136,13 @@ export function BottomNav() {
                     />
                 </div>
             </nav>
-        </m.div>
+        </div>
     );
 }
 
 function NavItem({ id, href, icon: Icon, label, isActive, onInteract }: { id?: string; href: string; icon: LucideIcon; label: string; isActive: boolean; onInteract: () => void }) {
     const handleNavItemClick = (e: React.MouseEvent) => {
-        onInteract();
+        if (e.detail === 0) onInteract();
         if (isActive) {
             e.preventDefault();
             window.scrollTo({ top: 0, behavior: "smooth" });
@@ -160,25 +151,22 @@ function NavItem({ id, href, icon: Icon, label, isActive, onInteract }: { id?: s
 
     return (
         <Link
-            prefetch={false}
             id={id}
             href={href}
             onClick={handleNavItemClick}
+            onPointerDown={onInteract}
             aria-label={label}
             aria-current={isActive ? 'page' : undefined}
             className={cn(
-                "flex flex-col items-center justify-center min-w-[56px] min-h-[48px] relative group z-10",
+                "flex flex-col items-center justify-center min-w-[56px] min-h-[48px] relative group z-10 touch-manipulation",
                 isActive ? "text-black dark:text-white" : "text-zinc-500 dark:text-zinc-500"
             )}
         >
-            <m.div
-                whileTap={{ scaleX: 1.25, scaleY: 0.85 }}
-                transition={{ type: "spring", stiffness: 400, damping: 15 }}
-                className="flex flex-col items-center gap-0.5 relative"
+            <div
+                className="flex flex-col items-center gap-0.5 relative transition-transform duration-150 active:scale-x-110 active:scale-y-90"
             >
                 {isActive && (
-                    <m.div
-                        layoutId="nav-item-background"
+                    <div
                         className="
                             absolute inset-0 
                             bg-black/5 dark:bg-white/10 
@@ -186,7 +174,6 @@ function NavItem({ id, href, icon: Icon, label, isActive, onInteract }: { id?: s
                             rounded-lg
                             shadow-inner dark:shadow-[inset_0_1px_4px_rgba(0,0,0,0.2)]
                         "
-                        transition={{ type: "spring", stiffness: 500, damping: 30 }}
                     />
                 )}
 
@@ -194,10 +181,11 @@ function NavItem({ id, href, icon: Icon, label, isActive, onInteract }: { id?: s
                     "p-1.5 rounded-lg transition-all duration-200 relative z-10",
                     !isActive && "group-hover:bg-black/5 dark:group-hover:bg-white/5"
                 )}>
-                    <m.div
-                        initial={false}
-                        animate={isActive ? { scale: 1.1 } : { scale: 1 }}
-                        transition={{ type: "spring", stiffness: 500, damping: 15 }}
+                    <div
+                        className={cn(
+                            "transition-transform duration-150",
+                            isActive && "scale-110"
+                        )}
                     >
                         <Icon
                             fill={isActive ? "currentColor" : "none"}
@@ -206,9 +194,9 @@ function NavItem({ id, href, icon: Icon, label, isActive, onInteract }: { id?: s
                                 isActive ? "stroke-[2.75px]" : "stroke-[2px]"
                             )}
                         />
-                    </m.div>
+                    </div>
                 </div>
-            </m.div>
+            </div>
         </Link>
     );
 }

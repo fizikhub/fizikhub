@@ -13,6 +13,11 @@ export function MemeCorner() {
     const [load3D, setLoad3D] = useState(false);
 
     useEffect(() => {
+        const isMobile = window.matchMedia("(max-width: 767px)").matches;
+        const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+        if (isMobile || prefersReducedMotion) return;
+
         const load = () => setLoad3D(true);
         const idleWindow = window as Window & typeof globalThis & {
             requestIdleCallback?: (callback: IdleRequestCallback, options?: IdleRequestOptions) => number;
@@ -20,11 +25,11 @@ export function MemeCorner() {
         };
 
         if (idleWindow.requestIdleCallback && idleWindow.cancelIdleCallback) {
-            const idleId = idleWindow.requestIdleCallback(load, { timeout: 1800 });
+            const idleId = idleWindow.requestIdleCallback(load, { timeout: 700 });
             return () => idleWindow.cancelIdleCallback?.(idleId);
         }
 
-        const timeoutId = globalThis.setTimeout(load, 900);
+        const timeoutId = globalThis.setTimeout(load, 300);
         return () => globalThis.clearTimeout(timeoutId);
     }, []);
 
@@ -45,6 +50,12 @@ export function MemeCorner() {
             >
                 {/* 3D Canvas - Loaded automatically via dynamic import (ssr: false) */}
                 <div className="absolute inset-0 z-0">
+                    <div className="meme-galaxy-fallback absolute inset-0" aria-hidden="true">
+                        <div className="meme-galaxy-core" />
+                        <div className="meme-galaxy-arm meme-galaxy-arm-a" />
+                        <div className="meme-galaxy-arm meme-galaxy-arm-b" />
+                        <div className="meme-star-field" />
+                    </div>
                     {load3D && <MemeCornerCanvas />}
                 </div>
 
