@@ -81,7 +81,7 @@ type FeedArticleRow = {
 };
 
 // Cache articles for better performance
-const getCachedArticles = (category?: string, sort?: string) => unstable_cache(
+const getCachedArticles = (category?: string, sort?: string, searchQuery?: string) => unstable_cache(
     async () => {
         const supabase = getPublicClient();
         let query = supabase
@@ -91,6 +91,10 @@ const getCachedArticles = (category?: string, sort?: string) => unstable_cache(
 
         if (category) {
             query = query.eq('category', category);
+        }
+
+        if (searchQuery) {
+            query = query.or(`title.ilike.%${searchQuery}%,excerpt.ilike.%${searchQuery}%`);
         }
 
         // Sorting
@@ -123,7 +127,7 @@ const getCachedArticles = (category?: string, sort?: string) => unstable_cache(
                 : undefined,
         })) || [];
     },
-    ['makale-feed', category || 'all', sort || 'latest'],
+    ['makale-feed', category || 'all', sort || 'latest', searchQuery || 'none'],
     { revalidate: 3600, tags: ['articles'] }
 )();
 
@@ -151,9 +155,10 @@ export default async function MakalePage({ searchParams }: PageProps) {
     const params = await searchParams;
     const category = typeof params.category === 'string' ? params.category : undefined;
     const sort = typeof params.sort === 'string' ? params.sort : 'latest';
+    const searchQuery = typeof params.q === 'string' ? params.q : undefined;
 
     const [articles, cats] = await Promise.all([
-        getCachedArticles(category, sort),
+        getCachedArticles(category, sort, searchQuery),
         getCachedCategories()
     ]);
 
@@ -167,6 +172,7 @@ export default async function MakalePage({ searchParams }: PageProps) {
             activeCategory={category}
             sortParam={sort}
             newsItems={newsItems}
+            searchQuery={searchQuery}
         />
     );
 }

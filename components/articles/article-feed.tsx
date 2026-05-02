@@ -1,208 +1,124 @@
 "use client";
 
-import { useRef } from "react";
-import { m as motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
+import { useState, FormEvent } from "react";
+import { useRouter } from "next/navigation";
+import { m as motion } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
-import { Clock, Zap, ArrowUpRight, Sparkles, Telescope, Cpu, Dna, FlaskConical, Globe, LayoutGrid } from "lucide-react";
+import { Search, Telescope, Cpu, Dna, Zap, FlaskConical, Globe, BookOpen } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { TrendingMarquee } from "@/components/ui/trending-marquee";
 import { type ScienceNewsItem } from "@/lib/rss";
 import { formatDistanceToNow } from "date-fns";
 import { tr } from "date-fns/locale";
 
-/* ─────────────────────────────────────────────
-   Types
-   ───────────────────────────────────────────── */
 interface ArticleFeedProps {
-    articles: {
-        id: string;
-        title: string;
-        excerpt?: string;
-        summary?: string;
-        image_url?: string;
-        cover_url?: string;
-        category?: string;
-        created_at: string;
-        slug: string;
-        content?: string;
-        author?: { full_name?: string };
-        profiles?: { full_name?: string };
-        [key: string]: unknown;
-    }[];
+    articles: any[];
     categories: string[];
     activeCategory?: string;
     sortParam: string;
     newsItems: ScienceNewsItem[];
+    searchQuery?: string;
 }
 
-/* ─────────────────────────────────────────────
-   Category Config (matching homepage palette)
-   ───────────────────────────────────────────── */
-const CATEGORY_CONFIG: Record<string, { icon: typeof Zap; color: string; bg: string }> = {
-    'Astrofizik': { icon: Telescope, color: 'text-purple-400', bg: 'bg-purple-500/20' },
-    'Uzay': { icon: Telescope, color: 'text-blue-400', bg: 'bg-blue-500/20' },
-    'Teknoloji': { icon: Cpu, color: 'text-cyan-400', bg: 'bg-cyan-500/20' },
-    'Biyoloji': { icon: Dna, color: 'text-green-400', bg: 'bg-green-500/20' },
-    'Fizik': { icon: Zap, color: 'text-yellow-400', bg: 'bg-yellow-500/20' },
-    'Kimya': { icon: FlaskConical, color: 'text-pink-400', bg: 'bg-pink-500/20' },
-    'Popüler Bilim': { icon: Sparkles, color: 'text-orange-400', bg: 'bg-orange-500/20' },
-    'Modern Fizik': { icon: Zap, color: 'text-amber-400', bg: 'bg-amber-500/20' },
-    'Genel': { icon: Globe, color: 'text-zinc-400', bg: 'bg-zinc-500/20' },
+const CATEGORY_CONFIG: Record<string, { icon: any; color: string; bg: string }> = {
+    'Astrofizik': { icon: Telescope, color: 'bg-purple-400', bg: 'text-purple-950' },
+    'Uzay': { icon: Telescope, color: 'bg-blue-400', bg: 'text-blue-950' },
+    'Teknoloji': { icon: Cpu, color: 'bg-cyan-400', bg: 'text-cyan-950' },
+    'Biyoloji': { icon: Dna, color: 'bg-green-400', bg: 'text-green-950' },
+    'Fizik': { icon: Zap, color: 'bg-yellow-400', bg: 'text-yellow-950' },
+    'Kimya': { icon: FlaskConical, color: 'bg-pink-400', bg: 'text-pink-950' },
+    'Popüler Bilim': { icon: BookOpen, color: 'bg-orange-400', bg: 'text-orange-950' },
+    'Modern Fizik': { icon: Zap, color: 'bg-amber-400', bg: 'text-amber-950' },
+    'Genel': { icon: Globe, color: 'bg-zinc-300', bg: 'text-zinc-900' },
 };
 
-const TABS = [
-    { id: 'TÜMÜ', icon: LayoutGrid },
-    { id: 'Uzay', icon: Telescope },
-    { id: 'Teknoloji', icon: Cpu },
-    { id: 'Biyoloji', icon: Dna },
-    { id: 'Fizik', icon: Zap },
-    { id: 'Kimya', icon: FlaskConical },
-    { id: 'Genel', icon: Globe },
-];
-
-/* ─────────────────────────────────────────────
-   Sticky Magazine Card — The Hero Component
-   ───────────────────────────────────────────── */
-function MagazineCard({ article, index, total }: {
-    article: {
-        id: string;
-        title: string;
-        excerpt?: string;
-        image: string;
-        category: string;
-        date: string;
-        author: string;
-        slug: string;
-        readingTime: number;
-    };
-    index: number;
-    total: number;
-}) {
-    const cardRef = useRef<HTMLDivElement>(null);
-    const { scrollYProgress } = useScroll({
-        target: cardRef,
-        offset: ["start end", "end start"]
-    });
-
-    // Outer Card Transforms (Scale down and fade as it goes up)
-    const scale = useTransform(scrollYProgress, [0.4, 1], [1, 0.90]);
-    const opacity = useTransform(scrollYProgress, [0.6, 1], [1, 0.2]);
-    
-    // Parallax effect for the image inside the card (moves down slightly as you scroll down)
-    const imageY = useTransform(scrollYProgress, [0, 1], ["0%", "15%"]);
-
+function EncyclopediaCard({ article, index }: { article: any, index: number }) {
     const catConfig = CATEGORY_CONFIG[article.category] || CATEGORY_CONFIG['Genel'];
     const CatIcon = catConfig.icon;
     const isNew = new Date().getTime() - new Date(article.date).getTime() < 3 * 24 * 60 * 60 * 1000;
-    const isHero = index === 0;
 
     return (
         <motion.div
-            ref={cardRef}
-            style={{ scale, opacity }}
-            // Initial staggered entrance animation
-            initial={{ opacity: 0, y: 50 }}
+            initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: index * 0.15, ease: [0.16, 1, 0.3, 1] }} // smooth spring-like ease out
-            className="sticky top-[140px] sm:top-[160px] will-change-transform"
+            transition={{ duration: 0.5, delay: index * 0.05 }}
+            className="group block h-full"
         >
-            <Link href={`/makale/${article.slug}`} className="block group">
-                <article
-                    className={cn(
-                        "relative overflow-hidden transition-all duration-300",
-                        // Perfected border and shadows
-                        "bg-zinc-950 border-[3px] border-zinc-800 rounded-[20px]",
-                        "shadow-[4px_4px_0px_0px_rgba(39,39,42,0.8)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.05)]",
-                        "hover:border-[#FFBD2E] hover:shadow-[6px_6px_0px_0px_rgba(255,189,46,0.3)]",
-                        "active:shadow-none active:translate-x-[2px] active:translate-y-[2px]",
-                        isHero ? "min-h-[500px] sm:min-h-[560px]" : "min-h-[420px] sm:min-h-[460px]"
-                    )}
-                >
-                    {/* Parallax Image Container */}
-                    <motion.div style={{ y: imageY }} className="absolute inset-[-10%] z-0 h-[120%] w-[120%]">
-                        <Image
-                            src={article.image}
-                            alt={article.title}
-                            fill
-                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px"
-                            className="object-cover transition-transform duration-1000 ease-[0.16,1,0.3,1] group-hover:scale-[1.03] opacity-90 group-hover:opacity-100"
-                            priority={index < 2}
-                        />
-                    </motion.div>
+            <Link href={`/makale/${article.slug}`} className="block h-full outline-none focus-visible:ring-4 focus-visible:ring-[#FFBD2E]">
+                <article className={cn(
+                    "h-full flex flex-col relative overflow-hidden transition-all duration-300",
+                    "bg-[#fdfdfd] dark:bg-zinc-900 border-[3px] border-black dark:border-white rounded-xl",
+                    "shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]",
+                    "hover:-translate-y-1 hover:translate-x-[-1px] hover:shadow-[8px_8px_0px_0px_rgba(255,189,46,1)] dark:hover:shadow-[8px_8px_0px_0px_rgba(255,189,46,1)]",
+                    "hover:border-[#FFBD2E] dark:hover:border-[#FFBD2E]"
+                )}>
+                    {/* Spine color line on the left */}
+                    <div className={cn("absolute left-0 top-0 bottom-0 w-2 border-r-[3px] border-black dark:border-white z-20", catConfig.color)} />
                     
-                    {/* Perfected Gradient Overlay — richer dark at the bottom for text legibility */}
-                    <div className="absolute inset-0 z-0 bg-gradient-to-t from-black via-black/80 to-transparent/10 opacity-95 group-hover:opacity-100 transition-opacity duration-500" />
+                    <div className="flex-1 flex flex-col pl-2">
+                        {/* Image Section - styled like an embedded illustration */}
+                        <div className="relative h-48 sm:h-56 border-b-[3px] border-black dark:border-white bg-zinc-100 overflow-hidden">
+                            <Image
+                                src={article.image}
+                                alt={article.title}
+                                fill
+                                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                                className="object-cover filter sepia-[0.2] contrast-[1.1] grayscale-[0.2] mix-blend-multiply dark:mix-blend-normal transition-transform duration-700 group-hover:scale-105 group-hover:filter-none"
+                            />
+                            {/* Texture overlay on image */}
+                            <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 mix-blend-overlay pointer-events-none" />
+                        </div>
 
-                    {/* Content Layer */}
-                    <div className="relative z-10 h-full flex flex-col justify-between p-6 sm:p-8">
-                        
-                        {/* Top Bar: Category + Status */}
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2.5">
-                                {/* Category Badge */}
-                                <span className="flex items-center gap-1.5 px-3 py-1.5 bg-[#FFBD2E] text-black text-[10px] sm:text-[11px] font-black uppercase tracking-widest rounded-lg border-[1.5px] border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,0.4)]">
-                                    <CatIcon className="w-3 h-3 stroke-[2.5px]" />
+                        {/* Content Section */}
+                        <div className="p-5 sm:p-6 flex flex-col flex-1 relative bg-[url('https://www.transparenttextures.com/patterns/stucco.png')] dark:bg-none">
+                            
+                            {/* Top Meta */}
+                            <div className="flex items-center justify-between mb-4">
+                                <span className={cn(
+                                    "flex items-center gap-1.5 px-2.5 py-1 text-[10px] sm:text-[11px] font-black uppercase tracking-widest border-[2px] border-black dark:border-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]",
+                                    catConfig.color, catConfig.bg
+                                )}>
+                                    <CatIcon className="w-3.5 h-3.5 stroke-[2.5px]" />
                                     {article.category}
                                 </span>
                                 {isNew && (
-                                    <span className="flex items-center gap-1.5 px-2.5 py-1.5 bg-emerald-500/10 backdrop-blur-md rounded-lg border border-emerald-500/30">
-                                        <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
-                                        <span className="text-[9px] font-black text-emerald-400 uppercase tracking-widest">Yeni</span>
+                                    <span className="text-[10px] font-black uppercase tracking-widest text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+                                        <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
+                                        YENİ
                                     </span>
                                 )}
                             </div>
-                            {isHero && (
-                                <span className="px-3 py-1.5 bg-white/5 backdrop-blur-md text-white text-[9px] sm:text-[10px] font-black uppercase tracking-widest rounded-lg border border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.1)]">
-                                    ★ Kapak Konusu
-                                </span>
-                            )}
-                        </div>
 
-                        {/* Bottom Content: Title, Excerpt, Meta */}
-                        <div className="mt-auto">
-                            {/* Date & Author Pill */}
-                            <div className="flex items-center gap-2 mb-3.5 opacity-80 group-hover:opacity-100 transition-opacity duration-300">
-                                <span className="text-[10px] sm:text-[11px] font-bold text-zinc-300 uppercase tracking-widest">
-                                    {formatDistanceToNow(new Date(article.date), { locale: tr })} önce
-                                </span>
-                                <span className="w-1 h-1 rounded-full bg-zinc-500" />
-                                <span className="text-[10px] sm:text-[11px] font-black text-zinc-300 uppercase tracking-widest truncate max-w-[150px]">
-                                    {article.author}
-                                </span>
-                            </div>
-
-                            {/* Title — refined typography */}
-                            <h3 className={cn(
-                                "font-black text-white leading-[1.15] tracking-tight group-hover:text-[#FFBD2E] transition-colors duration-300 mb-4 drop-shadow-md",
-                                isHero
-                                    ? "text-3xl sm:text-4xl md:text-5xl lg:text-[3.25rem]"
-                                    : "text-2xl sm:text-3xl md:text-4xl line-clamp-3"
-                            )}>
+                            {/* Title (Editorial style) */}
+                            <h3 className="font-black text-black dark:text-white text-xl sm:text-2xl leading-[1.15] mb-3 group-hover:text-[#FFBD2E] transition-colors line-clamp-3 uppercase tracking-tighter">
                                 {article.title}
                             </h3>
 
-                            {/* Excerpt — increased line-height for editorial feel */}
+                            {/* Excerpt */}
                             {article.excerpt && (
-                                <p className={cn(
-                                    "text-zinc-300 font-medium leading-[1.7] mb-6 drop-shadow-sm",
-                                    isHero
-                                        ? "text-base sm:text-lg line-clamp-3 max-w-[90%]"
-                                        : "text-sm sm:text-base line-clamp-2 max-w-[95%]"
-                                )}>
+                                <p className="text-zinc-700 dark:text-zinc-300 text-sm font-medium leading-relaxed line-clamp-2 mb-6 flex-1">
                                     {article.excerpt}
                                 </p>
                             )}
 
-                            {/* Footer Bar & Interactive Button */}
-                            <div className="flex items-center justify-between pt-4 border-t-[1.5px] border-white/10 group-hover:border-white/20 transition-colors duration-300">
-                                <div className="flex items-center gap-2 text-zinc-400 text-[10px] sm:text-[11px] font-black tracking-widest uppercase">
-                                    <Clock className="w-3.5 h-3.5" />
-                                    <span>{article.readingTime} dk okuma</span>
+                            {/* Footer / Author Block */}
+                            <div className="mt-auto pt-4 border-t-[3px] border-dashed border-black/20 dark:border-white/20 flex flex-col gap-2">
+                                <div className="flex items-center justify-between text-black dark:text-white">
+                                    <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-400">
+                                        Yazar / Editör
+                                    </span>
+                                    <span className="text-[10px] font-black uppercase tracking-wider truncate max-w-[150px]">
+                                        {article.author}
+                                    </span>
                                 </div>
-                                {/* Micro-interaction: Bouncy Arrow Button */}
-                                <div className="flex items-center justify-center w-10 h-10 sm:w-11 sm:h-11 rounded-[10px] bg-white/5 backdrop-blur-md border-[1.5px] border-white/20 text-white group-hover:bg-[#FFBD2E] group-hover:text-black group-hover:border-black group-hover:scale-110 group-hover:-rotate-3 transition-all duration-300 shadow-lg">
-                                    <ArrowUpRight className="w-5 h-5 stroke-[2.5px] group-hover:translate-x-[1px] group-hover:-translate-y-[1px] transition-transform duration-300" />
+                                <div className="flex items-center justify-between text-black dark:text-white">
+                                    <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-400">
+                                        Yayın Tarihi
+                                    </span>
+                                    <span className="text-[10px] font-bold uppercase tracking-wider">
+                                        {formatDistanceToNow(new Date(article.date), { locale: tr })} önce
+                                    </span>
                                 </div>
                             </div>
                         </div>
@@ -213,10 +129,9 @@ function MagazineCard({ article, index, total }: {
     );
 }
 
-/* ─────────────────────────────────────────────
-   Main Export: ArticleFeed
-   ───────────────────────────────────────────── */
-export function ArticleFeed({ articles, categories, activeCategory, sortParam, newsItems }: ArticleFeedProps) {
+export function ArticleFeed({ articles, categories, activeCategory, sortParam, newsItems, searchQuery }: ArticleFeedProps) {
+    const router = useRouter();
+    const [inputValue, setInputValue] = useState(searchQuery || "");
 
     const ARTICLES = articles.map(a => ({
         id: a.id,
@@ -230,80 +145,94 @@ export function ArticleFeed({ articles, categories, activeCategory, sortParam, n
         readingTime: Math.max(1, Math.ceil((a.content?.split(/\s+/).length || 500) / 200))
     }));
 
+    const handleSearch = (e: FormEvent) => {
+        e.preventDefault();
+        const params = new URLSearchParams();
+        if (inputValue.trim()) params.set("q", inputValue.trim());
+        if (activeCategory) params.set("category", activeCategory);
+        if (sortParam !== 'latest') params.set("sort", sortParam);
+        
+        router.push(`/makale?${params.toString()}`);
+    };
+
     return (
-        <div className="min-h-screen bg-background text-foreground pb-32">
+        <div className="min-h-screen bg-[#FDFBF7] dark:bg-zinc-950 text-foreground pb-32 selection:bg-[#FFBD2E] selection:text-black">
             {/* Trending News */}
             {newsItems && newsItems.length > 0 && <TrendingMarquee items={newsItems} />}
 
             {/* Paper Texture Background */}
             <div
-                className="pointer-events-none fixed inset-0 z-0 opacity-[0.03] dark:opacity-[0.04]"
+                className="pointer-events-none fixed inset-0 z-0 opacity-[0.04] dark:opacity-[0.02]"
                 style={{
-                    backgroundImage:
-                        "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")",
+                    backgroundImage: "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")",
                 }}
             />
 
-            <main className="relative z-10 max-w-[700px] mx-auto px-4 sm:px-6">
-
-                {/* ── STICKY GLASSMORPHIC HEADER ── */}
-                <div className="sticky top-14 sm:top-[72px] z-40 bg-background/80 backdrop-blur-xl border-b-[3px] border-zinc-200 dark:border-zinc-800/60 pt-6 sm:pt-8 pb-5 mb-8 sm:mb-12 -mx-4 px-4 sm:mx-0 sm:px-0">
-                    <header className="mb-4 sm:mb-5">
-                        <div className="flex items-center gap-2.5 mb-1.5">
-                            <span className="w-1.5 h-6 bg-[#FFBD2E] rounded-sm border border-black dark:border-yellow-600" />
-                            <h1 className="text-xl sm:text-2xl font-black uppercase tracking-tight">
-                                Bilim & Makale
+            <main className="relative z-10 max-w-[1200px] mx-auto px-4 sm:px-6 md:px-8 mt-6 sm:mt-10">
+                
+                {/* ── HEADER & SEARCH ── */}
+                <div className="mb-10 sm:mb-16">
+                    <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8 border-b-[4px] border-black dark:border-white pb-6">
+                        <div>
+                            <h1 className="text-4xl sm:text-6xl md:text-7xl font-black uppercase tracking-tighter text-black dark:text-white flex items-center gap-3">
+                                <span className="text-[#FFBD2E]">*</span>
+                                ANSİKLOPEDİ
                             </h1>
-                        </div>
-                        <p className="text-[11px] sm:text-xs font-bold text-muted-foreground uppercase tracking-widest pl-4">
-                            Evrenin sırlarından derinlemesine analizler
-                        </p>
-                    </header>
-
-                    {/* Filter Bar */}
-                    <div className="flex flex-col gap-3">
-                        <div className="flex items-center gap-2">
-                            {['latest', 'popular'].map((s) => {
-                                const isActive = sortParam === s;
-                                return (
-                                    <Link
-                                        key={s}
-                                        href={`/makale?sort=${s}${activeCategory ? `&category=${activeCategory}` : ''}`}
-                                        className={cn(
-                                            "flex items-center gap-1.5 px-3.5 py-2 rounded-xl border-[2.5px] text-[10px] sm:text-[11px] font-black uppercase tracking-wider transition-all duration-200",
-                                            isActive
-                                                ? "bg-[#FFBD2E] text-black border-black shadow-[3px_3px_0px_0px_#000] -translate-y-[1px]"
-                                                : "bg-transparent border-zinc-300 dark:border-zinc-700 text-muted-foreground hover:border-black hover:text-black dark:hover:border-white dark:hover:text-white"
-                                        )}
-                                    >
-                                        {s === 'latest' ? <Clock className="w-3.5 h-3.5 stroke-[2.5px]" /> : <Sparkles className="w-3.5 h-3.5 stroke-[2.5px]" />}
-                                        {s === 'latest' ? 'En Yeni' : 'Popüler'}
-                                    </Link>
-                                );
-                            })}
+                            <p className="mt-2 text-sm sm:text-base font-bold text-zinc-600 dark:text-zinc-400 uppercase tracking-widest flex items-center gap-2">
+                                <span className="w-1.5 h-1.5 bg-black dark:bg-white rounded-full"></span>
+                                Evrenin Sırları Kütüphanesi
+                            </p>
                         </div>
 
-                        {/* Horizontal scroll pills */}
-                        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1 -mx-4 px-4 sm:mx-0 sm:px-0">
-                            {TABS.map((tab) => {
-                                const Icon = tab.icon;
-                                const isAll = tab.id === 'TÜMÜ';
-                                const isActive = isAll ? !activeCategory : activeCategory === tab.id;
-                                if (!isAll && !categories.includes(tab.id) && !isActive) return null;
+                        {/* Search Bar */}
+                        <form onSubmit={handleSearch} className="relative w-full md:w-[450px]">
+                            <div className="relative flex items-center bg-white dark:bg-zinc-900 border-[3px] border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] focus-within:translate-y-[2px] focus-within:translate-x-[2px] focus-within:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:focus-within:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] transition-all duration-200">
+                                <div className="pl-4 flex-shrink-0 text-black dark:text-white">
+                                    <Search className="w-5 h-5 stroke-[3px]" />
+                                </div>
+                                <input 
+                                    type="text" 
+                                    placeholder="Kavram, Teori veya Yazar Ara..." 
+                                    value={inputValue}
+                                    onChange={(e) => setInputValue(e.target.value)}
+                                    className="w-full bg-transparent py-4 px-4 outline-none font-bold placeholder:text-zinc-400 text-black dark:text-white text-sm uppercase tracking-wider"
+                                />
+                                <button type="submit" className="bg-[#FFBD2E] border-l-[3px] border-black dark:border-white h-full px-6 text-black font-black uppercase tracking-widest hover:bg-yellow-400 active:bg-yellow-500 transition-colors flex items-center justify-center">
+                                    Bul
+                                </button>
+                            </div>
+                        </form>
+                    </div>
 
+                    {/* Filter Bar (Index Tabs) */}
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                        {/* Category Tabs */}
+                        <div className="flex flex-wrap items-center gap-2">
+                            <Link 
+                                href={`/makale${searchQuery ? `?q=${searchQuery}` : ''}`}
+                                className={cn(
+                                    "px-4 py-2 text-xs sm:text-sm font-black uppercase tracking-widest border-[3px] transition-all",
+                                    !activeCategory 
+                                        ? "bg-black text-white border-black dark:bg-white dark:text-black dark:border-white shadow-[3px_3px_0px_0px_rgba(255,189,46,1)]" 
+                                        : "bg-transparent text-zinc-600 dark:text-zinc-400 border-zinc-300 dark:border-zinc-700 hover:border-black dark:hover:border-white hover:text-black dark:hover:text-white"
+                                )}
+                            >
+                                TÜM DİZİN
+                            </Link>
+                            {categories.map(cat => {
+                                const isActive = activeCategory === cat;
                                 return (
-                                    <Link
-                                        key={tab.id}
-                                        href={isAll ? '/makale' : `/makale?category=${tab.id}${sortParam !== 'latest' ? `&sort=${sortParam}` : ''}`}
+                                    <Link 
+                                        key={cat}
+                                        href={`/makale?category=${cat}${searchQuery ? `&q=${searchQuery}` : ''}`}
                                         className={cn(
-                                            "flex items-center gap-1.5 px-3 py-1.5 rounded-[10px] border-[2px] text-[10px] font-black uppercase tracking-wider whitespace-nowrap flex-shrink-0 transition-all duration-200",
-                                            isActive
-                                                ? "bg-foreground text-background border-foreground shadow-[2px_2px_0px_0px_rgba(0,0,0,0.5)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.15)]"
-                                                : "bg-transparent border-zinc-300 dark:border-zinc-700 text-muted-foreground hover:border-foreground hover:text-foreground hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                                            "px-4 py-2 text-xs sm:text-sm font-black uppercase tracking-widest border-[3px] transition-all",
+                                            isActive 
+                                                ? "bg-[#FFBD2E] text-black border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_0px_rgba(255,255,255,1)]" 
+                                                : "bg-transparent text-zinc-600 dark:text-zinc-400 border-zinc-300 dark:border-zinc-700 hover:border-black dark:hover:border-white hover:text-black dark:hover:text-white"
                                         )}
                                     >
-                                        <Icon className="w-3.5 h-3.5 stroke-[2.5px]" />
-                                        {tab.id}
+                                        {cat}
                                     </Link>
                                 );
                             })}
@@ -311,30 +240,31 @@ export function ArticleFeed({ articles, categories, activeCategory, sortParam, n
                     </div>
                 </div>
 
-                {/* ── MAGAZINE CARD STACK ── */}
+                {/* ── ENCYCLOPEDIA GRID ── */}
                 {ARTICLES.length > 0 ? (
-                    <div className="flex flex-col gap-10 sm:gap-14 pb-20 relative z-20">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-10 pb-20">
                         {ARTICLES.map((article, index) => (
-                            <MagazineCard
+                            <EncyclopediaCard
                                 key={article.id}
                                 article={article}
                                 index={index}
-                                total={ARTICLES.length}
                             />
                         ))}
                     </div>
                 ) : (
                     <motion.div 
-                        initial={{ opacity: 0, scale: 0.95 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        className="flex flex-col items-center justify-center py-20 text-center border-[3px] border-dashed border-zinc-700 rounded-2xl bg-card relative z-20"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="flex flex-col items-center justify-center py-32 text-center border-[4px] border-dashed border-black/20 dark:border-white/20 rounded-none bg-white/50 dark:bg-zinc-900/50"
                     >
-                        <div className="w-14 h-14 rounded-xl bg-[#FFBD2E]/20 border-[2.5px] border-zinc-700 flex items-center justify-center mb-4 shadow-[3px_3px_0px_0px_rgba(39,39,42,0.8)]">
-                            <Zap className="w-7 h-7 text-yellow-400 stroke-[2.5px]" />
+                        <div className="w-20 h-20 bg-[#FFBD2E] border-[4px] border-black flex items-center justify-center mb-6 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
+                            <Search className="w-10 h-10 text-black stroke-[3px]" />
                         </div>
-                        <p className="text-foreground font-black text-lg uppercase tracking-tight mb-2">İçerik Bulunamadı</p>
-                        <p className="text-muted-foreground text-xs font-bold max-w-[250px]">
-                            Bu kategori için henüz yayınlanmış içerik bulunmuyor.
+                        <h2 className="text-black dark:text-white font-black text-2xl md:text-3xl uppercase tracking-tighter mb-4">
+                            KAYIT BULUNAMADI
+                        </h2>
+                        <p className="text-zinc-600 dark:text-zinc-400 font-bold uppercase tracking-widest max-w-md">
+                            Aradığınız terime veya kategoriye uygun bir ansiklopedi girdisi mevcut değil. Lütfen aramanızı genişletin.
                         </p>
                     </motion.div>
                 )}
