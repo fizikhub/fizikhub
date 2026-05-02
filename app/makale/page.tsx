@@ -80,6 +80,11 @@ type FeedArticleRow = {
     } | null;
 };
 
+type CategoryStat = {
+    name: string;
+    count: number;
+};
+
 const NON_ARTICLE_CATEGORIES = ["Kitap İncelemesi", "Deney", "Terim"];
 
 // Cache articles for better performance
@@ -150,7 +155,15 @@ const getCachedCategories = unstable_cache(
             return [];
         }
 
-        return [...new Set((catData || []).map(a => a.category).filter(Boolean))] as string[];
+        const counts = (catData || []).reduce<Record<string, number>>((acc, row) => {
+            if (!row.category) return acc;
+            acc[row.category] = (acc[row.category] || 0) + 1;
+            return acc;
+        }, {});
+
+        return Object.entries(counts)
+            .map(([name, count]) => ({ name, count }))
+            .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name, "tr")) as CategoryStat[];
     },
     ['makale-categories'],
     { revalidate: 3600, tags: ['articles'] }

@@ -8,8 +8,10 @@ import Image from "next/image";
 import {
     ArrowRight,
     BookMarked,
+    CalendarDays,
     Clock3,
     Compass,
+    Layers3,
     LibraryBig,
     Search,
     Sparkles,
@@ -20,12 +22,17 @@ import { type ScienceNewsItem } from "@/lib/rss";
 
 interface ArticleFeedProps {
     articles: RawArticle[];
-    categories: string[];
+    categories: CategoryStat[];
     activeCategory?: string;
     sortParam: string;
     newsItems: ScienceNewsItem[];
     searchQuery?: string;
 }
+
+type CategoryStat = {
+    name: string;
+    count: number;
+};
 
 type RawArticle = {
     id: string | number;
@@ -80,6 +87,10 @@ function readingTime(content?: string | null) {
     return Math.max(1, Math.ceil(words / 220));
 }
 
+function formatDate(date: string) {
+    return new Intl.DateTimeFormat("tr-TR", { day: "numeric", month: "short" }).format(new Date(date));
+}
+
 function ArticleBook({ article, index, featured = false }: { article: LibraryArticle; index: number; featured?: boolean }) {
     return (
         <motion.article
@@ -107,6 +118,8 @@ function ArticleBook({ article, index, featured = false }: { article: LibraryArt
                         className="object-cover transition-transform duration-700 group-hover:scale-105"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black via-black/35 to-black/5" />
+                    <div className="absolute inset-y-4 right-0 w-3 rounded-l-sm border-y border-l border-white/20 bg-white/25 shadow-[inset_5px_0_12px_rgba(255,255,255,.3)]" />
+                    <div className="absolute inset-x-14 top-0 h-2 bg-gradient-to-b from-white/35 to-transparent" />
                     <div className="absolute inset-y-0 left-0 w-12 border-r-[3px] border-black bg-[#07132a]/95 shadow-[inset_-10px_0_20px_rgba(0,0,0,.35)] sm:w-14">
                         <span className="absolute left-1/2 top-1/2 w-[280px] -translate-x-1/2 -translate-y-1/2 -rotate-90 text-center font-serif text-[10px] font-black uppercase tracking-[0.28em] text-white/80">
                             {article.category}
@@ -124,6 +137,9 @@ function ArticleBook({ article, index, featured = false }: { article: LibraryArt
                             </span>
                             <span className="border border-white/25 bg-black/35 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-white backdrop-blur">
                                 {article.readingTime} dk okuma
+                            </span>
+                            <span className="border border-white/25 bg-black/35 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-white backdrop-blur">
+                                {formatDate(article.date)}
                             </span>
                         </div>
                         <h2
@@ -152,15 +168,53 @@ function ArticleBook({ article, index, featured = false }: { article: LibraryArt
     );
 }
 
+function ReadingRoute({ articles }: { articles: LibraryArticle[] }) {
+    if (articles.length === 0) return null;
+
+    return (
+        <div className="rounded-[8px] border-[3px] border-black bg-[#07132a] p-3 text-white shadow-[6px_6px_0_#000]">
+            <div className="mb-3 flex items-center gap-2 px-1 text-[10px] font-black uppercase tracking-[0.22em] text-[#ffcc00]">
+                <Layers3 className="h-4 w-4" />
+                Okuma Rotası
+            </div>
+            <div className="grid gap-2">
+                {articles.map((article, index) => (
+                    <Link
+                        key={article.id}
+                        href={`/makale/${article.slug}`}
+                        className="group/route grid grid-cols-[38px_1fr_auto] items-center gap-3 rounded-[7px] border-2 border-white/15 bg-white/[0.08] px-2 py-2 transition-all hover:border-[#ffcc00] hover:bg-white/[0.12]"
+                    >
+                        <span className="flex h-8 w-8 items-center justify-center rounded-[6px] border-2 border-black bg-[#ffcc00] text-xs font-black text-black shadow-[2px_2px_0_#000]">
+                            {index + 1}
+                        </span>
+                        <span className="min-w-0">
+                            <span className="block truncate font-serif text-sm font-black leading-tight text-white">
+                                {article.title}
+                            </span>
+                            <span className="mt-1 flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-zinc-400">
+                                <CalendarDays className="h-3 w-3" />
+                                {article.category}
+                            </span>
+                        </span>
+                        <ArrowRight className="h-4 w-4 text-[#ffcc00] transition-transform group-hover/route:translate-x-1" />
+                    </Link>
+                ))}
+            </div>
+        </div>
+    );
+}
+
 function CategoryShelf({
     categories,
     activeCategory,
     searchQuery,
 }: {
-    categories: string[];
+    categories: CategoryStat[];
     activeCategory?: string;
     searchQuery?: string;
 }) {
+    const totalCount = categories.reduce((total, category) => total + category.count, 0);
+
     return (
         <div className="rounded-[8px] border-[3px] border-black bg-[#f7f2df] p-3 text-black shadow-[6px_6px_0_#000]">
             <div className="mb-3 flex items-center gap-2 px-1 text-[10px] font-black uppercase tracking-[0.22em] text-zinc-600">
@@ -178,19 +232,23 @@ function CategoryShelf({
                     )}
                 >
                     Tüm Makaleler
+                    <span className="ml-2 rounded bg-black/10 px-1.5 py-0.5">{totalCount}</span>
                 </Link>
                 {categories.map((cat) => (
                     <Link
-                        key={cat}
-                        href={makeMakaleHref(cat, searchQuery)}
+                        key={cat.name}
+                        href={makeMakaleHref(cat.name, searchQuery)}
                         className={cn(
-                            "whitespace-nowrap rounded-[7px] border-[2px] border-black px-4 py-2 text-[11px] font-black uppercase tracking-widest transition-all",
-                            activeCategory === cat
+                            "whitespace-nowrap rounded-[7px] border-[2px] border-black px-3 py-2 text-[11px] font-black uppercase tracking-widest transition-all",
+                            activeCategory === cat.name
                                 ? "bg-[#07132a] text-white shadow-[3px_3px_0_#000]"
                                 : "bg-white text-black hover:bg-zinc-100 hover:shadow-[3px_3px_0_#000]"
                         )}
                     >
-                        {cat}
+                        {cat.name}
+                        <span className={cn("ml-2 rounded px-1.5 py-0.5", activeCategory === cat.name ? "bg-white/15" : "bg-black/10")}>
+                            {cat.count}
+                        </span>
                     </Link>
                 ))}
             </div>
@@ -221,7 +279,8 @@ export function ArticleFeed({ articles, categories, activeCategory, sortParam, n
 
     const featuredArticle = libraryArticles[0];
     const restArticles = libraryArticles.slice(1);
-    const visibleCategories = categories.filter(Boolean);
+    const visibleCategories = categories.filter((category) => category.name);
+    const routeArticles = libraryArticles.slice(0, 3);
 
     const handleSearch = (e: FormEvent) => {
         e.preventDefault();
@@ -284,7 +343,7 @@ export function ArticleFeed({ articles, categories, activeCategory, sortParam, n
                     </div>
                 </motion.header>
 
-                <section className="relative z-10 mb-9 grid gap-4 lg:grid-cols-[minmax(0,1fr)_360px]">
+                <section className="relative z-10 mb-9 grid gap-4 lg:grid-cols-[minmax(0,1fr)_380px]">
                     <motion.form
                         onSubmit={handleSearch}
                         initial={{ opacity: 0, y: 12 }}
@@ -319,7 +378,10 @@ export function ArticleFeed({ articles, categories, activeCategory, sortParam, n
                         </div>
                     </motion.form>
 
-                    <CategoryShelf categories={visibleCategories} activeCategory={activeCategory} searchQuery={searchQuery} />
+                    <div className="grid gap-4">
+                        <CategoryShelf categories={visibleCategories} activeCategory={activeCategory} searchQuery={searchQuery} />
+                        <ReadingRoute articles={routeArticles} />
+                    </div>
                 </section>
 
                 {(searchQuery || activeCategory) && (
