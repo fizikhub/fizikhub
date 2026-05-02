@@ -12,7 +12,9 @@ import {
     Clock3,
     Compass,
     Layers3,
+    LayoutGrid,
     LibraryBig,
+    List,
     Search,
     Sparkles,
 } from "lucide-react";
@@ -65,7 +67,17 @@ type LibraryArticle = {
     readingTime: number;
 };
 
+type ViewMode = "covers" | "compact";
+type SortMode = "newest" | "short" | "long" | "az";
+
 const PAPER_TEXTURE = `url("data:image/svg+xml,%3Csvg viewBox='0 0 240 240' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.16'/%3E%3C/svg%3E")`;
+
+const sortOptions: Array<{ value: SortMode; label: string }> = [
+    { value: "newest", label: "Yeni" },
+    { value: "short", label: "Kısa" },
+    { value: "long", label: "Derin" },
+    { value: "az", label: "A-Z" },
+];
 
 function makeMakaleHref(category?: string, searchQuery?: string) {
     const params = new URLSearchParams();
@@ -168,6 +180,131 @@ function ArticleBook({ article, index, featured = false }: { article: LibraryArt
     );
 }
 
+function CompactArticleRow({ article, index }: { article: LibraryArticle; index: number }) {
+    return (
+        <motion.article
+            initial={{ opacity: 0, y: 18 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-60px" }}
+            transition={{ duration: 0.35, delay: Math.min(index * 0.03, 0.18), ease: "easeOut" }}
+        >
+            <Link href={`/makale/${article.slug}`} className="group block">
+                <div className="grid grid-cols-[86px_1fr] gap-3 rounded-[8px] border-[3px] border-black bg-[#f7f2df] p-2 text-black shadow-[5px_5px_0_#000] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0_#000] sm:grid-cols-[118px_1fr] sm:gap-4 sm:p-3">
+                    <div className="relative min-h-[122px] overflow-hidden rounded-[6px] border-[3px] border-black bg-[#07132a] sm:min-h-[154px]">
+                        <Image
+                            src={article.image}
+                            alt={`${article.title} makale kapağı`}
+                            fill
+                            sizes="130px"
+                            className="object-cover transition-transform duration-500 group-hover:scale-105"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/75 to-transparent" />
+                        <div className="absolute inset-y-0 left-0 w-5 border-r-2 border-black bg-[#07132a]/95" />
+                    </div>
+                    <div className="flex min-w-0 flex-col py-1 pr-1">
+                        <div className="mb-2 flex flex-wrap items-center gap-1.5">
+                            <span className="rounded-[5px] border-2 border-black bg-[#ffcc00] px-2 py-0.5 text-[9px] font-black uppercase tracking-widest">
+                                {article.category}
+                            </span>
+                            <span className="rounded-[5px] border border-black/20 bg-white px-2 py-0.5 text-[9px] font-black uppercase tracking-widest text-zinc-600">
+                                {article.readingTime} dk
+                            </span>
+                        </div>
+                        <h2 className="line-clamp-2 font-serif text-lg font-black leading-[1.05] text-black sm:text-2xl">
+                            {article.title}
+                        </h2>
+                        <p className="mt-2 line-clamp-2 text-xs font-bold leading-relaxed text-zinc-700 sm:line-clamp-3 sm:text-sm">
+                            {article.excerpt}
+                        </p>
+                        <div className="mt-auto flex items-center justify-between gap-3 border-t-2 border-dashed border-black/15 pt-2">
+                            <span className="min-w-0 truncate text-[10px] font-black uppercase tracking-widest text-zinc-500">
+                                {article.author}
+                            </span>
+                            <span className="inline-flex flex-shrink-0 items-center gap-1 text-[10px] font-black uppercase tracking-widest text-[#07132a]">
+                                Oku <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </Link>
+        </motion.article>
+    );
+}
+
+function CatalogueControls({
+    viewMode,
+    setViewMode,
+    sortMode,
+    setSortMode,
+}: {
+    viewMode: ViewMode;
+    setViewMode: (mode: ViewMode) => void;
+    sortMode: SortMode;
+    setSortMode: (mode: SortMode) => void;
+}) {
+    return (
+        <div className="rounded-[8px] border-[3px] border-black bg-[#f7f2df] p-3 text-black shadow-[6px_6px_0_#000]">
+            <div className="grid gap-3 sm:grid-cols-[1fr_1.3fr]">
+                <div>
+                    <div className="mb-2 text-[10px] font-black uppercase tracking-[0.22em] text-zinc-600">
+                        Görünüm
+                    </div>
+                    <div className="grid grid-cols-2 gap-2">
+                        <button
+                            type="button"
+                            onClick={() => setViewMode("covers")}
+                            className={cn(
+                                "flex h-10 items-center justify-center gap-2 rounded-[7px] border-2 border-black text-[10px] font-black uppercase tracking-widest transition-all",
+                                viewMode === "covers"
+                                    ? "bg-[#ffcc00] shadow-[3px_3px_0_#000]"
+                                    : "bg-white hover:bg-zinc-100"
+                            )}
+                        >
+                            <LayoutGrid className="h-4 w-4" />
+                            Kapak
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => setViewMode("compact")}
+                            className={cn(
+                                "flex h-10 items-center justify-center gap-2 rounded-[7px] border-2 border-black text-[10px] font-black uppercase tracking-widest transition-all",
+                                viewMode === "compact"
+                                    ? "bg-[#ffcc00] shadow-[3px_3px_0_#000]"
+                                    : "bg-white hover:bg-zinc-100"
+                            )}
+                        >
+                            <List className="h-4 w-4" />
+                            Liste
+                        </button>
+                    </div>
+                </div>
+                <div>
+                    <div className="mb-2 text-[10px] font-black uppercase tracking-[0.22em] text-zinc-600">
+                        Sıralama
+                    </div>
+                    <div className="grid grid-cols-4 gap-2">
+                        {sortOptions.map((option) => (
+                            <button
+                                key={option.value}
+                                type="button"
+                                onClick={() => setSortMode(option.value)}
+                                className={cn(
+                                    "h-10 rounded-[7px] border-2 border-black px-2 text-[10px] font-black uppercase tracking-widest transition-all",
+                                    sortMode === option.value
+                                        ? "bg-[#07132a] text-white shadow-[3px_3px_0_#000]"
+                                        : "bg-white text-black hover:bg-zinc-100"
+                                )}
+                            >
+                                {option.label}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+}
+
 function ReadingRoute({ articles }: { articles: LibraryArticle[] }) {
     if (articles.length === 0) return null;
 
@@ -260,6 +397,8 @@ export function ArticleFeed({ articles, categories, activeCategory, sortParam, n
     const router = useRouter();
     const [inputValue, setInputValue] = useState(searchQuery || "");
     const [isSearchFocused, setIsSearchFocused] = useState(false);
+    const [viewMode, setViewMode] = useState<ViewMode>("covers");
+    const [sortMode, setSortMode] = useState<SortMode>("newest");
 
     const libraryArticles = useMemo<LibraryArticle[]>(
         () =>
@@ -277,10 +416,19 @@ export function ArticleFeed({ articles, categories, activeCategory, sortParam, n
         [articles]
     );
 
-    const featuredArticle = libraryArticles[0];
-    const restArticles = libraryArticles.slice(1);
+    const sortedArticles = useMemo(() => {
+        return [...libraryArticles].sort((a, b) => {
+            if (sortMode === "short") return a.readingTime - b.readingTime;
+            if (sortMode === "long") return b.readingTime - a.readingTime;
+            if (sortMode === "az") return a.title.localeCompare(b.title, "tr");
+            return new Date(b.date).getTime() - new Date(a.date).getTime();
+        });
+    }, [libraryArticles, sortMode]);
+
+    const featuredArticle = sortedArticles[0];
+    const restArticles = sortedArticles.slice(1);
     const visibleCategories = categories.filter((category) => category.name);
-    const routeArticles = libraryArticles.slice(0, 3);
+    const routeArticles = sortedArticles.slice(0, 3);
 
     const handleSearch = (e: FormEvent) => {
         e.preventDefault();
@@ -326,7 +474,7 @@ export function ArticleFeed({ articles, categories, activeCategory, sortParam, n
                         <div className="grid grid-cols-3 gap-2 self-end sm:gap-3">
                             <div className="rounded-[8px] border-[3px] border-black bg-white p-3 shadow-[4px_4px_0_#000]">
                                 <BookMarked className="mb-3 h-5 w-5" />
-                                <div className="text-2xl font-black">{libraryArticles.length}</div>
+                                <div className="text-2xl font-black">{sortedArticles.length}</div>
                                 <div className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Eser</div>
                             </div>
                             <div className="rounded-[8px] border-[3px] border-black bg-[#07132a] p-3 text-white shadow-[4px_4px_0_#000]">
@@ -344,39 +492,47 @@ export function ArticleFeed({ articles, categories, activeCategory, sortParam, n
                 </motion.header>
 
                 <section className="relative z-10 mb-9 grid gap-4 lg:grid-cols-[minmax(0,1fr)_380px]">
-                    <motion.form
-                        onSubmit={handleSearch}
-                        initial={{ opacity: 0, y: 12 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.45, delay: 0.06 }}
-                        className="rounded-[8px] border-[3px] border-black bg-white p-3 text-black shadow-[6px_6px_0_#000]"
-                    >
-                        <div
-                            className={cn(
-                                "flex min-h-[60px] items-center overflow-hidden rounded-[7px] border-[3px] border-black bg-[#f7f2df] transition-all",
-                                isSearchFocused && "bg-white shadow-[inset_0_0_0_3px_#ffcc00]"
-                            )}
+                    <div className="grid gap-4">
+                        <motion.form
+                            onSubmit={handleSearch}
+                            initial={{ opacity: 0, y: 12 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.45, delay: 0.06 }}
+                            className="rounded-[8px] border-[3px] border-black bg-white p-3 text-black shadow-[6px_6px_0_#000]"
                         >
-                            <div className="flex h-full items-center px-4">
-                                <Search className="h-5 w-5" />
-                            </div>
-                            <input
-                                type="search"
-                                placeholder="Başlık, konu veya özet ara..."
-                                value={inputValue}
-                                onChange={(e) => setInputValue(e.target.value)}
-                                onFocus={() => setIsSearchFocused(true)}
-                                onBlur={() => setIsSearchFocused(false)}
-                                className="min-w-0 flex-1 bg-transparent py-4 pr-3 text-sm font-black outline-none placeholder:text-zinc-500 sm:text-base"
-                            />
-                            <button
-                                type="submit"
-                                className="m-2 inline-flex h-11 items-center justify-center rounded-[7px] border-[3px] border-black bg-[#ffcc00] px-5 text-xs font-black uppercase tracking-widest text-black shadow-[3px_3px_0_#000] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0_#000]"
+                            <div
+                                className={cn(
+                                    "flex min-h-[60px] items-center overflow-hidden rounded-[7px] border-[3px] border-black bg-[#f7f2df] transition-all",
+                                    isSearchFocused && "bg-white shadow-[inset_0_0_0_3px_#ffcc00]"
+                                )}
                             >
-                                Ara
-                            </button>
-                        </div>
-                    </motion.form>
+                                <div className="flex h-full items-center px-4">
+                                    <Search className="h-5 w-5" />
+                                </div>
+                                <input
+                                    type="search"
+                                    placeholder="Başlık, konu veya özet ara..."
+                                    value={inputValue}
+                                    onChange={(e) => setInputValue(e.target.value)}
+                                    onFocus={() => setIsSearchFocused(true)}
+                                    onBlur={() => setIsSearchFocused(false)}
+                                    className="min-w-0 flex-1 bg-transparent py-4 pr-3 text-sm font-black outline-none placeholder:text-zinc-500 sm:text-base"
+                                />
+                                <button
+                                    type="submit"
+                                    className="m-2 inline-flex h-11 items-center justify-center rounded-[7px] border-[3px] border-black bg-[#ffcc00] px-5 text-xs font-black uppercase tracking-widest text-black shadow-[3px_3px_0_#000] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0_#000]"
+                                >
+                                    Ara
+                                </button>
+                            </div>
+                        </motion.form>
+                        <CatalogueControls
+                            viewMode={viewMode}
+                            setViewMode={setViewMode}
+                            sortMode={sortMode}
+                            setSortMode={setSortMode}
+                        />
+                    </div>
 
                     <div className="grid gap-4">
                         <CategoryShelf categories={visibleCategories} activeCategory={activeCategory} searchQuery={searchQuery} />
@@ -390,7 +546,7 @@ export function ArticleFeed({ articles, categories, activeCategory, sortParam, n
                             {searchQuery && <span>&quot;{searchQuery}&quot; araması</span>}
                             {searchQuery && activeCategory && <span> · </span>}
                             {activeCategory && <span>{activeCategory} rafı</span>}
-                            <span className="font-black text-[#ffcc00]"> {libraryArticles.length} makale</span>
+                            <span className="font-black text-[#ffcc00]"> {sortedArticles.length} makale</span>
                         </p>
                         <Link href="/makale" className="text-xs font-black uppercase tracking-widest text-white underline decoration-[#ffcc00] underline-offset-4">
                             Filtreleri temizle
@@ -398,9 +554,9 @@ export function ArticleFeed({ articles, categories, activeCategory, sortParam, n
                     </div>
                 )}
 
-                {libraryArticles.length > 0 ? (
+                {sortedArticles.length > 0 ? (
                     <section className="relative z-10">
-                        {featuredArticle && (
+                        {viewMode === "covers" && featuredArticle && (
                             <div className="mb-10">
                                 <div className="mb-4 flex items-center gap-3">
                                     <div className="h-[2px] flex-1 bg-white/15" />
@@ -411,7 +567,7 @@ export function ArticleFeed({ articles, categories, activeCategory, sortParam, n
                             </div>
                         )}
 
-                        {restArticles.length > 0 && (
+                        {viewMode === "covers" && restArticles.length > 0 && (
                             <div>
                                 <div className="mb-5 flex items-center gap-3">
                                     <div className="h-[2px] flex-1 bg-white/15" />
@@ -421,6 +577,21 @@ export function ArticleFeed({ articles, categories, activeCategory, sortParam, n
                                 <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
                                     {restArticles.map((article, index) => (
                                         <ArticleBook key={article.id} article={article} index={index + 1} />
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {viewMode === "compact" && (
+                            <div>
+                                <div className="mb-5 flex items-center gap-3">
+                                    <div className="h-[2px] flex-1 bg-white/15" />
+                                    <span className="text-[11px] font-black uppercase tracking-[0.25em] text-zinc-300">Hızlı Tarama</span>
+                                    <div className="h-[2px] flex-1 bg-white/15" />
+                                </div>
+                                <div className="grid gap-4">
+                                    {sortedArticles.map((article, index) => (
+                                        <CompactArticleRow key={article.id} article={article} index={index} />
                                     ))}
                                 </div>
                             </div>
