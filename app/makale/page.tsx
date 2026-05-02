@@ -80,6 +80,8 @@ type FeedArticleRow = {
     } | null;
 };
 
+const NON_ARTICLE_CATEGORIES = ["Kitap İncelemesi", "Deney", "Terim"];
+
 // Cache articles for better performance
 const getCachedArticles = (category?: string, sort?: string, searchQuery?: string) => unstable_cache(
     async () => {
@@ -88,6 +90,8 @@ const getCachedArticles = (category?: string, sort?: string, searchQuery?: strin
             .from('articles')
             .select('id, title, slug, excerpt, content, created_at, category, image_url, cover_url, author_id, status, author:profiles!articles_author_id_fkey(id, full_name, username, avatar_url, is_verified, is_writer)')
             .eq('status', 'published');
+
+        query = query.not('category', 'in', `(${NON_ARTICLE_CATEGORIES.map((cat) => `"${cat}"`).join(',')})`);
 
         if (category) {
             query = query.eq('category', category);
@@ -138,7 +142,8 @@ const getCachedCategories = unstable_cache(
         const { data: catData, error } = await supabase
             .from('articles')
             .select('category')
-            .eq('status', 'published');
+            .eq('status', 'published')
+            .not('category', 'in', `(${NON_ARTICLE_CATEGORIES.map((cat) => `"${cat}"`).join(',')})`);
 
         if (error) {
             console.error("Error in getCachedCategories:", error);
