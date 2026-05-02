@@ -115,10 +115,10 @@ function ArticleBook({ article, index, featured = false }: { article: LibraryArt
             <Link href={`/makale/${article.slug}`} className="block h-full">
                 <div
                     className={cn(
-                        "relative h-full min-h-[390px] overflow-hidden rounded-[8px] border-[3px] border-black bg-[#08152b] text-white",
-                        "shadow-[8px_8px_0px_0px_#000] transition-all duration-200",
+                        "relative h-full min-h-[340px] overflow-hidden rounded-[8px] border-[3px] border-black bg-[#08152b] text-white sm:min-h-[390px]",
+                        "shadow-[5px_5px_0px_0px_#000] transition-all duration-200 sm:shadow-[8px_8px_0px_0px_#000]",
                         "group-hover:translate-x-[3px] group-hover:translate-y-[3px] group-hover:shadow-[4px_4px_0px_0px_#000]",
-                        featured && "min-h-[460px]"
+                        featured && "min-h-[380px] sm:min-h-[460px]"
                     )}
                 >
                     <Image
@@ -142,7 +142,7 @@ function ArticleBook({ article, index, featured = false }: { article: LibraryArt
                         <BookMarked className="h-5 w-5" />
                     </div>
 
-                    <div className="absolute inset-x-0 bottom-0 pl-16 pr-4 pb-5 sm:pl-20 sm:pr-6 sm:pb-7">
+                    <div className="absolute inset-x-0 bottom-0 pl-16 pr-4 pb-4 sm:pl-20 sm:pr-6 sm:pb-7">
                         <div className="mb-3 flex flex-wrap items-center gap-2">
                             <span className="border-2 border-black bg-[#ffcc00] px-2 py-1 text-[10px] font-black uppercase tracking-widest text-black shadow-[2px_2px_0_#000]">
                                 {article.category}
@@ -157,7 +157,7 @@ function ArticleBook({ article, index, featured = false }: { article: LibraryArt
                         <h2
                             className={cn(
                                 "font-serif font-black leading-[1.04] text-white drop-shadow-[0_2px_0_rgba(0,0,0,.65)]",
-                                featured ? "text-3xl sm:text-4xl" : "text-2xl"
+                                featured ? "text-2xl sm:text-4xl" : "text-xl sm:text-2xl"
                             )}
                         >
                             {article.title}
@@ -243,10 +243,10 @@ function CatalogueControls({
     setSortMode: (mode: SortMode) => void;
 }) {
     return (
-        <div className="rounded-[8px] border-[3px] border-black bg-[#f7f2df] p-3 text-black shadow-[6px_6px_0_#000]">
-            <div className="grid gap-3 sm:grid-cols-[1fr_1.3fr]">
+        <div className="rounded-[8px] border-[3px] border-black bg-[#f7f2df] p-2 text-black shadow-[4px_4px_0_#000] sm:p-3 sm:shadow-[6px_6px_0_#000]">
+            <div className="grid gap-2 sm:grid-cols-[1fr_1.3fr] sm:gap-3">
                 <div>
-                    <div className="mb-2 text-[10px] font-black uppercase tracking-[0.22em] text-zinc-600">
+                    <div className="mb-1.5 text-[9px] font-black uppercase tracking-[0.2em] text-zinc-600 sm:mb-2 sm:text-[10px]">
                         Görünüm
                     </div>
                     <div className="grid grid-cols-2 gap-2">
@@ -254,7 +254,7 @@ function CatalogueControls({
                             type="button"
                             onClick={() => setViewMode("covers")}
                             className={cn(
-                                "flex h-10 items-center justify-center gap-2 rounded-[7px] border-2 border-black text-[10px] font-black uppercase tracking-widest transition-all",
+                                "flex h-9 items-center justify-center gap-1.5 rounded-[7px] border-2 border-black text-[9px] font-black uppercase tracking-widest transition-all sm:h-10 sm:gap-2 sm:text-[10px]",
                                 viewMode === "covers"
                                     ? "bg-[#ffcc00] shadow-[3px_3px_0_#000]"
                                     : "bg-white hover:bg-zinc-100"
@@ -267,7 +267,7 @@ function CatalogueControls({
                             type="button"
                             onClick={() => setViewMode("compact")}
                             className={cn(
-                                "flex h-10 items-center justify-center gap-2 rounded-[7px] border-2 border-black text-[10px] font-black uppercase tracking-widest transition-all",
+                                "flex h-9 items-center justify-center gap-1.5 rounded-[7px] border-2 border-black text-[9px] font-black uppercase tracking-widest transition-all sm:h-10 sm:gap-2 sm:text-[10px]",
                                 viewMode === "compact"
                                     ? "bg-[#ffcc00] shadow-[3px_3px_0_#000]"
                                     : "bg-white hover:bg-zinc-100"
@@ -279,17 +279,17 @@ function CatalogueControls({
                     </div>
                 </div>
                 <div>
-                    <div className="mb-2 text-[10px] font-black uppercase tracking-[0.22em] text-zinc-600">
+                    <div className="mb-1.5 text-[9px] font-black uppercase tracking-[0.2em] text-zinc-600 sm:mb-2 sm:text-[10px]">
                         Sıralama
                     </div>
-                    <div className="grid grid-cols-4 gap-2">
+                    <div className="flex gap-2 overflow-x-auto pb-1 sm:grid sm:grid-cols-4 sm:overflow-visible sm:pb-0">
                         {sortOptions.map((option) => (
                             <button
                                 key={option.value}
                                 type="button"
                                 onClick={() => setSortMode(option.value)}
                                 className={cn(
-                                    "h-10 rounded-[7px] border-2 border-black px-2 text-[10px] font-black uppercase tracking-widest transition-all",
+                                    "h-9 min-w-[74px] rounded-[7px] border-2 border-black px-2 text-[9px] font-black uppercase tracking-widest transition-all sm:h-10 sm:min-w-0 sm:text-[10px]",
                                     sortMode === option.value
                                         ? "bg-[#07132a] text-white shadow-[3px_3px_0_#000]"
                                         : "bg-white text-black hover:bg-zinc-100"
@@ -309,31 +309,31 @@ function ReadingRoute({ articles }: { articles: LibraryArticle[] }) {
     if (articles.length === 0) return null;
 
     return (
-        <div className="rounded-[8px] border-[3px] border-black bg-[#07132a] p-3 text-white shadow-[6px_6px_0_#000]">
-            <div className="mb-3 flex items-center gap-2 px-1 text-[10px] font-black uppercase tracking-[0.22em] text-[#ffcc00]">
+        <div className="min-w-0 rounded-[8px] border-[3px] border-black bg-[#07132a] p-2 text-white shadow-[4px_4px_0_#000] sm:p-3 sm:shadow-[6px_6px_0_#000]">
+            <div className="mb-2 flex items-center gap-2 px-1 text-[9px] font-black uppercase tracking-[0.2em] text-[#ffcc00] sm:mb-3 sm:text-[10px]">
                 <Layers3 className="h-4 w-4" />
                 Okuma Rotası
             </div>
-            <div className="grid gap-2">
+            <div className="flex gap-2 overflow-x-auto pb-1 sm:grid sm:overflow-visible sm:pb-0">
                 {articles.map((article, index) => (
                     <Link
                         key={article.id}
                         href={`/makale/${article.slug}`}
-                        className="group/route grid grid-cols-[38px_1fr_auto] items-center gap-3 rounded-[7px] border-2 border-white/15 bg-white/[0.08] px-2 py-2 transition-all hover:border-[#ffcc00] hover:bg-white/[0.12]"
+                        className="group/route grid min-w-[220px] grid-cols-[32px_1fr] items-center gap-2 rounded-[7px] border-2 border-white/15 bg-white/[0.08] px-2 py-2 transition-all hover:border-[#ffcc00] hover:bg-white/[0.12] sm:min-w-0 sm:grid-cols-[38px_1fr_auto] sm:gap-3"
                     >
-                        <span className="flex h-8 w-8 items-center justify-center rounded-[6px] border-2 border-black bg-[#ffcc00] text-xs font-black text-black shadow-[2px_2px_0_#000]">
+                        <span className="flex h-7 w-7 items-center justify-center rounded-[6px] border-2 border-black bg-[#ffcc00] text-[11px] font-black text-black shadow-[2px_2px_0_#000] sm:h-8 sm:w-8 sm:text-xs">
                             {index + 1}
                         </span>
                         <span className="min-w-0">
-                            <span className="block truncate font-serif text-sm font-black leading-tight text-white">
+                            <span className="line-clamp-2 block font-serif text-xs font-black leading-tight text-white sm:truncate sm:text-sm">
                                 {article.title}
                             </span>
-                            <span className="mt-1 flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-zinc-400">
+                            <span className="mt-1 flex items-center gap-1.5 text-[9px] font-black uppercase tracking-widest text-zinc-400 sm:gap-2 sm:text-[10px]">
                                 <CalendarDays className="h-3 w-3" />
                                 {article.category}
                             </span>
                         </span>
-                        <ArrowRight className="h-4 w-4 text-[#ffcc00] transition-transform group-hover/route:translate-x-1" />
+                        <ArrowRight className="hidden h-4 w-4 text-[#ffcc00] transition-transform group-hover/route:translate-x-1 sm:block" />
                     </Link>
                 ))}
             </div>
@@ -353,8 +353,8 @@ function CategoryShelf({
     const totalCount = categories.reduce((total, category) => total + category.count, 0);
 
     return (
-        <div className="rounded-[8px] border-[3px] border-black bg-[#f7f2df] p-3 text-black shadow-[6px_6px_0_#000]">
-            <div className="mb-3 flex items-center gap-2 px-1 text-[10px] font-black uppercase tracking-[0.22em] text-zinc-600">
+        <div className="min-w-0 rounded-[8px] border-[3px] border-black bg-[#f7f2df] p-2 text-black shadow-[4px_4px_0_#000] sm:p-3 sm:shadow-[6px_6px_0_#000]">
+            <div className="mb-2 flex items-center gap-2 px-1 text-[9px] font-black uppercase tracking-[0.2em] text-zinc-600 sm:mb-3 sm:text-[10px]">
                 <LibraryBig className="h-4 w-4" />
                 Raflar
             </div>
@@ -362,7 +362,7 @@ function CategoryShelf({
                 <Link
                     href={makeMakaleHref(undefined, searchQuery)}
                     className={cn(
-                        "whitespace-nowrap rounded-[7px] border-[2px] border-black px-4 py-2 text-[11px] font-black uppercase tracking-widest transition-all",
+                        "whitespace-nowrap rounded-[7px] border-[2px] border-black px-3 py-1.5 text-[10px] font-black uppercase tracking-widest transition-all sm:px-4 sm:py-2 sm:text-[11px]",
                         !activeCategory
                             ? "bg-[#ffcc00] text-black shadow-[3px_3px_0_#000]"
                             : "bg-white text-black hover:bg-zinc-100 hover:shadow-[3px_3px_0_#000]"
@@ -376,7 +376,7 @@ function CategoryShelf({
                         key={cat.name}
                         href={makeMakaleHref(cat.name, searchQuery)}
                         className={cn(
-                            "whitespace-nowrap rounded-[7px] border-[2px] border-black px-3 py-2 text-[11px] font-black uppercase tracking-widest transition-all",
+                            "whitespace-nowrap rounded-[7px] border-[2px] border-black px-3 py-1.5 text-[10px] font-black uppercase tracking-widest transition-all sm:py-2 sm:text-[11px]",
                             activeCategory === cat.name
                                 ? "bg-[#07132a] text-white shadow-[3px_3px_0_#000]"
                                 : "bg-white text-black hover:bg-zinc-100 hover:shadow-[3px_3px_0_#000]"
@@ -441,10 +441,10 @@ export function ArticleFeed({ articles, categories, activeCategory, sortParam, n
     };
 
     return (
-        <div className="min-h-screen bg-[#292929] pb-32 text-white selection:bg-[#ffcc00] selection:text-black">
+        <div className="min-h-screen overflow-x-hidden bg-[#292929] pb-32 text-white selection:bg-[#ffcc00] selection:text-black">
             {newsItems && newsItems.length > 0 && <TrendingMarquee items={newsItems} />}
 
-            <main className="relative mx-auto max-w-[1180px] px-3 pt-6 sm:px-6 sm:pt-10">
+            <main className="relative mx-auto max-w-[1180px] px-2 pt-4 sm:px-6 sm:pt-10">
                 <div className="absolute inset-x-0 top-0 z-0 h-[460px] overflow-hidden opacity-70">
                     <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,.08)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.08)_1px,transparent_1px)] bg-[size:42px_42px]" />
                     <div className="absolute inset-0 bg-gradient-to-b from-[#111827] via-[#292929]/80 to-[#292929]" />
@@ -454,73 +454,73 @@ export function ArticleFeed({ articles, categories, activeCategory, sortParam, n
                     initial={{ opacity: 0, y: -18 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.55 }}
-                    className="relative z-10 mb-7 overflow-hidden rounded-[8px] border-[3px] border-black bg-[#f7f2df] text-black shadow-[8px_8px_0_#000]"
+                    className="relative z-10 mb-5 overflow-hidden rounded-[8px] border-[3px] border-black bg-[#f7f2df] text-black shadow-[5px_5px_0_#000] sm:mb-7 sm:shadow-[8px_8px_0_#000]"
                     style={{ backgroundImage: PAPER_TEXTURE }}
                 >
-                    <div className="grid gap-6 p-5 sm:p-7 lg:grid-cols-[1.05fr_.95fr] lg:p-9">
+                    <div className="grid gap-4 p-4 sm:gap-6 sm:p-7 lg:grid-cols-[1.05fr_.95fr] lg:p-9">
                         <div>
-                            <div className="mb-4 inline-flex items-center gap-2 rounded-[7px] border-[2px] border-black bg-[#ffcc00] px-3 py-2 text-[11px] font-black uppercase tracking-[0.22em] shadow-[3px_3px_0_#000]">
+                            <div className="mb-3 inline-flex items-center gap-2 rounded-[7px] border-[2px] border-black bg-[#ffcc00] px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.2em] shadow-[3px_3px_0_#000] sm:mb-4 sm:py-2 sm:text-[11px]">
                                 <Sparkles className="h-4 w-4" />
                                 Makale Atlası
                             </div>
                             <h1 className="max-w-3xl font-serif text-4xl font-black uppercase leading-[.95] tracking-normal text-black sm:text-6xl">
                                 Bilim Makaleleri
                             </h1>
-                            <p className="mt-4 max-w-2xl text-sm font-bold leading-relaxed text-zinc-700 sm:text-base">
+                            <p className="mt-3 max-w-2xl text-xs font-bold leading-relaxed text-zinc-700 sm:mt-4 sm:text-base">
                                 Ana akış karışık akar; burası sadece makaleler için ayrılmış düzenli bir çalışma masası. Konuya göre raf seç, başlığa göre ara, ilgini çeken cildi aç.
                             </p>
                         </div>
 
                         <div className="grid grid-cols-3 gap-2 self-end sm:gap-3">
-                            <div className="rounded-[8px] border-[3px] border-black bg-white p-3 shadow-[4px_4px_0_#000]">
-                                <BookMarked className="mb-3 h-5 w-5" />
-                                <div className="text-2xl font-black">{sortedArticles.length}</div>
-                                <div className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Eser</div>
+                            <div className="rounded-[8px] border-[3px] border-black bg-white p-2 shadow-[3px_3px_0_#000] sm:p-3 sm:shadow-[4px_4px_0_#000]">
+                                <BookMarked className="mb-2 h-4 w-4 sm:mb-3 sm:h-5 sm:w-5" />
+                                <div className="text-xl font-black sm:text-2xl">{sortedArticles.length}</div>
+                                <div className="text-[9px] font-black uppercase tracking-widest text-zinc-500 sm:text-[10px]">Eser</div>
                             </div>
-                            <div className="rounded-[8px] border-[3px] border-black bg-[#07132a] p-3 text-white shadow-[4px_4px_0_#000]">
-                                <Compass className="mb-3 h-5 w-5 text-[#ffcc00]" />
-                                <div className="text-2xl font-black">{visibleCategories.length}</div>
-                                <div className="text-[10px] font-black uppercase tracking-widest text-zinc-300">Kategori</div>
+                            <div className="rounded-[8px] border-[3px] border-black bg-[#07132a] p-2 text-white shadow-[3px_3px_0_#000] sm:p-3 sm:shadow-[4px_4px_0_#000]">
+                                <Compass className="mb-2 h-4 w-4 text-[#ffcc00] sm:mb-3 sm:h-5 sm:w-5" />
+                                <div className="text-xl font-black sm:text-2xl">{visibleCategories.length}</div>
+                                <div className="text-[9px] font-black uppercase tracking-widest text-zinc-300 sm:text-[10px]">Kategori</div>
                             </div>
-                            <div className="rounded-[8px] border-[3px] border-black bg-[#23a9fa] p-3 text-black shadow-[4px_4px_0_#000]">
-                                <Clock3 className="mb-3 h-5 w-5" />
-                                <div className="text-2xl font-black">{featuredArticle?.readingTime || 0}</div>
-                                <div className="text-[10px] font-black uppercase tracking-widest text-zinc-900">İlk Okuma</div>
+                            <div className="rounded-[8px] border-[3px] border-black bg-[#23a9fa] p-2 text-black shadow-[3px_3px_0_#000] sm:p-3 sm:shadow-[4px_4px_0_#000]">
+                                <Clock3 className="mb-2 h-4 w-4 sm:mb-3 sm:h-5 sm:w-5" />
+                                <div className="text-xl font-black sm:text-2xl">{featuredArticle?.readingTime || 0}</div>
+                                <div className="text-[9px] font-black uppercase tracking-widest text-zinc-900 sm:text-[10px]">İlk Okuma</div>
                             </div>
                         </div>
                     </div>
                 </motion.header>
 
-                <section className="relative z-10 mb-9 grid gap-4 lg:grid-cols-[minmax(0,1fr)_380px]">
-                    <div className="grid gap-4">
+                <section className="relative z-10 mb-7 grid min-w-0 gap-3 lg:grid-cols-[minmax(0,1fr)_380px]">
+                    <div className="grid min-w-0 gap-3">
                         <motion.form
                             onSubmit={handleSearch}
                             initial={{ opacity: 0, y: 12 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.45, delay: 0.06 }}
-                            className="rounded-[8px] border-[3px] border-black bg-white p-3 text-black shadow-[6px_6px_0_#000]"
+                            className="rounded-[8px] border-[3px] border-black bg-white p-2 text-black shadow-[4px_4px_0_#000] sm:p-3 sm:shadow-[6px_6px_0_#000]"
                         >
                             <div
                                 className={cn(
-                                    "flex min-h-[60px] items-center overflow-hidden rounded-[7px] border-[3px] border-black bg-[#f7f2df] transition-all",
+                                    "flex min-h-[48px] items-center overflow-hidden rounded-[7px] border-[3px] border-black bg-[#f7f2df] transition-all sm:min-h-[60px]",
                                     isSearchFocused && "bg-white shadow-[inset_0_0_0_3px_#ffcc00]"
                                 )}
                             >
-                                <div className="flex h-full items-center px-4">
-                                    <Search className="h-5 w-5" />
+                                <div className="flex h-full items-center px-3 sm:px-4">
+                                    <Search className="h-4 w-4 sm:h-5 sm:w-5" />
                                 </div>
                                 <input
                                     type="search"
-                                    placeholder="Başlık, konu veya özet ara..."
+                                    placeholder="Makale ara..."
                                     value={inputValue}
                                     onChange={(e) => setInputValue(e.target.value)}
                                     onFocus={() => setIsSearchFocused(true)}
                                     onBlur={() => setIsSearchFocused(false)}
-                                    className="min-w-0 flex-1 bg-transparent py-4 pr-3 text-sm font-black outline-none placeholder:text-zinc-500 sm:text-base"
+                                    className="min-w-0 flex-1 bg-transparent py-3 pr-2 text-xs font-black outline-none placeholder:text-zinc-500 sm:py-4 sm:pr-3 sm:text-base"
                                 />
                                 <button
                                     type="submit"
-                                    className="m-2 inline-flex h-11 items-center justify-center rounded-[7px] border-[3px] border-black bg-[#ffcc00] px-5 text-xs font-black uppercase tracking-widest text-black shadow-[3px_3px_0_#000] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0_#000]"
+                                    className="m-1.5 inline-flex h-9 w-11 items-center justify-center rounded-[7px] border-[3px] border-black bg-[#ffcc00] text-[10px] font-black uppercase tracking-widest text-black shadow-[2px_2px_0_#000] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0_#000] sm:m-2 sm:h-11 sm:w-auto sm:px-5 sm:text-xs sm:shadow-[3px_3px_0_#000]"
                                 >
                                     Ara
                                 </button>
@@ -534,7 +534,7 @@ export function ArticleFeed({ articles, categories, activeCategory, sortParam, n
                         />
                     </div>
 
-                    <div className="grid gap-4">
+                    <div className="grid min-w-0 gap-3">
                         <CategoryShelf categories={visibleCategories} activeCategory={activeCategory} searchQuery={searchQuery} />
                         <ReadingRoute articles={routeArticles} />
                     </div>
