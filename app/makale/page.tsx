@@ -1,7 +1,6 @@
 import { createClient as createBrowserClient } from "@supabase/supabase-js";
 import { ArticleFeed } from "@/components/articles/article-feed";
 import type { Metadata } from "next";
-import { getScienceNews } from "@/lib/rss";
 import { unstable_cache } from "next/cache";
 
 export const revalidate = 60;
@@ -180,16 +179,12 @@ export default async function MakalePage({ searchParams }: PageProps) {
         getCachedCategories()
     ]);
 
-    // Fetch RSS News (Server Side)
-    const newsItems = await getScienceNews();
-
     return (
         <ArticleFeed
             articles={articles || []}
             categories={cats}
             activeCategory={category}
             sortParam={sort}
-            newsItems={newsItems}
             searchQuery={searchQuery}
         />
     );

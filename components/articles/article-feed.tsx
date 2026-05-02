@@ -19,15 +19,12 @@ import {
     Sparkles,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { TrendingMarquee } from "@/components/ui/trending-marquee";
-import { type ScienceNewsItem } from "@/lib/rss";
 
 interface ArticleFeedProps {
     articles: RawArticle[];
     categories: CategoryStat[];
     activeCategory?: string;
     sortParam: string;
-    newsItems: ScienceNewsItem[];
     searchQuery?: string;
 }
 
@@ -393,7 +390,7 @@ function CategoryShelf({
     );
 }
 
-export function ArticleFeed({ articles, categories, activeCategory, sortParam, newsItems, searchQuery }: ArticleFeedProps) {
+export function ArticleFeed({ articles, categories, activeCategory, sortParam, searchQuery }: ArticleFeedProps) {
     const router = useRouter();
     const [inputValue, setInputValue] = useState(searchQuery || "");
     const [isSearchFocused, setIsSearchFocused] = useState(false);
@@ -442,9 +439,7 @@ export function ArticleFeed({ articles, categories, activeCategory, sortParam, n
 
     return (
         <div className="min-h-screen overflow-x-hidden bg-[#292929] pb-32 text-white selection:bg-[#ffcc00] selection:text-black">
-            {newsItems && newsItems.length > 0 && <TrendingMarquee items={newsItems} />}
-
-            <main className="relative mx-auto max-w-[1180px] px-2 pt-4 sm:px-6 sm:pt-10">
+            <main className="relative mx-auto max-w-[1180px] px-2 pt-3 sm:px-6 sm:pt-8">
                 <div className="absolute inset-x-0 top-0 z-0 h-[460px] overflow-hidden opacity-70">
                     <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,.08)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.08)_1px,transparent_1px)] bg-[size:42px_42px]" />
                     <div className="absolute inset-0 bg-gradient-to-b from-[#111827] via-[#292929]/80 to-[#292929]" />
@@ -454,38 +449,40 @@ export function ArticleFeed({ articles, categories, activeCategory, sortParam, n
                     initial={{ opacity: 0, y: -18 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.55 }}
-                    className="relative z-10 mb-5 overflow-hidden rounded-[8px] border-[3px] border-black bg-[#f7f2df] text-black shadow-[5px_5px_0_#000] sm:mb-7 sm:shadow-[8px_8px_0_#000]"
+                    className="relative z-10 mb-4 overflow-hidden rounded-[8px] border-[3px] border-black bg-[#f7f2df] text-black shadow-[4px_4px_0_#000] sm:mb-6 sm:shadow-[6px_6px_0_#000]"
                     style={{ backgroundImage: PAPER_TEXTURE }}
                 >
-                    <div className="grid gap-4 p-4 sm:gap-6 sm:p-7 lg:grid-cols-[1.05fr_.95fr] lg:p-9">
-                        <div>
-                            <div className="mb-3 inline-flex items-center gap-2 rounded-[7px] border-[2px] border-black bg-[#ffcc00] px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.2em] shadow-[3px_3px_0_#000] sm:mb-4 sm:py-2 sm:text-[11px]">
-                                <Sparkles className="h-4 w-4" />
+                    <div className="grid gap-3 p-3 sm:grid-cols-[1fr_auto] sm:items-center sm:p-5">
+                        <div className="min-w-0">
+                            <div className="mb-2 inline-flex items-center gap-1.5 rounded-[7px] border-[2px] border-black bg-[#ffcc00] px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.18em] shadow-[2px_2px_0_#000] sm:text-[10px]">
+                                <Sparkles className="h-3.5 w-3.5" />
                                 Makale Atlası
                             </div>
-                            <h1 className="max-w-3xl font-serif text-4xl font-black uppercase leading-[.95] tracking-normal text-black sm:text-6xl">
-                                Bilim Makaleleri
-                            </h1>
-                            <p className="mt-3 max-w-2xl text-xs font-bold leading-relaxed text-zinc-700 sm:mt-4 sm:text-base">
-                                Ana akış karışık akar; burası sadece makaleler için ayrılmış düzenli bir çalışma masası. Konuya göre raf seç, başlığa göre ara, ilgini çeken cildi aç.
-                            </p>
+                            <div className="flex flex-wrap items-end gap-x-3 gap-y-1">
+                                <h1 className="font-serif text-3xl font-black uppercase leading-[.9] tracking-normal text-black sm:text-5xl">
+                                    Bilim Makaleleri
+                                </h1>
+                                <p className="max-w-xl pb-0.5 text-[11px] font-black leading-snug text-zinc-600 sm:text-sm">
+                                    Ara, sırala, raf seç.
+                                </p>
+                            </div>
                         </div>
 
-                        <div className="grid grid-cols-3 gap-2 self-end sm:gap-3">
-                            <div className="rounded-[8px] border-[3px] border-black bg-white p-2 shadow-[3px_3px_0_#000] sm:p-3 sm:shadow-[4px_4px_0_#000]">
-                                <BookMarked className="mb-2 h-4 w-4 sm:mb-3 sm:h-5 sm:w-5" />
-                                <div className="text-xl font-black sm:text-2xl">{sortedArticles.length}</div>
-                                <div className="text-[9px] font-black uppercase tracking-widest text-zinc-500 sm:text-[10px]">Eser</div>
+                        <div className="grid grid-cols-3 gap-1.5 sm:w-[330px] sm:gap-2">
+                            <div className="rounded-[7px] border-[2px] border-black bg-white px-2 py-2 shadow-[2px_2px_0_#000]">
+                                <BookMarked className="mb-1 h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                                <div className="text-lg font-black leading-none sm:text-xl">{sortedArticles.length}</div>
+                                <div className="mt-1 text-[8px] font-black uppercase tracking-widest text-zinc-500 sm:text-[9px]">Eser</div>
                             </div>
-                            <div className="rounded-[8px] border-[3px] border-black bg-[#07132a] p-2 text-white shadow-[3px_3px_0_#000] sm:p-3 sm:shadow-[4px_4px_0_#000]">
-                                <Compass className="mb-2 h-4 w-4 text-[#ffcc00] sm:mb-3 sm:h-5 sm:w-5" />
-                                <div className="text-xl font-black sm:text-2xl">{visibleCategories.length}</div>
-                                <div className="text-[9px] font-black uppercase tracking-widest text-zinc-300 sm:text-[10px]">Kategori</div>
+                            <div className="rounded-[7px] border-[2px] border-black bg-[#07132a] px-2 py-2 text-white shadow-[2px_2px_0_#000]">
+                                <Compass className="mb-1 h-3.5 w-3.5 text-[#ffcc00] sm:h-4 sm:w-4" />
+                                <div className="text-lg font-black leading-none sm:text-xl">{visibleCategories.length}</div>
+                                <div className="mt-1 text-[8px] font-black uppercase tracking-widest text-zinc-300 sm:text-[9px]">Kategori</div>
                             </div>
-                            <div className="rounded-[8px] border-[3px] border-black bg-[#23a9fa] p-2 text-black shadow-[3px_3px_0_#000] sm:p-3 sm:shadow-[4px_4px_0_#000]">
-                                <Clock3 className="mb-2 h-4 w-4 sm:mb-3 sm:h-5 sm:w-5" />
-                                <div className="text-xl font-black sm:text-2xl">{featuredArticle?.readingTime || 0}</div>
-                                <div className="text-[9px] font-black uppercase tracking-widest text-zinc-900 sm:text-[10px]">İlk Okuma</div>
+                            <div className="rounded-[7px] border-[2px] border-black bg-[#23a9fa] px-2 py-2 text-black shadow-[2px_2px_0_#000]">
+                                <Clock3 className="mb-1 h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                                <div className="text-lg font-black leading-none sm:text-xl">{featuredArticle?.readingTime || 0}</div>
+                                <div className="mt-1 text-[8px] font-black uppercase tracking-widest text-zinc-900 sm:text-[9px]">İlk</div>
                             </div>
                         </div>
                     </div>
