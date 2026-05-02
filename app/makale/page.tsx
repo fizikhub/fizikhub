@@ -92,7 +92,7 @@ const getCachedArticles = (category?: string, sort?: string, searchQuery?: strin
         const supabase = getPublicClient();
         let query = supabase
             .from('articles')
-            .select('id, title, slug, excerpt, content, created_at, category, image_url, cover_url, author_id, status, author:profiles!articles_author_id_fkey(id, full_name, username, avatar_url, is_verified, is_writer)')
+            .select('id, title, slug, excerpt, created_at, category, image_url, cover_url, author_id, status, author:profiles!articles_author_id_fkey(id, full_name, username, avatar_url, is_verified, is_writer)')
             .eq('status', 'published');
 
         query = query.not('category', 'in', `(${NON_ARTICLE_CATEGORIES.map((cat) => `"${cat}"`).join(',')})`);
@@ -123,7 +123,7 @@ const getCachedArticles = (category?: string, sort?: string, searchQuery?: strin
             slug: article.slug,
             excerpt: article.excerpt ?? undefined,
             summary: article.excerpt ?? article.summary ?? undefined,
-            content: article.content ?? undefined,
+            content: undefined,
             created_at: article.created_at,
             category: article.category ?? undefined,
             image_url: article.image_url ?? undefined,

@@ -14,6 +14,36 @@ type NavigatorWithConnection = Navigator & {
 };
 
 const TRACKED_METRICS = new Set(["CLS", "FCP", "INP", "LCP", "TTFB"]);
+const PRODUCTION_SAMPLE_RATE = 0.1;
+
+function shouldSampleVitals(): boolean {
+    if (process.env.NODE_ENV !== "production") return true;
+    if (typeof window === "undefined") return false;
+
+    const key = "fh_web_vitals_sampled";
+    const existing = safeSessionStorageGet(key);
+    if (existing) return existing === "1";
+
+    const sampled = Math.random() < PRODUCTION_SAMPLE_RATE;
+    safeSessionStorageSet(key, sampled ? "1" : "0");
+    return sampled;
+}
+
+function safeSessionStorageGet(key: string): string | null {
+    try {
+        return window.sessionStorage.getItem(key);
+    } catch {
+        return null;
+    }
+}
+
+function safeSessionStorageSet(key: string, value: string) {
+    try {
+        window.sessionStorage.setItem(key, value);
+    } catch {
+        // Metrics sampling must never affect the app path.
+    }
+}
 
 function getConnectionInfo(): ConnectionInfo | undefined {
     if (typeof navigator === "undefined") return undefined;
@@ -32,6 +62,7 @@ function getConnectionInfo(): ConnectionInfo | undefined {
 export function WebVitalsReporter() {
     useReportWebVitals((metric) => {
         if (!TRACKED_METRICS.has(metric.name)) return;
+        if (!shouldSampleVitals()) return;
 
         const payload = {
             id: metric.id,

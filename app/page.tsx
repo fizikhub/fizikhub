@@ -91,16 +91,17 @@ const getCachedFeedData = unstable_cache(
       // Fetch Active Stories (Admin only for now as per policy)
       supabase
         .from('stories')
-        .select('*, author:profiles(username, full_name, avatar_url)')
+        .select('id, title, media_url, content, author_id, group_id, category, created_at, expires_at, author:profiles(username, full_name, avatar_url)')
         .gt('expires_at', new Date().toISOString())
         .order('created_at', { ascending: false })
-        .order('created_at', { ascending: false }),
+        .limit(12),
 
       // Fetch Story Groups
       supabase
         .from('story_groups')
         .select('id, title, cover_url, created_at')
         .order('created_at', { ascending: false })
+        .limit(12)
     ]);
 
     return {

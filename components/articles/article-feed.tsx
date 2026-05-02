@@ -2,7 +2,6 @@
 
 import { FormEvent, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { m as motion } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
 import {
@@ -87,7 +86,7 @@ function cleanExcerpt(article: RawArticle) {
 
 function readingTime(content?: string | null) {
     const plainText = String(content || "").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
-    const words = plainText ? plainText.split(" ").length : 500;
+    const words = plainText ? plainText.split(" ").length : 900;
     return Math.max(1, Math.ceil(words / 220));
 }
 
@@ -97,18 +96,15 @@ function formatDate(date: string) {
 
 function ArticleBook({ article, index, featured = false }: { article: LibraryArticle; index: number; featured?: boolean }) {
     return (
-        <motion.article
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-80px" }}
-            transition={{ duration: 0.45, delay: Math.min(index * 0.04, 0.24), ease: "easeOut" }}
-            className={cn("group h-full", featured && "lg:col-span-2")}
+        <article
+            className={cn("group h-full feed-card-enter", featured && "lg:col-span-2")}
+            style={{ animationDelay: `${Math.min(index * 25, 120)}ms` }}
         >
             <Link href={`/makale/${article.slug}`} className="block h-full">
                 <div
                     className={cn(
                         "relative h-full min-h-[340px] overflow-hidden rounded-[8px] border-[3px] border-black bg-[#08152b] text-white sm:min-h-[390px]",
-                        "shadow-[5px_5px_0px_0px_#000] transition-all duration-200 sm:shadow-[8px_8px_0px_0px_#000]",
+                        "shadow-[5px_5px_0px_0px_#000] transition-all duration-150 sm:shadow-[8px_8px_0px_0px_#000]",
                         "group-hover:translate-x-[3px] group-hover:translate-y-[3px] group-hover:shadow-[4px_4px_0px_0px_#000]",
                         featured && "min-h-[380px] sm:min-h-[460px]"
                     )}
@@ -119,7 +115,7 @@ function ArticleBook({ article, index, featured = false }: { article: LibraryArt
                         fill
                         sizes={featured ? "(max-width: 1024px) 100vw, 640px" : "(max-width: 640px) 100vw, 330px"}
                         priority={featured}
-                        className="object-cover transition-transform duration-700 group-hover:scale-105"
+                        className="object-cover transition-transform duration-300 group-hover:scale-[1.03]"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black via-black/35 to-black/5" />
                     <div className="absolute inset-y-4 right-0 w-3 rounded-l-sm border-y border-l border-white/20 bg-white/25 shadow-[inset_5px_0_12px_rgba(255,255,255,.3)]" />
@@ -168,17 +164,15 @@ function ArticleBook({ article, index, featured = false }: { article: LibraryArt
                     </div>
                 </div>
             </Link>
-        </motion.article>
+        </article>
     );
 }
 
 function CompactArticleRow({ article, index }: { article: LibraryArticle; index: number }) {
     return (
-        <motion.article
-            initial={{ opacity: 0, y: 18 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-60px" }}
-            transition={{ duration: 0.35, delay: Math.min(index * 0.03, 0.18), ease: "easeOut" }}
+        <article
+            className="feed-card-enter"
+            style={{ animationDelay: `${Math.min(index * 20, 120)}ms` }}
         >
             <Link href={`/makale/${article.slug}`} className="group block">
                 <div className="grid grid-cols-[86px_1fr] gap-3 rounded-[8px] border-[3px] border-black bg-[#27272a] p-2 text-white shadow-[5px_5px_0_#000] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0_#000] sm:grid-cols-[118px_1fr] sm:gap-4 sm:p-3">
@@ -219,7 +213,7 @@ function CompactArticleRow({ article, index }: { article: LibraryArticle; index:
                     </div>
                 </div>
             </Link>
-        </motion.article>
+        </article>
     );
 }
 
@@ -437,12 +431,9 @@ export function ArticleFeed({ articles, categories, activeCategory, sortParam, s
             <main className="relative mx-auto max-w-[1180px] px-3 pt-3 sm:px-6 sm:pt-8">
                 <section className="mb-7 grid min-w-0 gap-3 lg:grid-cols-[minmax(0,1fr)_380px]">
                     <div className="grid min-w-0 gap-3">
-                        <motion.form
+                        <form
                             onSubmit={handleSearch}
-                            initial={{ opacity: 0, y: 12 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.45, delay: 0.06 }}
-                            className="rounded-[8px] border-[3px] border-black bg-[#27272a] p-2 text-white shadow-[4px_4px_0_#000] sm:p-3 sm:shadow-[6px_6px_0_#000]"
+                            className="feed-card-enter rounded-[8px] border-[3px] border-black bg-[#27272a] p-2 text-white shadow-[4px_4px_0_#000] sm:p-3 sm:shadow-[6px_6px_0_#000]"
                         >
                             <div
                                 className={cn(
@@ -469,7 +460,7 @@ export function ArticleFeed({ articles, categories, activeCategory, sortParam, s
                                     Ara
                                 </button>
                             </div>
-                        </motion.form>
+                        </form>
                         <CatalogueControls
                             viewMode={viewMode}
                             setViewMode={setViewMode}
@@ -542,10 +533,8 @@ export function ArticleFeed({ articles, categories, activeCategory, sortParam, s
                         )}
                     </section>
                 ) : (
-                    <motion.section
-                        initial={{ opacity: 0, scale: 0.96 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        className="mx-auto mt-12 max-w-xl rounded-[8px] border-[3px] border-black bg-[#27272a] p-8 text-center text-white shadow-[8px_8px_0_#000]"
+                    <section
+                        className="feed-card-enter mx-auto mt-12 max-w-xl rounded-[8px] border-[3px] border-black bg-[#27272a] p-8 text-center text-white shadow-[8px_8px_0_#000]"
                     >
                         <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-[8px] border-[3px] border-black bg-[#ffcc00] shadow-[4px_4px_0_#000]">
                             <Search className="h-7 w-7" />
@@ -560,7 +549,7 @@ export function ArticleFeed({ articles, categories, activeCategory, sortParam, s
                         >
                             Tüm Makaleler
                         </Link>
-                    </motion.section>
+                    </section>
                 )}
             </main>
         </div>

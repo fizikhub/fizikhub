@@ -37,7 +37,6 @@ type ArticleSearchRow = {
     title: string;
     slug: string;
     excerpt: string | null;
-    content: string | null;
     cover_url?: string | null;
     image_url?: string | null;
     category?: string | null;
@@ -159,9 +158,9 @@ export async function searchGlobal(rawQuery: string): Promise<SearchResult[]> {
             .limit(5),
         supabase
             .from("articles")
-            .select("id, title, slug, excerpt, content, cover_url, image_url, category")
+            .select("id, title, slug, excerpt, cover_url, image_url, category")
             .eq("status", "published")
-            .or(`title.ilike.${searchTerm},excerpt.ilike.${searchTerm},content.ilike.${searchTerm},category.ilike.${searchTerm}`)
+            .or(`title.ilike.${searchTerm},excerpt.ilike.${searchTerm},category.ilike.${searchTerm}`)
             .order("created_at", { ascending: false })
             .limit(6),
         supabase
@@ -199,7 +198,7 @@ export async function searchGlobal(rawQuery: string): Promise<SearchResult[]> {
             type: "article",
             id: article.id,
             title: article.title,
-            description: toSnippet(article.excerpt || article.content),
+            description: toSnippet(article.excerpt),
             url: `/makale/${article.slug || article.id}`,
             image: article.cover_url || article.image_url || undefined,
             category: article.category || "Makale",

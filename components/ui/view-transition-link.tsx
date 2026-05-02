@@ -17,9 +17,15 @@ export function ViewTransitionLink({
     href,
     onClick,
     id,
+    prefetch,
     ...props
 }: ViewTransitionLinkProps) {
     const router = useRouter();
+
+    const prefetchRoute = () => {
+        if (typeof href !== "string" || !href.startsWith("/")) return;
+        router.prefetch(href);
+    };
 
     const handleTransition = async (e: React.MouseEvent<HTMLAnchorElement>) => {
         if (onClick) {
@@ -48,7 +54,16 @@ export function ViewTransitionLink({
     };
 
     return (
-        <Link prefetch={false} {...props} href={href} onClick={handleTransition} id={id}>
+        <Link
+            prefetch={prefetch ?? true}
+            {...props}
+            href={href}
+            onClick={handleTransition}
+            onFocus={prefetchRoute}
+            onPointerEnter={prefetchRoute}
+            onTouchStart={prefetchRoute}
+            id={id}
+        >
             {children}
         </Link>
     );

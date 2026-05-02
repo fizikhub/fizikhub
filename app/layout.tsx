@@ -200,6 +200,7 @@ export default async function RootLayout({
 }>) {
   // MAINTENANCE MODE FLAG - SET TO FALSE TO DISABLE
   const MAINTENANCE_MODE = false;
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
 
   if (MAINTENANCE_MODE) {
     return (
@@ -262,6 +263,12 @@ export default async function RootLayout({
     <html lang="tr" suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://cdn.jsdelivr.net" crossOrigin="anonymous" />
+        {supabaseUrl && (
+          <>
+            <link rel="preconnect" href={supabaseUrl} crossOrigin="anonymous" />
+            <link rel="dns-prefetch" href={supabaseUrl} />
+          </>
+        )}
       </head>
       <body suppressHydrationWarning className={`${inter.variable} ${lora.variable} font-sans min-h-[100dvh] flex flex-col pb-16 md:pb-0 bg-background text-foreground`}>
         <script

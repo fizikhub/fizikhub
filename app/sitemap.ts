@@ -1,5 +1,5 @@
 import { MetadataRoute } from 'next';
-import { createClient } from '@/lib/supabase-server';
+import { createStaticClient } from '@/lib/supabase-server';
 import { simulations } from '@/components/simulations/data';
 import { slugify } from '@/lib/slug';
 
@@ -16,7 +16,7 @@ function getBaseUrl() {
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-    const supabase = await createClient();
+    const supabase = createStaticClient();
     const baseUrl = getBaseUrl();
 
     // Static pages with all important routes
