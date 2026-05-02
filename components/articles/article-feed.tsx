@@ -9,14 +9,11 @@ import {
     ArrowRight,
     BookMarked,
     CalendarDays,
-    Clock3,
-    Compass,
     Layers3,
     LayoutGrid,
     LibraryBig,
     List,
     Search,
-    Sparkles,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -66,8 +63,6 @@ type LibraryArticle = {
 
 type ViewMode = "covers" | "compact";
 type SortMode = "newest" | "short" | "long" | "az";
-
-const PAPER_TEXTURE = `url("data:image/svg+xml,%3Csvg viewBox='0 0 240 240' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.16'/%3E%3C/svg%3E")`;
 
 const sortOptions: Array<{ value: SortMode; label: string }> = [
     { value: "newest", label: "Yeni" },
@@ -186,7 +181,7 @@ function CompactArticleRow({ article, index }: { article: LibraryArticle; index:
             transition={{ duration: 0.35, delay: Math.min(index * 0.03, 0.18), ease: "easeOut" }}
         >
             <Link href={`/makale/${article.slug}`} className="group block">
-                <div className="grid grid-cols-[86px_1fr] gap-3 rounded-[8px] border-[3px] border-black bg-[#f7f2df] p-2 text-black shadow-[5px_5px_0_#000] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0_#000] sm:grid-cols-[118px_1fr] sm:gap-4 sm:p-3">
+                <div className="grid grid-cols-[86px_1fr] gap-3 rounded-[8px] border-[3px] border-black bg-[#27272a] p-2 text-white shadow-[5px_5px_0_#000] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0_#000] sm:grid-cols-[118px_1fr] sm:gap-4 sm:p-3">
                     <div className="relative min-h-[122px] overflow-hidden rounded-[6px] border-[3px] border-black bg-[#07132a] sm:min-h-[154px]">
                         <Image
                             src={article.image}
@@ -203,21 +198,21 @@ function CompactArticleRow({ article, index }: { article: LibraryArticle; index:
                             <span className="rounded-[5px] border-2 border-black bg-[#ffcc00] px-2 py-0.5 text-[9px] font-black uppercase tracking-widest">
                                 {article.category}
                             </span>
-                            <span className="rounded-[5px] border border-black/20 bg-white px-2 py-0.5 text-[9px] font-black uppercase tracking-widest text-zinc-600">
+                            <span className="rounded-[5px] border border-white/15 bg-white/10 px-2 py-0.5 text-[9px] font-black uppercase tracking-widest text-zinc-200">
                                 {article.readingTime} dk
                             </span>
                         </div>
-                        <h2 className="line-clamp-2 font-serif text-lg font-black leading-[1.05] text-black sm:text-2xl">
+                        <h2 className="line-clamp-2 font-serif text-lg font-black leading-[1.05] text-white sm:text-2xl">
                             {article.title}
                         </h2>
-                        <p className="mt-2 line-clamp-2 text-xs font-bold leading-relaxed text-zinc-700 sm:line-clamp-3 sm:text-sm">
+                        <p className="mt-2 line-clamp-2 text-xs font-bold leading-relaxed text-zinc-300 sm:line-clamp-3 sm:text-sm">
                             {article.excerpt}
                         </p>
-                        <div className="mt-auto flex items-center justify-between gap-3 border-t-2 border-dashed border-black/15 pt-2">
-                            <span className="min-w-0 truncate text-[10px] font-black uppercase tracking-widest text-zinc-500">
+                        <div className="mt-auto flex items-center justify-between gap-3 border-t-2 border-dashed border-white/15 pt-2">
+                            <span className="min-w-0 truncate text-[10px] font-black uppercase tracking-widest text-zinc-400">
                                 {article.author}
                             </span>
-                            <span className="inline-flex flex-shrink-0 items-center gap-1 text-[10px] font-black uppercase tracking-widest text-[#07132a]">
+                            <span className="inline-flex flex-shrink-0 items-center gap-1 text-[10px] font-black uppercase tracking-widest text-[#ffcc00]">
                                 Oku <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
                             </span>
                         </div>
@@ -240,10 +235,10 @@ function CatalogueControls({
     setSortMode: (mode: SortMode) => void;
 }) {
     return (
-        <div className="rounded-[8px] border-[3px] border-black bg-[#f7f2df] p-2 text-black shadow-[4px_4px_0_#000] sm:p-3 sm:shadow-[6px_6px_0_#000]">
+        <div className="rounded-[8px] border-[3px] border-black bg-[#27272a] p-2 text-white shadow-[4px_4px_0_#000] sm:p-3 sm:shadow-[6px_6px_0_#000]">
             <div className="grid gap-2 sm:grid-cols-[1fr_1.3fr] sm:gap-3">
                 <div>
-                    <div className="mb-1.5 text-[9px] font-black uppercase tracking-[0.2em] text-zinc-600 sm:mb-2 sm:text-[10px]">
+                    <div className="mb-1.5 text-[9px] font-black uppercase tracking-[0.2em] text-zinc-300 sm:mb-2 sm:text-[10px]">
                         Görünüm
                     </div>
                     <div className="grid grid-cols-2 gap-2">
@@ -254,7 +249,7 @@ function CatalogueControls({
                                 "flex h-9 items-center justify-center gap-1.5 rounded-[7px] border-2 border-black text-[9px] font-black uppercase tracking-widest transition-all sm:h-10 sm:gap-2 sm:text-[10px]",
                                 viewMode === "covers"
                                     ? "bg-[#ffcc00] shadow-[3px_3px_0_#000]"
-                                    : "bg-white hover:bg-zinc-100"
+                                    : "bg-white text-black hover:bg-zinc-100"
                             )}
                         >
                             <LayoutGrid className="h-4 w-4" />
@@ -267,7 +262,7 @@ function CatalogueControls({
                                 "flex h-9 items-center justify-center gap-1.5 rounded-[7px] border-2 border-black text-[9px] font-black uppercase tracking-widest transition-all sm:h-10 sm:gap-2 sm:text-[10px]",
                                 viewMode === "compact"
                                     ? "bg-[#ffcc00] shadow-[3px_3px_0_#000]"
-                                    : "bg-white hover:bg-zinc-100"
+                                    : "bg-white text-black hover:bg-zinc-100"
                             )}
                         >
                             <List className="h-4 w-4" />
@@ -276,17 +271,17 @@ function CatalogueControls({
                     </div>
                 </div>
                 <div>
-                    <div className="mb-1.5 text-[9px] font-black uppercase tracking-[0.2em] text-zinc-600 sm:mb-2 sm:text-[10px]">
+                    <div className="mb-1.5 text-[9px] font-black uppercase tracking-[0.2em] text-zinc-300 sm:mb-2 sm:text-[10px]">
                         Sıralama
                     </div>
-                    <div className="flex gap-2 overflow-x-auto pb-1 sm:grid sm:grid-cols-4 sm:overflow-visible sm:pb-0">
+                    <div className="grid grid-cols-4 gap-1.5 sm:gap-2">
                         {sortOptions.map((option) => (
                             <button
                                 key={option.value}
                                 type="button"
                                 onClick={() => setSortMode(option.value)}
                                 className={cn(
-                                    "h-9 min-w-[74px] rounded-[7px] border-2 border-black px-2 text-[9px] font-black uppercase tracking-widest transition-all sm:h-10 sm:min-w-0 sm:text-[10px]",
+                                    "h-9 min-w-0 rounded-[7px] border-2 border-black px-1 text-[9px] font-black uppercase tracking-widest transition-all sm:h-10 sm:px-2 sm:text-[10px]",
                                     sortMode === option.value
                                         ? "bg-[#07132a] text-white shadow-[3px_3px_0_#000]"
                                         : "bg-white text-black hover:bg-zinc-100"
@@ -311,12 +306,12 @@ function ReadingRoute({ articles }: { articles: LibraryArticle[] }) {
                 <Layers3 className="h-4 w-4" />
                 Okuma Rotası
             </div>
-            <div className="flex gap-2 overflow-x-auto pb-1 sm:grid sm:overflow-visible sm:pb-0">
+            <div className="grid gap-2 sm:overflow-visible">
                 {articles.map((article, index) => (
                     <Link
                         key={article.id}
                         href={`/makale/${article.slug}`}
-                        className="group/route grid min-w-[220px] grid-cols-[32px_1fr] items-center gap-2 rounded-[7px] border-2 border-white/15 bg-white/[0.08] px-2 py-2 transition-all hover:border-[#ffcc00] hover:bg-white/[0.12] sm:min-w-0 sm:grid-cols-[38px_1fr_auto] sm:gap-3"
+                        className="group/route grid min-w-0 grid-cols-[32px_1fr_auto] items-center gap-2 rounded-[7px] border-2 border-white/15 bg-white/[0.08] px-2 py-2 transition-all hover:border-[#ffcc00] hover:bg-white/[0.12] sm:grid-cols-[38px_1fr_auto] sm:gap-3"
                     >
                         <span className="flex h-7 w-7 items-center justify-center rounded-[6px] border-2 border-black bg-[#ffcc00] text-[11px] font-black text-black shadow-[2px_2px_0_#000] sm:h-8 sm:w-8 sm:text-xs">
                             {index + 1}
@@ -330,7 +325,7 @@ function ReadingRoute({ articles }: { articles: LibraryArticle[] }) {
                                 {article.category}
                             </span>
                         </span>
-                        <ArrowRight className="hidden h-4 w-4 text-[#ffcc00] transition-transform group-hover/route:translate-x-1 sm:block" />
+                        <ArrowRight className="h-4 w-4 text-[#ffcc00] transition-transform group-hover/route:translate-x-1" />
                     </Link>
                 ))}
             </div>
@@ -350,12 +345,12 @@ function CategoryShelf({
     const totalCount = categories.reduce((total, category) => total + category.count, 0);
 
     return (
-        <div className="min-w-0 rounded-[8px] border-[3px] border-black bg-[#f7f2df] p-2 text-black shadow-[4px_4px_0_#000] sm:p-3 sm:shadow-[6px_6px_0_#000]">
-            <div className="mb-2 flex items-center gap-2 px-1 text-[9px] font-black uppercase tracking-[0.2em] text-zinc-600 sm:mb-3 sm:text-[10px]">
+        <div className="min-w-0 rounded-[8px] border-[3px] border-black bg-[#27272a] p-2 text-white shadow-[4px_4px_0_#000] sm:p-3 sm:shadow-[6px_6px_0_#000]">
+            <div className="mb-2 flex items-center gap-2 px-1 text-[9px] font-black uppercase tracking-[0.2em] text-zinc-300 sm:mb-3 sm:text-[10px]">
                 <LibraryBig className="h-4 w-4" />
                 Raflar
             </div>
-            <div className="flex gap-2 overflow-x-auto pb-1 sm:flex-wrap sm:overflow-visible">
+            <div className="flex flex-wrap gap-2">
                 <Link
                     href={makeMakaleHref(undefined, searchQuery)}
                     className={cn(
@@ -373,7 +368,7 @@ function CategoryShelf({
                         key={cat.name}
                         href={makeMakaleHref(cat.name, searchQuery)}
                         className={cn(
-                            "whitespace-nowrap rounded-[7px] border-[2px] border-black px-3 py-1.5 text-[10px] font-black uppercase tracking-widest transition-all sm:py-2 sm:text-[11px]",
+                            "max-w-full whitespace-nowrap rounded-[7px] border-[2px] border-black px-3 py-1.5 text-[10px] font-black uppercase tracking-widest transition-all sm:py-2 sm:text-[11px]",
                             activeCategory === cat.name
                                 ? "bg-[#07132a] text-white shadow-[3px_3px_0_#000]"
                                 : "bg-white text-black hover:bg-zinc-100 hover:shadow-[3px_3px_0_#000]"
@@ -438,69 +433,21 @@ export function ArticleFeed({ articles, categories, activeCategory, sortParam, s
     };
 
     return (
-        <div className="min-h-screen overflow-x-hidden bg-[#292929] pb-32 text-white selection:bg-[#ffcc00] selection:text-black">
-            <main className="relative mx-auto max-w-[1180px] px-2 pt-3 sm:px-6 sm:pt-8">
-                <div className="absolute inset-x-0 top-0 z-0 h-[460px] overflow-hidden opacity-70">
-                    <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,.08)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.08)_1px,transparent_1px)] bg-[size:42px_42px]" />
-                    <div className="absolute inset-0 bg-gradient-to-b from-[#111827] via-[#292929]/80 to-[#292929]" />
-                </div>
-
-                <motion.header
-                    initial={{ opacity: 0, y: -18 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.55 }}
-                    className="relative z-10 mb-4 overflow-hidden rounded-[8px] border-[3px] border-black bg-[#f7f2df] text-black shadow-[4px_4px_0_#000] sm:mb-6 sm:shadow-[6px_6px_0_#000]"
-                    style={{ backgroundImage: PAPER_TEXTURE }}
-                >
-                    <div className="grid gap-3 p-3 sm:grid-cols-[1fr_auto] sm:items-center sm:p-5">
-                        <div className="min-w-0">
-                            <div className="mb-2 inline-flex items-center gap-1.5 rounded-[7px] border-[2px] border-black bg-[#ffcc00] px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.18em] shadow-[2px_2px_0_#000] sm:text-[10px]">
-                                <Sparkles className="h-3.5 w-3.5" />
-                                Makale Atlası
-                            </div>
-                            <div className="flex flex-wrap items-end gap-x-3 gap-y-1">
-                                <h1 className="font-serif text-3xl font-black uppercase leading-[.9] tracking-normal text-black sm:text-5xl">
-                                    Bilim Makaleleri
-                                </h1>
-                                <p className="max-w-xl pb-0.5 text-[11px] font-black leading-snug text-zinc-600 sm:text-sm">
-                                    Ara, sırala, raf seç.
-                                </p>
-                            </div>
-                        </div>
-
-                        <div className="grid grid-cols-3 gap-1.5 sm:w-[330px] sm:gap-2">
-                            <div className="rounded-[7px] border-[2px] border-black bg-white px-2 py-2 shadow-[2px_2px_0_#000]">
-                                <BookMarked className="mb-1 h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                                <div className="text-lg font-black leading-none sm:text-xl">{sortedArticles.length}</div>
-                                <div className="mt-1 text-[8px] font-black uppercase tracking-widest text-zinc-500 sm:text-[9px]">Eser</div>
-                            </div>
-                            <div className="rounded-[7px] border-[2px] border-black bg-[#07132a] px-2 py-2 text-white shadow-[2px_2px_0_#000]">
-                                <Compass className="mb-1 h-3.5 w-3.5 text-[#ffcc00] sm:h-4 sm:w-4" />
-                                <div className="text-lg font-black leading-none sm:text-xl">{visibleCategories.length}</div>
-                                <div className="mt-1 text-[8px] font-black uppercase tracking-widest text-zinc-300 sm:text-[9px]">Kategori</div>
-                            </div>
-                            <div className="rounded-[7px] border-[2px] border-black bg-[#23a9fa] px-2 py-2 text-black shadow-[2px_2px_0_#000]">
-                                <Clock3 className="mb-1 h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                                <div className="text-lg font-black leading-none sm:text-xl">{featuredArticle?.readingTime || 0}</div>
-                                <div className="mt-1 text-[8px] font-black uppercase tracking-widest text-zinc-900 sm:text-[9px]">İlk</div>
-                            </div>
-                        </div>
-                    </div>
-                </motion.header>
-
-                <section className="relative z-10 mb-7 grid min-w-0 gap-3 lg:grid-cols-[minmax(0,1fr)_380px]">
+        <div className="min-h-screen overflow-x-hidden bg-background pb-[calc(9rem+env(safe-area-inset-bottom))] text-white selection:bg-[#ffcc00] selection:text-black sm:pb-32">
+            <main className="relative mx-auto max-w-[1180px] px-3 pt-3 sm:px-6 sm:pt-8">
+                <section className="mb-7 grid min-w-0 gap-3 lg:grid-cols-[minmax(0,1fr)_380px]">
                     <div className="grid min-w-0 gap-3">
                         <motion.form
                             onSubmit={handleSearch}
                             initial={{ opacity: 0, y: 12 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.45, delay: 0.06 }}
-                            className="rounded-[8px] border-[3px] border-black bg-white p-2 text-black shadow-[4px_4px_0_#000] sm:p-3 sm:shadow-[6px_6px_0_#000]"
+                            className="rounded-[8px] border-[3px] border-black bg-[#27272a] p-2 text-white shadow-[4px_4px_0_#000] sm:p-3 sm:shadow-[6px_6px_0_#000]"
                         >
                             <div
                                 className={cn(
-                                    "flex min-h-[48px] items-center overflow-hidden rounded-[7px] border-[3px] border-black bg-[#f7f2df] transition-all sm:min-h-[60px]",
-                                    isSearchFocused && "bg-white shadow-[inset_0_0_0_3px_#ffcc00]"
+                                    "flex min-h-[48px] items-center overflow-hidden rounded-[7px] border-[3px] border-black bg-[#202022] text-white transition-all sm:min-h-[60px]",
+                                    isSearchFocused && "shadow-[inset_0_0_0_3px_#ffcc00]"
                                 )}
                             >
                                 <div className="flex h-full items-center px-3 sm:px-4">
@@ -513,7 +460,7 @@ export function ArticleFeed({ articles, categories, activeCategory, sortParam, s
                                     onChange={(e) => setInputValue(e.target.value)}
                                     onFocus={() => setIsSearchFocused(true)}
                                     onBlur={() => setIsSearchFocused(false)}
-                                    className="min-w-0 flex-1 bg-transparent py-3 pr-2 text-xs font-black outline-none placeholder:text-zinc-500 sm:py-4 sm:pr-3 sm:text-base"
+                                    className="min-w-0 flex-1 bg-transparent py-3 pr-2 text-xs font-black outline-none placeholder:text-zinc-400 sm:py-4 sm:pr-3 sm:text-base"
                                 />
                                 <button
                                     type="submit"
@@ -538,7 +485,7 @@ export function ArticleFeed({ articles, categories, activeCategory, sortParam, s
                 </section>
 
                 {(searchQuery || activeCategory) && (
-                    <div className="relative z-10 mb-8 flex flex-wrap items-center justify-between gap-3 rounded-[8px] border-[2px] border-white/15 bg-black/25 px-4 py-3 text-sm text-zinc-200">
+                    <div className="mb-8 flex flex-wrap items-center justify-between gap-3 rounded-[8px] border-[2px] border-white/15 bg-[#27272a] px-4 py-3 text-sm text-zinc-200 shadow-[4px_4px_0_#000]">
                         <p>
                             {searchQuery && <span>&quot;{searchQuery}&quot; araması</span>}
                             {searchQuery && activeCategory && <span> · </span>}
@@ -552,7 +499,7 @@ export function ArticleFeed({ articles, categories, activeCategory, sortParam, s
                 )}
 
                 {sortedArticles.length > 0 ? (
-                    <section className="relative z-10">
+                    <section>
                         {viewMode === "covers" && featuredArticle && (
                             <div className="mb-10">
                                 <div className="mb-4 flex items-center gap-3">
@@ -598,14 +545,13 @@ export function ArticleFeed({ articles, categories, activeCategory, sortParam, s
                     <motion.section
                         initial={{ opacity: 0, scale: 0.96 }}
                         animate={{ opacity: 1, scale: 1 }}
-                        className="relative z-10 mx-auto mt-12 max-w-xl rounded-[8px] border-[3px] border-black bg-[#f7f2df] p-8 text-center text-black shadow-[8px_8px_0_#000]"
-                        style={{ backgroundImage: PAPER_TEXTURE }}
+                        className="mx-auto mt-12 max-w-xl rounded-[8px] border-[3px] border-black bg-[#27272a] p-8 text-center text-white shadow-[8px_8px_0_#000]"
                     >
                         <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-[8px] border-[3px] border-black bg-[#ffcc00] shadow-[4px_4px_0_#000]">
                             <Search className="h-7 w-7" />
                         </div>
                         <h2 className="font-serif text-2xl font-black uppercase tracking-normal">Sonuç Bulunamadı</h2>
-                        <p className="mx-auto mt-3 max-w-sm text-sm font-bold leading-relaxed text-zinc-700">
+                        <p className="mx-auto mt-3 max-w-sm text-sm font-bold leading-relaxed text-zinc-300">
                             Bu raflarda aradığın makale yok. Başka bir anahtar kelime dene veya tüm makalelere dön.
                         </p>
                         <Link
