@@ -2,13 +2,10 @@
 
 import { useState, useMemo } from "react";
 import { m as motion, AnimatePresence } from "framer-motion";
-import { LayoutList, MessageCircle, Bookmark, FileText, Search, Filter, ChevronDown } from "lucide-react";
+import { LayoutList, MessageCircle, Bookmark, FileText } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { UnifiedFeed, FeedItem } from "@/components/home/unified-feed";
 import { useUiSounds } from "@/hooks/use-ui-sounds";
-
-// True Royal Blue
-const ROYAL_BLUE = "#1E3A5F";
 
 interface DarkNeoFeedProps {
     articles: any[];
@@ -133,9 +130,9 @@ export function DarkNeoFeed({
     }, [activeTab, articles, questions, answers, drafts, bookmarkedArticles, bookmarkedQuestions]);
 
     return (
-        <div className="w-full space-y-6">
+        <div className="w-full space-y-4 sm:space-y-6">
             {/* TABS - Vivid & Chunky & Sticky */}
-            <div className="sticky top-[88px] z-40 mb-3 border-b-2 border-dashed border-black/20 bg-background/95 pt-2 pb-3 backdrop-blur-sm">
+            <div className="sticky top-[53px] z-40 mb-2 border-b-2 border-dashed border-black/20 bg-background/95 pt-2 pb-2 backdrop-blur-sm sm:top-[72px] sm:mb-3 sm:pb-3 md:top-0">
                 <div className="grid grid-cols-2 gap-2 sm:flex sm:items-center sm:gap-3">
                 {tabs.map((tab) => {
                     const Icon = tab.icon;
@@ -151,13 +148,13 @@ export function DarkNeoFeed({
                             key={tab.id}
                             onClick={handleTabClick}
                             className={cn(
-                                "relative flex min-h-11 min-w-0 items-center justify-center gap-2 px-3 py-2 border-2 rounded-xl font-black text-xs transition-all active:scale-95 group sm:flex-shrink-0 sm:justify-start sm:px-4",
+                                "group relative flex min-h-10 min-w-0 items-center justify-center gap-1.5 rounded-xl border-2 px-2.5 py-2 text-[11px] font-black transition-all active:scale-95 sm:min-h-11 sm:flex-shrink-0 sm:justify-start sm:gap-2 sm:px-4 sm:text-xs",
                                 isActive
                                     ? `${tab.color} border-black shadow-[2px_2px_0px_0px_#000] translate-x-[-1px] translate-y-[-1px]`
                                     : "bg-background border-black dark:border-zinc-800 text-zinc-500 hover:text-foreground hover:shadow-[2px_2px_0px_0px_#000] hover:translate-x-[-1px] hover:translate-y-[-1px]"
                             )}
                         >
-                            <Icon className={cn("w-3.5 h-3.5 stroke-[2.5px]", isActive && "stroke-current")} />
+                            <Icon className={cn("h-3.5 w-3.5 shrink-0 stroke-[2.5px]", isActive && "stroke-current")} />
                             <span className="truncate">{tab.label}</span>
                             {counts[tab.id as keyof typeof counts] > 0 && (
                                 <span className={cn(
@@ -183,13 +180,13 @@ export function DarkNeoFeed({
                         exit={{ opacity: 0, y: -10 }}
                         transition={{ duration: 0.2, ease: "easeOut" }}
                     >
-                        {activeTab === "posts" && <UnifiedFeed items={feedItems} />}
+                        {activeTab === "posts" && <UnifiedFeed items={feedItems} showExtras={false} />}
 
                         {activeTab === "replies" && (
                             <div className="space-y-4">
                                 {answers.length > 0 ? (
                                     answers.map((answer) => (
-                                        <div key={answer.id} className="bg-background border-2 border-black dark:border-zinc-800 rounded-xl p-5 hover:translate-x-[2px] hover:translate-y-[2px] transition-all cursor-pointer group hover:bg-zinc-50 dark:hover:bg-zinc-900/50 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.5)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.5)] relative overflow-hidden">
+                                        <div key={answer.id} className="group relative cursor-pointer overflow-hidden rounded-xl border-2 border-black bg-background p-4 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:bg-zinc-50 hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:border-zinc-800 dark:shadow-[3px_3px_0px_0px_rgba(0,0,0,0.5)] dark:hover:bg-zinc-900/50 dark:hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.5)] sm:p-5 sm:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
                                             {/* Top Line Accent */}
                                             <div className="absolute top-0 left-0 w-full h-1 bg-[#FFC800] transform origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-300" />
 
@@ -224,7 +221,7 @@ export function DarkNeoFeed({
 
                         {activeTab === "saved" && (
                             feedItems.length > 0 ? (
-                                <UnifiedFeed items={feedItems} />
+                                <UnifiedFeed items={feedItems} showExtras={false} />
                             ) : (
                                 <EmptyState
                                     icon={Bookmark}
@@ -236,7 +233,7 @@ export function DarkNeoFeed({
 
                         {activeTab === "drafts" && (
                             feedItems.length > 0 ? (
-                                <UnifiedFeed items={feedItems} />
+                                <UnifiedFeed items={feedItems} showExtras={false} />
                             ) : (
                                 <EmptyState
                                     icon={FileText}
@@ -254,15 +251,12 @@ export function DarkNeoFeed({
 
 function EmptyState({ icon: Icon, label, description }: { icon: any; label: string; description: string }) {
     return (
-        <div className="flex flex-col items-center justify-center py-24 text-center border-[3px] border-black rounded-xl bg-[#FFF5D1] shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] relative overflow-hidden group">
-            {/* Background pattern */}
-            <div className="absolute inset-0 opacity-10" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23000000' fill-opacity='1' fill-rule='evenodd'%3E%3Ccircle cx='3' cy='3' r='3'/%3E%3Ccircle cx='13' cy='13' r='3'/%3E%3C/g%3E%3C/svg%3E")` }} />
-
-            <div className="w-16 h-16 bg-[#FF3366] rounded-[16px] flex items-center justify-center mb-6 border-4 border-black shadow-[4px_4px_0px_0px_#000] rotate-[-5deg] group-hover:rotate-[5deg] transition-transform duration-300 relative z-10">
-                <Icon className="w-8 h-8 text-white stroke-[3px]" />
+        <div className="group relative flex flex-col items-center justify-center overflow-hidden rounded-xl border-[3px] border-black bg-[#27272a] px-5 py-16 text-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] sm:py-24">
+            <div className="relative z-10 mb-5 flex h-14 w-14 items-center justify-center rounded-[14px] border-4 border-black bg-[#FF3366] shadow-[4px_4px_0px_0px_#000] transition-transform duration-300 group-hover:rotate-[5deg] sm:mb-6 sm:h-16 sm:w-16">
+                <Icon className="h-7 w-7 text-white stroke-[3px] sm:h-8 sm:w-8" />
             </div>
-            <p className="text-black font-black text-xl mb-2 tracking-tight uppercase relative z-10 drop-shadow-sm">{label}</p>
-            <p className="text-black/70 text-sm font-bold max-w-[280px] leading-relaxed relative z-10">{description}</p>
+            <p className="relative z-10 mb-2 text-lg font-black uppercase tracking-tight text-white drop-shadow-sm sm:text-xl">{label}</p>
+            <p className="relative z-10 max-w-[280px] text-sm font-bold leading-relaxed text-zinc-300">{description}</p>
         </div>
     );
 }

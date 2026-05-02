@@ -1,11 +1,9 @@
 import { createClient } from "@/lib/supabase-server";
 import { redirect } from "next/navigation";
 import { getFollowStats } from "@/app/profil/actions";
-import { getTotalUnreadCount } from "@/app/mesajlar/actions";
 import { DarkNeoHeader } from "@/components/profile/dark-neo/dark-neo-header";
 import { DarkNeoFeed } from "@/components/profile/dark-neo/dark-neo-feed";
 import { DarkNeoSidebar } from "@/components/profile/dark-neo/dark-neo-sidebar";
-import { BackgroundWrapper } from "@/components/home/background-wrapper";
 import { ProfileSetupHint } from "@/components/profile/profile-setup-hint";
 
 export default async function ProfilePage() {
@@ -24,7 +22,6 @@ export default async function ProfilePage() {
         { data: answers },
         followStats,
         { data: drafts },
-        unreadMessagesCount,
         { data: bookmarkedArticles },
         { data: bookmarkedQuestions }
     ] = await Promise.all([
@@ -34,7 +31,6 @@ export default async function ProfilePage() {
         supabase.from('answers').select('id, content, created_at, questions(id, title, slug)').eq('author_id', user.id).order('created_at', { ascending: false }).limit(20),
         getFollowStats(user.id),
         supabase.from('articles').select('*, profiles(full_name, avatar_url, username)').eq('author_id', user.id).eq('status', 'draft').order('created_at', { ascending: false }).limit(20),
-        getTotalUnreadCount(),
         supabase.from('article_bookmarks').select('created_at, articles(*, profiles(full_name, avatar_url, username))').eq('user_id', user.id).order('created_at', { ascending: false }).limit(20),
         supabase.from('question_bookmarks').select('created_at, questions(*, profiles(full_name, avatar_url, username))').eq('user_id', user.id).order('created_at', { ascending: false }).limit(20)
     ]);
@@ -51,9 +47,7 @@ export default async function ProfilePage() {
 
     return (
         <main className="min-h-screen bg-background relative selection:bg-primary/30">
-            <BackgroundWrapper />
-
-            <div className="container max-w-7xl mx-auto px-2 sm:px-4 md:px-6 relative z-10 pt-2 sm:pt-4 lg:pt-8 pb-24 sm:pb-32">
+            <div className="container max-w-7xl mx-auto px-3 sm:px-4 md:px-6 relative z-10 pt-3 sm:pt-4 lg:pt-8 pb-[calc(6.5rem+env(safe-area-inset-bottom))] sm:pb-32">
 
                 {/* HERO SECTION */}
                 <div className="mb-4 sm:mb-6 lg:mb-8">

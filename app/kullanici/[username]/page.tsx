@@ -5,7 +5,6 @@ import { Metadata } from "next";
 import { DarkNeoHeader } from "@/components/profile/dark-neo/dark-neo-header";
 import { DarkNeoFeed } from "@/components/profile/dark-neo/dark-neo-feed";
 import { DarkNeoSidebar } from "@/components/profile/dark-neo/dark-neo-sidebar";
-import { BackgroundWrapper } from "@/components/home/background-wrapper";
 
 interface PageProps {
     params: Promise<{ username: string }>;
@@ -158,12 +157,11 @@ export default async function PublicProfilePage({ params }: PageProps) {
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
             />
-            <BackgroundWrapper />
 
-            <div className="container max-w-7xl mx-auto px-2 sm:px-4 md:px-6 relative z-10 pt-4 lg:pt-8 pb-32">
+            <div className="container max-w-7xl mx-auto px-3 sm:px-4 md:px-6 relative z-10 pt-3 sm:pt-4 lg:pt-8 pb-[calc(6.5rem+env(safe-area-inset-bottom))] sm:pb-32">
 
                 {/* 1. HERO SECTION (Full Width) */}
-                <div className="mb-8">
+                <div className="mb-4 sm:mb-6 lg:mb-8">
                     <DarkNeoHeader
                         profile={profile}
                         user={user || { created_at: profile.created_at }} // Fallback
@@ -174,10 +172,10 @@ export default async function PublicProfilePage({ params }: PageProps) {
                 </div>
 
                 {/* 2. GRID CONTENT */}
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-0 lg:gap-8">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-8">
 
                     {/* LEFT: MAIN FEED (7 Columns) */}
-                    <div className="lg:col-span-12 xl:col-span-7 space-y-6">
+                    <div className="order-2 space-y-6 lg:col-span-12 xl:order-1 xl:col-span-7">
                         <DarkNeoFeed
                             articles={articles || []}
                             questions={questions || []}
@@ -190,7 +188,7 @@ export default async function PublicProfilePage({ params }: PageProps) {
                     </div>
 
                     {/* RIGHT: SIDEBAR (5 Columns) */}
-                    <div className="hidden xl:block xl:col-span-5 relative">
+                    <div className="order-1 relative xl:order-2 xl:col-span-5">
                         <DarkNeoSidebar
                             profile={profile}
                             user={user || { created_at: profile.created_at }}

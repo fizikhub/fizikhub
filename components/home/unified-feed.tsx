@@ -37,9 +37,10 @@ export interface FeedItem {
 interface UnifiedFeedProps {
     items: FeedItem[];
     suggestedUsers?: any[];
+    showExtras?: boolean;
 }
 
-export function UnifiedFeed({ items, suggestedUsers = [] }: UnifiedFeedProps) {
+export function UnifiedFeed({ items, suggestedUsers = [], showExtras = true }: UnifiedFeedProps) {
     const [visibleCount, setVisibleCount] = useState(6);
     
     const visibleItems = items.slice(0, visibleCount);
@@ -96,12 +97,12 @@ export function UnifiedFeed({ items, suggestedUsers = [] }: UnifiedFeedProps) {
                             </div>
                         )}
 
-                        {index === 2 && (
+                        {showExtras && index === 2 && (
                             <LazyMount className="mt-6 min-h-40">
                                 <CommunityInviteBanner />
                             </LazyMount>
                         )}
-                        {index === 8 && (
+                        {showExtras && index === 8 && (
                             <LazyMount className="mt-6 min-h-40 rounded-[10px] bg-gradient-to-br from-[#FFBD2E] to-[#FFD466] p-6 border-[3px] border-black shadow-[4px_4px_0px_0px_#000]">
                                 <div>
                                     <h3 className="font-black text-sm uppercase tracking-widest text-black mb-4 text-center">
@@ -124,12 +125,14 @@ export function UnifiedFeed({ items, suggestedUsers = [] }: UnifiedFeedProps) {
                 </button>
             )}
 
-            <div className="mt-6 rounded-[10px] bg-white dark:bg-[#1e1e21] border-[3px] border-black dark:border-zinc-700 shadow-[4px_4px_0px_0px_#000] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] p-6">
-                <h3 className="font-black text-xs uppercase tracking-widest text-neutral-500 dark:text-zinc-400 mb-4 text-center">
-                    Önerilen Araştırmacılar
-                </h3>
-                <SuggestedUsersCard users={suggestedUsers} />
-            </div>
+            {showExtras && (
+                <div className="mt-6 rounded-[10px] bg-white dark:bg-[#1e1e21] border-[3px] border-black dark:border-zinc-700 shadow-[4px_4px_0px_0px_#000] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] p-6">
+                    <h3 className="font-black text-xs uppercase tracking-widest text-neutral-500 dark:text-zinc-400 mb-4 text-center">
+                        Önerilen Araştırmacılar
+                    </h3>
+                    <SuggestedUsersCard users={suggestedUsers} />
+                </div>
+            )}
         </div>
     );
 }
@@ -149,8 +152,8 @@ function LazyMount({
         if (!node || isVisible) return;
 
         if (!("IntersectionObserver" in window)) {
-            setIsVisible(true);
-            return;
+            const timeout = setTimeout(() => setIsVisible(true), 0);
+            return () => clearTimeout(timeout);
         }
 
         const observer = new IntersectionObserver(
