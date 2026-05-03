@@ -1,19 +1,14 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { OptimizedAvatar } from "@/components/ui/optimized-image";
 import { formatDistanceToNow } from "date-fns";
 import { tr } from "date-fns/locale";
-import { MessageCircle, Eye, ThumbsUp, CheckCircle2, ChevronUp, ChevronDown } from "lucide-react";
+import { MessageCircle, ChevronUp, ChevronDown } from "lucide-react";
 import { voteQuestion } from "@/app/forum/actions";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import React, { useState, useEffect } from "react";
-import { m as motion } from "framer-motion";
-import { useTheme } from "next-themes";
-import Link from "next/link";
+import React, { useState } from "react";
 import { ViewTransitionLink } from "@/components/ui/view-transition-link"; // [NEW]
 
 const stripHtml = (html: string) => html.replace(/<[^>]*>?/g, '');
@@ -27,13 +22,6 @@ interface QuestionCardProps {
 
 export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: QuestionCardProps) => {
     const router = useRouter();
-    const { theme } = useTheme();
-    const [mounted, setMounted] = useState(false);
-
-    useEffect(() => {
-        setMounted(true);
-    }, []);
-
     const [voteState, setVoteState] = useState(userVote);
     const [votes, setVotes] = useState(question.votes || 0);
     const [isVoting, setIsVoting] = useState(false);
@@ -89,13 +77,7 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
     const cleanContent = stripHtml(question.content || "").slice(0, 300);
 
     return (
-        <motion.div
-            layout
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.25, ease: [0.25, 0.46, 0.45, 0.94] }}
-            className="w-full h-full"
-        >
+        <div className="w-full h-full">
             <ViewTransitionLink
                 href={`/forum/${question.id}`}
                 className={cn(
@@ -238,7 +220,7 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
                     </div>
                 </div>
             </ViewTransitionLink>
-        </motion.div>
+        </div>
     );
 });
 

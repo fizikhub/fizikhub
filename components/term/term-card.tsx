@@ -1,9 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import Link from "next/link";
 import { ViewTransitionLink } from "@/components/ui/view-transition-link"; // [NEW]
-import { m as motion } from "framer-motion";
 import Image from "next/image";
 
 interface TermCardProps {
@@ -13,7 +11,7 @@ interface TermCardProps {
 
 export function TermCard({ article, index }: TermCardProps) {
     // Extract metadata
-    const metadataMatch = article.content.match(/<!--meta (.*?) -->/);
+    const metadataMatch = article.content?.match(/<!--meta (.*?) -->/);
     const metadata = metadataMatch ? JSON.parse(metadataMatch[1]) : {};
 
     // Fallback metadata
@@ -21,19 +19,13 @@ export function TermCard({ article, index }: TermCardProps) {
     const relatedField = metadata.relatedField || "Genel";
 
     // Clean content for V9 Preview (Simple text stripping)
-    let cleanContent = article.content.replace(/<!--meta .*? -->/, "");
+    let cleanContent = (article.content || article.excerpt || article.summary || "").replace(/<!--meta .*? -->/, "");
     cleanContent = cleanContent.replace(/<[^>]*>?/gm, " ");
     cleanContent = cleanContent.trim();
     const definition = cleanContent.slice(0, 160) + (cleanContent.length > 160 ? "..." : "");
 
     return (
-        <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.4, delay: index * 0.05 }}
-            className="h-full"
-        >
+        <div className="h-full feed-item-appear" style={{ animationDelay: index < 4 ? `${index * 40}ms` : undefined }}>
             <ViewTransitionLink href={`/makale/${article.slug}`} className="block h-full group">
                 <article
                     className={cn(
@@ -102,6 +94,6 @@ export function TermCard({ article, index }: TermCardProps) {
                     </div>
                 </article>
             </ViewTransitionLink>
-        </motion.div>
+        </div>
     );
 }

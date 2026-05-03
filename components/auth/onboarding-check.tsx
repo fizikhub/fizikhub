@@ -1,8 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { PremiumTour } from "@/components/onboarding/premium-tour";
+import dynamic from "next/dynamic";
 import { getOnboardingStatus } from "@/app/auth/actions";
+
+const PremiumTour = dynamic(() => import("@/components/onboarding/premium-tour").then((mod) => mod.PremiumTour), {
+    ssr: false,
+});
 
 export function OnboardingCheck() {
     const [showOnboarding, setShowOnboarding] = useState(false);

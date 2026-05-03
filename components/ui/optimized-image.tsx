@@ -16,7 +16,7 @@ interface OptimizedImageProps extends Omit<ImageProps, "onLoad"> {
  */
 export function OptimizedImage({
     className,
-    lowQualityPlaceholder = true,
+    lowQualityPlaceholder = false,
     alt,
     ...props
 }: OptimizedImageProps) {
@@ -30,7 +30,7 @@ export function OptimizedImage({
             )}
             placeholder={lowQualityPlaceholder ? "blur" : "empty"}
             blurDataURL={lowQualityPlaceholder ? generateBlurPlaceholder() : undefined}
-            quality={props.priority ? 85 : 75}
+            quality={props.priority ? 60 : 45}
             fetchPriority={props.priority ? "high" : "auto"}
         />
     );

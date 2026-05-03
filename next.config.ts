@@ -5,7 +5,7 @@ const nextConfig: NextConfig = {
     formats: ['image/avif', 'image/webp'],
     deviceSizes: [400, 500, 640, 750, 828, 1080, 1200, 1920],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
-    qualities: [50, 60, 75, 85],
+    qualities: [45, 50, 60, 70, 75, 85],
     minimumCacheTTL: 31536000, // 1 year cache
     remotePatterns: [
       {
@@ -33,7 +33,6 @@ const nextConfig: NextConfig = {
 
   // Performance optimizations
   experimental: {
-    inlineCss: true, // Native Next.js 15+ solution to inline all CSS and eliminate render-blocking <link> tags
     staleTimes: {
       dynamic: 30, // Client-side cache for dynamic pages (seconds)
       static: 300, // Client-side cache for static pages (seconds)
@@ -263,11 +262,11 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
 const withPWA = require("@ducanh2912/next-pwa").default({
   dest: "public",
   disable: process.env.NODE_ENV === "development",
-  register: true,
+  register: false,
   skipWaiting: true,
-  cacheOnFrontEndNav: true,
+  cacheOnFrontEndNav: false,
   cacheStartUrl: false,
-  reloadOnOnline: true,
+  reloadOnOnline: false,
   publicExcludes: [
     "!assets/**/*",
     "!audio/**/*",
@@ -286,6 +285,12 @@ const withPWA = require("@ducanh2912/next-pwa").default({
     cleanupOutdatedCaches: true,
     skipWaiting: true,
     clientsClaim: true,
+    exclude: [
+      /\/_next\/static\/chunks\/.*\.js$/,
+      /\/_next\/static\/.*(?<!\.p)\.woff2/,
+      /\.map$/,
+      /^manifest.*\.js$/,
+    ],
     // Exclude external URLs from being cached by the SW
     navigateFallbackDenylist: [/^\/api\//],
     runtimeCaching: [

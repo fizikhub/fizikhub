@@ -144,7 +144,7 @@ export function NeoArticleCard({
                         src={article.image_url || "/images/placeholder-article.webp"}
                         alt={article.title}
                         fill
-                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 350px"
+                        sizes="(max-width: 640px) 85vw, (max-width: 1024px) 50vw, 350px"
                         priority={priority}
                         className="object-cover transition-transform duration-500 group-hover:scale-105"
                     />

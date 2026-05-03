@@ -1,12 +1,10 @@
 "use client";
 
-import Link from "next/link";
 import { ViewTransitionLink } from "@/components/ui/view-transition-link"; // [NEW]
 import Image from "next/image";
 import { formatDistanceToNow } from "date-fns";
 import { tr } from "date-fns/locale";
-import { Heart, MessageCircle, FlaskConical, Beaker, Atom } from "lucide-react";
-import { m as motion } from "framer-motion";
+import { FlaskConical, Beaker, Atom } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
@@ -51,14 +49,14 @@ export function ExperimentCard({ article, index = 0 }: ExperimentCardProps) {
 
                 {/* Scientific Decorations - Animated */}
                 <div className="absolute right-2 bottom-20 opacity-10 pointer-events-none hidden sm:block">
-                    <motion.div animate={{ rotate: [0, 10, 0] }} transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}>
+                    <div className="animate-[float_4s_ease-in-out_infinite]">
                         <FlaskConical className="w-12 h-12 text-green-600" />
-                    </motion.div>
+                    </div>
                 </div>
                 <div className="absolute right-[-10px] top-[-10px] opacity-5 pointer-events-none">
-                    <motion.div animate={{ rotate: [0, 360] }} transition={{ duration: 20, repeat: Infinity, ease: "linear" }}>
+                    <div className="animate-spin-slow">
                         <Atom className="w-24 h-24 text-green-600" />
-                    </motion.div>
+                    </div>
                 </div>
 
                 {/* Right/Bottom: Content Section */}

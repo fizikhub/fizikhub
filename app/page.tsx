@@ -68,10 +68,10 @@ const getCachedFeedData = unstable_cache(
       // Fetch Articles & Blogs (using same table)
       supabase
         .from('articles')
-        .select('id, title, slug, excerpt, content, cover_url, image_url, category, created_at, status, author:profiles!articles_author_id_fkey(full_name, username, avatar_url, is_writer)')
+        .select('id, title, slug, excerpt, cover_url, image_url, category, created_at, status, author:profiles!articles_author_id_fkey(full_name, username, avatar_url, is_writer)')
         .eq('status', 'published')
         .order('created_at', { ascending: false })
-        .limit(20), // get recent 20
+        .limit(16), // keep homepage payload tight for mobile
 
       // Fetch Questions
       supabase

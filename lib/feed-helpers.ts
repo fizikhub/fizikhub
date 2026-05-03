@@ -16,19 +16,10 @@ export function processFeedData(articles: any[], questions: any[]): FeedItem[] {
             type = 'term';
         }
 
-        // --- Payload Optimization ---
-        // NeoArticleCard expects `summary` or `content` for its preview text.
-        // We calculate a summary here. Instead of deleting the content completely
-        // (which breaks TermCard, BookReviewCard using regex on content metadata),
-        // we heavily truncate it to 500 characters. This preserves the meta block
-        // at the top of the Markdown while still saving ~200KB-1MB per SSR!
-        if (a.content) {
-            if (!a.summary) {
-                const tempSummary = a.content.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
-                a.summary = tempSummary.substring(0, 200) + (tempSummary.length > 200 ? '...' : '');
-            }
-            a.content = a.content.length > 500 ? a.content.substring(0, 500) : a.content;
-        }
+        // Homepage feed must never ship full article bodies to the browser.
+        // Use DB-provided excerpts as the card summary and leave detail parsing to detail pages.
+        a.summary = a.excerpt || a.summary || "";
+        delete a.content;
 
         feedItems.push({
             type: type,
@@ -69,12 +60,6 @@ export function formatSliderArticles(articles: any[]) {
     return articles
         .filter((a: any) => a.category === 'Makale' || a.author?.is_writer)
         .map((a: any) => {
-            // Calculate reading time
-            const content = a.content || '';
-            const plainText = content.replace(/<[^>]+>/g, ' ');
-            const wordCount = plainText.trim().split(/\s+/).length;
-            const readingTime = Math.max(1, Math.ceil(wordCount / 225));
-
             return {
                 id: a.id,
                 title: a.title,
@@ -83,7 +68,7 @@ export function formatSliderArticles(articles: any[]) {
                 category: a.category,
                 author_name: a.author?.full_name || 'FizikHub',
                 created_at: a.created_at,
-                reading_time: readingTime
+                reading_time: a.reading_time || 5
             };
         });
 }

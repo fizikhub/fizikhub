@@ -1,34 +1,42 @@
 "use client";
 
-import { m as motion, useScroll, useAnimation, AnimatePresence } from "framer-motion";
 import { ArrowUp } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export function BackToTop() {
-    const { scrollY } = useScroll();
     const [isVisible, setIsVisible] = useState(false);
 
     useEffect(() => {
-        return scrollY.onChange((latest) => {
-            setIsVisible(latest > 400); // Show after 400px
-        });
-    }, [scrollY]);
+        let frame = 0;
+
+        const update = () => {
+            frame = 0;
+            setIsVisible(window.scrollY > 400);
+        };
+
+        const onScroll = () => {
+            if (frame) return;
+            frame = window.requestAnimationFrame(update);
+        };
+
+        update();
+        window.addEventListener("scroll", onScroll, { passive: true });
+        return () => {
+            window.removeEventListener("scroll", onScroll);
+            if (frame) window.cancelAnimationFrame(frame);
+        };
+    }, []);
 
     const scrollToTop = () => {
         window.scrollTo({ top: 0, behavior: "smooth" });
     };
 
+    if (!isVisible) return null;
+
     return (
-        <AnimatePresence>
-            {isVisible && (
-                <motion.button
-                    initial={{ scale: 0, rotate: 180 }}
-                    animate={{ scale: 1, rotate: 0 }}
-                    exit={{ scale: 0, rotate: -180 }}
-                    whileHover={{ scale: 1.1, y: -5 }}
-                    whileTap={{ scale: 0.9 }}
-                    onClick={scrollToTop}
-                    className="
+        <button
+            onClick={scrollToTop}
+            className="
                         fixed bottom-24 right-6 z-40
                         w-12 h-12
                         bg-black text-[#FACC15]
@@ -37,12 +45,12 @@ export function BackToTop() {
                         rounded-xl
                         flex items-center justify-center
                         cursor-pointer
+                        transition-transform duration-150
+                        hover:-translate-y-1 hover:scale-105 active:scale-95
                         md:bottom-8
                     "
-                >
-                    <ArrowUp className="w-6 h-6 stroke-[3px]" />
-                </motion.button>
-            )}
-        </AnimatePresence>
+        >
+            <ArrowUp className="w-6 h-6 stroke-[3px]" />
+        </button>
     );
 }
