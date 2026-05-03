@@ -51,8 +51,6 @@ export function OptimizedAvatar({
     className?: string;
 }) {
     const [hasError, setHasError] = useState(false);
-    const shouldBypassOptimizer = src ? shouldUseDirectAvatarUrl(src, size) : false;
-
     if (!src || hasError) {
         return (
             <div
@@ -80,23 +78,11 @@ export function OptimizedAvatar({
                 className={cn(
                     "object-cover text-transparent",
                 )}
-                quality={60}
-                unoptimized={shouldBypassOptimizer}
+                quality={45}
                 onError={() => setHasError(true)}
             />
         </div>
     );
-}
-
-function shouldUseDirectAvatarUrl(src: string, size: number): boolean {
-    if (size <= 64) return true;
-
-    try {
-        const url = new URL(src);
-        return url.hostname.endsWith(".supabase.co") || url.hostname === "lh3.googleusercontent.com";
-    } catch {
-        return false;
-    }
 }
 
 // Generate a tiny blur placeholder (1x1 pixel)

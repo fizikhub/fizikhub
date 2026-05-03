@@ -2,16 +2,38 @@
 
 import { useRouter } from "next/navigation";
 import { OptimizedAvatar } from "@/components/ui/optimized-image";
-import { formatDistanceToNow } from "date-fns";
-import { tr } from "date-fns/locale";
 import { MessageCircle, ChevronUp, ChevronDown } from "lucide-react";
 import { voteQuestion } from "@/app/forum/actions";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ViewTransitionLink } from "@/components/ui/view-transition-link"; // [NEW]
 
 const stripHtml = (html: string) => html.replace(/<[^>]*>?/g, '');
+const relativeTimeFormatter = new Intl.RelativeTimeFormat("tr", { numeric: "auto" });
+
+function formatRelativeTime(dateLike: string, now: number) {
+    const diffSeconds = Math.round((new Date(dateLike).getTime() - now) / 1000);
+    const divisions = [
+        { amount: 60, unit: "second" },
+        { amount: 60, unit: "minute" },
+        { amount: 24, unit: "hour" },
+        { amount: 7, unit: "day" },
+        { amount: 4.345, unit: "week" },
+        { amount: 12, unit: "month" },
+        { amount: Number.POSITIVE_INFINITY, unit: "year" },
+    ] as const;
+
+    let duration = diffSeconds;
+    for (const division of divisions) {
+        if (Math.abs(duration) < division.amount) {
+            return relativeTimeFormatter.format(Math.round(duration), division.unit);
+        }
+        duration /= division.amount;
+    }
+
+    return "";
+}
 
 interface QuestionCardProps {
     question: any;
@@ -26,8 +48,11 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
     const [votes, setVotes] = useState(question.votes || 0);
     const [isVoting, setIsVoting] = useState(false);
     const [isExpanded, setIsExpanded] = useState(false);
+    const [renderedAt] = useState(() => Date.now());
 
-    // Removed handleCardClick in favor of Link
+    useEffect(() => {
+        setVoteState(userVote);
+    }, [userVote]);
 
     const handleVote = async (e: React.MouseEvent, type: 1 | -1) => {
         e.preventDefault();
@@ -79,6 +104,7 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
     return (
         <div className="w-full h-full">
             <ViewTransitionLink
+                prefetch={false}
                 href={`/forum/${question.id}`}
                 className={cn(
                     "relative flex flex-col w-full h-full overflow-hidden transition-all duration-200 cursor-pointer group rounded-[10px]",
@@ -104,7 +130,7 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
                     </span>
                     <div className="flex items-center gap-2">
                         <span className="text-[10px] font-bold text-black/50 uppercase tracking-widest">
-                            {formatDistanceToNow(new Date(question.created_at), { addSuffix: true, locale: tr })}
+                            {formatRelativeTime(question.created_at, renderedAt)}
                         </span>
                         {badgeLabel && (
                             <div className="bg-black text-[#FFBD2E] px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider">

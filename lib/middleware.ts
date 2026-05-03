@@ -37,6 +37,9 @@ export async function updateSession(request: NextRequest) {
         publicPrefixes.some(prefix => request.nextUrl.pathname.startsWith(prefix));
 
     if (isPublicPage) {
+        if (request.nextUrl.pathname === '/forum') {
+            supabaseResponse.headers.set('Cache-Control', 'public, max-age=60, stale-while-revalidate=300');
+        }
         return supabaseResponse;
     }
 

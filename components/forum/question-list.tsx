@@ -1,11 +1,11 @@
 "use client";
 
 import { QuestionCard } from "@/components/forum/question-card";
-import { useRealtimeQuestions } from "@/hooks/useRealtimeQuestions";
+import { getUserQuestionVotes } from "@/app/forum/actions";
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight, Sparkles } from "lucide-react";
-import { Fragment } from "react";
+import { Sparkles } from "lucide-react";
+import { Fragment, useEffect, useState } from "react";
 
 interface QuestionListProps {
     initialQuestions: any[];
@@ -14,15 +14,30 @@ interface QuestionListProps {
 }
 
 export function QuestionList({ initialQuestions, userVotes, latestArticle }: QuestionListProps) {
-    const questions = useRealtimeQuestions(initialQuestions);
+    const [voteMap, setVoteMap] = useState(userVotes);
+
+    useEffect(() => {
+        let isMounted = true;
+        const questionIds = initialQuestions.map((question) => question.id).filter(Boolean);
+
+        getUserQuestionVotes(questionIds).then((result) => {
+            if (!isMounted || !result.success || result.votes.length === 0) return;
+
+            setVoteMap(new Map(result.votes.map((vote) => [vote.question_id, vote.vote_type])));
+        });
+
+        return () => {
+            isMounted = false;
+        };
+    }, [initialQuestions]);
 
     return (
         <div className="space-y-4">
-            {questions.map((question, index) => (
+            {initialQuestions.map((question, index) => (
                 <Fragment key={question.id}>
                     <QuestionCard
                         question={question}
-                        userVote={userVotes.get(question.id)}
+                        userVote={voteMap.get(question.id)}
                     />
                     {index === 2 && latestArticle && (
                         <Link prefetch={false} href={`/makale/${latestArticle.slug}`} className="block group my-2">

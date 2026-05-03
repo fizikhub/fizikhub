@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { createClient } from "@/lib/supabase";
 import { getNotifications, markAsRead } from "@/app/notifications/actions";
 import { useRouter } from "next/navigation";
 import confetti from 'canvas-confetti';
@@ -13,44 +12,10 @@ export default function GlobalAdminNotification() {
     const [adminNotification, setAdminNotification] = useState<any>(null);
     const [isVisible, setIsVisible] = useState(false);
 
-    // Initialize state for client-side only usage
-    const [supabase] = useState(() => createClient());
     const router = useRouter();
 
     useEffect(() => {
-        // Safety check for window/browser environment
         if (typeof window === 'undefined') return;
-
-        let channel: any = null;
-
-        const setupRealtime = async () => {
-            try {
-                // Initial check
-                await checkNotifications();
-
-                // Subscribe to real-time updates
-                channel = supabase
-                    .channel('global-admin-notification')
-                    .on(
-                        'postgres_changes',
-                        {
-                            event: 'INSERT',
-                            schema: 'public',
-                            table: 'notifications',
-                        },
-                        () => {
-                            checkNotifications();
-                        }
-                    )
-                    .subscribe((status) => {
-                        if (status === 'SUBSCRIBED') {
-                            // Connection established
-                        }
-                    });
-            } catch (error) {
-                console.error("Realtime subscription error:", error);
-            }
-        };
 
         const checkNotifications = async () => {
             try {
@@ -69,11 +34,13 @@ export default function GlobalAdminNotification() {
             }
         };
 
-        setupRealtime();
+        if ('requestIdleCallback' in window) {
+            const idleId = window.requestIdleCallback(() => checkNotifications(), { timeout: 5000 });
+            return () => window.cancelIdleCallback(idleId);
+        }
 
-        return () => {
-            if (channel) supabase.removeChannel(channel);
-        };
+        const timeout = setTimeout(checkNotifications, 2500);
+        return () => clearTimeout(timeout);
     }, []);
 
     const handleDismiss = async () => {

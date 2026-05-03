@@ -1,14 +1,39 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { HeaderSpaceBackground } from "./header-space-background";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Sparkles, ArrowRight } from "lucide-react";
-import { CreateQuestionDialog } from "./create-question-dialog";
-import { m as motion, AnimatePresence } from "framer-motion";
+import dynamic from "next/dynamic";
+import { m as motion } from "framer-motion";
 import { createClient } from "@/lib/supabase";
 import { cn } from "@/lib/utils";
 import { useTheme } from "next-themes";
+
+const CreateQuestionDialog = dynamic(
+    () => import("./create-question-dialog").then((mod) => mod.CreateQuestionDialog),
+    {
+        ssr: false,
+        loading: () => (
+            <div
+                className={cn(
+                    "group relative w-full cursor-pointer h-14 sm:h-16 rounded-lg",
+                    "bg-white/5 border-[2px] border-white/30 transition-all duration-200",
+                    "flex items-center px-4 backdrop-blur-md shadow-[0_4px_20px_rgba(0,0,0,0.2)]"
+                )}
+            >
+                <div className="w-10 h-10 rounded-full bg-white/10 text-white flex items-center justify-center border border-white/20 mr-4">
+                    <Sparkles className="w-5 h-5 opacity-80" />
+                </div>
+                <span className="text-lg font-medium text-white/70 transition-colors font-mono">
+                    Bugün neyi merak ediyorsun?
+                </span>
+                <div className="ml-auto text-white/50 transition-all duration-300">
+                    <ArrowRight className="w-5 h-5" />
+                </div>
+            </div>
+        ),
+    }
+);
 
 export function ModernForumHeader() {
     const { theme } = useTheme();

@@ -361,6 +361,27 @@ export async function voteQuestion(questionId: number, voteType: 1 | -1) {
     return { success: true, voteChange: newVoteCountChange };
 }
 
+export async function getUserQuestionVotes(questionIds: number[]) {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user || questionIds.length === 0) {
+        return { success: true, votes: [] as { question_id: number; vote_type: number }[] };
+    }
+
+    const { data, error } = await supabase
+        .from('question_votes')
+        .select('question_id, vote_type')
+        .eq('user_id', user.id)
+        .in('question_id', questionIds);
+
+    if (error) {
+        return { success: false, votes: [] as { question_id: number; vote_type: number }[] };
+    }
+
+    return { success: true, votes: data || [] };
+}
+
 export async function deleteQuestion(questionId: number) {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();

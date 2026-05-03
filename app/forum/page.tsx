@@ -1,11 +1,8 @@
-import { createClient } from "@/lib/supabase-server";
+import { createStaticClient } from "@/lib/supabase-server";
 import { ModernForumHeader } from "@/components/forum/modern-forum-header";
-import { Suspense } from "react";
 import { ForumSidebar } from "@/components/forum/forum-sidebar";
-import { QuestionCard } from "@/components/forum/question-card";
 import { QuestionList } from "@/components/forum/question-list";
 import { QuestionOfTheWeek } from "@/components/forum/question-of-the-week";
-import { ForumHeaderFallback } from "@/components/forum/forum-header-fallback";
 import { Ghost } from "lucide-react";
 import { BreadcrumbJsonLd } from "@/lib/breadcrumbs";
 import { sanitizeSearchQuery } from "@/lib/security";
@@ -59,15 +56,16 @@ export async function generateMetadata({ searchParams }: ForumPageProps): Promis
 }
 
 export default async function ForumPage({ searchParams }: ForumPageProps) {
-    const supabase = await createClient();
+    const supabase = createStaticClient();
     const params = await searchParams;
 
     const category = typeof params.category === 'string' ? params.category : undefined;
     const sort = typeof params.sort === 'string' ? params.sort : 'newest';
     const searchQuery = typeof params.q === 'string' ? params.q : undefined;
     const filter = typeof params.filter === 'string' ? params.filter : undefined;
-    const page = typeof params.page === 'string' ? parseInt(params.page) : 1;
-    const limit = 30; // Limit for performance
+    const requestedPage = typeof params.page === 'string' ? Number.parseInt(params.page, 10) : 1;
+    const page = Number.isFinite(requestedPage) ? Math.max(requestedPage, 1) : 1;
+    const limit = 18;
     const offset = (page - 1) * limit;
 
     // Build query
@@ -77,7 +75,7 @@ export default async function ForumPage({ searchParams }: ForumPageProps) {
             id, title, content, created_at, category, votes, author_id, tags,
             profiles(username, full_name, avatar_url, is_verified),
             answers(count)
-        `, { count: 'exact' });
+        `);
 
     // Apply filters
     if (category && category !== "Tümü") {
@@ -100,21 +98,17 @@ export default async function ForumPage({ searchParams }: ForumPageProps) {
     // Add pagination
     query = query.range(offset, offset + limit - 1);
 
-    // Run main query + user auth + secondary queries in parallel
-    const [{ data: questions, count: totalCount, error: questionsError }, { data: { user } }, { data: weeklyQuestion }, { data: latestArticle }] = await Promise.all([
+    const [{ data: questions, error: questionsError }, { data: weeklyQuestion }, { data: latestArticle }] = await Promise.all([
         query,
-        supabase.auth.getUser(),
-        // Fetch Question of the Week
         supabase
             .from('questions')
             .select('id')
             .contains('tags', ['haftanin-sorusu'])
             .limit(1)
             .maybeSingle(),
-        // Fetch Latest Article for Ad (Only from Writers)
         supabase
             .from('articles')
-            .select('title, slug, image_url, content, category, created_at, author:profiles!articles_author_id_fkey(full_name, is_writer)')
+            .select('title, slug, image_url, category')
             .eq('status', 'published')
             .order('created_at', { ascending: false })
             .limit(1)
@@ -125,19 +119,7 @@ export default async function ForumPage({ searchParams }: ForumPageProps) {
         console.error("Supabase Error fetching forum questions:", questionsError);
     }
 
-    // Fetch user's votes to show "voted" state
     const userVotes = new Map<number, number>();
-    if (user && questions && questions.length > 0) {
-        const { data: votes } = await supabase
-            .from('question_votes')
-            .select('question_id, vote_type')
-            .eq('user_id', user.id)
-            .in('question_id', questions.map(q => q.id));
-
-        if (votes) {
-            votes.forEach(v => userVotes.set(v.question_id, v.vote_type));
-        }
-    }
 
     const jsonLd = {
         '@context': 'https://schema.org',
@@ -165,9 +147,7 @@ export default async function ForumPage({ searchParams }: ForumPageProps) {
             />
             <div className="bg-background min-h-screen pb-20">
                 <div className="container py-4 md:py-8 px-4 md:px-8 max-w-[1600px] mx-auto">
-                    <Suspense fallback={<ForumHeaderFallback currentCategory={category} currentSort={sort} />}>
-                        <ModernForumHeader />
-                    </Suspense>
+                    <ModernForumHeader />
 
                     <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-6 lg:gap-10">
                         {/* Main Content */}
