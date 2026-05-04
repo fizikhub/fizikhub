@@ -1,21 +1,29 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Home, BookOpen, MessageCircle, User, Plus, type LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export function BottomNav() {
     const pathname = usePathname();
+    const router = useRouter();
     const navRef = useRef<HTMLDivElement>(null);
     const lastScrollYRef = useRef(0);
     const hiddenRef = useRef(false);
     const frameRef = useRef<number | null>(null);
+    const navigatingHrefRef = useRef<string | null>(null);
+    const [optimisticHref, setOptimisticHref] = useState<string | null>(null);
 
     useEffect(() => {
         const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-        if (motionQuery.matches) return;
+        const coarsePointerQuery = window.matchMedia("(hover: none), (pointer: coarse)");
+
+        if (motionQuery.matches || coarsePointerQuery.matches) {
+            navRef.current?.classList.remove("translate-y-full");
+            return;
+        }
 
         const setHidden = (hidden: boolean) => {
             if (hiddenRef.current === hidden) return;
@@ -56,10 +64,64 @@ export function BottomNav() {
         };
     }, []);
 
+    useEffect(() => {
+        setOptimisticHref(null);
+        navigatingHrefRef.current = null;
+        navRef.current?.classList.remove("translate-y-full");
+        hiddenRef.current = false;
+    }, [pathname]);
+
     const vibrate = () => {
         if (typeof navigator !== "undefined" && navigator.vibrate) {
             navigator.vibrate(6);
         }
+    };
+
+    const isHrefActive = (href: string) => {
+        if (href === "/") return pathname === "/";
+        return pathname.startsWith(href);
+    };
+
+    const warmRoute = (href: string) => {
+        if (href.startsWith("/")) router.prefetch(href);
+    };
+
+    const activateRoute = (href: string) => {
+        navRef.current?.classList.remove("translate-y-full");
+        hiddenRef.current = false;
+        setOptimisticHref(href);
+        vibrate();
+        warmRoute(href);
+    };
+
+    const navigateImmediately = (href: string) => {
+        activateRoute(href);
+
+        if (isHrefActive(href)) {
+            window.scrollTo({ top: 0, behavior: "smooth" });
+            return;
+        }
+
+        navigatingHrefRef.current = href;
+        router.push(href);
+    };
+
+    const handleSharePointerDown = (event: React.PointerEvent<HTMLAnchorElement>) => {
+        if (event.pointerType === "mouse") {
+            activateRoute("/paylas");
+            return;
+        }
+
+        navigateImmediately("/paylas");
+    };
+
+    const handleShareClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
+        if (navigatingHrefRef.current === "/paylas") {
+            event.preventDefault();
+            return;
+        }
+
+        activateRoute("/paylas");
     };
 
     return (
@@ -76,8 +138,10 @@ export function BottomNav() {
                         href="/"
                         icon={Home}
                         label="Ana Sayfa"
-                        isActive={pathname === "/"}
-                        onInteract={vibrate}
+                        isActive={(optimisticHref ?? pathname) === "/"}
+                        onActivate={activateRoute}
+                        onNavigateImmediately={navigateImmediately}
+                        navigatingHrefRef={navigatingHrefRef}
                     />
 
                     <NavItem
@@ -85,8 +149,10 @@ export function BottomNav() {
                         href="/makale"
                         icon={BookOpen}
                         label="Keşfet"
-                        isActive={pathname.startsWith("/makale")}
-                        onInteract={vibrate}
+                        isActive={(optimisticHref ?? pathname).startsWith("/makale")}
+                        onActivate={activateRoute}
+                        onNavigateImmediately={navigateImmediately}
+                        navigatingHrefRef={navigatingHrefRef}
                     />
 
                     <div className="relative -top-3.5 z-20">
@@ -94,7 +160,10 @@ export function BottomNav() {
                             id="nav-item-share"
                             href="/paylas"
                             className="relative block touch-manipulation"
-                            onPointerDown={vibrate}
+                            onPointerDown={handleSharePointerDown}
+                            onClick={handleShareClick}
+                            onTouchStart={() => warmRoute("/paylas")}
+                            onFocus={() => warmRoute("/paylas")}
                         >
                             <div
                                 className="
@@ -122,8 +191,10 @@ export function BottomNav() {
                         href="/forum"
                         icon={MessageCircle}
                         label="Forum"
-                        isActive={pathname.startsWith("/forum")}
-                        onInteract={vibrate}
+                        isActive={(optimisticHref ?? pathname).startsWith("/forum")}
+                        onActivate={activateRoute}
+                        onNavigateImmediately={navigateImmediately}
+                        navigatingHrefRef={navigatingHrefRef}
                     />
 
                     <NavItem
@@ -131,8 +202,10 @@ export function BottomNav() {
                         href="/profil"
                         icon={User}
                         label="Profil"
-                        isActive={pathname.startsWith("/profil")}
-                        onInteract={vibrate}
+                        isActive={(optimisticHref ?? pathname).startsWith("/profil")}
+                        onActivate={activateRoute}
+                        onNavigateImmediately={navigateImmediately}
+                        navigatingHrefRef={navigatingHrefRef}
                     />
                 </div>
             </nav>
@@ -140,9 +213,42 @@ export function BottomNav() {
     );
 }
 
-function NavItem({ id, href, icon: Icon, label, isActive, onInteract }: { id?: string; href: string; icon: LucideIcon; label: string; isActive: boolean; onInteract: () => void }) {
+function NavItem({
+    id,
+    href,
+    icon: Icon,
+    label,
+    isActive,
+    onActivate,
+    onNavigateImmediately,
+    navigatingHrefRef
+}: {
+    id?: string;
+    href: string;
+    icon: LucideIcon;
+    label: string;
+    isActive: boolean;
+    onActivate: (href: string) => void;
+    onNavigateImmediately: (href: string) => void;
+    navigatingHrefRef: React.MutableRefObject<string | null>;
+}) {
+    const handlePointerDown = (event: React.PointerEvent<HTMLAnchorElement>) => {
+        if (event.pointerType === "mouse") {
+            onActivate(href);
+            return;
+        }
+
+        onNavigateImmediately(href);
+    };
+
     const handleNavItemClick = (e: React.MouseEvent) => {
-        if (e.detail === 0) onInteract();
+        if (navigatingHrefRef.current === href) {
+            e.preventDefault();
+            return;
+        }
+
+        onActivate(href);
+
         if (isActive) {
             e.preventDefault();
             window.scrollTo({ top: 0, behavior: "smooth" });
@@ -154,7 +260,9 @@ function NavItem({ id, href, icon: Icon, label, isActive, onInteract }: { id?: s
             id={id}
             href={href}
             onClick={handleNavItemClick}
-            onPointerDown={onInteract}
+            onPointerDown={handlePointerDown}
+            onTouchStart={() => onActivate(href)}
+            onFocus={() => onActivate(href)}
             aria-label={label}
             aria-current={isActive ? 'page' : undefined}
             className={cn(

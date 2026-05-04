@@ -34,6 +34,7 @@ export const viewport = {
   viewportFit: 'cover',
 };
 
+export const preferredRegion = "fra1";
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.fizikhub.com'),
