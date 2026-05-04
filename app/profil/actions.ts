@@ -34,6 +34,49 @@ interface ProfileUpdateData {
     cover_url?: string;
 }
 
+export async function getDeferredProfileFeed() {
+    const supabase = await createClient();
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+
+    if (authError || !user) {
+        return {
+            success: false,
+            drafts: [],
+            bookmarkedArticles: [],
+            bookmarkedQuestions: [],
+        };
+    }
+
+    const [{ data: drafts }, { data: bookmarkedArticles }, { data: bookmarkedQuestions }] = await Promise.all([
+        supabase
+            .from('articles')
+            .select('*, profiles(full_name, avatar_url, username)')
+            .eq('author_id', user.id)
+            .eq('status', 'draft')
+            .order('created_at', { ascending: false })
+            .limit(16),
+        supabase
+            .from('article_bookmarks')
+            .select('created_at, articles(*, profiles(full_name, avatar_url, username))')
+            .eq('user_id', user.id)
+            .order('created_at', { ascending: false })
+            .limit(16),
+        supabase
+            .from('question_bookmarks')
+            .select('created_at, questions(*, profiles(full_name, avatar_url, username))')
+            .eq('user_id', user.id)
+            .order('created_at', { ascending: false })
+            .limit(16),
+    ]);
+
+    return {
+        success: true,
+        drafts: drafts || [],
+        bookmarkedArticles: bookmarkedArticles || [],
+        bookmarkedQuestions: bookmarkedQuestions || [],
+    };
+}
+
 // ============================================
 // HELPER: Username validation & change
 // ============================================

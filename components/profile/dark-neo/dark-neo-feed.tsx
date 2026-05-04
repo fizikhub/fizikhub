@@ -1,11 +1,12 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { m as motion, AnimatePresence } from "framer-motion";
 import { LayoutList, MessageCircle, Bookmark, FileText } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { UnifiedFeed, FeedItem } from "@/components/home/unified-feed";
 import { useUiSounds } from "@/hooks/use-ui-sounds";
+import { getDeferredProfileFeed } from "@/app/profil/actions";
 
 interface DarkNeoFeedProps {
     articles: any[];
@@ -14,6 +15,10 @@ interface DarkNeoFeedProps {
     drafts: any[];
     bookmarkedArticles: any[];
     bookmarkedQuestions: any[];
+    deferredCounts?: {
+        saved: number;
+        drafts: number;
+    };
     isOwnProfile: boolean;
 }
 
@@ -24,16 +29,57 @@ export function DarkNeoFeed({
     drafts,
     bookmarkedArticles,
     bookmarkedQuestions,
+    deferredCounts,
     isOwnProfile
 }: DarkNeoFeedProps) {
     const [activeTab, setActiveTab] = useState("posts");
+    const [deferredFeed, setDeferredFeed] = useState({
+        drafts,
+        bookmarkedArticles,
+        bookmarkedQuestions,
+    });
+    const [hasLoadedDeferredFeed, setHasLoadedDeferredFeed] = useState(
+        drafts.length > 0 || bookmarkedArticles.length > 0 || bookmarkedQuestions.length > 0
+    );
+    const [isLoadingDeferredFeed, setIsLoadingDeferredFeed] = useState(false);
     const { playInteractSound } = useUiSounds();
+
+    const loadDeferredFeed = async () => {
+        if (hasLoadedDeferredFeed || isLoadingDeferredFeed) return;
+
+        setIsLoadingDeferredFeed(true);
+        try {
+            const result = await getDeferredProfileFeed();
+            if (result.success) {
+                setDeferredFeed({
+                    drafts: result.drafts,
+                    bookmarkedArticles: result.bookmarkedArticles,
+                    bookmarkedQuestions: result.bookmarkedQuestions,
+                });
+                setHasLoadedDeferredFeed(true);
+            }
+        } finally {
+            setIsLoadingDeferredFeed(false);
+        }
+    };
+
+    useEffect(() => {
+        if (!isOwnProfile || hasLoadedDeferredFeed) return;
+
+        if ('requestIdleCallback' in window) {
+            const idleId = window.requestIdleCallback(() => loadDeferredFeed(), { timeout: 4000 });
+            return () => window.cancelIdleCallback(idleId);
+        }
+
+        const timeout = setTimeout(() => loadDeferredFeed(), 2500);
+        return () => clearTimeout(timeout);
+    }, [hasLoadedDeferredFeed, isOwnProfile]);
 
     const counts = {
         posts: articles.length + questions.length,
         replies: answers.length,
-        saved: bookmarkedArticles.length + bookmarkedQuestions.length,
-        drafts: drafts.length
+        saved: deferredCounts?.saved ?? deferredFeed.bookmarkedArticles.length + deferredFeed.bookmarkedQuestions.length,
+        drafts: deferredCounts?.drafts ?? deferredFeed.drafts.length
     };
 
     const tabs = [
@@ -77,7 +123,7 @@ export function DarkNeoFeed({
             } as FeedItem));
             items = [...articleItems as FeedItem[], ...questionItems];
         } else if (activeTab === 'saved') {
-            const savedArticles = bookmarkedArticles
+            const savedArticles = deferredFeed.bookmarkedArticles
                 .filter(b => b.articles)
                 .map(b => {
                     const a = Array.isArray(b.articles) ? b.articles[0] : b.articles;
@@ -99,7 +145,7 @@ export function DarkNeoFeed({
                         sortDate: b.created_at
                     } as FeedItem;
                 });
-            const savedQuestions = bookmarkedQuestions
+            const savedQuestions = deferredFeed.bookmarkedQuestions
                 .filter(b => b.questions)
                 .map(b => {
                     const q = Array.isArray(b.questions) ? b.questions[0] : b.questions;
@@ -116,7 +162,7 @@ export function DarkNeoFeed({
         } else if (activeTab === 'replies') {
             items = answers.map(a => ({ type: 'answer', data: a, sortDate: a.created_at } as FeedItem));
         } else if (activeTab === 'drafts') {
-            items = drafts.map(d => ({
+            items = deferredFeed.drafts.map(d => ({
                 type: 'article',
                 data: {
                     ...d,
@@ -127,7 +173,7 @@ export function DarkNeoFeed({
             } as FeedItem));
         }
         return items.sort((a, b) => new Date(b.sortDate).getTime() - new Date(a.sortDate).getTime());
-    }, [activeTab, articles, questions, answers, drafts, bookmarkedArticles, bookmarkedQuestions]);
+    }, [activeTab, articles, questions, answers, deferredFeed]);
 
     return (
         <div className="w-full space-y-4 sm:space-y-6">
@@ -140,6 +186,9 @@ export function DarkNeoFeed({
 
                     const handleTabClick = () => {
                         playInteractSound();
+                        if (tab.id === "saved" || tab.id === "drafts") {
+                            loadDeferredFeed();
+                        }
                         setActiveTab(tab.id);
                     };
 
@@ -220,7 +269,13 @@ export function DarkNeoFeed({
                         )}
 
                         {activeTab === "saved" && (
-                            feedItems.length > 0 ? (
+                            isLoadingDeferredFeed ? (
+                                <EmptyState
+                                    icon={Bookmark}
+                                    label="Yükleniyor"
+                                    description="Kayıtlı içerikler hazırlanıyor."
+                                />
+                            ) : feedItems.length > 0 ? (
                                 <UnifiedFeed items={feedItems} showExtras={false} />
                             ) : (
                                 <EmptyState
@@ -232,7 +287,13 @@ export function DarkNeoFeed({
                         )}
 
                         {activeTab === "drafts" && (
-                            feedItems.length > 0 ? (
+                            isLoadingDeferredFeed ? (
+                                <EmptyState
+                                    icon={FileText}
+                                    label="Yükleniyor"
+                                    description="Taslakların hazırlanıyor."
+                                />
+                            ) : feedItems.length > 0 ? (
                                 <UnifiedFeed items={feedItems} showExtras={false} />
                             ) : (
                                 <EmptyState

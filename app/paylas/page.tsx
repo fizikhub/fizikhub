@@ -157,9 +157,11 @@ function FreshCard({ title, description, href, icon: Icon, color, accentColor, c
 export default function PaylasPage() {
     const [userName, setUserName] = useState<string | null>(null);
     const [loaded, setLoaded] = useState(false);
-    const supabase = createClient();
+    const [supabase] = useState(() => createClient());
 
     useEffect(() => {
+        let isMounted = true;
+
         const fetchUser = async () => {
             const { data: { user } } = await supabase.auth.getUser();
             if (user) {
@@ -170,14 +172,27 @@ export default function PaylasPage() {
                     .single();
 
                 if (profile) {
-                    setUserName(profile.full_name || profile.username || "Bilim İnsanı");
+                    if (isMounted) setUserName(profile.full_name || profile.username || "Bilim İnsanı");
                 } else {
-                    setUserName("Bilim İnsanı");
+                    if (isMounted) setUserName("Bilim İnsanı");
                 }
             }
-            setLoaded(true);
+            if (isMounted) setLoaded(true);
         };
-        fetchUser();
+
+        if ('requestIdleCallback' in window) {
+            const idleId = window.requestIdleCallback(() => fetchUser(), { timeout: 1600 });
+            return () => {
+                isMounted = false;
+                window.cancelIdleCallback(idleId);
+            };
+        }
+
+        const timeout = setTimeout(() => fetchUser(), 350);
+        return () => {
+            isMounted = false;
+            clearTimeout(timeout);
+        };
     }, [supabase]);
 
     // ... inside component

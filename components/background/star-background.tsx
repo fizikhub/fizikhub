@@ -277,18 +277,31 @@ function ShootingStars({ count = 20 }) {
 export function StarBackground() {
   const [isLowEnd, setIsLowEnd] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [isCanvasReady, setIsCanvasReady] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
     setMounted(true);
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const isMobile = window.innerWidth <= 768;
+    const mobile = window.innerWidth <= 768;
     const hardwareConcurrency = navigator.hardwareConcurrency || 4;
     // @ts-ignore
     const deviceMemory = navigator.deviceMemory || 4;
 
-    if (prefersReducedMotion || (isMobile && (hardwareConcurrency < 4 || deviceMemory < 4))) {
+    setIsMobile(mobile);
+
+    if (prefersReducedMotion || (mobile && (hardwareConcurrency < 4 || deviceMemory < 4))) {
       setIsLowEnd(true);
+      return;
     }
+
+    if ('requestIdleCallback' in window) {
+      const idleId = window.requestIdleCallback(() => setIsCanvasReady(true), { timeout: 1200 });
+      return () => window.cancelIdleCallback(idleId);
+    }
+
+    const timeout = setTimeout(() => setIsCanvasReady(true), 300);
+    return () => clearTimeout(timeout);
   }, []);
 
   if (!mounted) {
@@ -297,16 +310,16 @@ export function StarBackground() {
 
   return (
     <div className="fixed inset-0 z-0 bg-[#020205] pointer-events-none">
-      {!isLowEnd && (
-        <Canvas camera={{ position: [0, 0, 5], fov: 60 }}>
+      {!isLowEnd && isCanvasReady && (
+        <Canvas camera={{ position: [0, 0, 5], fov: 60 }} dpr={isMobile ? [1, 1.25] : [1, 1.5]} gl={{ antialias: false, powerPreference: "low-power" }}>
           <fog attach="fog" args={["#020205", 10, 1000]} />
           <Nebula />
-          <Stars />
-          <ShootingStars />
+          <Stars count={isMobile ? 2800 : 7000} />
+          <ShootingStars count={isMobile ? 6 : 14} />
         </Canvas>
       )}
       {/* CSS fallback background particles for low-end hardware */}
-      {isLowEnd && (
+      {(isLowEnd || !isCanvasReady) && (
         <div className="absolute inset-0 w-full h-full opacity-30" style={{ backgroundImage: "radial-gradient(circle at center, #ffffff 1px, transparent 1px)", backgroundSize: "40px 40px" }} />
       )}
       {/* Visual Depth Overlay */}

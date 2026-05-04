@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useMotionValue, useSpring, useTransform, m as motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
@@ -16,6 +16,12 @@ export function TiltCard({
     rotationFactor = 15
 }: TiltCardProps) {
     const ref = useRef<HTMLDivElement>(null);
+    const [canTilt, setCanTilt] = useState(false);
+
+    useEffect(() => {
+        if (typeof window === "undefined") return;
+        setCanTilt(window.matchMedia("(hover: hover) and (pointer: fine)").matches);
+    }, []);
 
     const x = useMotionValue(0);
     const y = useMotionValue(0);
@@ -35,7 +41,7 @@ export function TiltCard({
     );
 
     const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-        if (!ref.current) return;
+        if (!canTilt || !ref.current) return;
 
         const rect = ref.current.getBoundingClientRect();
 
@@ -53,6 +59,7 @@ export function TiltCard({
     };
 
     const handleMouseLeave = () => {
+        if (!canTilt) return;
         x.set(0);
         y.set(0);
     };
@@ -63,8 +70,8 @@ export function TiltCard({
             onMouseMove={handleMouseMove}
             onMouseLeave={handleMouseLeave}
             style={{
-                rotateY,
-                rotateX,
+                rotateY: canTilt ? rotateY : "0deg",
+                rotateX: canTilt ? rotateX : "0deg",
                 transformStyle: "preserve-3d",
             }}
             className={cn("relative w-full h-full", className)}

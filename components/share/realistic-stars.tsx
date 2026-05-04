@@ -290,15 +290,40 @@ function Stars({ count = 2000, isDark }: { count?: number, isDark: boolean }) {
 export function RealisticStars() {
     const { resolvedTheme } = useTheme();
     const [mounted, setMounted] = useState(false);
-    useEffect(() => setMounted(true), []);
+    const [isCanvasReady, setIsCanvasReady] = useState(false);
+    const [isMobile, setIsMobile] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+        const mobile = window.innerWidth <= 768;
+        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        setIsMobile(mobile);
+
+        if (prefersReducedMotion) return;
+
+        if ('requestIdleCallback' in window) {
+            const idleId = window.requestIdleCallback(() => setIsCanvasReady(true), { timeout: 1400 });
+            return () => window.cancelIdleCallback(idleId);
+        }
+
+        const timeout = setTimeout(() => setIsCanvasReady(true), 300);
+        return () => clearTimeout(timeout);
+    }, []);
+
     const isDark = mounted ? resolvedTheme === "dark" : true;
 
     return (
         <div className="absolute inset-0 z-0 pointer-events-none">
-            <Canvas camera={{ position: [0, 0, 1], fov: 75 }} gl={{ alpha: true }}>
-                <Stars count={1200} isDark={isDark} />
-                <Meteors count={20} isDark={isDark} />
-            </Canvas>
+            {isCanvasReady && (
+                <Canvas
+                    camera={{ position: [0, 0, 1], fov: 75 }}
+                    dpr={isMobile ? [1, 1.2] : [1, 1.5]}
+                    gl={{ alpha: true, antialias: false, powerPreference: "low-power" }}
+                >
+                    <Stars count={isMobile ? 500 : 1000} isDark={isDark} />
+                    <Meteors count={isMobile ? 6 : 14} isDark={isDark} />
+                </Canvas>
+            )}
         </div>
     );
 }
