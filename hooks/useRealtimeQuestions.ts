@@ -12,13 +12,12 @@ export interface QuestionWithProfile extends Question {
         is_verified?: boolean | null;
     } | null;
     votes: number;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     answers?: Record<string, unknown>[]; // Keep as Record for now or define Answer structure if needed
 }
 
 export function useRealtimeQuestions(initialQuestions: QuestionWithProfile[]) {
     const [questions, setQuestions] = useState<QuestionWithProfile[]>(initialQuestions);
-    const supabase = createClient();
+    const [supabase] = useState(() => createClient());
 
     useEffect(() => {
         // Subscribe to new questions
@@ -74,8 +73,7 @@ export function useRealtimeQuestions(initialQuestions: QuestionWithProfile[]) {
         return () => {
             supabase.removeChannel(channel);
         };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [supabase]);
 
     return questions;
 }

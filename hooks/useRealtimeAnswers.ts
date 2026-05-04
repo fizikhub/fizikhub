@@ -19,7 +19,7 @@ export interface AnswerWithProfile extends Answer {
 
 export function useRealtimeAnswers(questionId: number, initialAnswers: AnswerWithProfile[]) {
     const [answers, setAnswers] = useState<AnswerWithProfile[]>(initialAnswers);
-    const supabase = createClient();
+    const [supabase] = useState(() => createClient());
 
     useEffect(() => {
         // Subscribe to new answers for this question

@@ -19,7 +19,7 @@ interface Comment {
 
 export function useRealtimeComments(answerId: number, initialComments: Comment[]) {
     const [comments, setComments] = useState<Comment[]>(initialComments);
-    const supabase = createClient();
+    const [supabase] = useState(() => createClient());
 
     useEffect(() => {
         // Subscribe to new comments for this answer

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { Bell, Check } from "lucide-react";
+import { Bell } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import confetti from 'canvas-confetti';
 import { m as motion } from "framer-motion";
@@ -9,7 +9,6 @@ import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
-    DropdownMenuLabel,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { createClient } from "@/lib/supabase";
@@ -17,7 +16,6 @@ import { getNotifications, getUnreadCount, markAsRead, markAllAsRead } from "@/a
 import { formatDistanceToNow } from "date-fns";
 import { tr } from "date-fns/locale";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 
@@ -45,7 +43,7 @@ export function NotificationBell({ className }: { className?: string }) {
     const [supabase] = useState(() => createClient());
     const router = useRouter();
 
-    const fetchNotifications = async () => {
+    const fetchNotifications = useCallback(async () => {
         try {
             setIsLoading(true);
             if (process.env.NODE_ENV === 'development') {
@@ -61,11 +59,12 @@ export function NotificationBell({ className }: { className?: string }) {
                 // console.log('[NotificationBell] Fetched:', { notificationCount: data?.length || 0, unreadCount: count });
             }
 
-            setNotifications((data || []) as unknown as Notification[]);
+            const notificationData = (data || []) as unknown as Notification[];
+            setNotifications(notificationData);
             setUnreadCount(count);
 
             // Check for special admin notification
-            const hasAdminNotification = (data || []).some((n: any) =>
+            const hasAdminNotification = notificationData.some((n) =>
                 !n.is_read && n.content === "hazreti yüce müce admin soruna cevap verdi"
             );
 
@@ -79,48 +78,68 @@ export function NotificationBell({ className }: { className?: string }) {
         } finally {
             setIsLoading(false);
         }
-    };
+    }, []);
 
     useEffect(() => {
+        let active = true;
+
         fetchNotifications();
 
-        const channel = supabase
-            .channel('notifications-bell')
-            .on(
-                'postgres_changes',
-                {
-                    event: 'INSERT',
-                    schema: 'public',
-                    table: 'notifications',
-                },
-                (payload) => {
-                    if (process.env.NODE_ENV === 'development') {
-                        // console.log('[NotificationBell] New notification received:', payload);
+        const setupRealtime = async () => {
+            const { data: { user } } = await supabase.auth.getUser();
+
+            if (!active || !user) {
+                return null;
+            }
+
+            return supabase
+                .channel('notifications-bell')
+                .on(
+                    'postgres_changes',
+                    {
+                        event: 'INSERT',
+                        schema: 'public',
+                        table: 'notifications',
+                        filter: `recipient_id=eq.${user.id}`,
+                    },
+                    () => {
+                        if (process.env.NODE_ENV === 'development') {
+                            // console.log('[NotificationBell] New notification received:', payload);
+                        }
+                        setUnreadCount(prev => prev + 1);
+                        fetchNotifications();
                     }
-                    setUnreadCount(prev => prev + 1);
-                    fetchNotifications();
-                }
-            )
-            .on(
-                'postgres_changes',
-                {
-                    event: 'UPDATE',
-                    schema: 'public',
-                    table: 'notifications',
-                },
-                (payload) => {
-                    if (process.env.NODE_ENV === 'development') {
-                        // console.log('[NotificationBell] Notification updated:', payload);
+                )
+                .on(
+                    'postgres_changes',
+                    {
+                        event: 'UPDATE',
+                        schema: 'public',
+                        table: 'notifications',
+                        filter: `recipient_id=eq.${user.id}`,
+                    },
+                    () => {
+                        if (process.env.NODE_ENV === 'development') {
+                            // console.log('[NotificationBell] Notification updated:', payload);
+                        }
+                        fetchNotifications();
                     }
-                    fetchNotifications();
-                }
-            )
-            .subscribe();
+                )
+                .subscribe();
+        };
+
+        let channel: ReturnType<typeof supabase.channel> | null = null;
+        setupRealtime().then((createdChannel) => {
+            channel = createdChannel;
+        });
 
         return () => {
-            supabase.removeChannel(channel);
+            active = false;
+            if (channel) {
+                supabase.removeChannel(channel);
+            }
         };
-    }, []);
+    }, [fetchNotifications, supabase]);
 
     const handleMarkAsRead = async (id: number) => {
         await markAsRead(id);

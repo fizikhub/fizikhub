@@ -31,7 +31,7 @@ export function useChat({
     const [replyTo, setReplyTo] = useState<Message | null>(null);
     const [editingMessage, setEditingMessage] = useState<Message | null>(null);
     const scrollRef = useRef<HTMLDivElement>(null);
-    const supabase = createClient();
+    const [supabase] = useState(() => createClient());
 
     // Scroll to bottom
     const scrollToBottom = useCallback((smooth = true) => {
@@ -45,7 +45,7 @@ export function useChat({
 
     useEffect(() => {
         scrollToBottom(false);
-    }, []);
+    }, [scrollToBottom]);
 
     useEffect(() => {
         if (messages.length > 0) {
@@ -54,7 +54,7 @@ export function useChat({
                 scrollToBottom();
             }
         }
-    }, [messages.length]);
+    }, [currentUserId, messages, scrollToBottom]);
 
     // Realtime: messages
     useEffect(() => {
@@ -101,8 +101,7 @@ export function useChat({
             .subscribe();
 
         return () => { supabase.removeChannel(channel); };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [conversationId]); // Removed supabase from dependencies
+    }, [conversationId, scrollToBottom, supabase]);
 
     // Realtime: reactions
     useEffect(() => {
@@ -119,8 +118,7 @@ export function useChat({
             .subscribe();
 
         return () => { supabase.removeChannel(channel); };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [conversationId]); // Removed supabase from dependencies
+    }, [conversationId, supabase]);
 
     // Mark as read on mount and new messages
     useEffect(() => {

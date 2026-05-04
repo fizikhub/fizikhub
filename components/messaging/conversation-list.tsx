@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Conversation, getConversations } from "@/app/mesajlar/actions";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { formatDistanceToNow } from "date-fns";
@@ -23,7 +23,12 @@ export function ConversationList({
     const [conversations, setConversations] = useState<Conversation[]>(initialConversations);
     const [searchQuery, setSearchQuery] = useState("");
     const [showSearch, setShowSearch] = useState(false);
-    const supabase = createClient();
+    const [supabase] = useState(() => createClient());
+
+    const refreshConversations = useCallback(async () => {
+        const data = await getConversations();
+        setConversations(data);
+    }, []);
 
     // Realtime updates
     useEffect(() => {
@@ -31,22 +36,25 @@ export function ConversationList({
             .channel("inbox:updates")
             .on(
                 "postgres_changes",
-                { event: "*", schema: "public", table: "messages" },
-                () => {
-                    refreshConversations();
-                }
+                { event: "UPDATE", schema: "public", table: "conversations" },
+                refreshConversations
+            )
+            .on(
+                "postgres_changes",
+                {
+                    event: "INSERT",
+                    schema: "public",
+                    table: "conversation_participants",
+                    filter: `user_id=eq.${currentUserId}`,
+                },
+                refreshConversations
             )
             .subscribe();
 
         return () => {
             supabase.removeChannel(channel);
         };
-    }, [supabase]);
-
-    const refreshConversations = async () => {
-        const data = await getConversations();
-        setConversations(data);
-    };
+    }, [currentUserId, refreshConversations, supabase]);
 
     const filteredConversations = conversations.filter((c) => {
         const name = c.otherUser?.full_name || c.otherUser?.username || "";
