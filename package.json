@@ -109,6 +109,11 @@
     "typescript": "^5",
     "vitest": "^4.1.0"
   },
+  "overrides": {
+    "@rollup/plugin-terser": {
+      "serialize-javascript": "^7.0.5"
+    }
+  },
   "browserslist": [
     "last 2 Chrome versions",
     "last 2 Firefox versions",
