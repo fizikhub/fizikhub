@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, BookOpen, Hash } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { createStaticClient } from "@/lib/supabase-server";
 import { getDictionaryTerms } from "@/lib/api";
 import { BreadcrumbJsonLd } from "@/lib/breadcrumbs";
@@ -48,15 +48,6 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     return {
         title: `${term.term} Nedir? | Bilim Sözlüğü`,
         description,
-        keywords: [
-            term.term,
-            `${term.term} nedir`,
-            `${term.term} ne demek`,
-            `${term.term} anlamı`,
-            "bilim sözlüğü",
-            "fizik sözlüğü",
-            term.category || "bilim terimleri",
-        ],
         openGraph: {
             title: `${term.term} Nedir? — Fizikhub Sözlük`,
             description,
@@ -78,6 +69,17 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
             description,
             images: [`${SITE_URL}/og-image.jpg`],
         },
+        robots: {
+            index: true,
+            follow: true,
+            googleBot: {
+                index: true,
+                follow: true,
+                "max-image-preview": "large",
+                "max-snippet": -1,
+                "max-video-preview": -1,
+            },
+        },
         alternates: { canonical },
     };
 }
@@ -89,6 +91,12 @@ export default async function DictionaryTermPage({ params }: PageProps) {
     if (!term) notFound();
 
     const canonical = `${SITE_URL}/sozluk/${slug}`;
+    const supabase = createStaticClient();
+    const terms = await getDictionaryTerms(supabase);
+    const relatedTerms = terms
+        .filter((item) => item.category === term.category && item.term !== term.term)
+        .slice(0, 6);
+
     const jsonLd = {
         "@context": "https://schema.org",
         "@type": "DefinedTerm",
@@ -105,27 +113,23 @@ export default async function DictionaryTermPage({ params }: PageProps) {
         inLanguage: "tr-TR",
     };
 
-    const faqJsonLd = {
+    const webPageJsonLd = {
         "@context": "https://schema.org",
-        "@type": "FAQPage",
-        mainEntity: [
-            {
-                "@type": "Question",
-                name: `${term.term} nedir?`,
-                acceptedAnswer: {
-                    "@type": "Answer",
-                    text: term.definition,
-                },
-            },
-            {
-                "@type": "Question",
-                name: `${term.term} hangi alanda kullanılır?`,
-                acceptedAnswer: {
-                    "@type": "Answer",
-                    text: `${term.term}, ${term.category || "bilim"} alanında kullanılan temel kavramlardan biridir.`,
-                },
-            },
-        ],
+        "@type": "WebPage",
+        "@id": `${canonical}#webpage`,
+        name: `${term.term} nedir?`,
+        description: term.definition,
+        url: canonical,
+        inLanguage: "tr-TR",
+        isPartOf: {
+            "@type": "WebSite",
+            "@id": `${SITE_URL}/#website`,
+            name: "Fizikhub",
+            url: SITE_URL,
+        },
+        mainEntity: {
+            "@id": `${canonical}#defined-term`,
+        },
     };
 
     return (
@@ -136,59 +140,73 @@ export default async function DictionaryTermPage({ params }: PageProps) {
             />
             <script
                 type="application/ld+json"
-                dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageJsonLd) }}
             />
             <BreadcrumbJsonLd items={[
                 { name: "Sözlük", href: "/sozluk" },
                 { name: term.term, href: `/sozluk/${slug}` },
             ]} />
 
-            <main className="container mx-auto min-h-screen max-w-4xl px-4 py-10 md:py-16">
+            <main className="container mx-auto min-h-screen max-w-3xl px-4 py-8 md:py-12">
                 <Link
                     href="/sozluk"
-                    className="mb-8 inline-flex items-center gap-2 text-xs font-black uppercase tracking-wider text-muted-foreground transition-colors hover:text-foreground"
+                    className="mb-6 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-zinc-500 transition-colors hover:text-white"
                 >
                     <ArrowLeft className="h-4 w-4" />
                     Sözlüğe Dön
                 </Link>
 
-                <article className="rounded-xl border-[3px] border-black bg-card p-6 shadow-[6px_6px_0px_#000] sm:p-8">
-                    <div className="mb-6 flex flex-wrap items-center gap-3">
-                        <span className="inline-flex items-center gap-2 rounded-lg border-[3px] border-black bg-[#FFC800] px-3 py-1 text-xs font-black uppercase tracking-widest text-black shadow-[2px_2px_0px_#000]">
-                            <BookOpen className="h-4 w-4 stroke-[3px]" />
-                            Sözlük
-                        </span>
+                <article className="rounded-lg border border-zinc-800 bg-zinc-950/80 p-5 sm:p-7">
+                    <div className="mb-4 flex flex-wrap items-center gap-2">
                         {term.category && (
-                            <span className="inline-flex items-center gap-2 rounded-lg bg-muted px-3 py-1 text-xs font-black uppercase tracking-widest text-muted-foreground">
-                                <Hash className="h-3.5 w-3.5" />
+                            <span className="rounded-md border border-zinc-700 bg-zinc-900 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider text-zinc-300">
                                 {term.category}
                             </span>
                         )}
                     </div>
 
-                    <h1 className="text-4xl font-black uppercase tracking-tight text-foreground sm:text-5xl md:text-6xl">
+                    <h1 className="text-3xl font-black uppercase leading-tight tracking-normal text-white sm:text-4xl">
                         {term.term}
                     </h1>
 
-                    <div className="mt-8 border-t-[3px] border-black pt-8">
-                        <h2 className="mb-3 text-sm font-black uppercase tracking-widest text-muted-foreground">
+                    <div className="mt-6 border-t border-zinc-800 pt-6">
+                        <h2 className="mb-3 text-sm font-black uppercase tracking-wider text-zinc-500">
                             {term.term} nedir?
                         </h2>
-                        <p className="text-lg font-semibold leading-relaxed text-foreground sm:text-xl">
+                        <p className="text-base font-medium leading-relaxed text-zinc-300 sm:text-lg">
                             {term.definition}
                         </p>
                     </div>
 
-                    <div className="mt-8 border-t-[3px] border-black pt-6">
-                        <h2 className="mb-3 text-sm font-black uppercase tracking-widest text-muted-foreground">
+                    <div className="mt-6 border-t border-zinc-800 pt-5">
+                        <h2 className="mb-3 text-sm font-black uppercase tracking-wider text-zinc-500">
                             Kısa not
                         </h2>
-                        <p className="text-base font-semibold leading-relaxed text-muted-foreground">
+                        <p className="text-sm font-medium leading-relaxed text-zinc-400 sm:text-base">
                             {term.term} kavramı, {term.category || "bilim"} başlığındaki konuları okurken sık karşına çıkar.
                             Tanımı akılda tutmanın en iyi yolu, kavramı yalnızca ezberlemek değil; hangi olayda, hangi ölçümde
                             ya da hangi modelde işe yaradığını görmektir.
                         </p>
                     </div>
+
+                    {relatedTerms.length > 0 && (
+                        <nav className="mt-6 border-t border-zinc-800 pt-5" aria-label="İlgili sözlük terimleri">
+                            <h2 className="mb-3 text-sm font-black uppercase tracking-wider text-zinc-500">
+                                İlgili terimler
+                            </h2>
+                            <div className="flex flex-wrap gap-2">
+                                {relatedTerms.map((relatedTerm) => (
+                                    <Link
+                                        key={relatedTerm.id}
+                                        href={`/sozluk/${slugify(relatedTerm.term)}`}
+                                        className="rounded-md bg-zinc-900 px-3 py-2 text-xs font-semibold text-zinc-300 transition-colors hover:bg-zinc-800 hover:text-white"
+                                    >
+                                        {relatedTerm.term}
+                                    </Link>
+                                ))}
+                            </div>
+                        </nav>
+                    )}
                 </article>
             </main>
         </>

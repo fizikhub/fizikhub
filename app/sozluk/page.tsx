@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Book, Hash, Search } from "lucide-react";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase-server";
 import { getDictionaryTerms } from "@/lib/api";
 import { DictionaryList } from "@/components/dictionary/dictionary-list";
@@ -10,21 +10,10 @@ const SITE_URL = "https://www.fizikhub.com";
 
 export const metadata: Metadata = {
     title: "Bilim Sözlüğü | Fizik, Uzay ve Bilim Terimleri",
-    description: "Fizik, astronomi, kuantum, termodinamik ve modern bilim terimlerini Türkçe, net ve arama dostu açıklamalarla keşfedin.",
-    keywords: [
-        "bilim sözlüğü",
-        "fizik sözlüğü",
-        "fizik terimleri",
-        "kuantum terimleri",
-        "astronomi terimleri",
-        "uzay terimleri",
-        "termodinamik terimleri",
-        "parçacık fiziği terimleri",
-        "bilim terimleri ve anlamları",
-    ],
+    description: "Fizik, astronomi, kuantum, termodinamik ve modern bilim terimleri için kısa, güvenilir ve sade Türkçe açıklamalar.",
     openGraph: {
         title: "Bilim Sözlüğü — Fizikhub",
-        description: "Fizik, uzay ve modern bilim kavramları için Türkçe, kısa ve güvenilir açıklamalar.",
+        description: "Fizik, uzay ve modern bilim kavramları için kısa, sade ve güvenilir Türkçe açıklamalar.",
         type: "website",
         url: `${SITE_URL}/sozluk`,
         siteName: "Fizikhub",
@@ -41,8 +30,19 @@ export const metadata: Metadata = {
     twitter: {
         card: "summary_large_image",
         title: "Bilim Sözlüğü — Fizikhub",
-        description: "Fizik, uzay ve modern bilim terimleri için anlaşılır Türkçe sözlük.",
+        description: "Fizik, uzay ve modern bilim terimleri için kısa Türkçe sözlük.",
         images: [`${SITE_URL}/og-image.jpg`],
+    },
+    robots: {
+        index: true,
+        follow: true,
+        googleBot: {
+            index: true,
+            follow: true,
+            "max-image-preview": "large",
+            "max-snippet": -1,
+            "max-video-preview": -1,
+        },
     },
     alternates: { canonical: `${SITE_URL}/sozluk` },
 };
@@ -53,6 +53,30 @@ export default async function DictionaryPage() {
     const supabase = await createClient();
     const terms = await getDictionaryTerms(supabase);
     const categories = Array.from(new Set(terms.map((term) => term.category).filter(Boolean)));
+    const popularTermNames = ["Atom", "Entropi", "Kuantum", "Karadelik", "Big Bang (Büyük Patlama)", "Kızıla Kayma"];
+    const popularTerms = popularTermNames
+        .map((name) => terms.find((term) => term.term === name))
+        .filter((term): term is NonNullable<typeof term> => Boolean(term));
+
+    const collectionPageJsonLd = {
+        '@context': 'https://schema.org',
+        '@type': 'CollectionPage',
+        '@id': `${SITE_URL}/sozluk#webpage`,
+        name: 'Fizikhub Bilim Sözlüğü',
+        description: 'Fizik, astronomi, kuantum, termodinamik ve modern bilim terimleri için kısa Türkçe açıklamalar.',
+        url: `${SITE_URL}/sozluk`,
+        inLanguage: 'tr-TR',
+        isPartOf: {
+            '@type': 'WebSite',
+            '@id': `${SITE_URL}/#website`,
+            name: 'Fizikhub',
+            url: SITE_URL,
+        },
+        about: categories.slice(0, 12).map((category) => ({
+            '@type': 'Thing',
+            name: category,
+        })),
+    };
 
     const definedTermSetJsonLd = {
         '@context': 'https://schema.org',
@@ -83,21 +107,12 @@ export default async function DictionaryPage() {
         })),
     };
 
-    const faqJsonLd = {
-        '@context': 'https://schema.org',
-        '@type': 'FAQPage',
-        mainEntity: terms.slice(0, 40).map((term) => ({
-            '@type': 'Question',
-            name: `${term.term} nedir?`,
-            acceptedAnswer: {
-                '@type': 'Answer',
-                text: term.definition,
-            },
-        })),
-    };
-
     return (
         <>
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionPageJsonLd) }}
+            />
             <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(definedTermSetJsonLd) }}
@@ -106,66 +121,58 @@ export default async function DictionaryPage() {
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd) }}
             />
-            <script
-                type="application/ld+json"
-                dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
-            />
             <BreadcrumbJsonLd items={[{ name: 'Sözlük', href: '/sozluk' }]} />
-            <div className="container mx-auto min-h-screen max-w-7xl px-4 py-8 md:px-6 md:py-10">
-                <section className="mb-8 overflow-hidden rounded-xl border-[3px] border-black bg-zinc-950 text-white shadow-[6px_6px_0px_#000]">
-                    <div className="grid gap-5 p-5 sm:p-6 lg:grid-cols-[1fr_auto] lg:items-end">
-                        <div className="flex min-w-0 gap-4">
-                            <div className="hidden h-16 w-16 shrink-0 items-center justify-center border-[3px] border-white bg-[#FFC800] text-black shadow-[4px_4px_0px_rgba(255,255,255,0.9)] sm:flex">
-                                <Book className="h-8 w-8 stroke-[3px]" />
-                            </div>
-                            <div className="min-w-0">
-                                <div className="mb-3 inline-flex items-center gap-2 rounded-full border-2 border-white bg-white px-3 py-1 text-[11px] font-black uppercase tracking-wider text-black">
-                                    <Hash className="h-3.5 w-3.5" />
-                                    {terms.length} terim, {categories.length} alan
-                                </div>
-                                <h1 className="text-3xl font-black uppercase leading-none tracking-normal sm:text-4xl md:text-5xl">
-                                    Bilim Sözlüğü
-                                </h1>
-                                <p className="mt-3 max-w-2xl text-base font-semibold leading-relaxed text-zinc-300 sm:text-lg">
-                                    Fizik, uzay ve modern bilim kavramları; kısa, net ve Türkçe açıklamalarla tek yerde.
-                                </p>
-                            </div>
-                        </div>
-                        <div className="flex flex-wrap gap-2 lg:max-w-sm lg:justify-end">
-                            {categories.slice(0, 6).map((category) => (
-                                <span
-                                    key={category}
-                                    className="rounded-full border-2 border-black bg-[#FFC800] px-3 py-1 text-[11px] font-black uppercase tracking-wider text-black"
-                                >
-                                    {category}
-                                </span>
-                            ))}
-                        </div>
+            <div className="container mx-auto min-h-screen max-w-6xl px-4 py-6 md:px-6 md:py-8">
+                <section className="mb-6 border-b border-zinc-800 pb-5">
+                    <p className="text-xs font-bold uppercase tracking-wider text-zinc-500">
+                        {terms.length} terim · {categories.length} alan
+                    </p>
+                    <h1 className="mt-2 text-3xl font-black uppercase leading-tight tracking-normal text-white sm:text-4xl">
+                        Bilim Sözlüğü
+                    </h1>
+                    <p className="mt-2 max-w-2xl text-sm font-medium leading-relaxed text-zinc-400 sm:text-base">
+                        Fizik, uzay ve modern bilim terimleri için kısa, sade ve doğru Türkçe açıklamalar.
+                    </p>
+
+                    <div className="mt-4 flex flex-wrap gap-2">
+                        {categories.slice(0, 6).map((category) => (
+                            <span
+                                key={category}
+                                className="rounded-full border border-zinc-700 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-zinc-300"
+                            >
+                                {category}
+                            </span>
+                        ))}
                     </div>
-                    <div className="border-t-[3px] border-black bg-[#FFC800] px-5 py-3 text-sm font-black uppercase tracking-wider text-black sm:px-6">
-                        <Search className="mr-2 inline h-4 w-4 align-[-2px] stroke-[3px]" />
-                        Terimi yaz, kartı aç, kavramı temizce yakala.
+
+                    <div className="mt-4 flex flex-wrap gap-2">
+                        {popularTerms.map((term) => (
+                            <Link
+                                key={term.id}
+                                href={`/sozluk/${slugify(term.term)}`}
+                                className="rounded-md bg-zinc-900 px-3 py-2 text-xs font-semibold text-zinc-300 transition-colors hover:bg-zinc-800 hover:text-white"
+                            >
+                                {term.term}
+                            </Link>
+                        ))}
                     </div>
                 </section>
 
                 <DictionaryList initialTerms={terms} />
 
-                <section className="mt-12 border-t-[3px] border-black pt-8 dark:border-white">
-                    <div className="max-w-4xl space-y-4">
-                        <h2 className="text-2xl font-black uppercase tracking-normal sm:text-3xl">
-                            Fizik ve bilim terimleri için temiz Türkçe kaynak
+                <section className="mt-10 border-t border-zinc-800 pt-6">
+                    <div className="max-w-3xl space-y-3">
+                        <h2 className="text-xl font-black uppercase tracking-normal text-white sm:text-2xl">
+                            Fizik terimlerini sade dille okumak
                         </h2>
-                        <p className="text-base font-semibold leading-relaxed text-muted-foreground">
+                        <p className="text-sm font-medium leading-relaxed text-zinc-400 sm:text-base">
                             Bu sözlük; fizik, astronomi, kuantum fiziği, termodinamik, optik, elektromanyetizma,
                             nükleer fizik ve kozmoloji kavramlarını hızlıca anlamak isteyen öğrenciler, meraklılar
-                            ve içerik üreticileri için hazırlandı. Her açıklama gereksiz akademik sis olmadan,
-                            kavramın özünü ve doğru bilimsel bağlamını verecek şekilde yazıldı.
+                            ve içerik üreticileri için hazırlandı.
                         </p>
-                        <p className="text-base font-semibold leading-relaxed text-muted-foreground">
-                            Aradığın şey bir formülün arkasındaki fikir, bir uzay haberinde geçen terim ya da derste
-                            kafaya takılan kısa bir tanım olabilir. Fizikhub Bilim Sözlüğü, bu kavramları arama
-                            motorlarının da rahat okuyabileceği açık başlıklar, tekil terim sayfaları ve yapılandırılmış
-                            veriyle düzenli olarak sunar.
+                        <p className="text-sm font-medium leading-relaxed text-zinc-400 sm:text-base">
+                            Her terim kendi sayfasına bağlanır; başlık, açıklama, canonical URL, sitemap kaydı ve
+                            yapılandırılmış veri aynı ana URL üzerinde tutarlı kalır.
                         </p>
                     </div>
                 </section>

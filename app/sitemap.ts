@@ -45,7 +45,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
             url: `${baseUrl}/sozluk`,
             lastModified: STATIC_LAST_MODIFIED,
             changeFrequency: 'weekly',
-            priority: 0.7,
+            priority: 0.85,
         },
         {
             url: `${baseUrl}/testler`,
