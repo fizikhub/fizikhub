@@ -56,105 +56,92 @@ export default async function DictionaryPage() {
     const terms = await getDictionaryTerms(supabase);
     const categories = Array.from(new Set(terms.map((term) => term.category).filter(Boolean)));
 
-    const collectionPageJsonLd = {
+    const combinedJsonLd = {
         '@context': 'https://schema.org',
-        '@type': 'CollectionPage',
-        '@id': `${SITE_URL}/sozluk#webpage`,
-        name: 'Fizikhub Bilim Sözlüğü',
-        description: 'Fizik, astronomi, kuantum, termodinamik ve modern bilim terimleri için kısa Türkçe açıklamalar.',
-        url: `${SITE_URL}/sozluk`,
-        inLanguage: 'tr-TR',
-        isPartOf: {
-            '@type': 'WebSite',
-            '@id': `${SITE_URL}/#website`,
-            name: 'Fizikhub',
-            url: SITE_URL,
-        },
-        about: categories.slice(0, 12).map((category) => ({
-            '@type': 'Thing',
-            name: category,
-        })),
-    };
-
-    const definedTermSetJsonLd = {
-        '@context': 'https://schema.org',
-        '@type': 'DefinedTermSet',
-        '@id': `${SITE_URL}/sozluk#defined-term-set`,
-        name: 'Fizikhub Bilim Sözlüğü',
-        description: 'Fizik, astronomi, kuantum, termodinamik ve modern bilim terimlerinin Türkçe açıklamaları.',
-        url: `${SITE_URL}/sozluk`,
-        inLanguage: 'tr-TR',
-        hasDefinedTerm: terms.slice(0, MAX_STRUCTURED_DATA_TERMS).map((term) => ({
-            '@type': 'DefinedTerm',
-            name: term.term,
-            description: term.definition,
-            url: `${SITE_URL}/sozluk/${slugify(term.term)}`,
-            termCode: term.category || 'Bilim',
-        })),
-    };
-
-    const itemListJsonLd = {
-        '@context': 'https://schema.org',
-        '@type': 'ItemList',
-        name: 'Bilim Sözlüğü Terimleri',
-        itemListElement: terms.slice(0, MAX_STRUCTURED_DATA_TERMS).map((term, index) => ({
-            '@type': 'ListItem',
-            position: index + 1,
-            name: term.term,
-            url: `${SITE_URL}/sozluk/${slugify(term.term)}`,
-        })),
+        '@graph': [
+            {
+                '@type': 'CollectionPage',
+                '@id': `${SITE_URL}/sozluk#webpage`,
+                name: 'Fizikhub Bilim Sözlüğü',
+                description: 'Fizik, astronomi, kuantum, termodinamik ve modern bilim terimleri için kısa Türkçe açıklamalar.',
+                url: `${SITE_URL}/sozluk`,
+                inLanguage: 'tr-TR',
+                isPartOf: {
+                    '@type': 'WebSite',
+                    '@id': `${SITE_URL}/#website`,
+                    name: 'Fizikhub',
+                    url: SITE_URL,
+                },
+                about: categories.slice(0, 12).map((category) => ({
+                    '@type': 'Thing',
+                    name: category,
+                })),
+            },
+            {
+                '@type': 'DefinedTermSet',
+                '@id': `${SITE_URL}/sozluk#defined-term-set`,
+                name: 'Fizikhub Bilim Sözlüğü',
+                description: 'Fizik, astronomi, kuantum, termodinamik ve modern bilim terimlerinin Türkçe açıklamaları.',
+                url: `${SITE_URL}/sozluk`,
+                inLanguage: 'tr-TR',
+                hasDefinedTerm: terms.slice(0, MAX_STRUCTURED_DATA_TERMS).map((term) => ({
+                    '@type': 'DefinedTerm',
+                    name: term.term,
+                    description: term.definition,
+                    url: `${SITE_URL}/sozluk/${slugify(term.term)}`,
+                    termCode: term.category || 'Bilim',
+                })),
+            },
+            {
+                '@type': 'ItemList',
+                name: 'Bilim Sözlüğü Terimleri',
+                itemListElement: terms.slice(0, MAX_STRUCTURED_DATA_TERMS).map((term, index) => ({
+                    '@type': 'ListItem',
+                    position: index + 1,
+                    name: term.term,
+                    url: `${SITE_URL}/sozluk/${slugify(term.term)}`,
+                })),
+            }
+        ]
     };
 
     return (
         <>
             <script
                 type="application/ld+json"
-                dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionPageJsonLd) }}
-            />
-            <script
-                type="application/ld+json"
-                dangerouslySetInnerHTML={{ __html: JSON.stringify(definedTermSetJsonLd) }}
-            />
-            <script
-                type="application/ld+json"
-                dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd) }}
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(combinedJsonLd) }}
             />
             <BreadcrumbJsonLd items={[{ name: 'Sözlük', href: '/sozluk' }]} />
             <div className="container mx-auto min-h-screen max-w-7xl px-4 py-8 md:px-6 md:py-10">
-                <section className="mb-8 overflow-hidden rounded-xl border-[3px] border-black bg-zinc-950 text-white shadow-[6px_6px_0px_#000]">
-                    <div className="grid gap-5 p-5 sm:p-6 lg:grid-cols-[1fr_auto] lg:items-end">
-                        <div className="flex min-w-0 gap-4">
-                            <div className="hidden h-16 w-16 shrink-0 items-center justify-center border-[3px] border-white bg-[#FFC800] text-black shadow-[4px_4px_0px_rgba(255,255,255,0.9)] sm:flex">
-                                <Book className="h-8 w-8 stroke-[3px]" />
-                            </div>
-                            <div className="min-w-0">
-                                <div className="mb-3 inline-flex items-center gap-2 rounded-full border-2 border-white bg-white px-3 py-1 text-[11px] font-black uppercase tracking-wider text-black">
-                                    <Hash className="h-3.5 w-3.5" />
-                                    {terms.length} terim, {categories.length} alan
-                                </div>
-                                <h1 className="text-3xl font-black uppercase leading-none tracking-normal sm:text-4xl md:text-5xl">
-                                    Bilim Sözlüğü
-                                </h1>
-                                <p className="mt-3 max-w-2xl text-base font-semibold leading-relaxed text-zinc-300 sm:text-lg">
-                                    Fizik, uzay ve modern bilim kavramları; kısa, net ve Türkçe açıklamalarla tek yerde.
-                                </p>
+                <section className="group relative mb-8 flex flex-col overflow-hidden rounded-xl border-[3px] border-black bg-white p-5 shadow-[4px_4px_0px_0px_#000] dark:bg-zinc-900 sm:p-6 lg:flex-row lg:items-center lg:justify-between">
+                    <div className="relative z-10 flex flex-col items-start gap-3">
+                        <div className="flex flex-wrap items-center gap-3">
+                            <h1 className="border-2 border-black bg-[#FFC800] px-3 py-1 text-2xl font-black uppercase leading-tight text-black shadow-[2px_2px_0px_0px_#000] transition-transform origin-left -rotate-1 group-hover:rotate-0 sm:text-3xl md:text-4xl">
+                                Bilim Sözlüğü
+                            </h1>
+                            <div className="inline-flex items-center gap-1.5 rounded-full border-2 border-black bg-white px-3 py-1 text-[10px] font-black uppercase tracking-wider text-black shadow-sm">
+                                <Hash className="h-3 w-3" />
+                                {terms.length} terim
                             </div>
                         </div>
-                        <div className="flex flex-wrap gap-2 lg:max-w-sm lg:justify-end">
-                            {categories.slice(0, 6).map((category) => (
-                                <span
-                                    key={category}
-                                    className="rounded-full border-2 border-black bg-[#FFC800] px-3 py-1 text-[11px] font-black uppercase tracking-wider text-black"
-                                >
-                                    {category}
-                                </span>
-                            ))}
-                        </div>
+                        <p className="max-w-2xl font-['Inter'] text-sm font-semibold leading-relaxed text-zinc-700 dark:text-zinc-300 sm:text-base">
+                            Fizik, uzay ve modern bilim kavramları; gereksiz akademik sis olmadan, kısa ve net Türkçe açıklamalarla tek yerde. Aradığın terimi temizce yakala.
+                        </p>
                     </div>
-                    <div className="border-t-[3px] border-black bg-[#FFC800] px-5 py-3 text-sm font-black uppercase tracking-wider text-black sm:px-6">
-                        <Search className="mr-2 inline h-4 w-4 align-[-2px] stroke-[3px]" />
-                        Terimi yaz, kartı aç, kavramı temizce yakala.
+                    
+                    <div className="relative z-10 mt-5 flex flex-wrap gap-2 lg:mt-0 lg:max-w-[280px] lg:justify-end">
+                        {categories.slice(0, 5).map((category) => (
+                            <span
+                                key={category}
+                                className="rounded-full border-[1.5px] border-black bg-zinc-100 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-black dark:bg-zinc-800 dark:text-white"
+                            >
+                                {category}
+                            </span>
+                        ))}
                     </div>
+                    
+                    {/* Background decoration matching cards */}
+                    <div className="absolute -right-20 -top-20 z-0 h-48 w-48 rounded-full bg-gradient-to-br from-gray-100 to-transparent opacity-50 transition-transform duration-500 group-hover:scale-110 dark:from-zinc-800" />
                 </section>
 
                 <DictionaryList initialTerms={terms} />

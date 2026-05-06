@@ -108,50 +108,48 @@ export default async function DictionaryTermPage({ params }: PageProps) {
         .filter((item) => item.category === term.category && item.term !== term.term)
         .slice(0, 6);
 
-    const jsonLd = {
+    const combinedJsonLd = {
         "@context": "https://schema.org",
-        "@type": "DefinedTerm",
-        "@id": `${canonical}#defined-term`,
-        name: term.term,
-        description: term.definition,
-        inDefinedTermSet: {
-            "@type": "DefinedTermSet",
-            name: "Fizikhub Bilim Sözlüğü",
-            url: `${SITE_URL}/sozluk`,
-        },
-        termCode: slug,
-        url: canonical,
-        inLanguage: "tr-TR",
-    };
-
-    const webPageJsonLd = {
-        "@context": "https://schema.org",
-        "@type": "WebPage",
-        "@id": `${canonical}#webpage`,
-        name: `${term.term} nedir?`,
-        description: term.definition,
-        url: canonical,
-        inLanguage: "tr-TR",
-        isPartOf: {
-            "@type": "WebSite",
-            "@id": `${SITE_URL}/#website`,
-            name: "Fizikhub",
-            url: SITE_URL,
-        },
-        mainEntity: {
-            "@id": `${canonical}#defined-term`,
-        },
+        "@graph": [
+            {
+                "@type": "DefinedTerm",
+                "@id": `${canonical}#defined-term`,
+                name: term.term,
+                description: term.definition,
+                inDefinedTermSet: {
+                    "@type": "DefinedTermSet",
+                    name: "Fizikhub Bilim Sözlüğü",
+                    url: `${SITE_URL}/sozluk`,
+                },
+                termCode: slug,
+                url: canonical,
+                inLanguage: "tr-TR",
+            },
+            {
+                "@type": "WebPage",
+                "@id": `${canonical}#webpage`,
+                name: `${term.term} nedir?`,
+                description: term.definition,
+                url: canonical,
+                inLanguage: "tr-TR",
+                isPartOf: {
+                    "@type": "WebSite",
+                    "@id": `${SITE_URL}/#website`,
+                    name: "Fizikhub",
+                    url: SITE_URL,
+                },
+                mainEntity: {
+                    "@id": `${canonical}#defined-term`,
+                },
+            }
+        ]
     };
 
     return (
         <>
             <script
                 type="application/ld+json"
-                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-            />
-            <script
-                type="application/ld+json"
-                dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageJsonLd) }}
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(combinedJsonLd) }}
             />
             <BreadcrumbJsonLd items={[
                 { name: "Sözlük", href: "/sozluk" },
