@@ -180,7 +180,10 @@ export default async function ForumPage({ searchParams }: ForumPageProps) {
                                 </div>
                             ) : (
                                 <QuestionList
-                                    initialQuestions={questions}
+                                    initialQuestions={questions.map((q: any) => ({
+                                        ...q,
+                                        content: q.content ? q.content.slice(0, 350) : ''
+                                    }))}
                                     userVotes={userVotes}
                                     latestArticle={latestArticle}
                                 />

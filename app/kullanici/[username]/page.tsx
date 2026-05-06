@@ -1,7 +1,8 @@
-import { createClient } from "@/lib/supabase-server";
+import { createClient, createStaticClient } from "@/lib/supabase-server";
 import { notFound } from "next/navigation";
 import { getFollowStatus, getFollowStats } from "@/app/profil/actions";
 import { Metadata } from "next";
+import { cache } from "react";
 import { DarkNeoHeader } from "@/components/profile/dark-neo/dark-neo-header";
 import { DarkNeoFeed } from "@/components/profile/dark-neo/dark-neo-feed";
 import { DarkNeoSidebar } from "@/components/profile/dark-neo/dark-neo-sidebar";
@@ -10,16 +11,21 @@ interface PageProps {
     params: Promise<{ username: string }>;
 }
 
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-    const { username } = await params;
-    const supabase = await createClient();
-
-    // Minimal selection for SEO to reduce TTFB
+const getCachedProfile = cache(async (username: string) => {
+    const supabase = createStaticClient();
     const { data: profile } = await supabase
         .from('profiles')
-        .select('username, full_name, avatar_url, bio')
+        .select('*')
         .eq('username', username)
         .maybeSingle();
+    return profile;
+});
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+    const { username } = await params;
+    
+    // Using cached static client call for fast metadata generation
+    const profile = await getCachedProfile(username);
 
     if (!profile) return { title: 'Profil Bulunamadı' };
 
@@ -56,12 +62,12 @@ export default async function PublicProfilePage({ params }: PageProps) {
     const { username } = await params;
     const supabase = await createClient();
 
-    // Fetch profile and current user concurrently
+    // Fetch profile (cached) and current user concurrently
     const [
-        { data: profile },
+        profile,
         { data: { user } }
     ] = await Promise.all([
-        supabase.from('profiles').select('*').eq('username', username).maybeSingle(),
+        getCachedProfile(username),
         supabase.auth.getUser()
     ]);
 
@@ -129,6 +135,7 @@ export default async function PublicProfilePage({ params }: PageProps) {
         '@context': 'https://schema.org',
         '@type': 'ProfilePage',
         '@id': `https://www.fizikhub.com/kullanici/${profile.username}`,
+        mainEntityOfPage: `https://www.fizikhub.com/kullanici/${profile.username}`,
         dateCreated: profile.created_at,
         dateModified: profile.updated_at || profile.created_at,
         mainEntity: {
@@ -177,9 +184,9 @@ export default async function PublicProfilePage({ params }: PageProps) {
                     {/* LEFT: MAIN FEED (7 Columns) */}
                     <div className="order-2 space-y-6 lg:col-span-12 xl:order-1 xl:col-span-7">
                         <DarkNeoFeed
-                            articles={articles || []}
-                            questions={questions || []}
-                            answers={answers || []}
+                            articles={(articles || []).map(a => ({ ...a, content: a.content ? a.content.slice(0, 300) : '' }))}
+                            questions={(questions || []).map(q => ({ ...q, content: q.content ? q.content.slice(0, 300) : '' }))}
+                            answers={(answers || []).map(ans => ({ ...ans, content: ans.content ? ans.content.slice(0, 300) : '' }))}
                             drafts={[]} // No drafts on public profile
                             bookmarkedArticles={[]} // No bookmarks on public profile
                             bookmarkedQuestions={[]}

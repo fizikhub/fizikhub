@@ -1,9 +1,18 @@
 import { createClient } from "@/lib/supabase-server";
 import { redirect } from "next/navigation";
+import { Metadata } from "next";
 import { DarkNeoHeader } from "@/components/profile/dark-neo/dark-neo-header";
 import { DarkNeoFeed } from "@/components/profile/dark-neo/dark-neo-feed";
 import { DarkNeoSidebar } from "@/components/profile/dark-neo/dark-neo-sidebar";
 import { ProfileSetupHint } from "@/components/profile/profile-setup-hint";
+
+export const metadata: Metadata = {
+    title: 'Profilim — Fizikhub',
+    robots: {
+        index: false,
+        follow: false,
+    },
+};
 
 export default async function ProfilePage() {
     const supabase = await createClient();
@@ -78,9 +87,9 @@ export default async function ProfilePage() {
                     {/* MAIN FEED */}
                     <div className="order-2 xl:order-1 xl:col-span-7">
                         <DarkNeoFeed
-                            articles={articles || []}
-                            questions={questions || []}
-                            answers={answers || []}
+                            articles={(articles || []).map(a => ({ ...a, content: a.content ? a.content.slice(0, 300) : '' }))}
+                            questions={(questions || []).map(q => ({ ...q, content: q.content ? q.content.slice(0, 300) : '' }))}
+                            answers={(answers || []).map(ans => ({ ...ans, content: ans.content ? ans.content.slice(0, 300) : '' }))}
                             drafts={[]}
                             bookmarkedArticles={[]}
                             bookmarkedQuestions={[]}
