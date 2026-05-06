@@ -331,6 +331,15 @@
         text-transform: uppercase;
     }
 
+    @media (max-width: 640px) {
+        .article-content > p:first-of-type::first-letter {
+            font-size: 3.75rem;
+            line-height: 0.82;
+            margin-right: 0.1em;
+            margin-bottom: -0.08em;
+        }
+    }
+
     .dark .article-content > p:first-of-type::first-letter {
         color: #FFC800; /* Keep yellow in dark mode too — brand consistency */
         text-shadow: 2px 2px 0px rgba(0,0,0,0.5);

@@ -1,7 +1,5 @@
 import { notFound } from "next/navigation";
 import { ReadingProgress } from "@/components/blog/reading-progress";
-import { TableOfContents } from "@/components/blog/table-of-contents";
-import { RelatedArticles } from "@/components/blog/related-articles";
 import { NeoArticleHero } from "@/components/articles/neo-article-hero";
 import { createStaticClient } from "@/lib/supabase-server";
 import { getArticleBySlug } from "@/lib/api";
@@ -27,6 +25,22 @@ function toAbsoluteUrl(url: string | null | undefined, baseUrl: string) {
     }
 }
 
+function stripMarkdownForMeta(content: string | null | undefined) {
+    return (content || "")
+        .replace(/<[^>]*>/g, " ")
+        .replace(/!\[[^\]]*]\([^)]*\)/g, " ")
+        .replace(/\[([^\]]+)]\([^)]*\)/g, "$1")
+        .replace(/[#*_>`~|[\]]/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+}
+
+function toMetaDescription(article: any) {
+    const source = article.excerpt || article.summary || stripMarkdownForMeta(article.content);
+    const description = stripMarkdownForMeta(source).slice(0, 158).trim();
+    return description.endsWith(".") ? description : `${description}...`;
+}
+
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
     const { slug } = await params;
     const supabase = createStaticClient();
@@ -47,12 +61,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     fallbackOgUrl.searchParams.set('author', authorName);
     fallbackOgUrl.searchParams.set('category', category);
 
-    const coverUrl = toAbsoluteUrl(article.cover_url, baseUrl) || fallbackOgUrl.toString();
+    const coverUrl = toAbsoluteUrl(article.cover_url || (article as any).image_url, baseUrl) || fallbackOgUrl.toString();
+    const canonicalUrl = `${baseUrl}/makale/${article.slug || slug}`;
 
-    // Use excerpt if available for a better meta description, fallback to content snippet
-    const description = (article.excerpt || (article as any).summary || "") 
-        ? (article.excerpt || (article as any).summary || "").substring(0, 160)
-        : (article.content || "").replace(/[#*`>\[\]]/g, "").substring(0, 160) + "...";
+    const description = toMetaDescription(article);
 
     const tags = (article as any).tags as string[] | undefined;
 
@@ -69,7 +81,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
         openGraph: {
             title: article.title,
             description,
+            url: canonicalUrl,
             type: "article",
+            locale: "tr_TR",
             publishedTime: article.created_at,
             modifiedTime: (article as any).updated_at || article.created_at,
             authors: [authorName],
@@ -91,7 +105,24 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
             images: [coverUrl],
         },
         alternates: {
-            canonical: `https://www.fizikhub.com/makale/${slug}`,
+            canonical: canonicalUrl,
+        },
+        robots: {
+            index: true,
+            follow: true,
+            googleBot: {
+                index: true,
+                follow: true,
+                "max-image-preview": "large",
+                "max-snippet": -1,
+                "max-video-preview": -1,
+            },
+        },
+        other: {
+            "article:published_time": article.created_at,
+            "article:modified_time": (article as any).updated_at || article.created_at,
+            "article:section": article.category || "Fizik",
+            "article:author": authorName,
         },
     };
 }
@@ -172,64 +203,94 @@ export default async function ArticlePage({ params }: PageProps) {
 
     // JSON-LD structured data for Article — full E-E-A-T signals
     const articleTags = (article as any).tags as string[] | undefined;
-    const articleDescription = article.excerpt
-        ? article.excerpt.substring(0, 160)
-        : (article.content || "").replace(/[#*`>\[\]]/g, "").substring(0, 160) + "...";
+    const articleDescription = toMetaDescription(article);
+    const baseUrl = 'https://www.fizikhub.com';
+    const articleUrl = `${baseUrl}/makale/${article.slug}`;
+    const articleImageUrl = toAbsoluteUrl(article.cover_url || (article as any).image_url, baseUrl) || `${baseUrl}/api/og?title=${encodeURIComponent(article.title)}`;
+    const authorUrl = article.author?.username ? `${baseUrl}/kullanici/${article.author.username}` : baseUrl;
+    const citations = references
+        .map((reference: any) => reference.url || reference.title)
+        .filter(Boolean);
 
     const jsonLd = [
         {
             '@context': 'https://schema.org',
             '@type': 'Article',
-            '@id': `https://www.fizikhub.com/makale/${article.slug}#article`,
+            '@id': `${articleUrl}#article`,
+            url: articleUrl,
             headline: article.title,
             description: articleDescription,
             image: {
                 '@type': 'ImageObject',
-                url: toAbsoluteUrl(article.cover_url, 'https://www.fizikhub.com') || 'https://www.fizikhub.com/og-image.jpg',
+                url: articleImageUrl,
                 width: 1200,
                 height: 630,
             },
+            thumbnailUrl: articleImageUrl,
             datePublished: article.created_at,
             dateModified: (article as { updated_at?: string }).updated_at || article.created_at,
             wordCount: article.content ? article.content.split(/\s+/).length : 0,
+            timeRequired: `PT${readingTime}M`,
             inLanguage: 'tr-TR',
             articleSection: article.category || 'Fizik',
             keywords: articleTags && articleTags.length > 0 ? articleTags.join(', ') : 'fizik, bilim, fizikhub',
+            citation: citations.length > 0 ? citations : undefined,
+            isAccessibleForFree: true,
+            about: {
+                '@type': 'Thing',
+                name: article.category || 'Fizik',
+            },
             author: {
                 '@type': 'Person',
-                '@id': article.author?.username ? `https://www.fizikhub.com/kullanici/${article.author.username}#person` : 'https://www.fizikhub.com/#organization',
+                '@id': article.author?.username ? `${authorUrl}#person` : `${baseUrl}/#organization`,
                 name: article.author?.full_name || article.author?.username || 'Fizikhub Ekibi',
-                url: article.author?.username ? `https://www.fizikhub.com/kullanici/${article.author.username}` : 'https://www.fizikhub.com',
+                url: authorUrl,
             },
             publisher: {
                 '@type': 'Organization',
-                '@id': 'https://www.fizikhub.com/#organization',
+                '@id': `${baseUrl}/#organization`,
                 name: 'Fizikhub',
-                url: 'https://www.fizikhub.com',
+                url: baseUrl,
                 logo: {
                     '@type': 'ImageObject',
-                    url: 'https://www.fizikhub.com/icon-512.png',
+                    url: `${baseUrl}/icon-512.png`,
                     width: 512,
                     height: 512,
                 },
             },
             mainEntityOfPage: {
                 '@type': 'WebPage',
-                '@id': `https://www.fizikhub.com/makale/${article.slug}`,
+                '@id': articleUrl,
             },
             isPartOf: {
                 '@type': 'WebSite',
-                '@id': 'https://www.fizikhub.com/#website',
+                '@id': `${baseUrl}/#website`,
                 name: 'Fizikhub',
             },
         },
         {
             '@context': 'https://schema.org',
+            '@type': 'WebPage',
+            '@id': articleUrl,
+            url: articleUrl,
+            name: article.title,
+            description: articleDescription,
+            inLanguage: 'tr-TR',
+            isPartOf: { '@id': `${baseUrl}/#website` },
+            primaryImageOfPage: {
+                '@type': 'ImageObject',
+                url: articleImageUrl,
+            },
+            breadcrumb: { '@id': `${articleUrl}#breadcrumb` },
+        },
+        {
+            '@context': 'https://schema.org',
             '@type': 'BreadcrumbList',
+            '@id': `${articleUrl}#breadcrumb`,
             itemListElement: [
-                { '@type': 'ListItem', position: 1, name: 'Ana Sayfa', item: 'https://www.fizikhub.com' },
-                { '@type': 'ListItem', position: 2, name: 'Makaleler', item: 'https://www.fizikhub.com/makale' },
-                { '@type': 'ListItem', position: 3, name: article.title, item: `https://www.fizikhub.com/makale/${article.slug}` },
+                { '@type': 'ListItem', position: 1, name: 'Ana Sayfa', item: baseUrl },
+                { '@type': 'ListItem', position: 2, name: 'Makaleler', item: `${baseUrl}/makale` },
+                { '@type': 'ListItem', position: 3, name: article.title, item: articleUrl },
             ],
         },
     ];
@@ -245,7 +306,7 @@ export default async function ArticlePage({ params }: PageProps) {
             ))}
             <ReadingProgress />
 
-            <div className="min-h-screen bg-background pb-20">
+            <div className="min-h-screen overflow-x-hidden bg-background pb-20">
                 {article.category === 'Kitap İncelemesi' ? (
                     <ArticleErrorBoundary fallback={
                         <div className="container max-w-4xl mx-auto px-4 py-10">

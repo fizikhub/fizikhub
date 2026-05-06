@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { MarkdownRenderer } from "@/components/markdown-renderer";
 import { cn } from "@/lib/utils";
-import { AnimatePresence, m as motion, useScroll, useMotionValueEvent, useTransform } from "framer-motion";
+import { AnimatePresence, m as motion, useScroll, useMotionValueEvent } from "framer-motion";
 import { AuthorCard } from "@/components/blog/author-card";
 import { LikeButton } from "@/components/articles/like-button";
 import { BookmarkButton } from "@/components/bookmark-button";
@@ -12,7 +12,7 @@ import { ShareButtons } from "@/components/blog/share-buttons";
 import { RelatedArticles } from "@/components/blog/related-articles";
 import { CommentSection } from "@/components/articles/comment-section";
 
-import { ArrowUp, X, Type, Maximize2, Minimize2, Minus, Plus } from "lucide-react";
+import { ArrowUp, Type, Maximize2, Minimize2, Minus, Plus } from "lucide-react";
 import { isAdminEmail } from "@/lib/admin-shared";
 import { Button } from "@/components/ui/button";
 import {
@@ -52,7 +52,6 @@ export function ArticleReader({
     const [isZenMode, setIsZenMode] = useState(false);
     const [fontSize, setFontSize] = useState<'sm' | 'base' | 'lg' | 'xl'>('base');
     const [fontFamily, setFontFamily] = useState<'sans' | 'serif'>('sans');
-    const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
     const [showScrollTop, setShowScrollTop] = useState(false);
     const contentRef = useRef<HTMLDivElement>(null);
 
@@ -107,24 +106,6 @@ export function ArticleReader({
             setShowScrollTop(false);
         }
     });
-
-
-    // Image lightbox: intercept clicks on article images
-    useEffect(() => {
-        const container = contentRef.current;
-        if (!container) return;
-
-        const handleImageClick = (e: Event) => {
-            const target = e.target as HTMLElement;
-            if (target.tagName === 'IMG' && target.closest('.prose')) {
-                e.preventDefault();
-                setLightboxSrc((target as HTMLImageElement).src);
-            }
-        };
-
-        container.addEventListener('click', handleImageClick);
-        return () => container.removeEventListener('click', handleImageClick);
-    }, []);
 
     // Code block copy buttons: inject after render
     useEffect(() => {
@@ -199,16 +180,6 @@ export function ArticleReader({
         };
     }, [article.content]);
 
-    // Lightbox close on Escape
-    useEffect(() => {
-        if (!lightboxSrc) return;
-        const handleKeyDown = (e: KeyboardEvent) => {
-            if (e.key === 'Escape') setLightboxSrc(null);
-        };
-        window.addEventListener('keydown', handleKeyDown);
-        return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [lightboxSrc]);
-
     const scrollToTop = useCallback(() => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }, []);
@@ -233,7 +204,7 @@ export function ArticleReader({
                 isZenMode ? "fixed inset-0 overflow-y-auto z-50 pt-16 px-4" : ""
             )}>
                 <div className={cn(
-                    "container mx-auto overflow-x-hidden",
+                    "container mx-auto max-w-[100vw] overflow-x-hidden",
                     isZenMode ? "max-w-3xl" : "max-w-4xl px-4 py-10"
                 )}>
                     {/* Article Content */}
@@ -252,21 +223,21 @@ export function ArticleReader({
                         <div className={cn(
                             "prose prose-base sm:prose-lg dark:prose-invert max-w-none mb-12 sm:mb-20 overflow-x-hidden",
                             // Headings
-                            "prose-headings:font-black prose-headings:tracking-tighter prose-headings:text-foreground",
+                            "prose-headings:font-black prose-headings:tracking-normal prose-headings:text-foreground",
                             "prose-h1:text-2xl sm:prose-h1:text-4xl md:prose-h1:text-5xl prose-h1:!mb-8 sm:prose-h1:!mb-12 prose-h1:leading-[1.15]",
-                            "prose-h2:text-xl sm:prose-h2:text-3xl md:prose-h2:text-4xl prose-h2:mt-10 sm:prose-h2:mt-16 prose-h2:!mb-6 sm:prose-h2:!mb-8 prose-h2:border-l-[6px] sm:prose-h2:border-l-[8px] prose-h2:border-[#FFC800] prose-h2:pl-4 sm:prose-h2:pl-5 prose-h2:leading-[1.2]",
-                            "prose-h3:text-lg sm:prose-h3:text-2xl md:prose-h3:text-3xl prose-h3:mt-8 sm:prose-h3:mt-12 prose-h3:!mb-5 sm:prose-h3:!mb-6 prose-h3:font-bold prose-h3:border-l-[4px] sm:prose-h3:border-l-[6px] prose-h3:border-[#23A9FA] prose-h3:pl-3 sm:prose-h3:pl-4 prose-h3:leading-[1.2]",
+                            "prose-h2:text-[1.35rem] sm:prose-h2:text-3xl md:prose-h2:text-4xl prose-h2:mt-10 sm:prose-h2:mt-16 prose-h2:!mb-5 sm:prose-h2:!mb-8 prose-h2:border-l-[5px] sm:prose-h2:border-l-[8px] prose-h2:border-[#FFC800] prose-h2:pl-3.5 sm:prose-h2:pl-5 prose-h2:leading-[1.25]",
+                            "prose-h3:text-[1.18rem] sm:prose-h3:text-2xl md:prose-h3:text-3xl prose-h3:mt-8 sm:prose-h3:mt-12 prose-h3:!mb-4 sm:prose-h3:!mb-6 prose-h3:font-bold prose-h3:border-l-[4px] sm:prose-h3:border-l-[6px] prose-h3:border-[#23A9FA] prose-h3:pl-3 sm:prose-h3:pl-4 prose-h3:leading-[1.25]",
                             "prose-h4:text-base sm:prose-h4:text-xl prose-h4:mt-6 prose-h4:!mb-4 prose-h4:font-black prose-h4:text-foreground",
                             // Paragraphs & Text — optimized for mobile readability
-                            "prose-p:text-[15px] sm:prose-p:text-[17px] md:prose-p:text-[18px] prose-p:text-[#1a1a1a] dark:prose-p:text-[#e5e5e5] prose-p:leading-[1.85] sm:prose-p:leading-[1.9] prose-p:mb-6 sm:prose-p:mb-8 prose-p:font-[450]",
+                            "prose-p:text-[16px] sm:prose-p:text-[17px] md:prose-p:text-[18px] prose-p:text-[#1a1a1a] dark:prose-p:text-[#e5e5e5] prose-p:leading-[1.78] sm:prose-p:leading-[1.9] prose-p:mb-5 sm:prose-p:mb-8 prose-p:font-[450]",
                             "prose-strong:text-black dark:prose-strong:text-white prose-strong:font-black prose-strong:bg-[#FFC800]/20 dark:prose-strong:bg-[#23A9FA]/20 prose-strong:px-1 prose-strong:rounded-sm",
                             // Links — break long URLs
                             "prose-a:text-black dark:prose-a:text-white prose-a:font-black prose-a:no-underline prose-a:border-b-[3px] prose-a:border-[#23A9FA] dark:prose-a:border-[#FFC800] hover:prose-a:bg-[#23A9FA] dark:hover:prose-a:bg-[#FFC800] hover:prose-a:text-white dark:hover:prose-a:text-black prose-a:break-all prose-a:px-0.5",
                             // Lists
-                            "prose-li:text-[15px] sm:prose-li:text-[17px] md:prose-li:text-[18px] prose-li:text-zinc-800 dark:prose-li:text-zinc-300 prose-li:leading-[1.8] sm:prose-li:leading-relaxed prose-li:marker:text-[#FFC800] prose-li:marker:font-black prose-li:font-[450]",
+                            "prose-li:text-[16px] sm:prose-li:text-[17px] md:prose-li:text-[18px] prose-li:text-zinc-800 dark:prose-li:text-zinc-300 prose-li:leading-[1.78] sm:prose-li:leading-relaxed prose-li:marker:text-[#FFC800] prose-li:marker:font-black prose-li:font-[450]",
                             "prose-ul:pl-5 sm:prose-ul:pl-8 prose-ol:pl-5 sm:prose-ol:pl-8",
                             // Blockquotes
-                            "prose-blockquote:border-l-[5px] sm:prose-blockquote:border-l-[8px] prose-blockquote:border-black dark:prose-blockquote:border-[#FFC800] prose-blockquote:bg-[#FFC800]/10 dark:prose-blockquote:bg-[#FFC800]/5 prose-blockquote:py-4 sm:prose-blockquote:py-8 prose-blockquote:px-4 sm:prose-blockquote:px-10 prose-blockquote:my-8 sm:prose-blockquote:my-12 prose-blockquote:rounded-r-2xl prose-blockquote:not-italic prose-blockquote:font-bold prose-blockquote:text-base sm:prose-blockquote:text-2xl prose-blockquote:leading-relaxed prose-blockquote:text-black dark:prose-blockquote:text-zinc-100",
+                            "prose-blockquote:border-l-[5px] sm:prose-blockquote:border-l-[8px] prose-blockquote:border-black dark:prose-blockquote:border-[#FFC800] prose-blockquote:bg-[#FFC800]/10 dark:prose-blockquote:bg-[#FFC800]/5 prose-blockquote:py-4 sm:prose-blockquote:py-8 prose-blockquote:px-4 sm:prose-blockquote:px-10 prose-blockquote:my-7 sm:prose-blockquote:my-12 prose-blockquote:rounded-r-xl sm:prose-blockquote:rounded-r-2xl prose-blockquote:not-italic prose-blockquote:font-bold prose-blockquote:text-base sm:prose-blockquote:text-2xl prose-blockquote:leading-relaxed prose-blockquote:text-black dark:prose-blockquote:text-zinc-100",
                             // Code
                             "prose-code:bg-zinc-100 dark:prose-code:bg-zinc-800 prose-code:border-2 prose-code:border-black dark:prose-code:border-zinc-700 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded-md prose-code:text-[#FF3366] dark:prose-code:text-[#FFC800] prose-code:font-mono prose-code:text-[0.8em] sm:prose-code:text-[0.9em] prose-code:font-black prose-code:before:content-none prose-code:after:content-none prose-code:shadow-[2px_2px_0px_0px_#000] dark:prose-code:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.1)] prose-code:break-all",
                             "prose-pre:bg-zinc-950 prose-pre:border-4 prose-pre:border-black dark:prose-pre:border-zinc-700 prose-pre:rounded-xl prose-pre:shadow-[8px_8px_0px_0px_#000] dark:prose-pre:shadow-[8px_8px_0px_0px_rgba(0,0,0,0.8)] prose-pre:overflow-x-auto prose-pre:max-w-full",
@@ -284,9 +255,9 @@ export function ArticleReader({
                             />
                         </div>
 
-                        {/* Unified Floating Action Dock — ALL controls in one bar */}
+                        {/* Unified Floating Action Dock — desktop/tablet only. Mobile keeps the reading surface clear. */}
                         {!isZenMode && (
-                            <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 w-fit max-w-[95vw] transition-all duration-300">
+                            <div className="fixed bottom-6 left-1/2 z-40 hidden w-fit max-w-[95vw] -translate-x-1/2 transition-all duration-300 md:block">
                                 <div className="p-2 sm:p-3 bg-white dark:bg-zinc-900 rounded-2xl border-4 border-black dark:border-zinc-700 flex items-center gap-2 sm:gap-4 shadow-[6px_6px_0px_0px_#000] dark:shadow-[6px_6px_0px_0px_rgba(0,0,0,0.5)]">
                                     {/* Like / Bookmark / Report */}
                                     <div className="flex items-center gap-1 sm:gap-3">
@@ -424,14 +395,14 @@ export function ArticleReader({
 
                         {/* Footer Section */}
                         {!isZenMode && (
-                            <div className="mt-10 sm:mt-12 space-y-10 sm:space-y-16 pb-32 sm:pb-40">
+                            <div className="mt-10 sm:mt-12 space-y-10 sm:space-y-16 pb-24 sm:pb-40">
 
 
                                 {/* Author */}
                                 <aside className="border-t-[3px] border-dashed border-black/10 dark:border-white/10 pt-8 sm:pt-12">
                                     <div className="flex items-center gap-2.5 sm:gap-3 mb-6 sm:mb-8">
                                         <div className="w-1.5 sm:w-2 h-6 sm:h-8 bg-[#FFC800]" />
-                                        <h3 className="text-xl sm:text-2xl font-black text-foreground uppercase tracking-tight">Yazar</h3>
+                                        <h3 className="text-xl sm:text-2xl font-black text-foreground uppercase tracking-normal">Yazar</h3>
                                     </div>
                                     <AuthorCard author={article.author || {}} />
                                 </aside>
@@ -441,7 +412,7 @@ export function ArticleReader({
                                     <div className="space-y-5">
                                         <div className="flex items-center gap-2.5 sm:gap-3">
                                             <div className="w-1.5 sm:w-2 h-6 sm:h-8 bg-[#23A9FA]" />
-                                            <h3 className="text-xl sm:text-2xl font-black text-foreground uppercase tracking-tight">Kaynaklar</h3>
+                                            <h3 className="text-xl sm:text-2xl font-black text-foreground uppercase tracking-normal">Kaynaklar</h3>
                                             <span className="ml-auto text-[10px] sm:text-xs font-bold bg-zinc-100 dark:bg-zinc-800 border-2 border-black dark:border-zinc-700 px-2 sm:px-2.5 py-1 rounded-md shadow-[2px_2px_0px_0px_#000] dark:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.3)]">
                                                 {references.length} kaynak
                                             </span>
@@ -489,7 +460,7 @@ export function ArticleReader({
                                     <div className="space-y-6 sm:space-y-8">
                                         <div className="flex items-center gap-2.5 sm:gap-3">
                                             <div className="w-1.5 sm:w-2 h-6 sm:h-8 bg-[#FFC800]" />
-                                            <h3 className="text-xl sm:text-2xl font-black text-foreground uppercase tracking-tight">Benzer Makaleler</h3>
+                                            <h3 className="text-xl sm:text-2xl font-black text-foreground uppercase tracking-normal">Benzer Makaleler</h3>
                                         </div>
                                         <RelatedArticles articles={relatedArticles} />
                                     </div>
@@ -499,7 +470,7 @@ export function ArticleReader({
                                 <div className="space-y-6 sm:space-y-8">
                                     <div className="flex items-center gap-2.5 sm:gap-3">
                                         <div className="w-1.5 sm:w-2 h-6 sm:h-8 bg-black dark:bg-white" />
-                                        <h3 className="text-xl sm:text-2xl font-black text-foreground uppercase tracking-tight">
+                                        <h3 className="text-xl sm:text-2xl font-black text-foreground uppercase tracking-normal">
                                             Yorumlar {comments.length > 0 && `(${comments.length})`}
                                         </h3>
                                     </div>
@@ -517,16 +488,6 @@ export function ArticleReader({
                 </div>
             </div>
 
-            {/* Image Lightbox */}
-            {lightboxSrc && (
-                <div className="image-lightbox" onClick={() => setLightboxSrc(null)}>
-                    <button className="image-lightbox-close" onClick={() => setLightboxSrc(null)}>
-                        <X className="w-5 h-5" />
-                    </button>
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={lightboxSrc} alt="Büyütülmüş görsel" onClick={(e) => e.stopPropagation()} />
-                </div>
-            )}
         </div>
     );
 }
