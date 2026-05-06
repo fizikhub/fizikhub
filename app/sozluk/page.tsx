@@ -49,6 +49,8 @@ export const metadata: Metadata = {
 
 export const revalidate = 3600;
 
+const MAX_STRUCTURED_DATA_TERMS = 250;
+
 export default async function DictionaryPage() {
     const supabase = await createClient();
     const terms = await getDictionaryTerms(supabase);
@@ -82,7 +84,7 @@ export default async function DictionaryPage() {
         description: 'Fizik, astronomi, kuantum, termodinamik ve modern bilim terimlerinin Türkçe açıklamaları.',
         url: `${SITE_URL}/sozluk`,
         inLanguage: 'tr-TR',
-        hasDefinedTerm: terms.slice(0, 100).map((term) => ({
+        hasDefinedTerm: terms.slice(0, MAX_STRUCTURED_DATA_TERMS).map((term) => ({
             '@type': 'DefinedTerm',
             name: term.term,
             description: term.definition,
@@ -95,7 +97,7 @@ export default async function DictionaryPage() {
         '@context': 'https://schema.org',
         '@type': 'ItemList',
         name: 'Bilim Sözlüğü Terimleri',
-        itemListElement: terms.slice(0, 100).map((term, index) => ({
+        itemListElement: terms.slice(0, MAX_STRUCTURED_DATA_TERMS).map((term, index) => ({
             '@type': 'ListItem',
             position: index + 1,
             name: term.term,

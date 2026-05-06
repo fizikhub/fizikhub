@@ -15,6 +15,19 @@ const SITE_URL = "https://www.fizikhub.com";
 
 export const revalidate = 3600;
 
+function truncateAtWordBoundary(text: string, limit: number) {
+    if (text.length <= limit) return text;
+
+    const candidate = text.slice(0, limit + 1);
+    const lastSpace = candidate.lastIndexOf(" ");
+
+    if (lastSpace <= Math.floor(limit * 0.6)) {
+        return `${text.slice(0, limit).trim()}...`;
+    }
+
+    return `${candidate.slice(0, lastSpace).trim()}...`;
+}
+
 async function getTermBySlug(slug: string) {
     const supabase = createStaticClient();
     const terms = await getDictionaryTerms(supabase);
@@ -40,9 +53,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
         };
     }
 
-    const description = term.definition.length > 155
-        ? `${term.definition.slice(0, 152).trim()}...`
-        : term.definition;
+    const description = truncateAtWordBoundary(term.definition, 152);
     const canonical = `${SITE_URL}/sozluk/${slug}`;
 
     return {
