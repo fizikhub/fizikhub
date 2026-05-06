@@ -102,7 +102,7 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
     const cleanContent = stripHtml(question.content || "").slice(0, 300);
 
     return (
-        <div className="w-full h-full">
+        <article className="w-full h-full">
             <ViewTransitionLink
                 prefetch={false}
                 href={`/forum/${question.id}`}
@@ -129,9 +129,9 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
                         {question.category || "GENEL"}
                     </span>
                     <div className="flex items-center gap-2">
-                        <span className="text-[10px] font-bold text-black/50 uppercase tracking-widest">
+                        <time dateTime={question.created_at} className="text-[10px] font-bold text-black/50 uppercase tracking-widest">
                             {formatRelativeTime(question.created_at, renderedAt)}
-                        </span>
+                        </time>
                         {badgeLabel && (
                             <div className="bg-black text-[#FFBD2E] px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider">
                                 {badgeLabel}
@@ -144,9 +144,9 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
                 <div className="flex-1 p-4 sm:p-5 flex flex-col gap-2.5 z-10 relative">
 
                     {/* Title */}
-                    <h3 className="font-[family-name:var(--font-outfit)] text-lg sm:text-2xl font-black text-black dark:text-zinc-50 leading-tight uppercase tracking-tight group-hover:text-[#FFBD2E] transition-colors duration-200 line-clamp-2">
+                    <h2 className="font-[family-name:var(--font-outfit)] text-lg sm:text-2xl font-black text-black dark:text-zinc-50 leading-tight uppercase tracking-tight group-hover:text-[#FFBD2E] transition-colors duration-200 line-clamp-2">
                         {question.title}
-                    </h3>
+                    </h2>
 
                     {/* Content Snippet */}
                     <div className="relative">
@@ -246,7 +246,7 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
                     </div>
                 </div>
             </ViewTransitionLink>
-        </div>
+        </article>
     );
 });
 

@@ -113,7 +113,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const [questionsResult, articlesResult, profilesResult, quizzesResult, terms] = await Promise.all([
         supabase
             .from('questions')
-            .select('id, created_at')
+            .select('id, created_at, updated_at')
             .order('created_at', { ascending: false })
             .limit(1000),
 
@@ -142,9 +142,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
     const questionPages: MetadataRoute.Sitemap = (questionsResult.data || []).map((question) => ({
         url: `${baseUrl}/forum/${question.id}`,
-        lastModified: toLastModified(question.created_at),
+        lastModified: toLastModified(question.updated_at || question.created_at),
         changeFrequency: 'weekly' as const,
         priority: 0.8,
+    }));
+
+    // Forum category pages for better discovery
+    const forumCategories = ['Fizik', 'Kuantum', 'Astrofizik', 'Mekanik', 'Termodinamik', 'Biyoloji', 'Kimya', 'Matematik', 'Edebiyat', 'Felsefe'];
+    const forumCategoryPages: MetadataRoute.Sitemap = forumCategories.map((cat) => ({
+        url: `${baseUrl}/forum?category=${encodeURIComponent(cat)}`,
+        lastModified: STATIC_LAST_MODIFIED,
+        changeFrequency: 'daily' as const,
+        priority: 0.7,
     }));
 
     const articlePages: MetadataRoute.Sitemap = (articlesResult.data || []).map((article) => {
@@ -194,6 +203,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     return [
         ...staticPages,
         ...questionPages,
+        ...forumCategoryPages,
         ...articlePages,
         ...profilePages,
         ...termPages,

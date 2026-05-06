@@ -29,7 +29,7 @@ export async function RelatedQuestions({ currentQuestionId, category }: RelatedQ
     if (!questions || questions.length === 0) return null;
 
     return (
-        <div className="pt-6 border-t-[2.5px] border-black/10 dark:border-zinc-800">
+        <nav aria-label="Benzer sorular" className="pt-6 border-t-[2.5px] border-black/10 dark:border-zinc-800">
             <h3 className="text-base font-black mb-4 flex items-center gap-2 uppercase tracking-tight text-neutral-700 dark:text-zinc-300">
                 <span className="text-[#FFBD2E]">📚</span>
                 Benzer {category} Soruları
@@ -40,6 +40,7 @@ export async function RelatedQuestions({ currentQuestionId, category }: RelatedQ
                     <Link
                         key={q.id}
                         href={`/forum/${q.id}`}
+                        prefetch={false}
                         className="group block p-4 bg-white dark:bg-[#1e1e21] border-[2px] border-black/20 dark:border-zinc-700 rounded-[10px] hover:border-black dark:hover:border-zinc-500 hover:shadow-[3px_3px_0_0_#000] dark:hover:shadow-[3px_3px_0_0_rgba(255,255,255,0.06)] transition-all duration-200 hover:-translate-y-0.5"
                     >
                         {/* Title */}
@@ -61,6 +62,6 @@ export async function RelatedQuestions({ currentQuestionId, category }: RelatedQ
                     </Link>
                 ))}
             </div>
-        </div>
+        </nav>
     );
 }

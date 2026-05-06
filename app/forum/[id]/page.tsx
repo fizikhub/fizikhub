@@ -39,33 +39,72 @@ interface PageProps {
 // ISR: Regenerate every 30 seconds for forum questions
 export const revalidate = 30;
 
+// Strip markdown/HTML for clean meta descriptions
+function stripMarkdownForMeta(text: string): string {
+    return text
+        .replace(/#{1,6}\s?/g, '') // headings
+        .replace(/\*\*([^*]+)\*\*/g, '$1') // bold
+        .replace(/\*([^*]+)\*/g, '$1') // italic
+        .replace(/`([^`]+)`/g, '$1') // inline code
+        .replace(/```[\s\S]*?```/g, '') // code blocks
+        .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1') // links
+        .replace(/!\[([^\]]*)\]\([^)]+\)/g, '') // images
+        .replace(/<[^>]*>/g, '') // HTML tags
+        .replace(/\n+/g, ' ') // newlines
+        .replace(/\s+/g, ' ') // multiple spaces
+        .trim();
+}
+
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
     const { id } = await params;
     const supabase = await createClient();
 
     const { data: question } = await supabase
         .from('questions')
-        .select('title, content, category')
+        .select('title, content, category, tags, created_at, updated_at, votes, profiles(username), answers(count)')
         .eq('id', id)
         .single();
 
     if (!question) {
         return {
             title: "Soru Bulunamadı",
+            robots: { index: false, follow: false },
         };
     }
 
-    const ogUrl = new URL(`${process.env.NEXT_PUBLIC_APP_URL || 'https://www.fizikhub.com'}/api/og`);
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.fizikhub.com';
+    const canonicalUrl = `${baseUrl}/forum/${id}`;
+    const category = question.category || 'Genel';
+    const cleanContent = stripMarkdownForMeta(question.content);
+    const description = cleanContent.length > 155
+        ? cleanContent.substring(0, 155).trimEnd() + '…'
+        : cleanContent;
+    const seoTitle = `${question.title} — ${category} Forumu`;
+
+    // Dynamic keywords from category + tags
+    const dynamicKeywords = [
+        question.title.toLowerCase(),
+        category.toLowerCase(),
+        'fizik forumu',
+        'bilim soruları',
+        ...(question.tags || []).map((t: string) => t.toLowerCase()),
+        'fizikhub',
+    ].filter(Boolean);
+
+    const ogUrl = new URL(`${baseUrl}/api/og`);
     ogUrl.searchParams.set('title', question.title);
-    ogUrl.searchParams.set('category', question.category || 'Genel');
+    ogUrl.searchParams.set('category', category);
 
     return {
-        title: question.title,
-        description: question.content.substring(0, 160) + "...",
+        title: seoTitle,
+        description,
+        keywords: dynamicKeywords,
+        robots: { index: true, follow: true },
         openGraph: {
-            title: question.title,
-            description: question.content.substring(0, 160) + "...",
+            title: seoTitle,
+            description,
             type: "website",
+            url: canonicalUrl,
             images: [
                 {
                     url: ogUrl.toString(),
@@ -77,12 +116,12 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
         },
         twitter: {
             card: "summary_large_image",
-            title: question.title,
-            description: question.content.substring(0, 160) + "...",
+            title: seoTitle,
+            description,
             images: [ogUrl.toString()],
         },
         alternates: {
-            canonical: `${process.env.NEXT_PUBLIC_APP_URL || 'https://www.fizikhub.com'}/forum/${id}`,
+            canonical: canonicalUrl,
         },
     };
 }
@@ -234,16 +273,18 @@ export default async function QuestionPage({ params }: PageProps) {
 
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.fizikhub.com';
 
+    // QAPage JSON-LD — Google Rich Results for Q&A
     const jsonLd = {
         '@context': 'https://schema.org',
         '@type': 'QAPage',
         mainEntity: {
             '@type': 'Question',
             name: question.title,
-            text: question.content.substring(0, 200) + "...",
+            text: question.content, // Full text required by Google
             answerCount: answers?.length || 0,
             upvoteCount: question.votes || 0,
             dateCreated: question.created_at,
+            ...(question.updated_at && { dateModified: question.updated_at }),
             author: {
                 '@type': 'Person',
                 name: question.profiles?.username || 'Anonim',
@@ -280,6 +321,53 @@ export default async function QuestionPage({ params }: PageProps) {
         },
     };
 
+    // DiscussionForumPosting JSON-LD — Google's recommended schema for forums
+    const discussionJsonLd = {
+        '@context': 'https://schema.org',
+        '@type': 'DiscussionForumPosting',
+        '@id': `${baseUrl}/forum/${question.id}`,
+        headline: question.title,
+        text: question.content,
+        url: `${baseUrl}/forum/${question.id}`,
+        datePublished: question.created_at,
+        ...(question.updated_at && { dateModified: question.updated_at }),
+        author: {
+            '@type': 'Person',
+            name: question.profiles?.username || 'Anonim',
+            url: question.profiles?.username ? `${baseUrl}/kullanici/${question.profiles.username}` : baseUrl,
+        },
+        interactionStatistic: [
+            {
+                '@type': 'InteractionCounter',
+                interactionType: 'https://schema.org/LikeAction',
+                userInteractionCount: question.votes || 0,
+            },
+            {
+                '@type': 'InteractionCounter',
+                interactionType: 'https://schema.org/CommentAction',
+                userInteractionCount: answers?.length || 0,
+            },
+        ],
+        ...(answersWithLikes && answersWithLikes.length > 0 && {
+            comment: answersWithLikes.map(answer => ({
+                '@type': 'Comment',
+                text: answer.content,
+                dateCreated: answer.created_at,
+                author: {
+                    '@type': 'Person',
+                    name: answer.profiles?.username || 'Anonim',
+                    url: answer.profiles?.username ? `${baseUrl}/kullanici/${answer.profiles.username}` : baseUrl,
+                },
+                url: `${baseUrl}/forum/${question.id}#answer-${answer.id}`,
+            })),
+        }),
+        isPartOf: {
+            '@type': 'DiscussionForum',
+            name: 'Fizikhub Bilim Forumu',
+            url: `${baseUrl}/forum`,
+        },
+    };
+
     const tagColors = [
         "bg-[#FFBD2E] text-black", // Neo Yellow
         "bg-neo-pink text-white", // Neo Pink
@@ -300,6 +388,10 @@ export default async function QuestionPage({ params }: PageProps) {
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
             />
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(discussionJsonLd) }}
+            />
 
             <div className="container max-w-7xl mx-auto py-2 sm:py-6 md:py-8 px-0 sm:px-4 md:px-6 relative z-10">
                 <div className="grid grid-cols-1 lg:grid-cols-[1fr_350px] gap-6 lg:gap-8 items-start">
@@ -318,7 +410,7 @@ export default async function QuestionPage({ params }: PageProps) {
                         </div>
 
                         {/* QUESTION CARD - Neo-Brutalist */}
-                        <div className={cn(
+                        <article itemScope itemType="https://schema.org/Question" className={cn(
                             "relative overflow-hidden transition-all duration-200",
                             "bg-white dark:bg-[#1e1e21]",
                             "border-[2.5px] border-black dark:border-zinc-700 rounded-[10px]",
@@ -365,9 +457,9 @@ export default async function QuestionPage({ params }: PageProps) {
                                                 <BadgeCheck className="h-4 w-4 text-blue-500 fill-blue-500/10" />
                                             )}
                                         </Link>
-                                        <span className="font-medium text-xs text-neutral-500 dark:text-zinc-500">
+                                        <time dateTime={question.created_at} className="font-medium text-xs text-neutral-500 dark:text-zinc-500">
                                             {formatDistanceToNow(new Date(question.created_at), { addSuffix: true, locale: tr })}
-                                        </span>
+                                        </time>
                                     </div>
                                 </div>
 
@@ -464,10 +556,10 @@ export default async function QuestionPage({ params }: PageProps) {
                                     />
                                 </div>
                             </div>
-                        </div>
+                        </article>
 
                         {/* Answers Section */}
-                        <div className="mt-8 sm:mt-10 max-w-full px-2 sm:px-0">
+                        <section aria-label="Cevaplar" className="mt-8 sm:mt-10 max-w-full px-2 sm:px-0">
                             <div className="flex items-center justify-between px-1 mb-5">
                                 <h3 className="text-lg sm:text-xl font-black uppercase tracking-tight flex items-center gap-2">
                                     <MessageSquare className="h-5 w-5 text-[#FFBD2E]" />
@@ -482,7 +574,7 @@ export default async function QuestionPage({ params }: PageProps) {
                                 questionAuthorId={question.author_id}
                                 currentUser={user}
                             />
-                        </div>
+                        </section>
 
                         {/* Related Questions */}
                         <div className="mt-10 sm:mt-12 px-2 sm:px-0">

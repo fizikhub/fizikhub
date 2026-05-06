@@ -22,10 +22,14 @@ export async function generateMetadata({ searchParams }: ForumPageProps): Promis
     const filter = typeof params.filter === 'string' ? params.filter : undefined;
     const query = typeof params.q === 'string' ? params.q : undefined;
     const page = typeof params.page === 'string' ? params.page : undefined;
-    const hasLowValueParams = Boolean(query || filter || page || (sort && sort !== 'newest'));
-    const canonicalUrl = category
-        ? `https://www.fizikhub.com/forum?category=${encodeURIComponent(category)}`
-        : "https://www.fizikhub.com/forum";
+    const hasLowValueParams = Boolean(query || filter || (sort && sort !== 'newest'));
+    // Self-referencing canonical: each paginated page gets its own canonical
+    let canonicalUrl = 'https://www.fizikhub.com/forum';
+    const canonicalParams = new URLSearchParams();
+    if (category) canonicalParams.set('category', category);
+    if (page && Number(page) > 1) canonicalParams.set('page', page);
+    const qs = canonicalParams.toString();
+    if (qs) canonicalUrl += `?${qs}`;
     const title = category ? `${category} Soruları ve Bilim Forumu` : "Bilim Forumu";
     const description = category
         ? `${category} hakkında fizik ve bilim soruları, cevaplar ve topluluk tartışmaları.`
@@ -147,6 +151,12 @@ export default async function ForumPage({ searchParams }: ForumPageProps) {
             />
             <div className="bg-background min-h-screen pb-20">
                 <div className="container py-4 md:py-8 px-4 md:px-8 max-w-[1600px] mx-auto">
+                    {/* SEO-friendly heading — visible and descriptive */}
+                    <h1 className="sr-only">
+                        {category && category !== 'Tümü'
+                            ? `${category} Soruları — Fizikhub Bilim Forumu`
+                            : 'Fizikhub Bilim Forumu — Fizik Soruları ve Tartışmalar'}
+                    </h1>
                     <ModernForumHeader />
 
                     <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-6 lg:gap-10">
@@ -178,10 +188,10 @@ export default async function ForumPage({ searchParams }: ForumPageProps) {
                         </div>
 
                         {/* Desktop Sidebar */}
-                        <div className="hidden lg:block space-y-8 order-2 sticky top-[100px] h-fit">
+                        <aside className="hidden lg:block space-y-8 order-2 sticky top-[100px] h-fit" aria-label="Forum kenar çubuğu">
                             <ForumSidebar />
                             {weeklyQuestion && <QuestionOfTheWeek questionId={weeklyQuestion.id} />}
-                        </div>
+                        </aside>
 
                         {/* Mobile Question of the Week (Bottom) */}
                         <div className="lg:hidden mt-8 order-3">
