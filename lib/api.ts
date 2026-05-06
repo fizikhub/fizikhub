@@ -3,6 +3,8 @@ import { SupabaseClient } from '@supabase/supabase-js';
 import { cache } from 'react';
 import { unstable_cache } from 'next/cache';
 import { createStaticClient } from './supabase-server';
+import { CURATED_DICTIONARY_TERMS } from './dictionary-defaults';
+import { slugify } from './slug';
 
 
 export type Article = Database['public']['Tables']['articles']['Row'] & {
@@ -20,6 +22,25 @@ export type Question = Database['public']['Tables']['questions']['Row'] & {
 };
 
 export type DictionaryTerm = Database['public']['Tables']['dictionary_terms']['Row'];
+
+function mergeDictionaryTerms(remoteTerms: DictionaryTerm[]) {
+    const termsBySlug = new Map<string, DictionaryTerm>();
+
+    for (const term of CURATED_DICTIONARY_TERMS) {
+        termsBySlug.set(slugify(term.term), term);
+    }
+
+    for (const term of remoteTerms) {
+        const slug = slugify(term.term);
+        if (!termsBySlug.has(slug)) {
+            termsBySlug.set(slug, term);
+        }
+    }
+
+    return Array.from(termsBySlug.values()).sort((a, b) =>
+        a.term.localeCompare(b.term, 'tr'),
+    );
+}
 
 export const getArticles = cache(async function (
     _supabase: SupabaseClient<Database>, // Kept for backwards compatibility but ignored
@@ -126,9 +147,9 @@ export const getDictionaryTerms = cache(async function (_supabase: SupabaseClien
 
             if (error) {
                 console.error('Error fetching dictionary terms:', JSON.stringify(error, null, 2));
-                return [];
+                return CURATED_DICTIONARY_TERMS;
             }
-            return data as DictionaryTerm[];
+            return mergeDictionaryTerms(data as DictionaryTerm[]);
         },
         ['dictionary_terms'],
         { revalidate: 3600, tags: ['dictionary'] } // 1 hour cache since terms rarely change
@@ -136,4 +157,3 @@ export const getDictionaryTerms = cache(async function (_supabase: SupabaseClien
 
     return await fetchCached();
 });
-

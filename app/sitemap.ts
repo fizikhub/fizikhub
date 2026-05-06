@@ -2,6 +2,7 @@ import { MetadataRoute } from 'next';
 import { createStaticClient } from '@/lib/supabase-server';
 import { simulations } from '@/components/simulations/data';
 import { slugify } from '@/lib/slug';
+import { getDictionaryTerms } from '@/lib/api';
 
 export const revalidate = 3600; // Revalidate sitemap every hour
 
@@ -109,7 +110,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ];
 
     // Fetch all data in parallel for speed
-    const [questionsResult, articlesResult, profilesResult, quizzesResult, termsResult] = await Promise.all([
+    const [questionsResult, articlesResult, profilesResult, quizzesResult, terms] = await Promise.all([
         supabase
             .from('questions')
             .select('id, created_at')
@@ -136,11 +137,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
             .order('created_at', { ascending: false })
             .limit(200),
 
-        supabase
-            .from('dictionary_terms')
-            .select('term, created_at')
-            .order('term', { ascending: true })
-            .limit(1000),
+        getDictionaryTerms(supabase),
     ]);
 
     const questionPages: MetadataRoute.Sitemap = (questionsResult.data || []).map((question) => ({
@@ -173,7 +170,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         ...(profile.avatar_url ? { images: [profile.avatar_url] } : {}),
     }));
 
-    const termPages: MetadataRoute.Sitemap = (termsResult.data || []).map((term) => ({
+    const termPages: MetadataRoute.Sitemap = terms.map((term) => ({
         url: `${baseUrl}/sozluk/${slugify(term.term)}`,
         lastModified: toLastModified(term.created_at),
         changeFrequency: 'monthly' as const,

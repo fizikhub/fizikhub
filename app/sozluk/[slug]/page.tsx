@@ -41,14 +41,22 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     }
 
     const description = term.definition.length > 155
-        ? `${term.definition.slice(0, 152)}...`
+        ? `${term.definition.slice(0, 152).trim()}...`
         : term.definition;
     const canonical = `${SITE_URL}/sozluk/${slug}`;
 
     return {
-        title: `${term.term} Nedir? | Fizik Sözlüğü`,
+        title: `${term.term} Nedir? | Bilim Sözlüğü`,
         description,
-        keywords: [term.term, `${term.term} nedir`, "fizik sözlüğü", term.category || "bilim terimleri"],
+        keywords: [
+            term.term,
+            `${term.term} nedir`,
+            `${term.term} ne demek`,
+            `${term.term} anlamı`,
+            "bilim sözlüğü",
+            "fizik sözlüğü",
+            term.category || "bilim terimleri",
+        ],
         openGraph: {
             title: `${term.term} Nedir? — Fizikhub Sözlük`,
             description,
@@ -97,11 +105,38 @@ export default async function DictionaryTermPage({ params }: PageProps) {
         inLanguage: "tr-TR",
     };
 
+    const faqJsonLd = {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        mainEntity: [
+            {
+                "@type": "Question",
+                name: `${term.term} nedir?`,
+                acceptedAnswer: {
+                    "@type": "Answer",
+                    text: term.definition,
+                },
+            },
+            {
+                "@type": "Question",
+                name: `${term.term} hangi alanda kullanılır?`,
+                acceptedAnswer: {
+                    "@type": "Answer",
+                    text: `${term.term}, ${term.category || "bilim"} alanında kullanılan temel kavramlardan biridir.`,
+                },
+            },
+        ],
+    };
+
     return (
         <>
             <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+            />
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
             />
             <BreadcrumbJsonLd items={[
                 { name: "Sözlük", href: "/sozluk" },
@@ -141,6 +176,17 @@ export default async function DictionaryTermPage({ params }: PageProps) {
                         </h2>
                         <p className="text-lg font-semibold leading-relaxed text-foreground sm:text-xl">
                             {term.definition}
+                        </p>
+                    </div>
+
+                    <div className="mt-8 border-t-[3px] border-black pt-6">
+                        <h2 className="mb-3 text-sm font-black uppercase tracking-widest text-muted-foreground">
+                            Kısa not
+                        </h2>
+                        <p className="text-base font-semibold leading-relaxed text-muted-foreground">
+                            {term.term} kavramı, {term.category || "bilim"} başlığındaki konuları okurken sık karşına çıkar.
+                            Tanımı akılda tutmanın en iyi yolu, kavramı yalnızca ezberlemek değil; hangi olayda, hangi ölçümde
+                            ya da hangi modelde işe yaradığını görmektir.
                         </p>
                     </div>
                 </article>

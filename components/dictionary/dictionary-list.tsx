@@ -24,14 +24,14 @@ export function DictionaryList({ initialTerms }: DictionaryListProps) {
     return (
         <>
             {/* Search Input - NEO STYLE */}
-            <div className="relative max-w-xl mb-12">
+            <div className="relative mb-8 max-w-2xl">
                 <div className="relative group">
-                    <div className="absolute top-[6px] left-[6px] w-full h-full bg-black rounded-xl transition-all duration-200 group-focus-within:top-[2px] group-focus-within:left-[2px]"></div>
+                    <div className="absolute left-[6px] top-[6px] h-full w-full rounded-xl bg-black transition-all duration-200 group-focus-within:left-[2px] group-focus-within:top-[2px]"></div>
                     <div className="relative">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-6 w-6 text-black z-10" />
+                        <Search className="absolute left-4 top-1/2 z-10 h-5 w-5 -translate-y-1/2 text-black sm:h-6 sm:w-6" />
                         <Input
                             placeholder="Terim ara (örn: Entropi)..."
-                            className="pl-14 h-16 text-lg sm:text-xl font-bold bg-white dark:bg-zinc-100 dark:text-black border-[3px] border-black rounded-xl transition-all placeholder:text-zinc-400 placeholder:font-medium focus-visible:ring-0 focus-visible:ring-offset-0"
+                            className="h-14 rounded-xl border-[3px] border-black bg-white pl-12 text-base font-bold transition-all placeholder:font-medium placeholder:text-zinc-400 focus-visible:ring-0 focus-visible:ring-offset-0 dark:bg-zinc-100 dark:text-black sm:h-16 sm:pl-14 sm:text-xl"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
@@ -40,7 +40,7 @@ export function DictionaryList({ initialTerms }: DictionaryListProps) {
             </div>
 
             {/* Terms Grid */}
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
                 <AnimatePresence mode="popLayout">
                     {filteredTerms.map((item, index) => (
                         <motion.div
@@ -54,21 +54,21 @@ export function DictionaryList({ initialTerms }: DictionaryListProps) {
                         >
                             <Link
                                 href={`/sozluk/${slugify(item.term)}`}
-                                className="h-full flex flex-col bg-white dark:bg-zinc-900 border-[3px] border-black rounded-xl shadow-[4px_4px_0px_0px_#000] hover:shadow-[2px_2px_0px_0px_#000] hover:translate-x-[2px] hover:translate-y-[2px] transition-all p-5 sm:p-6 relative overflow-hidden"
+                                className="relative flex h-full min-h-[230px] flex-col overflow-hidden rounded-xl border-[3px] border-black bg-white p-5 shadow-[4px_4px_0px_0px_#000] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_#000] dark:bg-zinc-900 sm:p-6"
                             >
 
                                 {/* Header */}
-                                <div className="flex items-start justify-between mb-4 relative z-10">
-                                    <h3 className="text-xl sm:text-2xl font-black bg-[#FFC800] text-black px-2 py-0.5 border-2 border-black shadow-[2px_2px_0px_0px_#000] -rotate-1 group-hover:rotate-0 transition-transform origin-left">
+                                <div className="relative z-10 mb-5 flex flex-col items-start gap-3">
+                                    <h3 className="max-w-full break-words border-2 border-black bg-[#FFC800] px-2 py-1 text-xl font-black leading-tight text-black shadow-[2px_2px_0px_0px_#000] transition-transform origin-left -rotate-1 group-hover:rotate-0 sm:text-2xl">
                                         {item.term}
                                     </h3>
-                                    <Badge variant="outline" className="border-2 border-black bg-white text-black font-bold text-[10px] uppercase tracking-wider shadow-sm">
+                                    <Badge variant="outline" className="rounded-full border-2 border-black bg-white px-3 py-1 text-[10px] font-black uppercase tracking-wider text-black shadow-sm">
                                         {item.category}
                                     </Badge>
                                 </div>
 
                                 {/* Content */}
-                                <p className="text-sm sm:text-base font-medium text-zinc-700 dark:text-zinc-300 leading-relaxed flex-grow font-['Inter'] relative z-10">
+                                <p className="relative z-10 flex-grow font-['Inter'] text-sm font-semibold leading-relaxed text-zinc-700 dark:text-zinc-300 sm:text-base">
                                     {item.definition}
                                 </p>
 
@@ -83,7 +83,7 @@ export function DictionaryList({ initialTerms }: DictionaryListProps) {
             {filteredTerms.length === 0 && (
                 <div className="text-center py-20">
                     <div className="inline-block p-6 bg-white border-[3px] border-black rounded-xl shadow-[6px_6px_0px_0px_#000]">
-                        <p className="text-xl font-black text-black mb-2">🤔 Hmm...</p>
+                        <p className="text-xl font-black text-black mb-2">Sonuç yok</p>
                         <p className="text-zinc-600 font-medium">Aradığın terimi bulamadık.</p>
                     </div>
                 </div>
