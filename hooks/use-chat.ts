@@ -32,6 +32,7 @@ export function useChat({
     const [editingMessage, setEditingMessage] = useState<Message | null>(null);
     const scrollRef = useRef<HTMLDivElement>(null);
     const [supabase] = useState(() => createClient());
+    const messageIdsRef = useRef(new Set(initialMessages.map((message) => message.id)));
 
     // Scroll to bottom
     const scrollToBottom = useCallback((smooth = true) => {
@@ -69,6 +70,7 @@ export function useChat({
                 const newMsg = payload.new as unknown as Message;
                 setMessages(prev => {
                     if (prev.find(m => m.id === newMsg.id)) return prev;
+                    messageIdsRef.current.add(newMsg.id);
                     return [...prev, {
                         ...newMsg,
                         message_type: newMsg.message_type || 'text',
@@ -96,6 +98,7 @@ export function useChat({
                 filter: `conversation_id=eq.${conversationId}`
             }, (payload) => {
                 const deletedId = (payload.old as { id: number }).id;
+                messageIdsRef.current.delete(deletedId);
                 setMessages(prev => prev.filter(m => m.id !== deletedId));
             })
             .subscribe();
@@ -111,7 +114,10 @@ export function useChat({
                 event: '*',
                 schema: 'public',
                 table: 'message_reactions'
-            }, async () => {
+            }, async (payload) => {
+                const row = (payload.new ?? payload.old) as { message_id?: number } | null;
+                if (!row?.message_id || !messageIdsRef.current.has(row.message_id)) return;
+
                 const newReactions = await getReactions(conversationId);
                 setReactions(newReactions);
             })
@@ -146,13 +152,26 @@ export function useChat({
         };
 
         setMessages(prev => [...prev, tempMessage]);
+        messageIdsRef.current.add(tempMessage.id);
         setReplyTo(null);
 
         const result = await sendMessage(conversationId, content, replyTo?.id);
         setSending(false);
 
         if (!result.success) {
+            messageIdsRef.current.delete(tempMessage.id);
             setMessages(prev => prev.filter(m => m.id !== tempMessage.id));
+        } else if (result.message) {
+            const savedMessage = {
+                ...result.message,
+                message_type: result.message.message_type || 'text',
+                reply_to: tempMessage.reply_to,
+                sender: null,
+            } as Message;
+
+            messageIdsRef.current.delete(tempMessage.id);
+            messageIdsRef.current.add(savedMessage.id);
+            setMessages(prev => prev.map(m => m.id === tempMessage.id ? savedMessage : m));
         }
     }, [conversationId, currentUserId, replyTo, sending]);
 
@@ -161,12 +180,14 @@ export function useChat({
         let deletedMsg: Message | undefined;
         setMessages(prev => {
             deletedMsg = prev.find(m => m.id === messageId);
+            messageIdsRef.current.delete(messageId);
             return prev.filter(m => m.id !== messageId);
         });
         
         const result = await deleteMessage(messageId);
         
         if (!result.success && deletedMsg) {
+            messageIdsRef.current.add(messageId);
             // Rollback on failure
             setMessages(prev => [...prev, deletedMsg as Message].sort((a, b) => 
                 new Date(a.created_at).getTime() - new Date(b.created_at).getTime()

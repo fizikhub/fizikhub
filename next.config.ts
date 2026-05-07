@@ -284,7 +284,12 @@ const withPWA = require("@ducanh2912/next-pwa").default({
     "!retro/**/*",
     "!rive/**/*",
     "!stories/**/*",
-    "!images/galileo-error.jpg",
+    "!fonts/**/*",
+    "!images/**/*",
+    "!404-rick-scientist-transparent.png",
+    "!hubgpt-logo.png",
+    "!noise.png",
+    "!og-image.jpg",
   ],
   fallbacks: {
     document: "/~offline",
@@ -294,8 +299,12 @@ const withPWA = require("@ducanh2912/next-pwa").default({
     skipWaiting: true,
     clientsClaim: true,
     exclude: [
-      /\/_next\/static\/chunks\/.*\.js$/,
-      /\/_next\/static\/.*(?<!\.p)\.woff2/,
+      // Workbox receives webpack asset names like `static/chunks/...`,
+      // not the public `/_next/static/...` URLs. Keep those bundles out of
+      // precache; caching every route chunk on SW install can flood slower
+      // clients with background downloads.
+      /static\/chunks\/.*\.js$/,
+      /static\/media\/.*\.(?:woff|woff2|ttf)$/,
       /\.map$/,
       /^manifest.*\.js$/,
     ],

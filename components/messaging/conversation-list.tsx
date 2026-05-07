@@ -30,15 +30,27 @@ export function ConversationList({
         setConversations(data);
     }, []);
 
+    const conversationIdsKey = conversations.map((conversation) => conversation.id).join(",");
+
     // Realtime updates
     useEffect(() => {
-        const channel = supabase
-            .channel("inbox:updates")
-            .on(
+        let channel = supabase.channel(`inbox:updates:${currentUserId}`);
+        const conversationIds = conversationIdsKey ? conversationIdsKey.split(",") : [];
+
+        for (const conversationId of conversationIds) {
+            channel = channel.on(
                 "postgres_changes",
-                { event: "UPDATE", schema: "public", table: "conversations" },
+                {
+                    event: "UPDATE",
+                    schema: "public",
+                    table: "conversations",
+                    filter: `id=eq.${conversationId}`,
+                },
                 refreshConversations
-            )
+            );
+        }
+
+        channel = channel
             .on(
                 "postgres_changes",
                 {
@@ -54,7 +66,7 @@ export function ConversationList({
         return () => {
             supabase.removeChannel(channel);
         };
-    }, [currentUserId, refreshConversations, supabase]);
+    }, [conversationIdsKey, currentUserId, refreshConversations, supabase]);
 
     const filteredConversations = conversations.filter((c) => {
         const name = c.otherUser?.full_name || c.otherUser?.username || "";
