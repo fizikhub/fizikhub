@@ -6,6 +6,19 @@ import { TermEditor } from "@/components/term/term-editor";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+    title: "Yeni İçerik | Fizikhub",
+    robots: {
+        index: false,
+        follow: false,
+        googleBot: {
+            index: false,
+            follow: false,
+        },
+    },
+};
 
 interface NewArticlePageProps {
     searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
