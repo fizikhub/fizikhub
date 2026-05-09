@@ -19,6 +19,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     if (!article) {
         return {
             title: "Deney Bulunamadı",
+            robots: { index: false, follow: true },
         };
     }
 

@@ -86,6 +86,7 @@ export const getArticleBySlug = cache(async function (_supabase: SupabaseClient<
                 .from('articles')
                 .select('*, author:profiles!articles_author_id_fkey(*)')
                 .eq('slug', querySlug)
+                .eq('status', 'published')
                 .maybeSingle();
 
             if (data) return data as unknown as Article;
@@ -96,6 +97,7 @@ export const getArticleBySlug = cache(async function (_supabase: SupabaseClient<
                     .from('articles')
                     .select('*, author:profiles!articles_author_id_fkey(*)')
                     .eq('id', parseInt(querySlug))
+                    .eq('status', 'published')
                     .maybeSingle();
 
                 if (byId) return byId as unknown as Article;

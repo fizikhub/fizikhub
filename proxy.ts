@@ -133,6 +133,23 @@ export async function proxy(request: NextRequest) {
         return NextResponse.redirect(url, 301);
     }
 
+    if (pathname.startsWith('/kitap-inceleme/') && pathname !== '/kitap-inceleme/yeni') {
+        const url = request.nextUrl.clone();
+        url.pathname = pathname.replace(/^\/kitap-inceleme/, '/makale');
+        return NextResponse.redirect(url, 301);
+    }
+
+    const legacyArticleRedirects: Record<string, string> = {
+        '/makale/killi-bir-kopekten-kitalararasi-akustik-muhendisane-binalarin-evrimi-ve-fizigi':
+            '/makale/killi-bir-kopekten-kitalararasi-akustik-muhendisine-balinalarin-evrimi-ve-fizigi',
+    };
+
+    if (legacyArticleRedirects[pathname]) {
+        const url = request.nextUrl.clone();
+        url.pathname = legacyArticleRedirects[pathname];
+        return NextResponse.redirect(url, 301);
+    }
+
     // Clean up URLs broken by markdown parsing bugs (trailing characters after closed parenthesis)
     // E.g. /abs/123) or /storage/...blob)olay
     if (pathname.includes(')')) {

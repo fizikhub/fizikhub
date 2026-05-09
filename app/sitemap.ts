@@ -60,18 +60,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
             priority: 0.6,
         },
         {
-            url: `${baseUrl}/ara`,
-            lastModified: STATIC_LAST_MODIFIED,
-            changeFrequency: 'monthly',
-            priority: 0.5,
-        },
-        {
-            url: `${baseUrl}/basvuru/yazar`,
-            lastModified: STATIC_LAST_MODIFIED,
-            changeFrequency: 'monthly',
-            priority: 0.4,
-        },
-        {
             url: `${baseUrl}/puanlar-nedir`,
             lastModified: STATIC_LAST_MODIFIED,
             changeFrequency: 'monthly',
@@ -110,26 +98,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ];
 
     // Fetch all data in parallel for speed
-    const [questionsResult, articlesResult, profilesResult, quizzesResult, terms] = await Promise.all([
+    const [questionsResult, articlesResult, quizzesResult, terms] = await Promise.all([
         supabase
             .from('questions')
-            .select('id, created_at, updated_at')
+            .select('id, created_at')
             .order('created_at', { ascending: false })
-            .limit(1000),
+            .limit(250),
 
         supabase
             .from('articles')
-            .select('slug, created_at, updated_at, category, cover_url')
+            .select('slug, created_at, category, cover_url')
             .eq('status', 'published')
             .order('created_at', { ascending: false })
             .limit(1000),
-
-        supabase
-            .from('profiles')
-            .select('username, updated_at, avatar_url')
-            .not('username', 'is', null)
-            .order('created_at', { ascending: false })
-            .limit(500),
 
         supabase
             .from('quizzes')
@@ -142,42 +123,25 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
     const questionPages: MetadataRoute.Sitemap = (questionsResult.data || []).map((question) => ({
         url: `${baseUrl}/forum/${question.id}`,
-        lastModified: toLastModified(question.updated_at || question.created_at),
+        lastModified: toLastModified(question.created_at),
         changeFrequency: 'weekly' as const,
         priority: 0.8,
     }));
 
-    // Forum category pages for better discovery
-    const forumCategories = ['Fizik', 'Kuantum', 'Astrofizik', 'Mekanik', 'Termodinamik', 'Biyoloji', 'Kimya', 'Matematik', 'Edebiyat', 'Felsefe'];
-    const forumCategoryPages: MetadataRoute.Sitemap = forumCategories.map((cat) => ({
-        url: `${baseUrl}/forum?category=${encodeURIComponent(cat)}`,
-        lastModified: STATIC_LAST_MODIFIED,
-        changeFrequency: 'daily' as const,
-        priority: 0.7,
-    }));
+    const articlePages: MetadataRoute.Sitemap = (articlesResult.data || []).flatMap((article) => {
+        if (!article.slug || article.category === 'Terim') return [];
 
-    const articlePages: MetadataRoute.Sitemap = (articlesResult.data || []).map((article) => {
-        // Differentiate between articles (makale), experiments, and book reviews by category
         let urlPrefix = 'makale';
         if (article.category === 'Deney') urlPrefix = 'deney';
-        else if (article.category === 'Kitap İncelemesi') urlPrefix = 'kitap-inceleme';
 
-        return {
+        return [{
             url: `${baseUrl}/${urlPrefix}/${article.slug}`,
-            lastModified: toLastModified(article.updated_at || article.created_at),
+            lastModified: toLastModified(article.created_at),
             changeFrequency: 'weekly' as const,
             priority: 0.9,
             ...(article.cover_url ? { images: [article.cover_url] } : { images: [`${baseUrl}/api/og?title=${encodeURIComponent(article.slug)}`] }),
-        };
+        }];
     });
-
-    const profilePages: MetadataRoute.Sitemap = (profilesResult.data || []).map((profile) => ({
-        url: `${baseUrl}/kullanici/${encodeURIComponent(profile.username)}`,
-        lastModified: toLastModified(profile.updated_at),
-        changeFrequency: 'monthly' as const,
-        priority: 0.6,
-        ...(profile.avatar_url ? { images: [profile.avatar_url] } : {}),
-    }));
 
     const termPages: MetadataRoute.Sitemap = terms.map((term) => ({
         url: `${baseUrl}/sozluk/${slugify(term.term)}`,
@@ -203,9 +167,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     return [
         ...staticPages,
         ...questionPages,
-        ...forumCategoryPages,
         ...articlePages,
-        ...profilePages,
         ...termPages,
         ...quizPages,
         ...simulationPages,

@@ -44,7 +44,6 @@ export const metadata: Metadata = {
     template: "%s | Fizikhub"
   },
   alternates: {
-    canonical: 'https://www.fizikhub.com',
     types: {
       'application/rss+xml': '/feed.xml',
     },

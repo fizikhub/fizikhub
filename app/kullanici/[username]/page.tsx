@@ -33,10 +33,19 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     const description = profile.bio
         ? `${displayName} — ${profile.bio.substring(0, 140)}`
         : `${displayName} adlı kullanıcının FizikHub profili. Makaleler, sorular ve bilimsel katkılar.`;
+    const shouldIndex = Boolean(profile.is_writer || profile.bio);
 
     return {
         title: `${displayName} (@${username})`,
         description,
+        robots: {
+            index: shouldIndex,
+            follow: true,
+            googleBot: {
+                index: shouldIndex,
+                follow: true,
+            },
+        },
         openGraph: {
             title: `${displayName} — FizikHub Profil`,
             description,
