@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { createQuestion, voteQuestion, toggleAnswerAcceptance } from '../app/forum/actions';
 import * as supabaseServer from '../lib/supabase-server';
+import { createAdminClient } from '../lib/supabase-admin';
 import * as moderation from '../lib/moderation';
 
 // Mock the moderation dependency
@@ -12,6 +13,10 @@ vi.mock('../lib/moderation', () => ({
 // Mock revalidatePath
 vi.mock('next/cache', () => ({
   revalidatePath: vi.fn(),
+}));
+
+vi.mock('../lib/supabase-admin', () => ({
+  createAdminClient: vi.fn(),
 }));
 
 describe('Forum Server Actions', () => {
@@ -58,6 +63,7 @@ describe('Forum Server Actions', () => {
         };
 
         vi.spyOn(supabaseServer, 'createClient').mockResolvedValue(mockSupabase);
+        vi.mocked(createAdminClient).mockReturnValue(mockSupabase);
     });
 
     describe('createQuestion', () => {

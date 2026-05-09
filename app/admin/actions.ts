@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase-server";
+import { createAdminClient } from "@/lib/supabase-admin";
 import { revalidatePath } from "next/cache";
 import { isAdminEmail } from "@/lib/admin";
 
@@ -183,7 +184,7 @@ export async function approveArticle(id: number) {
         .single();
 
     if (article) {
-        await adminCheck.supabase!.rpc('add_reputation', {
+        await createAdminClient().rpc('add_reputation', {
             p_user_id: article.author_id,
             p_points: 20,
             p_reason: 'article_published',
@@ -386,5 +387,4 @@ export async function getYoutubeDownloadUrl(url: string) {
         error: `${lastError} (Tüm indirme sunucuları denendi, lütfen daha sonra tekrar deneyin veya farklı bir link kullanın.)`
     };
 }
-
 

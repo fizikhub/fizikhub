@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase-server";
+import { createAdminClient } from "@/lib/supabase-admin";
 import { revalidatePath } from "next/cache";
 import { getClientMetadata, checkContent } from "@/lib/moderation";
 
@@ -331,16 +332,63 @@ export async function startConversation(otherUserId: string) {
         return { success: false, error: "Giriş yapmalısınız" };
     }
 
-    const { data: conversationId, error } = await supabase
-        .rpc('create_conversation', { other_user_id: otherUserId });
+    const adminSupabase = createAdminClient();
 
-    if (error) {
-        console.error("Start conversation error:", error);
-        return { success: false, error: error.message };
+    const { data: ownConversations, error: ownConversationsError } = await adminSupabase
+        .from('conversation_participants')
+        .select('conversation_id')
+        .eq('user_id', user.id);
+
+    if (ownConversationsError) {
+        console.error("Start conversation lookup error:", ownConversationsError);
+        return { success: false, error: ownConversationsError.message };
+    }
+
+    const conversationIds = (ownConversations || []).map((item) => item.conversation_id);
+    if (conversationIds.length > 0) {
+        const { data: existingParticipant, error: existingParticipantError } = await adminSupabase
+            .from('conversation_participants')
+            .select('conversation_id')
+            .eq('user_id', otherUserId)
+            .in('conversation_id', conversationIds)
+            .maybeSingle();
+
+        if (existingParticipantError) {
+            console.error("Start conversation existing check error:", existingParticipantError);
+            return { success: false, error: existingParticipantError.message };
+        }
+
+        if (existingParticipant?.conversation_id) {
+            revalidatePath('/mesajlar');
+            return { success: true, conversationId: existingParticipant.conversation_id };
+        }
+    }
+
+    const { data: conversation, error: conversationError } = await adminSupabase
+        .from('conversations')
+        .insert({})
+        .select('id')
+        .single();
+
+    if (conversationError || !conversation) {
+        console.error("Start conversation create error:", conversationError);
+        return { success: false, error: conversationError?.message || "Konuşma oluşturulamadı" };
+    }
+
+    const { error: participantError } = await adminSupabase
+        .from('conversation_participants')
+        .insert([
+            { conversation_id: conversation.id, user_id: user.id },
+            { conversation_id: conversation.id, user_id: otherUserId },
+        ]);
+
+    if (participantError) {
+        console.error("Start conversation participant error:", participantError);
+        return { success: false, error: participantError.message };
     }
 
     revalidatePath('/mesajlar');
-    return { success: true, conversationId };
+    return { success: true, conversationId: conversation.id };
 }
 
 // ============================================

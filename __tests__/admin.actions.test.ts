@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { deleteArticle, approveArticle } from '../app/admin/actions';
 import * as supabaseServer from '../lib/supabase-server';
+import { createAdminClient } from '../lib/supabase-admin';
 
 // Mock the lib/admin dependency entirely so we can control isAdminEmail
 vi.mock('../lib/admin', () => ({
@@ -10,6 +11,10 @@ vi.mock('../lib/admin', () => ({
 // Mock revalidatePath
 vi.mock('next/cache', () => ({
   revalidatePath: vi.fn(),
+}));
+
+vi.mock('../lib/supabase-admin', () => ({
+  createAdminClient: vi.fn(),
 }));
 
 describe('Admin Server Actions', () => {
@@ -49,6 +54,7 @@ describe('Admin Server Actions', () => {
     };
 
     vi.spyOn(supabaseServer, 'createClient').mockResolvedValue(mockSupabase);
+    vi.mocked(createAdminClient).mockReturnValue(mockSupabase);
   });
 
   describe('deleteArticle', () => {

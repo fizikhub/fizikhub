@@ -1,10 +1,32 @@
 "use server";
 
 import { createClient } from "@/lib/supabase-server";
+import { createAdminClient } from "@/lib/supabase-admin";
 import { revalidatePath } from "next/cache";
 import { createNotification } from "@/app/notifications/actions";
 import { getClientMetadata, checkContent } from "@/lib/moderation";
 import { isAdminEmail } from "@/lib/admin";
+
+type ReputationParams = {
+    p_user_id: string;
+    p_points: number;
+    p_reason: string;
+    p_reference_type: string;
+    p_reference_id: number;
+};
+
+async function addReputation(params: ReputationParams) {
+    const { error } = await createAdminClient().rpc('add_reputation', params);
+    if (error) {
+        console.error("Add Reputation Error:", error);
+    }
+}
+
+async function incrementQuestionViews(questionId: number) {
+    return createAdminClient().rpc('increment_question_views', {
+        question_id: questionId,
+    });
+}
 
 export async function toggleAnswerLike(answerId: number) {
     const supabase = await createClient();
@@ -46,7 +68,7 @@ export async function toggleAnswerLike(answerId: number) {
 
         // Remove reputation if not self-like
         if (answer.author_id !== user.id) {
-            await supabase.rpc('add_reputation', {
+            await addReputation({
                 p_user_id: answer.author_id,
                 p_points: -5,
                 p_reason: 'answer_like_removed',
@@ -67,7 +89,7 @@ export async function toggleAnswerLike(answerId: number) {
 
         // Add reputation if not self-like
         if (answer.author_id !== user.id) {
-            await supabase.rpc('add_reputation', {
+            await addReputation({
                 p_user_id: answer.author_id,
                 p_points: 5,
                 p_reason: 'answer_liked',
@@ -138,7 +160,7 @@ export async function createQuestion(formData: { title: string; content: string;
 
     // Add reputation for asking question ONLY IF PUBLISHED
     if (data.status === 'published') {
-        await supabase.rpc('add_reputation', {
+        await addReputation({
             p_user_id: user.id,
             p_points: 5,
             p_reason: 'question_created',
@@ -271,7 +293,7 @@ export async function createAnswer(formData: { content: string; questionId: numb
     }
 
     // Add reputation for answering a question
-    await supabase.rpc('add_reputation', {
+    await addReputation({
         p_user_id: user.id,
         p_points: 10,
         p_reason: 'answer_created',
@@ -452,7 +474,7 @@ export async function toggleAnswerAcceptance(answerId: number, questionId: numbe
 
         if (previousAccepted) {
             // Remove points from previous owner
-            await supabase.rpc('add_reputation', {
+            await addReputation({
                 p_user_id: previousAccepted.author_id,
                 p_points: -15,
                 p_reason: 'answer_unaccepted',
@@ -468,7 +490,7 @@ export async function toggleAnswerAcceptance(answerId: number, questionId: numbe
             .eq('question_id', questionId);
     } else {
         // If unmarking (newStatus is false), remove points from current author
-        await supabase.rpc('add_reputation', {
+        await addReputation({
             p_user_id: currentAnswer.author_id,
             p_points: -15,
             p_reason: 'answer_unaccepted',
@@ -489,7 +511,7 @@ export async function toggleAnswerAcceptance(answerId: number, questionId: numbe
 
     // Add points if accepted
     if (newStatus) {
-        await supabase.rpc('add_reputation', {
+        await addReputation({
             p_user_id: currentAnswer.author_id,
             p_points: 15,
             p_reason: 'answer_accepted',
@@ -546,9 +568,7 @@ export async function incrementView(questionId: number) {
         user_id: user.id
     }).select().maybeSingle(); // ignore errors (table may not exist yet, RPC handles it)
 
-    const { error } = await supabase.rpc('increment_question_views', {
-        question_id: questionId
-    });
+    const { error } = await incrementQuestionViews(questionId);
 
     if (error) {
         console.error("Increment View Error:", error);
@@ -719,7 +739,7 @@ export async function toggleCommentLike(commentId: number) {
         }
 
         // Remove reputation (deduct 1 point)
-        await supabase.rpc('add_reputation', {
+        await addReputation({
             p_user_id: comment.author_id,
             p_points: -1,
             p_reason: 'answer_comment_like_removed',
@@ -742,7 +762,7 @@ export async function toggleCommentLike(commentId: number) {
         }
 
         // Add reputation (add 1 point)
-        await supabase.rpc('add_reputation', {
+        await addReputation({
             p_user_id: comment.author_id,
             p_points: 1,
             p_reason: 'answer_comment_liked',
