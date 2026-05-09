@@ -121,12 +121,14 @@ export function NexusStories({ initialStories = [], initialGroups = [] }: NexusS
                 })}
             </div>
 
-            <StoryViewer
-                stories={activeStories}
-                initialIndex={0}
-                isOpen={viewerOpen}
-                onClose={() => setViewerOpen(false)}
-            />
+            {viewerOpen && (
+                <StoryViewer
+                    stories={activeStories}
+                    initialIndex={0}
+                    isOpen={viewerOpen}
+                    onClose={() => setViewerOpen(false)}
+                />
+            )}
         </section>
     );
 }

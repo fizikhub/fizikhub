@@ -189,7 +189,6 @@ import { MaintenanceAudioPlayer } from "@/components/maintenance/audio-player";
 
 
 import { Analytics } from "@vercel/analytics/react";
-import { QueryProvider } from "@/components/providers/query-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { RuntimeEffects } from "@/components/layout/runtime-effects";
 
@@ -279,40 +278,38 @@ export default async function RootLayout({
           İçeriğe atla
         </a>
 
-        <QueryProvider>
-          <ThemeProvider
-            attribute="class"
-            forcedTheme="dark"
-            enableSystem={false}
-            disableTransitionOnChange
-          >
-            <TimeLimitProvider>
-              <FramerMotionProvider>
-                <NavigationWrapper>
-                  <RuntimeEffects />
-                  <TooltipProvider>
-                    <div id="main-content" className="flex-1">
-                      {children}
-                    </div>
-                  </TooltipProvider>
-                </NavigationWrapper>
-              </FramerMotionProvider>
-            </TimeLimitProvider>
+        <ThemeProvider
+          attribute="class"
+          forcedTheme="dark"
+          enableSystem={false}
+          disableTransitionOnChange
+        >
+          <TimeLimitProvider>
+            <FramerMotionProvider>
+              <NavigationWrapper>
+                <RuntimeEffects />
+                <TooltipProvider>
+                  <div id="main-content" className="flex-1">
+                    {children}
+                  </div>
+                </TooltipProvider>
+              </NavigationWrapper>
+            </FramerMotionProvider>
+          </TimeLimitProvider>
 
-            <Toaster
-              position="top-center"
-              toastOptions={{
-                className: "font-sans border-[3px] border-black bg-[#FFBD2E] text-black shadow-[4px_4px_0_0_#000] rounded-[4px] px-6 py-3 min-w-[200px] flex items-center justify-center text-center font-black tracking-widest uppercase",
-                style: {
-                  borderRadius: "4px",
-                  background: "#FFBD2E",
-                  color: "#000000",
-                },
-              }}
-            />
-            <Analytics />
-          </ThemeProvider>
-        </QueryProvider>
+          <Toaster
+            position="top-center"
+            toastOptions={{
+              className: "font-sans border-[3px] border-black bg-[#FFBD2E] text-black shadow-[4px_4px_0_0_#000] rounded-[4px] px-6 py-3 min-w-[200px] flex items-center justify-center text-center font-black tracking-widest uppercase",
+              style: {
+                borderRadius: "4px",
+                background: "#FFBD2E",
+                color: "#000000",
+              },
+            }}
+          />
+          <Analytics />
+        </ThemeProvider>
       </body>
     </html>
   );

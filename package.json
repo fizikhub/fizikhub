@@ -11,8 +11,6 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@ai-sdk/google": "^3.0.18",
-    "@ai-sdk/react": "^3.0.64",
     "@ducanh2912/next-pwa": "^10.2.6",
     "@hookform/resolvers": "^5.2.2",
     "@phosphor-icons/react": "^2.1.10",
@@ -34,8 +32,6 @@
     "@supabase/ssr": "^0.7.0",
     "@supabase/supabase-js": "^2.84.0",
     "@tailwindcss/typography": "^0.5.19",
-    "@tanstack/react-query": "^5.90.21",
-    "@tanstack/react-query-devtools": "^5.91.3",
     "@tiptap/core": "^3.20.0",
     "@tiptap/extension-bubble-menu": "^3.13.0",
     "@tiptap/extension-image": "^3.13.0",
@@ -49,7 +45,6 @@
     "@tiptap/react": "^3.13.0",
     "@tiptap/starter-kit": "^3.13.0",
     "@vercel/analytics": "^1.6.1",
-    "ai": "^6.0.62",
     "browser-image-compression": "^2.0.2",
     "canvas-confetti": "^1.9.4",
     "class-variance-authority": "^0.7.1",

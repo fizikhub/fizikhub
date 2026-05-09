@@ -2,7 +2,7 @@
 
 import { cn } from "@/lib/utils";
 import dynamic from "next/dynamic";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 // Dynamically import the heavy 3D canvas (loads cleanly in the background)
 const MemeCornerCanvas = dynamic(() => import("@/components/home/meme-corner-canvas"), {
@@ -10,7 +10,25 @@ const MemeCornerCanvas = dynamic(() => import("@/components/home/meme-corner-can
 });
 
 export function MemeCorner() {
-    const [load3D] = useState(true);
+    const [load3D, setLoad3D] = useState(false);
+
+    useEffect(() => {
+        const shouldSkip3D =
+            window.matchMedia("(max-width: 767px)").matches ||
+            window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+        if (shouldSkip3D) return;
+
+        const enable3D = () => setLoad3D(true);
+
+        if ("requestIdleCallback" in window) {
+            const idleId = window.requestIdleCallback(enable3D, { timeout: 2500 });
+            return () => window.cancelIdleCallback(idleId);
+        }
+
+        const timeoutId = globalThis.setTimeout(enable3D, 1400);
+        return () => globalThis.clearTimeout(timeoutId);
+    }, []);
 
     return (
         <div className="w-full relative group min-h-[180px] sm:min-h-[240px]">
@@ -27,7 +45,7 @@ export function MemeCorner() {
                     "bg-[radial-gradient(circle_at_50%_120%,rgba(60,0,120,0.5),transparent)]"
                 )}
             >
-                {/* 3D Canvas - Loaded automatically via dynamic import (ssr: false) */}
+                {/* 3D Canvas is deferred on desktop and skipped on mobile for faster first load. */}
                 <div className="absolute inset-0 z-0">
                     {load3D && <MemeCornerCanvas />}
                 </div>

@@ -3,9 +3,10 @@ import { unstable_cache } from "next/cache";
 import type { Metadata } from "next";
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { FeedSkeleton, SidebarSkeleton } from "@/components/home/performance-skeletons";
+import { FeedSkeleton } from "@/components/home/performance-skeletons";
 import { processFeedData, formatSliderArticles } from "@/lib/feed-helpers";
 import { SEO_PRIORITY_ARTICLES, SEO_PRIORITY_SLUGS } from "@/lib/seo-priority";
+import { LazyDesktopSidebar } from "@/components/home/lazy-desktop-sidebar";
 
 // Dynamic Imports (Client boundaries lazy loaded automatically)
 const ScrollProgress = dynamic(() => import("@/components/ui/scroll-progress").then(mod => mod.ScrollProgress));
@@ -18,11 +19,6 @@ import { CompactHero } from "@/components/home/compact-hero";
 const UnifiedFeed = dynamic(() => import("@/components/home/unified-feed").then(mod => mod.UnifiedFeed), {
   loading: () => <FeedSkeleton />,
   ssr: true
-});
-
-// FeedSidebar — dynamically imported (no ssr:false in Server Components)
-const FeedSidebar = dynamic(() => import("@/components/home/feed-sidebar").then(mod => mod.FeedSidebar), {
-  loading: () => <SidebarSkeleton />,
 });
 
 // LCP Component is NO LONGER LatestArticlesSlider, CompactHero is the LCP component.
@@ -235,7 +231,7 @@ export default async function Home() {
 
           {/* Sidebar Column */}
           <div className="hidden xl:block xl:col-span-5 relative">
-            <FeedSidebar suggestedUsers={suggestedUsers} />
+            <LazyDesktopSidebar suggestedUsers={suggestedUsers} />
           </div>
         </div>
       </div>

@@ -41,7 +41,7 @@ interface UnifiedFeedProps {
 }
 
 export function UnifiedFeed({ items, suggestedUsers = [], showExtras = true }: UnifiedFeedProps) {
-    const [visibleCount, setVisibleCount] = useState(6);
+    const [visibleCount, setVisibleCount] = useState(4);
     
     const visibleItems = items.slice(0, visibleCount);
     const hasMore = visibleCount < items.length;
@@ -126,12 +126,12 @@ export function UnifiedFeed({ items, suggestedUsers = [], showExtras = true }: U
             )}
 
             {showExtras && (
-                <div className="mt-6 rounded-[10px] bg-white dark:bg-[#1e1e21] border-[3px] border-black dark:border-zinc-700 shadow-[4px_4px_0px_0px_#000] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] p-6">
+                <LazyMount className="mt-6 rounded-[10px] bg-white dark:bg-[#1e1e21] border-[3px] border-black dark:border-zinc-700 shadow-[4px_4px_0px_0px_#000] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] p-6">
                     <h3 className="font-black text-xs uppercase tracking-widest text-neutral-500 dark:text-zinc-400 mb-4 text-center">
                         Önerilen Araştırmacılar
                     </h3>
                     <SuggestedUsersCard users={suggestedUsers} />
-                </div>
+                </LazyMount>
             )}
         </div>
     );
