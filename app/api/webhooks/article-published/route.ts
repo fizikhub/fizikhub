@@ -5,12 +5,11 @@ import { render } from '@react-email/render';
 import NewArticleEmail from '@/components/emails/NewArticleEmail';
 import * as React from 'react';
 
-// Initialize Resend
-// Note: You need to add RESEND_API_KEY to your .env.local file
-const resend = new Resend(process.env.RESEND_API_KEY);
-
 export async function POST(req: Request) {
   try {
+    // Initialize Resend inside the handler to prevent build errors
+    const resend = new Resend(process.env.RESEND_API_KEY || 're_dummy');
+
     // 1. Authenticate the webhook request
     // Verify a custom header or query param secret to ensure it's from Supabase
     const authHeader = req.headers.get('Authorization');
