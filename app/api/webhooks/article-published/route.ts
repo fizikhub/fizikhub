@@ -43,7 +43,7 @@ export async function POST(req: Request) {
 
     // 4. Prepare HTML email
     const articleUrl = `https://www.fizikhub.com/makale/${article.slug}`;
-    const logoUrl = 'https://www.fizikhub.com/icon.png';
+    const logoUrl = 'https://www.fizikhub.com/logo-no-bg.svg';
     const htmlContent = `
       <!DOCTYPE html>
       <html>
@@ -59,9 +59,8 @@ export async function POST(req: Request) {
                 
                 <!-- Header -->
                 <tr>
-                  <td align="center" style="padding: 40px 20px 20px; background-color: #fde047; border-bottom: 4px solid #000000;">
-                    <img src="${logoUrl}" alt="Fizikhub" width="64" height="64" style="display: block; border-radius: 12px; border: 3px solid #000; margin-bottom: 16px; background-color: #fff;" />
-                    <h1 style="margin: 0; font-size: 28px; font-weight: 900; color: #000000; text-transform: uppercase; letter-spacing: -0.5px;">Yeni Makale!</h1>
+                  <td align="center" style="padding: 32px 20px 24px; background-color: #18181b; border-bottom: 4px solid #000000;">
+                    <img src="${logoUrl}" alt="Fizikhub" style="display: block; width: 200px; height: auto;" />
                   </td>
                 </tr>
 
