@@ -150,6 +150,49 @@ export async function proxy(request: NextRequest) {
         return NextResponse.redirect(url, 301);
     }
 
+    const rootArticleRedirects: Record<string, string> = {
+        '/test-mkn0gnnsixw': '/makale/test-mkn0gnnsixw',
+        '/serway-1-kitap-i-ncelemesi-mkkynylwexp': '/makale/serway-1-kitap-i-ncelemesi-mkkynylwexp',
+        '/azteklerden-gunumuze-tutun-tarihcesi-kimyasi-ve-etkileri-1769018062247':
+            '/makale/azteklerden-gunumuze-tutun-tarihcesi-kimyasi-ve-etkileri-1769018062247',
+        '/matematik-ile-her-seyi-kusursuzca-kanitlayabilir-miyiz-1768299779741':
+            '/makale/matematik-ile-her-seyi-kusursuzca-kanitlayabilir-miyiz-1768299779741',
+    };
+
+    if (rootArticleRedirects[pathname]) {
+        const url = request.nextUrl.clone();
+        url.pathname = rootArticleRedirects[pathname];
+        return NextResponse.redirect(url, 301);
+    }
+
+    if (pathname === '/kesfet') {
+        const url = request.nextUrl.clone();
+        url.pathname = '/makale';
+        return NextResponse.redirect(url, 301);
+    }
+
+    const arxivMatch = pathname.match(/^\/abs\/([^).]+v\d+)/);
+    if (arxivMatch) {
+        return NextResponse.redirect(`https://arxiv.org/abs/${arxivMatch[1]}`, 301);
+    }
+
+    if (pathname.startsWith('/storage/v1/object/public/')) {
+        const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://cd8341b2-228f-4981-ac3a-5a84c9adca5e.supabase.co';
+        const cleanPathname = pathname.split(')')[0];
+        const url = new URL(`${supabaseUrl}${cleanPathname}`);
+        return NextResponse.redirect(url, 301);
+    }
+
+    if (pathname === '/solar-system/our-solar-system/in-depth') {
+        const url = request.nextUrl.clone();
+        url.pathname = '/simulasyonlar/gunes-sistemi';
+        return NextResponse.redirect(url, 301);
+    }
+
+    if (pathname === '/cdn-cgi/l/email-protection') {
+        return new NextResponse(null, { status: 410 });
+    }
+
     // Clean up URLs broken by markdown parsing bugs (trailing characters after closed parenthesis)
     // E.g. /abs/123) or /storage/...blob)olay
     if (pathname.includes(')')) {
@@ -192,18 +235,9 @@ export async function proxy(request: NextRequest) {
         }
     }
 
-    // Redirect /abs/* to 404 (arXiv automation removed)
+    // Deprecated arXiv automation paths without a parseable arXiv id are gone.
     if (pathname.startsWith('/abs/')) {
-        const url = request.nextUrl.clone();
-        url.pathname = '/404';
-        return NextResponse.rewrite(url);
-    }
-
-    // Soft-redirect /storage/ links to the actual Supabase bucket
-    if (pathname.startsWith('/storage/v1/object/public/')) {
-        const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://cd8341b2-228f-4981-ac3a-5a84c9adca5e.supabase.co';
-        const url = new URL(`${supabaseUrl}${pathname}`);
-        return NextResponse.redirect(url, 301);
+        return new NextResponse(null, { status: 410 });
     }
 
     // Redirect junk single-character paths that bots hit
