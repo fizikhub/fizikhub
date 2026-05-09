@@ -6,9 +6,12 @@ import { Home, BookOpen, MessageCircle, User, Plus, type LucideIcon } from "luci
 import { cn } from "@/lib/utils";
 import { useEffect, useRef, useState } from "react";
 
+const HIDDEN_NAV_CLASS = "translate-y-[calc(100%+1rem)]";
+
 export function BottomNav() {
     const pathname = usePathname();
     const router = useRouter();
+    const isArticleDetail = /^\/makale\/[^/]+/.test(pathname || "");
     const navRef = useRef<HTMLDivElement>(null);
     const lastScrollYRef = useRef(0);
     const hiddenRef = useRef(false);
@@ -20,15 +23,15 @@ export function BottomNav() {
         const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
         const coarsePointerQuery = window.matchMedia("(hover: none), (pointer: coarse)");
 
-        if (motionQuery.matches || coarsePointerQuery.matches) {
-            navRef.current?.classList.remove("translate-y-full");
+        if (motionQuery.matches || (coarsePointerQuery.matches && !isArticleDetail)) {
+            navRef.current?.classList.remove(HIDDEN_NAV_CLASS);
             return;
         }
 
         const setHidden = (hidden: boolean) => {
             if (hiddenRef.current === hidden) return;
             hiddenRef.current = hidden;
-            navRef.current?.classList.toggle("translate-y-full", hidden);
+            navRef.current?.classList.toggle(HIDDEN_NAV_CLASS, hidden);
         };
 
         const onScroll = () => {
@@ -62,14 +65,14 @@ export function BottomNav() {
             window.removeEventListener("scroll", onScroll);
             if (frameRef.current !== null) cancelAnimationFrame(frameRef.current);
         };
-    }, []);
+    }, [isArticleDetail]);
 
     useEffect(() => {
         setOptimisticHref(null);
         navigatingHrefRef.current = null;
-        navRef.current?.classList.remove("translate-y-full");
-        hiddenRef.current = false;
-    }, [pathname]);
+        navRef.current?.classList.toggle(HIDDEN_NAV_CLASS, isArticleDetail);
+        hiddenRef.current = isArticleDetail;
+    }, [pathname, isArticleDetail]);
 
     const vibrate = () => {
         if (typeof navigator !== "undefined" && navigator.vibrate) {
@@ -87,7 +90,7 @@ export function BottomNav() {
     };
 
     const activateRoute = (href: string) => {
-        navRef.current?.classList.remove("translate-y-full");
+        navRef.current?.classList.remove(HIDDEN_NAV_CLASS);
         hiddenRef.current = false;
         setOptimisticHref(href);
         vibrate();
@@ -127,7 +130,10 @@ export function BottomNav() {
     return (
         <div
             ref={navRef}
-            className="fixed bottom-0 left-0 right-0 z-[50] md:hidden font-sans translate-y-0 transition-transform duration-200 ease-out transform-gpu"
+            className={cn(
+                "fixed bottom-0 left-0 right-0 z-[50] md:hidden font-sans transition-transform duration-200 ease-out transform-gpu",
+                isArticleDetail ? "translate-y-[calc(100%+1rem)]" : "translate-y-0"
+            )}
         >
             <nav aria-label="Mobil navigasyon" className={cn(
                 "w-full h-[calc(56px+env(safe-area-inset-bottom))] bg-white/92 dark:bg-[#121212]/92 backdrop-blur-sm border-t border-black/10 dark:border-white/10 flex items-start justify-around px-2 pt-1 pb-[env(safe-area-inset-bottom)] relative shadow-[0_-4px_16px_rgba(0,0,0,0.08)]"

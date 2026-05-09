@@ -189,7 +189,7 @@ export function MarkdownRenderer({
                             );
                         }
                         return (
-                            <div className="flex flex-col items-center my-8 sm:my-12">
+                            <div className="flex flex-col items-center my-7 sm:my-10">
                                 <Dialog>
                                     <DialogTrigger asChild>
                                         <div className="relative group cursor-zoom-in w-full flex justify-center">

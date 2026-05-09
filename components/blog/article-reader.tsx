@@ -205,7 +205,7 @@ export function ArticleReader({
             )}>
                 <div className={cn(
                     "container mx-auto max-w-[100vw] overflow-x-hidden",
-                    isZenMode ? "max-w-3xl" : "max-w-4xl px-4 py-10"
+                    isZenMode ? "max-w-3xl" : "max-w-3xl px-4 pt-5 pb-8 sm:pt-8 sm:pb-10"
                 )}>
                     {/* Article Content */}
                     <article className="article-body-wrapper block">
@@ -221,7 +221,7 @@ export function ArticleReader({
 
                         {/* Content - NeoBrutalist High Contrast */}
                         <div className={cn(
-                            "prose prose-base sm:prose-lg dark:prose-invert max-w-none mb-12 sm:mb-20 overflow-x-hidden",
+                            "prose prose-base sm:prose-lg dark:prose-invert max-w-none mb-10 sm:mb-16 overflow-x-hidden",
                             // Headings
                             "prose-headings:font-black prose-headings:tracking-normal prose-headings:text-foreground",
                             "prose-h1:text-2xl sm:prose-h1:text-4xl md:prose-h1:text-5xl prose-h1:!mb-8 sm:prose-h1:!mb-12 prose-h1:leading-[1.15]",
@@ -229,7 +229,7 @@ export function ArticleReader({
                             "prose-h3:text-[1.18rem] sm:prose-h3:text-2xl md:prose-h3:text-3xl prose-h3:mt-8 sm:prose-h3:mt-12 prose-h3:!mb-4 sm:prose-h3:!mb-6 prose-h3:font-bold prose-h3:border-l-[4px] sm:prose-h3:border-l-[6px] prose-h3:border-[#23A9FA] prose-h3:pl-3 sm:prose-h3:pl-4 prose-h3:leading-[1.25]",
                             "prose-h4:text-base sm:prose-h4:text-xl prose-h4:mt-6 prose-h4:!mb-4 prose-h4:font-black prose-h4:text-foreground",
                             // Paragraphs & Text — optimized for mobile readability
-                            "prose-p:text-[16px] sm:prose-p:text-[17px] md:prose-p:text-[18px] prose-p:text-[#1a1a1a] dark:prose-p:text-[#e5e5e5] prose-p:leading-[1.78] sm:prose-p:leading-[1.9] prose-p:mb-5 sm:prose-p:mb-8 prose-p:font-[450]",
+                            "prose-p:text-[16px] sm:prose-p:text-[17px] md:prose-p:text-[18px] prose-p:text-[#1a1a1a] dark:prose-p:text-[#e5e5e5] prose-p:leading-[1.76] sm:prose-p:leading-[1.86] prose-p:mb-5 sm:prose-p:mb-7 prose-p:font-[450]",
                             "prose-strong:text-black dark:prose-strong:text-white prose-strong:font-black prose-strong:bg-[#FFC800]/20 dark:prose-strong:bg-[#23A9FA]/20 prose-strong:px-1 prose-strong:rounded-sm",
                             // Links — break long URLs
                             "prose-a:text-black dark:prose-a:text-white prose-a:font-black prose-a:no-underline prose-a:border-b-[3px] prose-a:border-[#23A9FA] dark:prose-a:border-[#FFC800] hover:prose-a:bg-[#23A9FA] dark:hover:prose-a:bg-[#FFC800] hover:prose-a:text-white dark:hover:prose-a:text-black prose-a:break-all prose-a:px-0.5",
@@ -242,7 +242,7 @@ export function ArticleReader({
                             "prose-code:bg-zinc-100 dark:prose-code:bg-zinc-800 prose-code:border-2 prose-code:border-black dark:prose-code:border-zinc-700 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded-md prose-code:text-[#FF3366] dark:prose-code:text-[#FFC800] prose-code:font-mono prose-code:text-[0.8em] sm:prose-code:text-[0.9em] prose-code:font-black prose-code:before:content-none prose-code:after:content-none prose-code:shadow-[2px_2px_0px_0px_#000] dark:prose-code:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.1)] prose-code:break-all",
                             "prose-pre:bg-zinc-950 prose-pre:border-4 prose-pre:border-black dark:prose-pre:border-zinc-700 prose-pre:rounded-xl prose-pre:shadow-[8px_8px_0px_0px_#000] dark:prose-pre:shadow-[8px_8px_0px_0px_rgba(0,0,0,0.8)] prose-pre:overflow-x-auto prose-pre:max-w-full",
                             // Images
-                            "prose-img:rounded-xl prose-img:border-4 prose-img:border-black dark:prose-img:border-zinc-800 prose-img:shadow-[8px_8px_0px_0px_#000] dark:prose-img:shadow-[8px_8px_0px_0px_rgba(0,0,0,0.6)] prose-img:my-8 sm:prose-img:my-16 prose-img:mx-auto prose-img:max-w-full",
+                            "prose-img:rounded-xl prose-img:border-4 prose-img:border-black dark:prose-img:border-zinc-800 prose-img:shadow-[8px_8px_0px_0px_#000] dark:prose-img:shadow-[8px_8px_0px_0px_rgba(0,0,0,0.6)] prose-img:my-7 sm:prose-img:my-10 prose-img:mx-auto prose-img:max-w-full",
                             // HR
                             "prose-hr:border-t-[3px] prose-hr:border-dashed prose-hr:border-black/15 dark:prose-hr:border-white/10 prose-hr:my-8 sm:prose-hr:my-14"
                         )}>

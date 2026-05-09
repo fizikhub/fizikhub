@@ -211,6 +211,10 @@
         margin-bottom: 1.5em;
     }
 
+    .article-content > p:first-of-type {
+        margin-top: 0;
+    }
+
     .prose.font-serif strong {
         font-weight: 850;
         color: inherit;
@@ -424,7 +428,7 @@
        IMAGE CAPTIONS — Neo-Brutalist Style
        ============================================ */
     .prose figure {
-        margin: 2.5em 0 !important;
+        margin: 2em 0 !important;
         display: flex;
         flex-direction: column;
         align-items: center;
