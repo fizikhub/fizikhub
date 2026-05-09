@@ -19,6 +19,7 @@ export interface Database {
                     cover_url: string | null
                     role: string | null
                     created_at: string
+                    wants_email_notifications: boolean
                 }
                 Insert: {
                     id: string
@@ -29,6 +30,7 @@ export interface Database {
                     cover_url?: string | null
                     role?: string | null
                     created_at?: string
+                    wants_email_notifications?: boolean
                 }
                 Update: {
                     id?: string
@@ -39,6 +41,7 @@ export interface Database {
                     cover_url?: string | null
                     role?: string | null
                     created_at?: string
+                    wants_email_notifications?: boolean
                 }
             }
             articles: {

@@ -4,7 +4,7 @@ import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { uploadAvatar, uploadCover, updateProfile, updateUsername, saveProfileChanges } from "@/app/profil/actions";
 import { signOut } from "@/app/auth/actions";
-import { Camera, Loader2, X, MapPin, Link as LinkIcon, AtSign, User as UserIcon, ArrowLeft, Save, LogOut, Upload } from "lucide-react";
+import { Camera, Loader2, X, MapPin, Link as LinkIcon, AtSign, User as UserIcon, ArrowLeft, Save, LogOut, Upload, Mail } from "lucide-react";
 import { toast } from "sonner";
 import { m as motion } from "framer-motion";
 import { cn } from "@/lib/utils";
@@ -27,6 +27,7 @@ export function ProfileEditForm({ user, profile }: ProfileEditFormProps) {
     const [bio, setBio] = useState(profile?.bio || "");
     const [website, setWebsite] = useState(profile?.website || "");
     const [location, setLocation] = useState(profile?.location || "");
+    const [wantsEmailNotifications, setWantsEmailNotifications] = useState(profile?.wants_email_notifications ?? true);
 
     // Image States
     const [avatarFile, setAvatarFile] = useState<File | null>(null);
@@ -93,6 +94,7 @@ export function ProfileEditForm({ user, profile }: ProfileEditFormProps) {
             formData.append("website", website);
             formData.append("location", location);
             formData.append("username", username);
+            formData.append("wants_email_notifications", String(wantsEmailNotifications));
             // Don't append files here — they're already uploaded above
 
             const res = await saveProfileChanges(formData);
@@ -284,6 +286,37 @@ export function ProfileEditForm({ user, profile }: ProfileEditFormProps) {
                                             />
                                         </div>
                                     </div>
+                                </div>
+
+                                {/* Email Notifications */}
+                                <div className="space-y-1.5 mt-2">
+                                    <div className="flex justify-between items-center px-1">
+                                        <label className="text-xs font-black uppercase tracking-wider text-zinc-500">Bildirimler</label>
+                                    </div>
+                                    <label className="flex items-center gap-3 cursor-pointer group bg-zinc-900 border-2 border-black rounded-lg p-4 transition-all hover:bg-zinc-800">
+                                        <div className="bg-black p-2 rounded-md">
+                                            <Mail className="w-5 h-5 text-white" />
+                                        </div>
+                                        <div className="flex-1">
+                                            <div className="text-sm font-bold text-white">Yeni Makale E-postaları</div>
+                                            <div className="text-xs text-zinc-500 font-medium">Yeni makale yayınlandığında haberdar ol</div>
+                                        </div>
+                                        <div className={cn(
+                                            "w-12 h-6 rounded-full border-2 border-black relative transition-colors duration-200",
+                                            wantsEmailNotifications ? "bg-[#10B981]" : "bg-zinc-700"
+                                        )}>
+                                            <div className={cn(
+                                                "absolute top-[2px] left-[2px] w-4 h-4 bg-white rounded-full border border-black transition-transform duration-200",
+                                                wantsEmailNotifications ? "translate-x-6" : "translate-x-0"
+                                            )} />
+                                        </div>
+                                        <input
+                                            type="checkbox"
+                                            className="hidden"
+                                            checked={wantsEmailNotifications}
+                                            onChange={(e) => setWantsEmailNotifications(e.target.checked)}
+                                        />
+                                    </label>
                                 </div>
 
                                 {/* THEME SELECTION */}

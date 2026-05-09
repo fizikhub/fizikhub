@@ -32,6 +32,7 @@ interface ProfileUpdateData {
     username?: string;
     username_changes_count?: number;
     cover_url?: string;
+    wants_email_notifications?: boolean;
 }
 
 export async function getDeferredProfileFeed() {
@@ -176,6 +177,7 @@ export async function updateProfile(formData: {
     cover_offset_y?: number;
     location?: string;
     onboarding_completed?: boolean;
+    wants_email_notifications?: boolean;
 }) {
     const supabase = await createClient();
     const { data: { user }, error: authError } = await supabase.auth.getUser();
@@ -194,6 +196,7 @@ export async function updateProfile(formData: {
     if (formData.cover_offset_y !== undefined) updateData.cover_offset_y = formData.cover_offset_y;
     if (formData.location !== undefined) updateData.location = formData.location;
     if (formData.onboarding_completed !== undefined) updateData.onboarding_completed = formData.onboarding_completed;
+    if (formData.wants_email_notifications !== undefined) updateData.wants_email_notifications = formData.wants_email_notifications;
 
     const { error: updateError } = await supabase
         .from('profiles')
@@ -221,6 +224,7 @@ export async function saveProfileChanges(formData: FormData) {
     const website = formData.get("website") as string;
     const location = formData.get("location") as string;
     const newUsername = formData.get("username") as string;
+    const wantsEmailNotifications = formData.get("wants_email_notifications") === "true";
     const avatarFile = formData.get("avatar") as File | null;
     const coverFile = formData.get("cover") as File | null;
 
@@ -232,6 +236,7 @@ export async function saveProfileChanges(formData: FormData) {
         if (bio !== null) updateData.bio = bio;
         if (website !== null) updateData.website = website;
         if (location !== null) updateData.location = location;
+        if (formData.has("wants_email_notifications")) updateData.wants_email_notifications = wantsEmailNotifications;
 
         // 2. Avatar Upload
         if (avatarFile && avatarFile.size > 0 && avatarFile.name !== 'undefined') {
