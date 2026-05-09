@@ -3,7 +3,7 @@ import { MetadataRoute } from 'next';
 export default function robots(): MetadataRoute.Robots {
     const baseUrl = (process.env.NEXT_PUBLIC_APP_URL || 'https://www.fizikhub.com').replace(/\/+$/, '');
 
-    const commonDisallow = [
+    const privateDisallow = [
         '/api/',
         '/profil/',
         '/onboarding/',
@@ -16,10 +16,15 @@ export default function robots(): MetadataRoute.Robots {
         '/kurulum/',
         '/time-limit/',
         '/yonetim/',
+    ];
+
+    const cleanupDisallow = [
         '/abs/',
         '/storage/',
         '/cdn-cgi/'
     ];
+
+    const commonDisallow = [...privateDisallow, ...cleanupDisallow];
 
     // Modern AI and LLM Search Crawlers (ChatGPT, Perplexity, Claude, etc.)
     const aiBots = [
@@ -51,12 +56,12 @@ export default function robots(): MetadataRoute.Robots {
             {
                 userAgent: 'Googlebot',
                 allow: '/',
-                disallow: commonDisallow,
+                disallow: privateDisallow,
             },
             {
                 userAgent: 'Bingbot',
                 allow: '/',
-                disallow: commonDisallow,
+                disallow: privateDisallow,
                 crawlDelay: 2,
             },
             {
