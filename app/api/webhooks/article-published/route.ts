@@ -21,16 +21,29 @@ export async function POST(req: Request) {
 
     const payload = await req.json();
 
-    // Ensure this is an INSERT operation and we have a new record
-    if (payload.type !== 'INSERT' || !payload.record) {
-      return NextResponse.json({ message: 'Ignoring non-insert events' });
+    // Support both INSERT and UPDATE events
+    // Articles are created as drafts (INSERT with published=false), 
+    // then approved/published via UPDATE (published=true, status='published')
+    if (!payload.record) {
+      return NextResponse.json({ message: 'No record in payload' });
     }
 
     const article = payload.record;
 
-    // Only send if the article is actually published
-    if (!article.published) {
+    // Only send email when article becomes published
+    // Check both 'published' boolean and 'status' field
+    const isPublished = article.published === true || article.status === 'published';
+    
+    if (!isPublished) {
       return NextResponse.json({ message: 'Article not published yet' });
+    }
+
+    // For UPDATE events, only send if article was NOT previously published
+    if (payload.type === 'UPDATE' && payload.old_record) {
+      const wasPublished = payload.old_record.published === true || payload.old_record.status === 'published';
+      if (wasPublished) {
+        return NextResponse.json({ message: 'Article was already published, skipping notification' });
+      }
     }
 
     // 2. Fetch users who want email notifications
