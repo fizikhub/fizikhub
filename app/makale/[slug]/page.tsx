@@ -15,6 +15,79 @@ interface PageProps {
     params: Promise<{ slug: string }>;
 }
 
+const SEARCH_INTENT_OVERRIDES: Record<string, {
+    title: string;
+    description: string;
+    keywords: string[];
+    summaryTitle: string;
+    summary: string;
+    questions: Array<{ question: string; answer: string }>;
+}> = {
+    'kuantum-fiziginin-baslangici-kara-cisim-isimasi-1766099948990': {
+        title: 'Siyah Cisim Işıması Nedir? Kara Cisim Işıması ve Morötesi Felaket',
+        description: 'Siyah cisim ışıması nedir? Kara cisim ışıması, morötesi felaket ve Planck’ın kuantum fikrini sade örneklerle öğren.',
+        keywords: ['siyah cisim ışıması', 'kara cisim ışıması', 'morötesi felaket', 'Planck sabiti', 'kuantum fiziği'],
+        summaryTitle: 'Siyah cisim ışıması nedir?',
+        summary: 'Siyah cisim ışıması, üzerine düşen tüm ışığı soğuran ideal bir cismin sıcaklığına bağlı olarak yaydığı elektromanyetik ışımadır. Klasik fizik bu ışımayı açıklamakta zorlanınca Planck enerjinin kesikli paketler halinde yayıldığını öne sürdü ve kuantum fiziğinin kapısı açıldı.',
+        questions: [
+            {
+                question: 'Kara cisim ile siyah cisim aynı şey mi?',
+                answer: 'Evet. Türkçede iki kullanım da aynı fiziksel modeli anlatır: üzerine gelen ışığı ideal olarak soğuran ve sıcaklığına göre ışınım yapan cisim.',
+            },
+            {
+                question: 'Morötesi felaket nedir?',
+                answer: 'Klasik fiziğin kısa dalga boylarında sonsuz enerji öngörmesi problemidir. Gerçek deneyler bunu göstermediği için Planck’ın kuantum fikri ortaya çıktı.',
+            },
+            {
+                question: 'Siyah cisim ışıması neden önemlidir?',
+                answer: 'Kuantum fiziğinin doğuşuna giden en önemli deneysel problemlerden biridir ve yıldızların sıcaklığını, ışık rengini ve termal ışımayı anlamamıza yardım eder.',
+            },
+        ],
+    },
+    'fizikte-ritmi-yakalamak-basit-harmonik-hareket-nedir-mk9qw6u9gcj': {
+        title: 'Periyodik Hareket Nedir? Basit Harmonik Hareket ve Örnekleri',
+        description: 'Periyodik hareket nedir? Basit harmonik hareket, salınım, periyot, frekans ve günlük hayattan örnekleri sade şekilde öğren.',
+        keywords: ['periyodik hareket nedir', 'basit harmonik hareket nedir', 'salınım', 'periyot', 'frekans', 'BHH'],
+        summaryTitle: 'Periyodik hareket nedir?',
+        summary: 'Periyodik hareket, belirli zaman aralıklarında kendini tekrar eden harekettir. Basit harmonik hareket ise denge noktasına doğru geri çağırıcı kuvvetin uzaklıkla orantılı olduğu özel bir periyodik harekettir; sarkaç ve yay-kütle sistemi bunun en bilinen örnekleridir.',
+        questions: [
+            {
+                question: 'Basit harmonik hareket nedir?',
+                answer: 'Denge noktasından uzaklaşan bir cismin, uzaklığıyla orantılı bir geri çağırıcı kuvvetle tekrar dengeye yöneldiği düzenli salınım hareketidir.',
+            },
+            {
+                question: 'Periyodik hareket ile basit harmonik hareket aynı mı?',
+                answer: 'Hayır. Her basit harmonik hareket periyodiktir ama her periyodik hareket basit harmonik hareket değildir.',
+            },
+            {
+                question: 'Periyot ve frekans neyi anlatır?',
+                answer: 'Periyot bir tam hareketin süresidir. Frekans ise bir saniyede kaç tekrar olduğunu gösterir.',
+            },
+        ],
+    },
+    'entropi-nedir-evrenin-sonu-nasil-gelecek-1767534266662': {
+        title: 'Entropi Nedir? Entropi Ne Demek ve Günlük Hayattan Örnekler',
+        description: 'Entropi nedir? Entropi ne demek, yüksek entropi ne anlama gelir ve evrende entropi neden artar, sade örneklerle öğren.',
+        keywords: ['entropi nedir', 'entropi ne demek', 'yüksek entropi nedir', 'termodinamik', 'düzensizlik'],
+        summaryTitle: 'Entropi nedir?',
+        summary: 'Entropi, bir sistemde enerjinin ne kadar dağılmış olduğunu ve doğal süreçlerin hangi yönde ilerlediğini anlatan termodinamik büyüklüktür. Günlük dilde düzensizlik benzetmesi işe yarar, ama entropi asıl olarak enerjinin kullanılabilirliğinin azalmasıyla ilgilidir.',
+        questions: [
+            {
+                question: 'Entropi ne demek?',
+                answer: 'Entropi, enerjinin sistem içinde yayılma ve daha az kullanılabilir hale gelme eğilimini ölçen fiziksel büyüklüktür.',
+            },
+            {
+                question: 'Yüksek entropi nedir?',
+                answer: 'Yüksek entropi, enerjinin daha dağılmış olduğu ve sistemden düzenli iş çıkarmanın daha zorlaştığı durumu anlatır.',
+            },
+            {
+                question: 'Entropi neden artar?',
+                answer: 'Kapalı sistemlerde doğal süreçler genellikle enerjiyi daha dağınık hale getirir. Bu yüzden toplam entropi zamanla artma eğilimindedir.',
+            },
+        ],
+    },
+};
+
 function toAbsoluteUrl(url: string | null | undefined, baseUrl: string) {
     if (!url) return null;
 
@@ -41,6 +114,30 @@ function toMetaDescription(article: any) {
     return description.endsWith(".") ? description : `${description}...`;
 }
 
+function ArticleSearchIntentBlock({ override }: { override: typeof SEARCH_INTENT_OVERRIDES[string] }) {
+    return (
+        <section className="container mx-auto max-w-4xl px-4 pt-8">
+            <div className="border-y border-zinc-200 bg-zinc-50 px-4 py-6 dark:border-zinc-800 dark:bg-zinc-950 sm:px-6">
+                <p className="text-xs font-black uppercase tracking-wider text-zinc-500">Kısa cevap</p>
+                <h2 className="mt-2 text-2xl font-black tracking-normal text-zinc-950 dark:text-white">
+                    {override.summaryTitle}
+                </h2>
+                <p className="mt-3 text-base font-medium leading-8 text-zinc-700 dark:text-zinc-300">
+                    {override.summary}
+                </p>
+                <div className="mt-5 grid gap-4">
+                    {override.questions.map((item) => (
+                        <div key={item.question}>
+                            <h3 className="text-base font-black text-zinc-950 dark:text-white">{item.question}</h3>
+                            <p className="mt-1 text-sm leading-7 text-zinc-600 dark:text-zinc-400">{item.answer}</p>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </section>
+    );
+}
+
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
     const { slug } = await params;
     const supabase = createStaticClient();
@@ -65,14 +162,15 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     const coverUrl = toAbsoluteUrl(article.cover_url || (article as any).image_url, baseUrl) || fallbackOgUrl.toString();
     const canonicalUrl = `${baseUrl}/makale/${article.slug || slug}`;
 
-    const description = toMetaDescription(article);
+    const intentOverride = SEARCH_INTENT_OVERRIDES[article.slug || slug];
+    const description = intentOverride?.description || toMetaDescription(article);
 
     const tags = (article as any).tags as string[] | undefined;
 
     return {
-        title: article.title,
+        title: intentOverride?.title || article.title,
         description,
-        keywords: tags && tags.length > 0 ? tags : ["fizik", "bilim", "fizikhub", article.category || "makale"],
+        keywords: intentOverride?.keywords || (tags && tags.length > 0 ? tags : ["fizik", "bilim", "fizikhub", article.category || "makale"]),
         authors: [{
             name: authorName,
             url: article.author?.username
@@ -80,7 +178,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
                 : 'https://www.fizikhub.com'
         }],
         openGraph: {
-            title: article.title,
+            title: intentOverride?.title || article.title,
             description,
             url: canonicalUrl,
             type: "article",
@@ -101,7 +199,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
         },
         twitter: {
             card: "summary_large_image",
-            title: article.title,
+            title: intentOverride?.title || article.title,
             description,
             images: [coverUrl],
         },
@@ -204,7 +302,8 @@ export default async function ArticlePage({ params }: PageProps) {
 
     // JSON-LD structured data for Article — full E-E-A-T signals
     const articleTags = (article as any).tags as string[] | undefined;
-    const articleDescription = toMetaDescription(article);
+    const intentOverride = SEARCH_INTENT_OVERRIDES[article.slug];
+    const articleDescription = intentOverride?.description || toMetaDescription(article);
     const baseUrl = 'https://www.fizikhub.com';
     const articleUrl = `${baseUrl}/makale/${article.slug}`;
     const articleImageUrl = toAbsoluteUrl(article.cover_url || (article as any).image_url, baseUrl) || `${baseUrl}/api/og?title=${encodeURIComponent(article.title)}`;
@@ -219,7 +318,7 @@ export default async function ArticlePage({ params }: PageProps) {
             '@type': 'Article',
             '@id': `${articleUrl}#article`,
             url: articleUrl,
-            headline: article.title,
+            headline: intentOverride?.title || article.title,
             description: articleDescription,
             image: {
                 '@type': 'ImageObject',
@@ -234,7 +333,7 @@ export default async function ArticlePage({ params }: PageProps) {
             timeRequired: `PT${readingTime}M`,
             inLanguage: 'tr-TR',
             articleSection: article.category || 'Fizik',
-            keywords: articleTags && articleTags.length > 0 ? articleTags.join(', ') : 'fizik, bilim, fizikhub',
+            keywords: intentOverride?.keywords.join(', ') || (articleTags && articleTags.length > 0 ? articleTags.join(', ') : 'fizik, bilim, fizikhub'),
             citation: citations.length > 0 ? citations : undefined,
             isAccessibleForFree: true,
             about: {
@@ -274,7 +373,7 @@ export default async function ArticlePage({ params }: PageProps) {
             '@type': 'WebPage',
             '@id': articleUrl,
             url: articleUrl,
-            name: article.title,
+            name: intentOverride?.title || article.title,
             description: articleDescription,
             inLanguage: 'tr-TR',
             isPartOf: { '@id': `${baseUrl}/#website` },
@@ -291,9 +390,22 @@ export default async function ArticlePage({ params }: PageProps) {
             itemListElement: [
                 { '@type': 'ListItem', position: 1, name: 'Ana Sayfa', item: baseUrl },
                 { '@type': 'ListItem', position: 2, name: 'Makaleler', item: `${baseUrl}/makale` },
-                { '@type': 'ListItem', position: 3, name: article.title, item: articleUrl },
+                { '@type': 'ListItem', position: 3, name: intentOverride?.title || article.title, item: articleUrl },
             ],
         },
+        ...(intentOverride ? [{
+            '@context': 'https://schema.org',
+            '@type': 'FAQPage',
+            '@id': `${articleUrl}#faq`,
+            mainEntity: intentOverride.questions.map((item) => ({
+                '@type': 'Question',
+                name: item.question,
+                acceptedAnswer: {
+                    '@type': 'Answer',
+                    text: item.answer,
+                },
+            })),
+        }] : []),
     ];
 
     return (
@@ -349,6 +461,8 @@ export default async function ArticlePage({ params }: PageProps) {
                     <>
                         {/* Hero is OUTSIDE error boundary — always visible (static JSX, no JS risk) */}
                         <NeoArticleHero article={article} readingTime={formattedReadingTime} />
+
+                        {intentOverride && <ArticleSearchIntentBlock override={intentOverride} />}
 
                         {/* Only interactive reader is wrapped — fallback shows plain article text */}
                         <ArticleErrorBoundary fallback={
