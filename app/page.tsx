@@ -2,8 +2,10 @@ import { createClient } from "@supabase/supabase-js";
 import { unstable_cache } from "next/cache";
 import type { Metadata } from "next";
 import dynamic from "next/dynamic";
+import Link from "next/link";
 import { FeedSkeleton, SidebarSkeleton } from "@/components/home/performance-skeletons";
 import { processFeedData, formatSliderArticles } from "@/lib/feed-helpers";
+import { SEO_PRIORITY_ARTICLES, SEO_PRIORITY_SLUGS } from "@/lib/seo-priority";
 
 // Dynamic Imports (Client boundaries lazy loaded automatically)
 const ScrollProgress = dynamic(() => import("@/components/ui/scroll-progress").then(mod => mod.ScrollProgress));
@@ -64,14 +66,23 @@ const getCachedFeedData = unstable_cache(
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!.trim()
     );
 
-    const [articlesResult, questionsResult, profilesResult, storiesResult, groupsResult] = await Promise.all([
+    const articleSelect = 'id, title, slug, excerpt, cover_url, image_url, category, created_at, status, author:profiles!articles_author_id_fkey(full_name, username, avatar_url, is_writer)';
+
+    const [articlesResult, priorityArticlesResult, questionsResult, profilesResult, storiesResult, groupsResult] = await Promise.all([
       // Fetch Articles & Blogs (using same table)
       supabase
         .from('articles')
-        .select('id, title, slug, excerpt, cover_url, image_url, category, created_at, status, author:profiles!articles_author_id_fkey(full_name, username, avatar_url, is_writer)')
+        .select(articleSelect)
         .eq('status', 'published')
         .order('created_at', { ascending: false })
         .limit(16), // keep homepage payload tight for mobile
+
+      // Keep proven Google Search Console opportunities linked from the homepage.
+      supabase
+        .from('articles')
+        .select(articleSelect)
+        .eq('status', 'published')
+        .in('slug', SEO_PRIORITY_SLUGS),
 
       // Fetch Questions
       supabase
@@ -104,8 +115,15 @@ const getCachedFeedData = unstable_cache(
         .limit(12)
     ]);
 
+    const latestArticles = articlesResult.data || [];
+    const priorityArticles = priorityArticlesResult.data || [];
+    const seenSlugs = new Set(priorityArticles.map((article: any) => article.slug));
+
     return {
-      articles: articlesResult.data || [],
+      articles: [
+        ...priorityArticles.sort((a: any, b: any) => SEO_PRIORITY_SLUGS.indexOf(a.slug) - SEO_PRIORITY_SLUGS.indexOf(b.slug)),
+        ...latestArticles.filter((article: any) => !seenSlugs.has(article.slug)),
+      ],
       questions: questionsResult.data || [],
       suggestedUsers: profilesResult.data || [],
       // Map stories to match NexusStories expected format temporarily or update component to handle both
@@ -136,6 +154,27 @@ const getCachedFeedData = unstable_cache(
   ['feed-data-v3-fixed'], // Bump version to invalidate cache
   { revalidate: 60, tags: ['feed'] }
 );
+
+function SearchOpportunityLinks() {
+  return (
+    <section className="mt-3 mb-3 rounded-[8px] border border-foreground/10 bg-background/80 px-3 py-3 sm:px-4" aria-label="Popüler fizik konu rehberleri">
+      <div className="flex flex-wrap items-center gap-2">
+        <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+          En çok arananlar
+        </span>
+        {SEO_PRIORITY_ARTICLES.map((article) => (
+          <Link
+            key={article.slug}
+            href={`/makale/${article.slug}`}
+            className="rounded-[7px] border border-foreground/15 bg-foreground px-2.5 py-1.5 text-[11px] font-black text-background transition-colors hover:bg-yellow-400 hover:text-black sm:text-xs"
+          >
+            {article.title}
+          </Link>
+        ))}
+      </div>
+    </section>
+  );
+}
 
 export default async function Home() {
   const { articles, questions, suggestedUsers, stories, groups } = await getCachedFeedData();
@@ -182,6 +221,7 @@ export default async function Home() {
 
           <div className="lg:col-span-12 mt-0 sm:px-0">
             <CompactHero />
+            <SearchOpportunityLinks />
             <NexusStories initialStories={stories} initialGroups={groups} />
           </div>
 

@@ -5,6 +5,7 @@ import { ArrowLeft } from "lucide-react";
 import { createStaticClient } from "@/lib/supabase-server";
 import { getDictionaryTerms } from "@/lib/api";
 import { BreadcrumbJsonLd } from "@/lib/breadcrumbs";
+import { SEO_PRIORITY_ARTICLES } from "@/lib/seo-priority";
 import { slugify } from "@/lib/slug";
 
 type PageProps = {
@@ -14,6 +15,16 @@ type PageProps = {
 const SITE_URL = "https://www.fizikhub.com";
 
 export const revalidate = 3600;
+
+const TERM_ARTICLE_SLUGS: Record<string, string[]> = {
+    entropi: ["entropi-nedir-evrenin-sonu-nasil-gelecek-1767534266662"],
+    "siyah-cisim": ["kuantum-fiziginin-baslangici-kara-cisim-isimasi-1766099948990"],
+    "kara-cisim": ["kuantum-fiziginin-baslangici-kara-cisim-isimasi-1766099948990"],
+    "siyah-cisim-isimasi": ["kuantum-fiziginin-baslangici-kara-cisim-isimasi-1766099948990"],
+    "kara-cisim-isimasi": ["kuantum-fiziginin-baslangici-kara-cisim-isimasi-1766099948990"],
+    "periyodik-hareket": ["fizikte-ritmi-yakalamak-basit-harmonik-hareket-nedir-mk9qw6u9gcj"],
+    "basit-harmonik-hareket": ["fizikte-ritmi-yakalamak-basit-harmonik-hareket-nedir-mk9qw6u9gcj"],
+};
 
 function truncateAtWordBoundary(text: string, limit: number) {
     if (text.length <= limit) return text;
@@ -107,6 +118,10 @@ export default async function DictionaryTermPage({ params }: PageProps) {
     const relatedTerms = terms
         .filter((item) => item.category === term.category && item.term !== term.term)
         .slice(0, 6);
+    const relatedArticleSlugs = TERM_ARTICLE_SLUGS[slug] || [];
+    const relatedArticles = relatedArticleSlugs
+        .map((articleSlug) => SEO_PRIORITY_ARTICLES.find((article) => article.slug === articleSlug))
+        .filter(Boolean) as typeof SEO_PRIORITY_ARTICLES[number][];
 
     const combinedJsonLd = {
         "@context": "https://schema.org",
@@ -197,6 +212,28 @@ export default async function DictionaryTermPage({ params }: PageProps) {
                             ya da hangi modelde işe yaradığını görmektir.
                         </p>
                     </div>
+
+                    {relatedArticles.length > 0 && (
+                        <nav className="mt-6 border-t border-zinc-800 pt-5" aria-label="İlgili makaleler">
+                            <h2 className="mb-3 text-sm font-black uppercase tracking-wider text-zinc-500">
+                                Bu konuyu derinleştir
+                            </h2>
+                            <div className="grid gap-2">
+                                {relatedArticles.map((article) => (
+                                    <Link
+                                        key={article.slug}
+                                        href={`/makale/${article.slug}`}
+                                        className="rounded-md border border-zinc-700 bg-zinc-900 px-3 py-3 text-sm font-bold text-zinc-200 transition-colors hover:border-yellow-400 hover:text-white"
+                                    >
+                                        {article.title}
+                                        <span className="mt-1 block text-xs font-medium leading-relaxed text-zinc-500">
+                                            {article.description}
+                                        </span>
+                                    </Link>
+                                ))}
+                            </div>
+                        </nav>
+                    )}
 
                     {relatedTerms.length > 0 && (
                         <nav className="mt-6 border-t border-zinc-800 pt-5" aria-label="İlgili sözlük terimleri">

@@ -15,6 +15,7 @@ import {
     Search,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { SEO_PRIORITY_ARTICLES, SEO_PRIORITY_SLUG_SET } from "@/lib/seo-priority";
 
 interface ArticleFeedProps {
     articles: RawArticle[];
@@ -327,6 +328,37 @@ function ReadingRoute({ articles }: { articles: LibraryArticle[] }) {
     );
 }
 
+function SearchOpportunityRoute({ articles }: { articles: LibraryArticle[] }) {
+    const priorityArticles = SEO_PRIORITY_ARTICLES
+        .map((priority) => articles.find((article) => article.slug === priority.slug))
+        .filter(Boolean) as LibraryArticle[];
+
+    if (priorityArticles.length === 0) return null;
+
+    return (
+        <div className="min-w-0 rounded-[8px] border-[3px] border-black bg-[#ffcc00] p-2 text-black shadow-[4px_4px_0_#000] sm:p-3 sm:shadow-[6px_6px_0_#000]">
+            <div className="mb-2 flex items-center gap-2 px-1 text-[9px] font-black uppercase tracking-[0.2em] sm:mb-3 sm:text-[10px]">
+                <Search className="h-4 w-4" />
+                Google'da Arananlar
+            </div>
+            <div className="grid gap-2">
+                {priorityArticles.map((article) => (
+                    <Link
+                        key={article.id}
+                        href={`/makale/${article.slug}`}
+                        className="group/priority rounded-[7px] border-2 border-black bg-white px-3 py-2 text-xs font-black transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0_#000]"
+                    >
+                        <span className="line-clamp-2">{article.title}</span>
+                        <span className="mt-1 flex items-center gap-1 text-[9px] uppercase tracking-widest text-zinc-600">
+                            Hedef konu <ArrowRight className="h-3 w-3 transition-transform group-hover/priority:translate-x-1" />
+                        </span>
+                    </Link>
+                ))}
+            </div>
+        </div>
+    );
+}
+
 function CategoryShelf({
     categories,
     activeCategory,
@@ -414,7 +446,11 @@ export function ArticleFeed({ articles, categories, activeCategory, sortParam, s
     const featuredArticle = sortedArticles[0];
     const restArticles = sortedArticles.slice(1);
     const visibleCategories = categories.filter((category) => category.name);
-    const routeArticles = sortedArticles.slice(0, 3);
+    const priorityRouteArticles = sortedArticles.filter((article) => SEO_PRIORITY_SLUG_SET.has(article.slug));
+    const routeArticles = [
+        ...priorityRouteArticles,
+        ...sortedArticles.filter((article) => !SEO_PRIORITY_SLUG_SET.has(article.slug)),
+    ].slice(0, 3);
 
     const handleSearch = (e: FormEvent) => {
         e.preventDefault();
@@ -471,6 +507,7 @@ export function ArticleFeed({ articles, categories, activeCategory, sortParam, s
 
                     <div className="grid min-w-0 gap-3">
                         <CategoryShelf categories={visibleCategories} activeCategory={activeCategory} searchQuery={searchQuery} />
+                        <SearchOpportunityRoute articles={sortedArticles} />
                         <ReadingRoute articles={routeArticles} />
                     </div>
                 </section>
