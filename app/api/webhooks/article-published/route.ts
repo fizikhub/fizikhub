@@ -41,20 +41,68 @@ export async function POST(req: Request) {
     }
     const resend = new Resend(apiKey);
 
-    // 4. Prepare simple HTML email (no external dependencies that might fail)
+    // 4. Prepare HTML email
     const articleUrl = `https://www.fizikhub.com/makale/${article.slug}`;
+    const logoUrl = 'https://www.fizikhub.com/icon.png';
     const htmlContent = `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-        <h1 style="font-size: 24px; font-weight: bold; text-align: center; margin-bottom: 30px;">Fizikhub</h1>
-        <h2 style="font-size: 20px; text-align: center; margin-bottom: 20px;">Yeni Makale Yayında!</h2>
-        ${article.image_url ? `<img src="${article.image_url}" alt="${article.title}" style="width: 100%; height: 200px; object-fit: cover; border-radius: 8px; margin-bottom: 20px;" />` : ''}
-        <h3 style="font-size: 18px; font-weight: 600;">${article.title}</h3>
-        <p style="color: #666; font-size: 14px;">${article.excerpt || 'Fizikhub\'da yeni bir makale yayınlandı.'}</p>
-        <div style="text-align: center; margin: 32px 0;">
-          <a href="${articleUrl}" style="background-color: #000; color: #fff; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 14px;">Makaleyi Oku</a>
-        </div>
-        <p style="color: #999; font-size: 12px;">Bu e-postayı Fizikhub bildirim ayarlarınız açık olduğu için aldınız.</p>
-      </div>
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      </head>
+      <body style="margin: 0; padding: 0; background-color: #f4f4f5; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+        <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #f4f4f5; padding: 40px 20px;">
+          <tr>
+            <td align="center">
+              <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px; background-color: #ffffff; border: 4px solid #000000; border-radius: 16px; overflow: hidden; box-shadow: 4px 4px 0px #000000;">
+                
+                <!-- Header -->
+                <tr>
+                  <td align="center" style="padding: 40px 20px 20px; background-color: #fde047; border-bottom: 4px solid #000000;">
+                    <img src="${logoUrl}" alt="Fizikhub" width="64" height="64" style="display: block; border-radius: 12px; border: 3px solid #000; margin-bottom: 16px; background-color: #fff;" />
+                    <h1 style="margin: 0; font-size: 28px; font-weight: 900; color: #000000; text-transform: uppercase; letter-spacing: -0.5px;">Yeni Makale!</h1>
+                  </td>
+                </tr>
+
+                <!-- Content -->
+                <tr>
+                  <td style="padding: 40px 32px;">
+                    <h2 style="margin: 0 0 16px; font-size: 22px; font-weight: 800; color: #000000; line-height: 1.3;">${article.title}</h2>
+                    
+                    ${article.image_url ? `
+                    <div style="margin-bottom: 24px; border: 3px solid #000000; border-radius: 12px; overflow: hidden;">
+                      <img src="${article.image_url}" alt="${article.title}" style="display: block; width: 100%; height: auto; max-height: 300px; object-fit: cover;" />
+                    </div>
+                    ` : ''}
+
+                    <p style="margin: 0 0 32px; font-size: 16px; color: #3f3f46; line-height: 1.6; font-weight: 500;">
+                      ${article.excerpt || 'Fizikhub\'da yeni bir makale yayınlandı. Hemen inceleyin ve öğrenmeye başlayın!'}
+                    </p>
+
+                    <div style="text-align: center;">
+                      <a href="${articleUrl}" style="display: inline-block; background-color: #000000; color: #ffffff; padding: 16px 32px; text-decoration: none; border-radius: 8px; font-weight: 700; font-size: 16px; border: 2px solid #000000; text-transform: uppercase; letter-spacing: 0.5px;">
+                        Makaleyi Oku
+                      </a>
+                    </div>
+                  </td>
+                </tr>
+
+                <!-- Footer -->
+                <tr>
+                  <td align="center" style="padding: 24px 32px; background-color: #fafafa; border-top: 3px solid #000000;">
+                    <p style="margin: 0; font-size: 13px; color: #71717a; font-weight: 500;">
+                      Bu e-postayı, Fizikhub profilinizde "Yeni Makale Bildirimleri" açık olduğu için aldınız.
+                    </p>
+                  </td>
+                </tr>
+
+              </table>
+            </td>
+          </tr>
+        </table>
+      </body>
+      </html>
     `;
 
     // 5. Send email - TEST: only to this address
