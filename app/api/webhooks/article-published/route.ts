@@ -1,29 +1,19 @@
 import { NextResponse } from 'next/server';
-import { createAdminClient } from '@/lib/supabase-admin';
 import { Resend } from 'resend';
-import { render } from '@react-email/render';
-import NewArticleEmail from '@/components/emails/NewArticleEmail';
-import * as React from 'react';
 
 export async function POST(req: Request) {
   try {
-    // Initialize Resend inside the handler to prevent build errors
-    const resend = new Resend(process.env.RESEND_API_KEY || 're_dummy');
-
     // 1. Authenticate the webhook request
-    // Verify a custom header or query param secret to ensure it's from Supabase
     const authHeader = req.headers.get('Authorization');
     const webhookSecret = process.env.SUPABASE_WEBHOOK_SECRET;
 
     if (!webhookSecret || authHeader !== `Bearer ${webhookSecret}`) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: 'Unauthorized', detail: 'Secret mismatch' }, { status: 401 });
     }
 
+    // 2. Parse payload
     const payload = await req.json();
 
-    // Support both INSERT and UPDATE events
-    // Articles are created as drafts (INSERT with published=false), 
-    // then approved/published via UPDATE (published=true, status='published')
     if (!payload.record) {
       return NextResponse.json({ message: 'No record in payload' });
     }
@@ -31,81 +21,56 @@ export async function POST(req: Request) {
     const article = payload.record;
 
     // Only send email when article becomes published
-    // Check both 'published' boolean and 'status' field
     const isPublished = article.published === true || article.status === 'published';
-    
     if (!isPublished) {
       return NextResponse.json({ message: 'Article not published yet' });
     }
 
-    // For UPDATE events, only send if article was NOT previously published
+    // For UPDATE events, skip if already published before
     if (payload.type === 'UPDATE' && payload.old_record) {
       const wasPublished = payload.old_record.published === true || payload.old_record.status === 'published';
       if (wasPublished) {
-        return NextResponse.json({ message: 'Article was already published, skipping notification' });
+        return NextResponse.json({ message: 'Already published, skipping' });
       }
     }
 
-    // 2. Fetch users who want email notifications
-    const supabase = createAdminClient();
-    const { data: users, error: usersError } = await supabase
-      .from('profiles')
-      .select('email, full_name, username')
-      .eq('wants_email_notifications', true)
-      .not('email', 'is', null);
+    // 3. Initialize Resend
+    const apiKey = process.env.RESEND_API_KEY;
+    if (!apiKey) {
+      return NextResponse.json({ error: 'RESEND_API_KEY not set' }, { status: 500 });
+    }
+    const resend = new Resend(apiKey);
 
-    if (usersError) {
-      console.error('Error fetching users:', usersError);
-      return NextResponse.json({ error: 'Failed to fetch users' }, { status: 500 });
+    // 4. Prepare simple HTML email (no external dependencies that might fail)
+    const articleUrl = `https://www.fizikhub.com/makale/${article.slug}`;
+    const htmlContent = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <h1 style="font-size: 24px; font-weight: bold; text-align: center; margin-bottom: 30px;">Fizikhub</h1>
+        <h2 style="font-size: 20px; text-align: center; margin-bottom: 20px;">Yeni Makale Yayında!</h2>
+        ${article.image_url ? `<img src="${article.image_url}" alt="${article.title}" style="width: 100%; height: 200px; object-fit: cover; border-radius: 8px; margin-bottom: 20px;" />` : ''}
+        <h3 style="font-size: 18px; font-weight: 600;">${article.title}</h3>
+        <p style="color: #666; font-size: 14px;">${article.excerpt || 'Fizikhub\'da yeni bir makale yayınlandı.'}</p>
+        <div style="text-align: center; margin: 32px 0;">
+          <a href="${articleUrl}" style="background-color: #000; color: #fff; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 14px;">Makaleyi Oku</a>
+        </div>
+        <p style="color: #999; font-size: 12px;">Bu e-postayı Fizikhub bildirim ayarlarınız açık olduğu için aldınız.</p>
+      </div>
+    `;
+
+    // 5. Send email - TEST: only to this address
+    const { data, error } = await resend.emails.send({
+      from: 'Fizikhub <onboarding@resend.dev>',
+      to: 'barannnbozkurttb.b@gmail.com',
+      subject: `Yeni Makale: ${article.title}`,
+      html: htmlContent,
+    });
+
+    if (error) {
+      return NextResponse.json({ error: 'Resend error', detail: error }, { status: 500 });
     }
 
-    // TEST İÇİN SADECE BU KULLANICIYA GÖNDERİLİR
-    const testUsers = [{ email: 'barannnbozkurttb.b@gmail.com', full_name: 'Test', username: 'test' }];
-
-    if (!testUsers || testUsers.length === 0) {
-      return NextResponse.json({ message: 'No users to notify' });
-    }
-
-    // 3. Prepare email content
-    const articleUrl = `${process.env.NEXT_PUBLIC_SITE_URL || 'https://fizikhub.com'}/makale/${article.slug}`;
-    const htmlContent = await render(
-      React.createElement(NewArticleEmail, {
-        title: article.title,
-        excerpt: article.excerpt || 'Fizikhub\'da yeni bir makale yayınlandı.',
-        articleUrl: articleUrl,
-        imageUrl: article.image_url,
-      })
-    );
-
-    // 4. Prepare batch payload for Resend
-    // Resend Batch API allows up to 100 emails per request. We slice the array if necessary.
-    // However, the standard Resend Node.js SDK batch method accepts an array of email objects.
-    const CHUNK_SIZE = 100;
-    const emailBatches = [];
-
-    for (let i = 0; i < testUsers.length; i += CHUNK_SIZE) {
-      const chunk = testUsers.slice(i, i + CHUNK_SIZE);
-      const batchPayload = chunk.map((user) => ({
-        from: 'Fizikhub <onboarding@resend.dev>', // Test için Resend'in izin verdiği domain
-        to: user.email!,
-        subject: `Yeni Makale: ${article.title}`,
-        html: htmlContent,
-      }));
-      emailBatches.push(batchPayload);
-    }
-
-    // 5. Send emails
-    for (const batch of emailBatches) {
-      const { error } = await resend.batch.send(batch);
-      if (error) {
-        console.error('Error sending batch via Resend:', error);
-        // We might want to continue to the next batch even if one fails
-      }
-    }
-
-    return NextResponse.json({ message: 'Emails queued for sending', count: users.length });
-  } catch (error) {
-    console.error('Webhook error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json({ message: 'Email sent successfully', emailId: data?.id });
+  } catch (error: any) {
+    return NextResponse.json({ error: 'Internal server error', detail: error?.message }, { status: 500 });
   }
 }
