@@ -44,16 +44,16 @@ export async function POST(req: Request) {
     // 4. Prepare HTML email
     const articleUrl = `https://www.fizikhub.com/makale/${article.slug}`;
     
-    // Opak koyu 1x1 pixel PNG'ler — Gmail background-image'ı DEĞİŞTİRMEZ
-    // Bu pixel tile edilerek tüm arka planı kaplar, Gmail ne yaparsa yapsın koyu kalır
-    const PX_CARD = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADElEQVR4nGOQkpICAACgAE8sk/soAAAAAElFTkSuQmCC"; // #1a1a1a
-    const PX_BODY = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADElEQVR4nGMQFBQEAABqADS54vDNAAAAAElFTkSuQmCC"; // #111111
+    // Hosted koyu PNG'ler — Gmail data URI'leri bloklar ama hosted image'ları ASLA değiştirmez
+    // HTML background attribute + CSS background-image = Gmail dark mode proof
+    const BG_BODY = 'https://www.fizikhub.com/email/body-bg.png'; // #111111
+    const BG_CARD = 'https://www.fizikhub.com/email/card-bg.png'; // #1a1a1a
     
     // Makale kapak fotoğrafı (og-image roket hariç)
     const coverImage = article.image_url && !article.image_url.includes('og-image') ? article.image_url : '';
 
     const htmlContent = `<!DOCTYPE html>
-<html lang="tr" xmlns="http://www.w3.org/1999/xhtml">
+<html lang="tr">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -63,24 +63,25 @@ export async function POST(req: Request) {
 body,table,td,div,p,a,span,h1,h2,h3{font-family:'Segoe UI',-apple-system,BlinkMacSystemFont,Roboto,Helvetica,Arial,sans-serif}
 </style>
 </head>
-<body style="margin:0;padding:0;background-color:#111111;background-image:url('${PX_BODY}');background-repeat:repeat;-webkit-text-size-adjust:none;">
-<table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color:#111111;background-image:url('${PX_BODY}');background-repeat:repeat;padding:28px 16px;" role="presentation">
+<body bgcolor="#111111" background="${BG_BODY}" style="margin:0;padding:0;background-color:#111111;background-image:url('${BG_BODY}');background-repeat:repeat;-webkit-text-size-adjust:none;">
+
+<table border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#111111" background="${BG_BODY}" style="background-color:#111111;background-image:url('${BG_BODY}');background-repeat:repeat;padding:28px 16px;" role="presentation">
 <tr>
-<td align="center">
+<td align="center" bgcolor="#111111" background="${BG_BODY}" style="background-color:#111111;background-image:url('${BG_BODY}');background-repeat:repeat;">
 
 <!-- KART -->
-<table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width:540px;background-color:#1a1a1a;background-image:url('${PX_CARD}');background-repeat:repeat;border-radius:12px;border:2px solid #2a2a2a;overflow:hidden;" role="presentation">
+<table border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#1a1a1a" background="${BG_CARD}" style="max-width:540px;background-color:#1a1a1a;background-image:url('${BG_CARD}');background-repeat:repeat;border-radius:12px;border:2px solid #2a2a2a;overflow:hidden;" role="presentation">
 
 <!-- LOGO -->
 <tr>
-<td align="center" style="padding:34px 24px 22px;">
+<td align="center" bgcolor="#1a1a1a" background="${BG_CARD}" style="padding:34px 24px 22px;background-color:#1a1a1a;background-image:url('${BG_CARD}');background-repeat:repeat;">
 <table border="0" cellpadding="0" cellspacing="0" role="presentation">
 <tr><td align="center">
 <h1 style="margin:0;font-size:36px;font-weight:900;font-style:italic;color:#FFD700;letter-spacing:-1.5px;line-height:1;">FizikHub</h1>
 </td></tr>
 <tr><td align="center" style="padding-top:7px;">
 <table border="0" cellpadding="0" cellspacing="0" role="presentation">
-<tr><td style="background-color:#FFD700;background-image:url('data:image/gif;base64,R0lGODlhAQABAPAAAP/xIAAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==');padding:3px 11px;border-radius:3px;">
+<tr><td bgcolor="#FFD700" style="background-color:#FFD700;padding:3px 11px;border-radius:3px;">
 <span style="font-size:8px;font-weight:800;color:#000000;letter-spacing:2.5px;text-transform:uppercase;line-height:1;">BİLİM PLATFORMU</span>
 </td></tr>
 </table>
@@ -92,7 +93,7 @@ body,table,td,div,p,a,span,h1,h2,h3{font-family:'Segoe UI',-apple-system,BlinkMa
 ${coverImage ? `
 <!-- KAPAK FOTOĞRAFI -->
 <tr>
-<td style="padding:0 18px 6px;">
+<td bgcolor="#1a1a1a" background="${BG_CARD}" style="padding:0 18px 6px;background-color:#1a1a1a;background-image:url('${BG_CARD}');background-repeat:repeat;">
 <div style="border-radius:8px;overflow:hidden;border:2px solid #2a2a2a;">
 <a href="${articleUrl}" style="text-decoration:none;">
 <img src="${coverImage}" alt="${article.title}" width="500" style="display:block;width:100%;height:auto;max-height:220px;object-fit:cover;border:0;" />
@@ -104,12 +105,12 @@ ${coverImage ? `
 
 <!-- İÇERİK -->
 <tr>
-<td style="padding:${coverImage ? '20px' : '6px'} 26px 30px;">
+<td bgcolor="#1a1a1a" background="${BG_CARD}" style="padding:${coverImage ? '20px' : '6px'} 26px 30px;background-color:#1a1a1a;background-image:url('${BG_CARD}');background-repeat:repeat;">
 
-<!-- YENİ MAKALE ETİKETİ — Sarı arka plan, siyah yazı -->
+<!-- YENİ MAKALE ETİKETİ -->
 <table border="0" cellpadding="0" cellspacing="0" role="presentation" style="margin-bottom:18px;">
 <tr>
-<td style="background-color:#fbbf24;padding:6px 16px;border-radius:4px;border:2px solid #000000;">
+<td bgcolor="#fbbf24" style="background-color:#fbbf24;padding:6px 16px;border-radius:4px;border:2px solid #000000;">
 <span style="font-size:11px;font-weight:800;color:#000000;letter-spacing:1.2px;text-transform:uppercase;">YENİ MAKALE</span>
 </td>
 </tr>
@@ -128,7 +129,7 @@ ${article.excerpt || 'Fizikhub\'da yepyeni bir makale yayınlandı. Hemen okumay
 <!-- BUTON -->
 <table border="0" cellpadding="0" cellspacing="0" role="presentation">
 <tr>
-<td style="border-radius:6px;background-color:#fbbf24;border:2px solid #000000;">
+<td bgcolor="#fbbf24" style="border-radius:6px;background-color:#fbbf24;border:2px solid #000000;">
 <a href="${articleUrl}" target="_blank" style="display:inline-block;padding:12px 28px;font-size:14px;font-weight:800;color:#000000;text-decoration:none;letter-spacing:0.3px;text-transform:uppercase;">Makaleyi Oku →</a>
 </td>
 </tr>
@@ -139,14 +140,14 @@ ${article.excerpt || 'Fizikhub\'da yepyeni bir makale yayınlandı. Hemen okumay
 
 <!-- ÇİZGİ -->
 <tr>
-<td style="padding:0 26px;">
-<div style="height:2px;background-color:#222222;background-image:url('${PX_CARD}');"></div>
+<td bgcolor="#1a1a1a" background="${BG_CARD}" style="padding:0 26px;background-color:#1a1a1a;background-image:url('${BG_CARD}');background-repeat:repeat;">
+<div style="height:2px;background-color:#252525;"></div>
 </td>
 </tr>
 
 <!-- FOOTER -->
 <tr>
-<td style="padding:16px 26px 20px;text-align:center;">
+<td bgcolor="#1a1a1a" background="${BG_CARD}" style="padding:16px 26px 20px;text-align:center;background-color:#1a1a1a;background-image:url('${BG_CARD}');background-repeat:repeat;">
 <p style="margin:0 0 4px;font-size:11px;color:#555555;line-height:1.5;">Bu e-postayı Fizikhub bildirimleriniz açık olduğu için aldınız.</p>
 <a href="https://www.fizikhub.com/profil" style="font-size:11px;color:#fbbf24;text-decoration:none;font-weight:600;">Bildirim ayarlarını değiştir</a>
 </td>
@@ -154,11 +155,11 @@ ${article.excerpt || 'Fizikhub\'da yepyeni bir makale yayınlandı. Hemen okumay
 
 </table>
 
-<!-- KART DIŞI LINK -->
+<!-- KART DIŞI -->
 <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width:540px;" role="presentation">
 <tr>
 <td align="center" style="padding:18px 0 0;">
-<a href="https://www.fizikhub.com" style="font-size:11px;color:#444444;text-decoration:none;">fizikhub.com</a>
+<a href="https://www.fizikhub.com" style="font-size:11px;color:#555555;text-decoration:none;">fizikhub.com</a>
 </td>
 </tr>
 </table>
@@ -167,8 +168,7 @@ ${article.excerpt || 'Fizikhub\'da yepyeni bir makale yayınlandı. Hemen okumay
 </tr>
 </table>
 </body>
-</html>
-    `;
+</html>`;
 
     // 5. Send email - TEST: only to this address
     const { data, error } = await resend.emails.send({
