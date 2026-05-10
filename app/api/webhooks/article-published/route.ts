@@ -44,134 +44,134 @@ export async function POST(req: Request) {
     // 4. Prepare HTML email
     const articleUrl = `https://www.fizikhub.com/makale/${article.slug}`;
     
-    // Roket görselinin (og-image) mailde çıkmasını engelle
-    const hasValidImage = article.image_url && !article.image_url.includes('og-image');
+    // Gmail dark mode hack: 1x1 transparent GIF prevents Gmail from inverting dark backgrounds
+    const IMG_FIX = "url('data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7')";
+    
+    // Makale kapak fotoğrafı - og-image (roket) hariç
+    const coverImage = article.image_url && !article.image_url.includes('og-image') ? article.image_url : '';
 
     const htmlContent = `
       <!DOCTYPE html>
-      <html lang="tr">
+      <html lang="tr" xmlns="http://www.w3.org/1999/xhtml">
       <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta name="color-scheme" content="dark only">
-        <meta name="supported-color-schemes" content="dark only">
+        <meta name="x-apple-disable-message-reformatting">
         <!--[if mso]>
-        <noscript>
-          <xml>
-            <o:OfficeDocumentSettings>
-              <o:PixelsPerInch>96</o:PixelsPerInch>
-            </o:OfficeDocumentSettings>
-          </xml>
-        </noscript>
+        <noscript><xml><o:OfficeDocumentSettings><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml></noscript>
         <![endif]-->
         <style>
-          :root { color-scheme: dark only; }
           body, table, td, div, p, a, span, h1, h2, h3 {
             font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
           }
-          /* Prevent Gmail from overriding dark backgrounds */
-          u + .body { background-color: transparent !important; }
-          [data-ogsc] .dark-bg { background-color: #1a1a1a !important; }
-          [data-ogsc] .card-bg { background-color: #242424 !important; }
+          /* Gmail dark mode: target all backgrounds to prevent inversion */
+          u + .body .gcard { background: #1a1a1a !important; }
+          u + .body .gdark { background: #111111 !important; }
+          [data-ogsc] .gcard { background: #1a1a1a !important; }
+          [data-ogsc] .gdark { background: #111111 !important; }
         </style>
       </head>
-      <body class="body" style="margin: 0; padding: 0; background-color: transparent; -webkit-text-size-adjust: none;">
-        <!-- Outer wrapper: transparent so Gmail dark mode background shows through -->
-        <table border="0" cellpadding="0" cellspacing="0" width="100%" style="padding: 32px 16px;" role="presentation">
+      <body class="body" style="margin: 0; padding: 0; background: #111111 ${IMG_FIX}; -webkit-text-size-adjust: none;">
+        <table class="gdark" border="0" cellpadding="0" cellspacing="0" width="100%" style="background: #111111 ${IMG_FIX}; padding: 24px 16px;" role="presentation">
           <tr>
             <td align="center">
-              <!-- Main card -->
-              <table class="card-bg" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 560px; background-color: #1e1e1e; border-radius: 16px; overflow: hidden;" role="presentation">
+              <!-- Card -->
+              <table class="gcard" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 540px; background: #1a1a1a ${IMG_FIX}; border-radius: 14px; overflow: hidden;" role="presentation">
                 
-                <!-- Logo Header -->
+                <!-- Logo -->
                 <tr>
-                  <td align="center" style="padding: 36px 24px 28px;">
-                    <!-- Text-based logo matching site's DankLogo style -->
+                  <td align="center" style="padding: 36px 24px 24px;">
                     <table border="0" cellpadding="0" cellspacing="0" role="presentation">
                       <tr>
-                        <td align="center">
-                          <h1 style="margin: 0; font-size: 32px; font-weight: 900; font-style: italic; color: #FFD700; letter-spacing: -1px; line-height: 1;">
-                            FizikHub
-                          </h1>
-                          <div style="margin-top: 4px; display: inline-block; background-color: #FFD700; padding: 2px 8px; border-radius: 2px;">
-                            <span style="font-size: 9px; font-weight: 800; color: #000000; letter-spacing: 2px; text-transform: uppercase;">
-                              BİLİM PLATFORMU
-                            </span>
-                          </div>
+                        <td align="center" style="font-size: 0; line-height: 0;">
+                          <h1 style="margin: 0; font-size: 34px; font-weight: 900; font-style: italic; color: #FFD700; letter-spacing: -1.5px; line-height: 1; mso-line-height-rule: exactly;">FizikHub</h1>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td align="center" style="padding-top: 6px;">
+                          <table border="0" cellpadding="0" cellspacing="0" role="presentation">
+                            <tr>
+                              <td style="background: #FFD700 ${IMG_FIX}; padding: 3px 10px; border-radius: 3px;">
+                                <span style="font-size: 8px; font-weight: 800; color: #000000; letter-spacing: 2.5px; text-transform: uppercase; line-height: 1;">BİLİM PLATFORMU</span>
+                              </td>
+                            </tr>
+                          </table>
                         </td>
                       </tr>
                     </table>
                   </td>
                 </tr>
 
-                <!-- Divider -->
+                ${coverImage ? `
+                <!-- Kapak Fotoğrafı -->
                 <tr>
-                  <td style="padding: 0 32px;">
-                    <div style="height: 1px; background-color: #333333;"></div>
+                  <td style="padding: 0 20px 4px;">
+                    <div style="border-radius: 10px; overflow: hidden;">
+                      <a href="${articleUrl}" style="text-decoration: none;">
+                        <img src="${coverImage}" alt="${article.title}" width="500" style="display: block; width: 100%; height: auto; max-height: 220px; object-fit: cover; border: 0;" />
+                      </a>
+                    </div>
                   </td>
                 </tr>
+                ` : ''}
 
-                <!-- Content -->
+                <!-- İçerik -->
                 <tr>
-                  <td style="padding: 32px 32px 36px;">
-                    <!-- Badge -->
-                    <table border="0" cellpadding="0" cellspacing="0" role="presentation">
+                  <td style="padding: ${coverImage ? '20px' : '8px'} 28px 32px;">
+                    <!-- Etiket -->
+                    <table border="0" cellpadding="0" cellspacing="0" role="presentation" style="margin-bottom: 18px;">
                       <tr>
-                        <td style="background-color: #332b00; padding: 5px 14px; border-radius: 20px;">
-                          <span style="font-size: 12px; font-weight: 700; color: #fbbf24; letter-spacing: 0.5px;">
-                            ✦ YENİ MAKALE
-                          </span>
+                        <td style="background: #2a2200 ${IMG_FIX}; padding: 6px 14px; border-radius: 6px; border: 1px solid #3d3300;">
+                          <span style="font-size: 11px; font-weight: 700; color: #fbbf24; letter-spacing: 1px; text-transform: uppercase;">YENİ MAKALE</span>
                         </td>
                       </tr>
                     </table>
                     
-                    <!-- Title -->
-                    <h2 style="margin: 20px 0 14px; font-size: 22px; font-weight: 700; color: #f5f5f5; line-height: 1.35;">
+                    <!-- Başlık -->
+                    <h2 style="margin: 0 0 14px; font-size: 22px; font-weight: 800; color: #eeeeee; line-height: 1.3; letter-spacing: -0.3px;">
                       ${article.title}
                     </h2>
-                    
-                    ${hasValidImage ? `
-                    <!-- Article Image -->
-                    <div style="margin-bottom: 20px; border-radius: 10px; overflow: hidden;">
-                      <img src="${article.image_url}" alt="${article.title}" style="display: block; width: 100%; height: auto; max-height: 240px; object-fit: cover;" />
-                    </div>
-                    ` : ''}
 
-                    <!-- Excerpt -->
-                    <p style="margin: 0 0 28px; font-size: 15px; color: #999999; line-height: 1.65;">
+                    <!-- Açıklama -->
+                    <p style="margin: 0 0 28px; font-size: 15px; color: #888888; line-height: 1.7;">
                       ${article.excerpt || 'Fizikhub\'da yepyeni bir makale yayınlandı. Hemen okumaya başla!'}
                     </p>
 
-                    <!-- CTA Button -->
+                    <!-- Buton -->
                     <table border="0" cellpadding="0" cellspacing="0" role="presentation">
                       <tr>
-                        <td align="center" style="border-radius: 10px; background-color: #fbbf24;">
-                          <a href="${articleUrl}" target="_blank" style="display: inline-block; padding: 13px 32px; font-size: 15px; font-weight: 700; color: #000000; text-decoration: none; border-radius: 10px;">
-                            Makaleyi Oku →
-                          </a>
+                        <td style="border-radius: 8px; background: #fbbf24 ${IMG_FIX};">
+                          <a href="${articleUrl}" target="_blank" style="display: inline-block; padding: 13px 30px; font-size: 14px; font-weight: 700; color: #000000; text-decoration: none; letter-spacing: 0.3px;">Makaleyi Oku →</a>
                         </td>
                       </tr>
                     </table>
+                  </td>
+                </tr>
+
+                <!-- Alt Çizgi -->
+                <tr>
+                  <td style="padding: 0 28px;">
+                    <div style="height: 1px; background: #252525 ${IMG_FIX};"></div>
                   </td>
                 </tr>
 
                 <!-- Footer -->
                 <tr>
-                  <td style="padding: 0 32px;">
-                    <div style="height: 1px; background-color: #2a2a2a;"></div>
-                  </td>
-                </tr>
-                <tr>
-                  <td style="padding: 20px 32px 24px; text-align: center;">
-                    <p style="margin: 0; font-size: 12px; color: #666666; line-height: 1.5;">
-                      Bu e-postayı Fizikhub bildirimleriniz açık olduğu için aldınız.
-                    </p>
-                    <p style="margin: 6px 0 0; font-size: 12px;">
-                      <a href="https://www.fizikhub.com/profil" style="color: #fbbf24; text-decoration: none;">Bildirim ayarlarını değiştir</a>
-                    </p>
+                  <td style="padding: 18px 28px 22px; text-align: center;">
+                    <p style="margin: 0 0 4px; font-size: 11px; color: #555555; line-height: 1.5;">Bu e-postayı Fizikhub bildirimleriniz açık olduğu için aldınız.</p>
+                    <a href="https://www.fizikhub.com/profil" style="font-size: 11px; color: #fbbf24; text-decoration: none;">Bildirim ayarlarını değiştir</a>
                   </td>
                 </tr>
 
+              </table>
+              
+              <!-- Alt yazı (kart dışı) -->
+              <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 540px;" role="presentation">
+                <tr>
+                  <td align="center" style="padding: 20px 0 0;">
+                    <a href="https://www.fizikhub.com" style="font-size: 11px; color: #444444; text-decoration: none;">fizikhub.com</a>
+                  </td>
+                </tr>
               </table>
             </td>
           </tr>
