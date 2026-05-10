@@ -44,6 +44,10 @@ export async function POST(req: Request) {
     // 4. Prepare HTML email
     const articleUrl = `https://www.fizikhub.com/makale/${article.slug}`;
     const logoUrl = 'https://www.fizikhub.com/logo-no-bg.svg';
+    
+    // Roket görselinin (og-image) mailde çıkmasını engelle
+    const hasValidImage = article.image_url && !article.image_url.includes('og-image');
+
     const htmlContent = `
       <!DOCTYPE html>
       <html>
@@ -53,46 +57,50 @@ export async function POST(req: Request) {
         <meta name="color-scheme" content="dark">
         <meta name="supported-color-schemes" content="dark">
         <style>
-          /* Force dark theme for email clients */
           body, table, td, h1, h2, h3, p, a {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
           }
         </style>
       </head>
-      <body style="margin: 0; padding: 0; background-color: #09090b; color: #f4f4f5;">
-        <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #09090b; padding: 40px 20px;">
+      <body style="margin: 0; padding: 0; background-color: #121212; color: #ffffff;">
+        <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #121212; padding: 40px 20px;">
           <tr>
             <td align="center">
-              <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px; background-color: #18181b; border: 2px solid #3f3f46; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+              <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px; background-color: #1c1c1e; border: 1px solid #333333; border-radius: 12px; overflow: hidden;">
                 
                 <!-- Header -->
                 <tr>
-                  <td align="center" style="padding: 40px 20px; background-color: #09090b; border-bottom: 2px solid #3f3f46;">
-                    <img src="${logoUrl}" alt="Fizikhub" style="display: block; width: 220px; height: auto;" />
+                  <td align="center" style="padding: 32px 20px; border-bottom: 1px solid #2c2c2e;">
+                    <img src="${logoUrl}" alt="Fizikhub Bilim Platformu" style="display: block; width: 180px; height: auto;" />
                   </td>
                 </tr>
 
                 <!-- Content -->
                 <tr>
                   <td style="padding: 40px 32px;">
-                    <div style="display: inline-block; background-color: #fbbf24; color: #000000; font-size: 12px; font-weight: 800; padding: 4px 12px; border-radius: 4px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 16px;">
-                      Yeni Makale
+                    <div style="margin-bottom: 16px;">
+                      <span style="display: inline-block; background-color: rgba(251, 191, 36, 0.1); color: #fbbf24; font-size: 13px; font-weight: 700; padding: 6px 12px; border-radius: 6px; letter-spacing: 0.5px;">
+                        YENİ MAKALE
+                      </span>
                     </div>
-                    <h2 style="margin: 0 0 20px; font-size: 24px; font-weight: 800; color: #ffffff; line-height: 1.4;">${article.title}</h2>
                     
-                    ${article.image_url ? `
-                    <div style="margin-bottom: 24px; border-radius: 12px; overflow: hidden; border: 1px solid #3f3f46;">
-                      <img src="${article.image_url}" alt="${article.title}" style="display: block; width: 100%; height: auto; max-height: 320px; object-fit: cover;" />
+                    <h2 style="margin: 0 0 16px; font-size: 24px; font-weight: 700; color: #ffffff; line-height: 1.4;">
+                      ${article.title}
+                    </h2>
+                    
+                    ${hasValidImage ? `
+                    <div style="margin-bottom: 24px; border-radius: 8px; overflow: hidden;">
+                      <img src="${article.image_url}" alt="${article.title}" style="display: block; width: 100%; height: auto; max-height: 250px; object-fit: cover;" />
                     </div>
                     ` : ''}
 
-                    <p style="margin: 0 0 32px; font-size: 16px; color: #a1a1aa; line-height: 1.6; font-weight: 400;">
-                      ${article.excerpt || 'Fizikhub\'da yepyeni bir makale yayınlandı. Keşfetmek için hemen tıkla!'}
+                    <p style="margin: 0 0 32px; font-size: 16px; color: #a1a1aa; line-height: 1.6;">
+                      ${article.excerpt || 'Fizikhub\'da yepyeni bir makale yayınlandı. Okumak ve incelemek için aşağıdaki butona tıklayın.'}
                     </p>
 
-                    <div style="text-align: left;">
-                      <a href="${articleUrl}" style="display: inline-block; background-color: #fbbf24; color: #000000; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-weight: 700; font-size: 15px; text-transform: uppercase; letter-spacing: 0.5px;">
-                        Makaleyi İncele
+                    <div>
+                      <a href="${articleUrl}" style="display: inline-block; background-color: #fbbf24; color: #000000; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 15px; text-align: center;">
+                        Makaleyi Oku
                       </a>
                     </div>
                   </td>
@@ -100,10 +108,10 @@ export async function POST(req: Request) {
 
                 <!-- Footer -->
                 <tr>
-                  <td align="left" style="padding: 24px 32px; background-color: #09090b; border-top: 1px solid #27272a;">
-                    <p style="margin: 0; font-size: 13px; color: #71717a; font-weight: 400; line-height: 1.5;">
-                      Bu e-postayı, Fizikhub bildirimleriniz açık olduğu için aldınız.<br/>
-                      <a href="https://www.fizikhub.com/profil" style="color: #fbbf24; text-decoration: none;">Bildirim ayarlarını değiştir</a>
+                  <td style="padding: 24px 32px; background-color: #121212; border-top: 1px solid #2c2c2e; text-align: center;">
+                    <p style="margin: 0; font-size: 13px; color: #71717a; line-height: 1.5;">
+                      Bu e-postayı, Fizikhub profilinizde "Yeni Makale Bildirimleri" açık olduğu için aldınız.<br/>
+                      <a href="https://www.fizikhub.com/profil" style="color: #fbbf24; text-decoration: none;">Bildirim Ayarlarını Değiştir</a>
                     </p>
                   </td>
                 </tr>
