@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { Resend } from 'resend';
+import { createAdminClient } from '@/lib/supabase-admin';
 
 export async function POST(req: Request) {
   try {
@@ -34,18 +35,38 @@ export async function POST(req: Request) {
       }
     }
 
-    // 3. Initialize Resend
+    // 3. Initialize Resend & Supabase Admin
     const apiKey = process.env.RESEND_API_KEY;
     if (!apiKey) {
       return NextResponse.json({ error: 'RESEND_API_KEY not set' }, { status: 500 });
     }
     const resend = new Resend(apiKey);
+    
+    // Admin yetkisi ile aboneleri çekiyoruz (RLS bypass)
+    const supabaseAdmin = createAdminClient();
+    
+    const { data: subscribers, error: subsError } = await supabaseAdmin
+      .from('profiles')
+      .select('email')
+      .eq('wants_email_notifications', true)
+      .not('email', 'is', null);
+      
+    if (subsError) {
+      console.error('Failed to fetch subscribers:', subsError);
+      return NextResponse.json({ error: 'Failed to fetch subscribers', detail: subsError.message }, { status: 500 });
+    }
+    
+    const toAddresses = subscribers?.map(s => s.email).filter(Boolean) as string[];
+    
+    // Eğer abone yoksa işlemi bitir
+    if (!toAddresses || toAddresses.length === 0) {
+      return NextResponse.json({ message: 'No subscribers to notify' });
+    }
 
     // 4. Prepare HTML email
     const articleUrl = `https://www.fizikhub.com/makale/${article.slug}`;
     
     // Hosted koyu PNG'ler — Gmail data URI'leri bloklar ama hosted image'ları ASLA değiştirmez
-    // HTML background attribute + CSS background-image = Gmail dark mode proof
     const BG_BODY = 'https://www.fizikhub.com/email/body-bg.png'; // #111111
     const BG_CARD = 'https://www.fizikhub.com/email/card-bg.png'; // #1a1a1a
     
@@ -236,19 +257,42 @@ ${article.excerpt || 'Fizikhub\'da yepyeni bir makale yayınlandı. Hemen okumay
 </body>
 </html>`;
 
-    // 5. Send email - TEST: only to this address
-    const { data, error } = await resend.emails.send({
-      from: 'Fizikhub <onboarding@resend.dev>',
-      to: 'barannnbozkurttb.b@gmail.com',
+    // 5. Send emails in batches using Resend Batch API
+    // (Resend supports up to 100 emails per batch request)
+    const FROM_EMAIL = 'Fizikhub <onboarding@resend.dev>'; // İleride bildirim@fizikhub.com yapılacak
+    
+    const emailObjects = toAddresses.map(email => ({
+      from: FROM_EMAIL,
+      to: email,
       subject: `Yeni Makale: ${article.title}`,
       html: htmlContent,
-    });
-
-    if (error) {
-      return NextResponse.json({ error: 'Resend error', detail: error }, { status: 500 });
+    }));
+    
+    // Chunking to handle potential large lists (e.g. over 100)
+    const CHUNK_SIZE = 100;
+    const batchResponses = [];
+    let hasError = false;
+    
+    for (let i = 0; i < emailObjects.length; i += CHUNK_SIZE) {
+      const chunk = emailObjects.slice(i, i + CHUNK_SIZE);
+      const { data, error } = await resend.batch.send(chunk);
+      
+      if (error) {
+        console.error('Batch send error:', error);
+        hasError = true;
+      }
+      if (data) batchResponses.push(data);
     }
 
-    return NextResponse.json({ message: 'Email sent successfully', emailId: data?.id });
+    if (hasError) {
+      return NextResponse.json({ error: 'Some emails failed to send', detail: batchResponses }, { status: 500 });
+    }
+
+    return NextResponse.json({ 
+      message: 'Emails sent successfully', 
+      recipientsCount: toAddresses.length 
+    });
+    
   } catch (error: any) {
     return NextResponse.json({ error: 'Internal server error', detail: error?.message }, { status: 500 });
   }
