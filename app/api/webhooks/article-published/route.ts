@@ -259,7 +259,7 @@ ${article.excerpt || 'Fizikhub\'da yepyeni bir makale yayınlandı. Hemen okumay
 
     // 5. Send emails in batches using Resend Batch API
     // (Resend supports up to 100 emails per batch request)
-    const FROM_EMAIL = 'Fizikhub <onboarding@resend.dev>'; // İleride bildirim@fizikhub.com yapılacak
+    const FROM_EMAIL = 'Fizikhub <bildirim@fizikhub.com>';
     
     const emailObjects = toAddresses.map(email => ({
       from: FROM_EMAIL,
