@@ -64,27 +64,68 @@ export async function POST(req: Request) {
 <style>
   body,table,td,div,p,a,span,h1,h2,h3{font-family:'Segoe UI',-apple-system,BlinkMacSystemFont,Roboto,Helvetica,Arial,sans-serif}
   
-  /* Temel Stiller */
+  /* Temel Sınıflar (Aydınlık / Karanlık fark etmeksizin her zaman bu renkler olmalı) */
   .bg-body { background-color: #111111 !important; }
   .bg-card { background-color: #1a1a1a !important; }
+  .bg-yellow { background-color: #fbbf24 !important; }
+  .bg-divider { background-color: #252525 !important; }
+  
   .text-white { color: #f0f0f0 !important; }
   .text-gray { color: #8a8a8a !important; }
+  .text-black { color: #000000 !important; }
+  .text-yellow { color: #FFD700 !important; }
+
+  .border-black { border: 2px solid #000000 !important; }
+  .border-gray { border: 2px solid #2a2a2a !important; }
   
-  /* Gmail Dark Mode Hack: Gradient kullanarak arka planı zorlama */
-  u + .body .bg-body { background-image: linear-gradient(#111111, #111111) !important; }
-  u + .body .bg-card { background-image: linear-gradient(#1a1a1a, #1a1a1a) !important; }
-  u + .body .text-white { color: #f0f0f0 !important; }
+  /* GMAIL MOBILE DARK MODE BYPASS (The Nuclear Option) */
+  /* 1. Arka planları linear-gradient ile sabitle (Gmail gradient'i invert edemez) */
+  u + .body .bg-body, [data-ogsc] .bg-body { background-image: linear-gradient(#111111, #111111) !important; }
+  u + .body .bg-card, [data-ogsc] .bg-card { background-image: linear-gradient(#1a1a1a, #1a1a1a) !important; }
+  u + .body .bg-yellow, [data-ogsc] .bg-yellow { background-image: linear-gradient(#fbbf24, #fbbf24) !important; }
+  u + .body .bg-divider, [data-ogsc] .bg-divider { background-image: linear-gradient(#252525, #252525) !important; }
   
-  /* Outlook.com / OWA Dark Mode Hack */
-  [data-ogsc] .bg-body { background-image: linear-gradient(#111111, #111111) !important; }
-  [data-ogsc] .bg-card { background-image: linear-gradient(#1a1a1a, #1a1a1a) !important; }
+  /* 2. Metin renklerini gradient + webkit-background-clip ile sabitle (Gmail metin gradientini invert edemez) */
+  u + .body .text-white, [data-ogsc] .text-white {
+    background-image: linear-gradient(#f0f0f0, #f0f0f0) !important;
+    -webkit-background-clip: text !important;
+    background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    color: transparent !important;
+  }
+  u + .body .text-gray, [data-ogsc] .text-gray {
+    background-image: linear-gradient(#8a8a8a, #8a8a8a) !important;
+    -webkit-background-clip: text !important;
+    background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    color: transparent !important;
+  }
+  u + .body .text-black, [data-ogsc] .text-black {
+    background-image: linear-gradient(#000000, #000000) !important;
+    -webkit-background-clip: text !important;
+    background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    color: transparent !important;
+  }
+  u + .body .text-yellow, [data-ogsc] .text-yellow {
+    background-image: linear-gradient(#FFD700, #FFD700) !important;
+    -webkit-background-clip: text !important;
+    background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    color: transparent !important;
+  }
   
-  /* Apple Mail & Diğer Dark Mode Destekleyen İstemciler */
+  /* Apple Mail & Genel Dark Mode İstemcileri */
   @media (prefers-color-scheme: dark) {
     .bg-body { background-color: #111111 !important; background-image: linear-gradient(#111111, #111111) !important; }
     .bg-card { background-color: #1a1a1a !important; background-image: linear-gradient(#1a1a1a, #1a1a1a) !important; }
-    .text-white { color: #f0f0f0 !important; }
-    .text-gray { color: #8a8a8a !important; }
+    .bg-yellow { background-color: #fbbf24 !important; background-image: linear-gradient(#fbbf24, #fbbf24) !important; }
+    .bg-divider { background-color: #252525 !important; background-image: linear-gradient(#252525, #252525) !important; }
+    
+    .text-white { color: #f0f0f0 !important; -webkit-text-fill-color: #f0f0f0 !important; }
+    .text-gray { color: #8a8a8a !important; -webkit-text-fill-color: #8a8a8a !important; }
+    .text-black { color: #000000 !important; -webkit-text-fill-color: #000000 !important; }
+    .text-yellow { color: #FFD700 !important; -webkit-text-fill-color: #FFD700 !important; }
   }
 </style>
 </head>
@@ -95,19 +136,19 @@ export async function POST(req: Request) {
 <td align="center" class="bg-body" style="background-color:#111111;">
 
 <!-- KART -->
-<table border="0" cellpadding="0" cellspacing="0" width="100%" class="bg-card" style="max-width:540px;background-color:#1a1a1a;border-radius:12px;border:2px solid #2a2a2a;overflow:hidden;" role="presentation">
+<table border="0" cellpadding="0" cellspacing="0" width="100%" class="bg-card border-gray" style="max-width:540px;background-color:#1a1a1a;border-radius:12px;border:2px solid #2a2a2a;overflow:hidden;" role="presentation">
 
 <!-- LOGO -->
 <tr>
 <td align="center" class="bg-card" style="padding:34px 24px 22px;background-color:#1a1a1a;">
 <table border="0" cellpadding="0" cellspacing="0" role="presentation">
 <tr><td align="center">
-<h1 style="margin:0;font-size:36px;font-weight:900;font-style:italic;color:#FFD700;letter-spacing:-1.5px;line-height:1;">FizikHub</h1>
+<h1 class="text-yellow" style="margin:0;font-size:36px;font-weight:900;font-style:italic;color:#FFD700;letter-spacing:-1.5px;line-height:1;">FizikHub</h1>
 </td></tr>
 <tr><td align="center" style="padding-top:7px;">
 <table border="0" cellpadding="0" cellspacing="0" role="presentation">
-<tr><td style="background-color:#FFD700;padding:3px 11px;border-radius:3px;">
-<span style="font-size:8px;font-weight:800;color:#000000;letter-spacing:2.5px;text-transform:uppercase;line-height:1;">BİLİM PLATFORMU</span>
+<tr><td class="bg-yellow" style="background-color:#FFD700;padding:3px 11px;border-radius:3px;">
+<span class="text-black" style="font-size:8px;font-weight:800;color:#000000;letter-spacing:2.5px;text-transform:uppercase;line-height:1;">BİLİM PLATFORMU</span>
 </td></tr>
 </table>
 </td></tr>
@@ -119,7 +160,7 @@ ${coverImage ? `
 <!-- KAPAK FOTOĞRAFI -->
 <tr>
 <td class="bg-card" style="padding:0 18px 6px;background-color:#1a1a1a;">
-<div style="border-radius:8px;overflow:hidden;border:2px solid #2a2a2a;">
+<div class="border-gray" style="border-radius:8px;overflow:hidden;border:2px solid #2a2a2a;">
 <a href="${articleUrl}" style="text-decoration:none;">
 <img src="${coverImage}" alt="${article.title}" width="500" style="display:block;width:100%;height:auto;max-height:220px;object-fit:cover;border:0;" />
 </a>
@@ -135,8 +176,8 @@ ${coverImage ? `
 <!-- YENİ MAKALE ETİKETİ -->
 <table border="0" cellpadding="0" cellspacing="0" role="presentation" style="margin-bottom:18px;">
 <tr>
-<td style="background-color:#fbbf24;padding:6px 16px;border-radius:4px;border:2px solid #000000;">
-<span style="font-size:11px;font-weight:800;color:#000000;letter-spacing:1.2px;text-transform:uppercase;">YENİ MAKALE</span>
+<td class="bg-yellow border-black" style="background-color:#fbbf24;padding:6px 16px;border-radius:4px;border:2px solid #000000;">
+<span class="text-black" style="font-size:11px;font-weight:800;color:#000000;letter-spacing:1.2px;text-transform:uppercase;">YENİ MAKALE</span>
 </td>
 </tr>
 </table>
@@ -154,8 +195,8 @@ ${article.excerpt || 'Fizikhub\'da yepyeni bir makale yayınlandı. Hemen okumay
 <!-- BUTON -->
 <table border="0" cellpadding="0" cellspacing="0" role="presentation">
 <tr>
-<td style="border-radius:6px;background-color:#fbbf24;border:2px solid #000000;">
-<a href="${articleUrl}" target="_blank" style="display:inline-block;padding:12px 28px;font-size:14px;font-weight:800;color:#000000;text-decoration:none;letter-spacing:0.3px;text-transform:uppercase;">Makaleyi Oku →</a>
+<td class="bg-yellow border-black" style="border-radius:6px;background-color:#fbbf24;border:2px solid #000000;">
+<a href="${articleUrl}" target="_blank" class="text-black" style="display:inline-block;padding:12px 28px;font-size:14px;font-weight:800;color:#000000;text-decoration:none;letter-spacing:0.3px;text-transform:uppercase;">Makaleyi Oku →</a>
 </td>
 </tr>
 </table>
@@ -166,7 +207,7 @@ ${article.excerpt || 'Fizikhub\'da yepyeni bir makale yayınlandı. Hemen okumay
 <!-- ÇİZGİ -->
 <tr>
 <td class="bg-card" style="padding:0 26px;background-color:#1a1a1a;">
-<div style="height:2px;background-color:#252525;"></div>
+<div class="bg-divider" style="height:2px;background-color:#252525;"></div>
 </td>
 </tr>
 
@@ -174,7 +215,7 @@ ${article.excerpt || 'Fizikhub\'da yepyeni bir makale yayınlandı. Hemen okumay
 <tr>
 <td class="bg-card" style="padding:16px 26px 20px;text-align:center;background-color:#1a1a1a;">
 <p class="text-gray" style="margin:0 0 4px;font-size:11px;color:#555555;line-height:1.5;">Bu e-postayı Fizikhub bildirimleriniz açık olduğu için aldınız.</p>
-<a href="https://www.fizikhub.com/profil" style="font-size:11px;color:#fbbf24;text-decoration:none;font-weight:600;">Bildirim ayarlarını değiştir</a>
+<a href="https://www.fizikhub.com/profil" class="text-yellow" style="font-size:11px;color:#fbbf24;text-decoration:none;font-weight:600;">Bildirim ayarlarını değiştir</a>
 </td>
 </tr>
 
@@ -184,7 +225,7 @@ ${article.excerpt || 'Fizikhub\'da yepyeni bir makale yayınlandı. Hemen okumay
 <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width:540px;" role="presentation">
 <tr>
 <td align="center" class="bg-body" style="padding:18px 0 0;background-color:#111111;">
-<a href="https://www.fizikhub.com" style="font-size:11px;color:#555555;text-decoration:none;">fizikhub.com</a>
+<a href="https://www.fizikhub.com" class="text-gray" style="font-size:11px;color:#555555;text-decoration:none;">fizikhub.com</a>
 </td>
 </tr>
 </table>
