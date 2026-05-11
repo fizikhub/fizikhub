@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Trash2, Pencil } from "lucide-react";
+import { Trash2, Pencil, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
 import { deleteArticle } from "@/app/admin/actions";
+import { sendArticleNotificationEmail } from "@/app/admin/email-actions";
 import { Article } from "@/lib/api";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
@@ -28,6 +29,7 @@ export function AdminArticlesList({ initialArticles }: AdminArticlesListProps) {
     const [articles, setArticles] = useState(initialArticles);
     const [deleteId, setDeleteId] = useState<number | null>(null);
     const [isDeleting, setIsDeleting] = useState(false);
+    const [isSendingEmail, setIsSendingEmail] = useState<number | null>(null);
 
     const handleDelete = async () => {
         if (!deleteId) return;
@@ -44,6 +46,20 @@ export function AdminArticlesList({ initialArticles }: AdminArticlesListProps) {
 
         setIsDeleting(false);
         setDeleteId(null);
+    };
+
+    const handleSendEmail = async (articleId: number) => {
+        setIsSendingEmail(articleId);
+        const result = await sendArticleNotificationEmail(articleId);
+
+        if (result.success) {
+            setArticles(articles.map(a => a.id === articleId ? { ...a, email_sent: true } : a));
+            toast.success(`${result.count} kişiye bildirim gönderildi`);
+        } else {
+            toast.error(result.error || "Bildirim gönderilirken bir hata oluştu");
+        }
+
+        setIsSendingEmail(null);
     };
 
     const getStatusBadge = (status?: string | null) => {
@@ -84,6 +100,29 @@ export function AdminArticlesList({ initialArticles }: AdminArticlesListProps) {
                                                 <Pencil className="h-4 w-4" />
                                             </Button>
                                         </Link>
+                                        {article.status === 'published' && !article.email_sent && (
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                onClick={() => handleSendEmail(article.id)}
+                                                disabled={isSendingEmail === article.id}
+                                                className="bg-blue-50 text-blue-600 border-blue-200 hover:bg-blue-100 dark:bg-blue-900/20 dark:border-blue-800 dark:text-blue-400"
+                                                title="Abonelere E-posta Gönder"
+                                            >
+                                                <Mail className={`h-4 w-4 ${isSendingEmail === article.id ? 'animate-pulse' : ''}`} />
+                                            </Button>
+                                        )}
+                                        {article.status === 'published' && article.email_sent && (
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                disabled
+                                                className="opacity-50"
+                                                title="E-posta Zaten Gönderilmiş"
+                                            >
+                                                <Mail className="h-4 w-4" />
+                                            </Button>
+                                        )}
                                         <Button
                                             variant="destructive"
                                             size="sm"

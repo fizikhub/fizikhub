@@ -56,6 +56,7 @@ export interface Database {
                     category: string | null
                     author_id: string | null
                     published: boolean
+                    email_sent: boolean
                 }
                 Insert: {
                     id?: number
@@ -68,6 +69,7 @@ export interface Database {
                     category?: string | null
                     author_id?: string | null
                     published?: boolean
+                    email_sent?: boolean
                 }
                 Update: {
                     id?: number
@@ -80,6 +82,7 @@ export interface Database {
                     category?: string | null
                     author_id?: string | null
                     published?: boolean
+                    email_sent?: boolean
                 }
             }
             questions: {
