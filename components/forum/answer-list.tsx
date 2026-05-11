@@ -11,9 +11,9 @@ import { MarkdownRenderer } from "@/components/markdown-renderer";
 import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
 import { tr } from "date-fns/locale";
-import { User, MessageSquare, BadgeCheck, CheckCircle2, ThumbsUp, ArrowBigUp, ArrowBigDown, Share2, Flame, Clock } from "lucide-react";
+import { User, MessageSquare, BadgeCheck, ThumbsUp, ArrowBigUp, ArrowBigDown, Share2, Flame, Clock } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { createAnswer, toggleAnswerAcceptance } from "@/app/forum/actions";
+import { createAnswer } from "@/app/forum/actions";
 import { Database } from "@/types/database";
 import { DeleteAnswerButton } from "@/components/forum/delete-answer-button";
 import { ReportDialog } from "@/components/report-dialog";
@@ -57,8 +57,6 @@ export function AnswerList({ questionId, initialAnswers, questionAuthorId, curre
     const [supabase] = useState(() => createClient());
 
     const displayedAnswers = [...answers].sort((a, b) => {
-        if (a.is_accepted && !b.is_accepted) return -1;
-        if (!a.is_accepted && b.is_accepted) return 1;
 
         if (sortBy === "newest") {
             return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
@@ -220,31 +218,7 @@ export function AnswerList({ questionId, initialAnswers, questionAuthorId, curre
         }
     };
 
-    const handleToggleAccept = async (answerId: number) => {
-        try {
-            const result = await toggleAnswerAcceptance(answerId, questionId);
-            if (!result.success) throw new Error(result.error);
 
-            setAnswers(answers.map(a => {
-                if (a.id === answerId) {
-                    return { ...a, is_accepted: !a.is_accepted };
-                }
-                if (!answers.find(ans => ans.id === answerId)?.is_accepted) {
-                    return { ...a, is_accepted: false };
-                }
-                return a;
-            }).sort((a, b) => {
-                if (a.id === answerId && !a.is_accepted) return -1;
-                if (b.id === answerId && !b.is_accepted) return 1;
-                if (a.is_accepted === b.is_accepted) return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
-                return a.is_accepted ? -1 : 1;
-            }));
-
-            toast.success("İşlem başarılı!");
-        } catch (error: any) {
-            toast.error(error.message);
-        }
-    };
 
     return (
         <div className="space-y-0">
@@ -368,10 +342,7 @@ export function AnswerList({ questionId, initialAnswers, questionAuthorId, curre
                                 dragElastic={0.05}
                                 whileDrag={{ scale: 0.98, zIndex: 10 }}
                                 id={`answer-${answer.id}`}
-                                className={cn(
-                                    "group relative transition-all duration-300 mb-5 bg-white dark:bg-[#1e1e21] border-[2.5px] border-black dark:border-zinc-700 rounded-[10px] shadow-[3px_3px_0_0_#000] dark:shadow-[3px_3px_0_0_rgba(255,255,255,0.06)]",
-                                    answer.is_accepted && "bg-[#E5F5E0] dark:bg-emerald-950/30 border-emerald-500 dark:border-emerald-600/60"
-                                )}
+                                className="group relative transition-all duration-300 mb-5 bg-white dark:bg-[#1e1e21] border-[2.5px] border-black dark:border-zinc-700 rounded-[10px] shadow-[3px_3px_0_0_#000] dark:shadow-[3px_3px_0_0_rgba(255,255,255,0.06)]"
                             >
                                 {/* Thread Line - Connecting to next item if needed, currently just visual marker */}
                                 {/* <div className="absolute left-8 top-16 bottom-0 w-0.5 bg-border/40 group-hover:bg-border/60 transition-colors" /> */}
@@ -423,30 +394,10 @@ export function AnswerList({ questionId, initialAnswers, questionAuthorId, curre
                                                 <span className="text-[10px] font-medium text-neutral-500 dark:text-zinc-500">
                                                     {formatDistanceToNow(new Date(answer.created_at), { addSuffix: true, locale: tr })}
                                                 </span>
-                                                {answer.is_accepted && (
-                                                    <span className="flex items-center gap-1 text-black bg-[#4ADE80] border-[2px] border-black dark:border-emerald-600 px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-bold uppercase ml-1 sm:ml-2 shadow-[2px_2px_0_0_#000] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.06)]">
-                                                        <CheckCircle2 className="h-3 w-3 stroke-[3px]" />
-                                                        ÇÖZÜM
-                                                    </span>
-                                                )}
                                             </div>
 
                                             {/* Actions Menu */}
                                             <div className="flex items-center opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity gap-1">
-                                                {(user?.id === questionAuthorId || isAdminEmail(user?.email)) && (
-                                                    <Button
-                                                        variant="ghost"
-                                                        size="icon"
-                                                        onClick={() => handleToggleAccept(answer.id)}
-                                                        className={cn(
-                                                            "h-8 w-8 rounded-lg border-[2px] border-black dark:border-zinc-600 transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none shadow-[1px_1px_0_0_#000] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.06)]",
-                                                            answer.is_accepted ? "bg-[#4ADE80] text-black" : "bg-white dark:bg-zinc-800 text-black dark:text-zinc-300 hover:bg-green-100 dark:hover:bg-green-900/30"
-                                                        )}
-                                                        title={answer.is_accepted ? "Çözümü kaldır" : "Çözüm olarak işaretle"}
-                                                    >
-                                                        <CheckCircle2 className="h-4 w-4 stroke-[3px]" />
-                                                    </Button>
-                                                )}
 
                                                 {(user?.id === answer.author_id || isAdminEmail(user?.email)) && (
                                                     <DeleteAnswerButton
