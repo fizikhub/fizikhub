@@ -187,95 +187,100 @@ function buildArticleEmailHtml(article: { title: string; slug: string; excerpt?:
 }
 
 export async function sendArticleNotificationEmail(articleId: number) {
-    const adminCheck = await verifyAdmin();
-    if (!adminCheck.isAdmin) {
-        return { success: false, error: adminCheck.error };
-    }
-
-    const apiKey = process.env.RESEND_API_KEY;
-    if (!apiKey) {
-        return { success: false, error: 'RESEND_API_KEY ayarlanmamış.' };
-    }
-    const resend = new Resend(apiKey);
-    const supabaseAdmin = createAdminClient();
-
-    // 1. Fetch the article
-    const { data: article, error: articleError } = await supabaseAdmin
-        .from('articles')
-        .select('*')
-        .eq('id', articleId)
-        .single();
-
-    if (articleError || !article) {
-        return { success: false, error: 'Makale bulunamadı.' };
-    }
-
-    if (article.status !== 'published') {
-        return { success: false, error: 'Sadece yayında olan makaleler için bildirim gönderilebilir.' };
-    }
-
-    if (article.email_sent) {
-        return { success: false, error: 'Bu makale için zaten e-posta gönderilmiş.' };
-    }
-
-    // 2. Fetch subscribers
-    const { data: subscribers, error: subsError } = await supabaseAdmin
-        .from('profiles')
-        .select('email')
-        .eq('wants_email_notifications', true)
-        .not('email', 'is', null);
-
-    if (subsError) {
-        console.error('Failed to fetch subscribers:', subsError);
-        return { success: false, error: 'Aboneler getirilemedi.' };
-    }
-
-    const toAddresses = subscribers?.map(s => s.email).filter(Boolean) as string[];
-
-    if (!toAddresses || toAddresses.length === 0) {
-        return { success: false, error: 'Bildirim gönderilecek abone bulunamadı.' };
-    }
-
-    // 3. Build email HTML
-    const htmlContent = buildArticleEmailHtml(article);
-
-    // 4. Send emails in batches using Resend Batch API
-    const FROM_EMAIL = 'Fizikhub <bildirim@fizikhub.com>';
-
-    const emailObjects = toAddresses.map(email => ({
-        from: FROM_EMAIL,
-        to: email,
-        subject: 'Yeni Makale: ' + article.title,
-        html: htmlContent,
-    }));
-
-    const CHUNK_SIZE = 100;
-    let hasError = false;
-
-    for (let i = 0; i < emailObjects.length; i += CHUNK_SIZE) {
-        const chunk = emailObjects.slice(i, i + CHUNK_SIZE);
-        const { error } = await resend.batch.send(chunk);
-
-        if (error) {
-            console.error('Batch send error:', error);
-            hasError = true;
+    try {
+        const adminCheck = await verifyAdmin();
+        if (!adminCheck.isAdmin) {
+            return { success: false, error: adminCheck.error };
         }
+
+        const apiKey = process.env.RESEND_API_KEY;
+        if (!apiKey) {
+            return { success: false, error: 'RESEND_API_KEY ayarlanmamış.' };
+        }
+        const resend = new Resend(apiKey);
+        const supabaseAdmin = createAdminClient();
+
+        // 1. Fetch the article
+        const { data: article, error: articleError } = await supabaseAdmin
+            .from('articles')
+            .select('*')
+            .eq('id', articleId)
+            .single();
+
+        if (articleError || !article) {
+            return { success: false, error: 'Makale bulunamadı.' };
+        }
+
+        if (article.status !== 'published') {
+            return { success: false, error: 'Sadece yayında olan makaleler için bildirim gönderilebilir.' };
+        }
+
+        if (article.email_sent) {
+            return { success: false, error: 'Bu makale için zaten e-posta gönderilmiş.' };
+        }
+
+        // 2. Fetch subscribers
+        const { data: subscribers, error: subsError } = await supabaseAdmin
+            .from('profiles')
+            .select('email')
+            .eq('wants_email_notifications', true)
+            .not('email', 'is', null);
+
+        if (subsError) {
+            console.error('Failed to fetch subscribers:', subsError);
+            return { success: false, error: 'Aboneler getirilemedi.' };
+        }
+
+        const toAddresses = subscribers?.map(s => s.email).filter(Boolean) as string[];
+
+        if (!toAddresses || toAddresses.length === 0) {
+            return { success: false, error: 'Bildirim gönderilecek abone bulunamadı.' };
+        }
+
+        // 3. Build email HTML
+        const htmlContent = buildArticleEmailHtml(article);
+
+        // 4. Send emails in batches using Resend Batch API
+        const FROM_EMAIL = 'Fizikhub <bildirim@fizikhub.com>';
+
+        const emailObjects = toAddresses.map(email => ({
+            from: FROM_EMAIL,
+            to: email,
+            subject: 'Yeni Makale: ' + article.title,
+            html: htmlContent,
+        }));
+
+        const CHUNK_SIZE = 100;
+        let hasError = false;
+
+        for (let i = 0; i < emailObjects.length; i += CHUNK_SIZE) {
+            const chunk = emailObjects.slice(i, i + CHUNK_SIZE);
+            const { error } = await resend.batch.send(chunk);
+
+            if (error) {
+                console.error('Batch send error:', error);
+                hasError = true;
+            }
+        }
+
+        if (hasError) {
+            return { success: false, error: 'Bazı e-postalar gönderilemedi.' };
+        }
+
+        // 5. Update article to mark email as sent
+        const { error: updateError } = await supabaseAdmin
+            .from('articles')
+            .update({ email_sent: true })
+            .eq('id', articleId);
+
+        if (updateError) {
+            console.error('Error updating article email_sent status:', updateError);
+        }
+
+        revalidatePath('/admin/articles');
+        return { success: true, count: toAddresses.length };
+    } catch (e: any) {
+        console.error("sendArticleNotificationEmail error:", e);
+        return { success: false, error: e.message || 'Bilinmeyen bir hata oluştu.' };
     }
-
-    if (hasError) {
-        return { success: false, error: 'Bazı e-postalar gönderilemedi.' };
-    }
-
-    // 5. Update article to mark email as sent
-    const { error: updateError } = await supabaseAdmin
-        .from('articles')
-        .update({ email_sent: true })
-        .eq('id', articleId);
-
-    if (updateError) {
-        console.error('Error updating article email_sent status:', updateError);
-    }
-
-    revalidatePath('/admin/articles');
-    return { success: true, count: toAddresses.length };
 }
