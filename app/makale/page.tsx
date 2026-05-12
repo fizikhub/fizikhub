@@ -2,6 +2,7 @@ import { createClient as createBrowserClient } from "@supabase/supabase-js";
 import { ArticleFeed } from "@/components/articles/article-feed";
 import type { Metadata } from "next";
 import { unstable_cache } from "next/cache";
+import { isLikelyIndexableTitle } from "@/lib/seo-utils";
 
 export const revalidate = 60;
 
@@ -117,7 +118,7 @@ const getCachedArticles = (category?: string, sort?: string, searchQuery?: strin
             console.error("Supabase Error fetching articles in Makale feed:", error, "Query details:", { category, sort });
             return [];
         }
-        return (data as FeedArticleRow[] | null)?.map((article) => ({
+        return (data as FeedArticleRow[] | null)?.filter((article) => isLikelyIndexableTitle(article.title)).map((article) => ({
             id: article.id,
             title: article.title,
             slug: article.slug,
@@ -179,13 +180,45 @@ export default async function MakalePage({ searchParams }: PageProps) {
         getCachedCategories()
     ]);
 
+    const canonicalUrl = category
+        ? `https://www.fizikhub.com/makale?category=${encodeURIComponent(category)}`
+        : "https://www.fizikhub.com/makale";
+
+    const jsonLd = {
+        "@context": "https://schema.org",
+        "@type": "CollectionPage",
+        "@id": `${canonicalUrl}#collection`,
+        url: canonicalUrl,
+        name: category ? `${category} Makaleleri` : "Fizikhub Makaleleri",
+        description: category
+            ? `${category} üzerine Türkçe bilimsel makaleler ve popüler bilim yazıları.`
+            : "Fizik, uzay, kuantum, astrofizik ve popüler bilim üzerine Türkçe makale arşivi.",
+        inLanguage: "tr-TR",
+        isPartOf: { "@id": "https://www.fizikhub.com/#website" },
+        mainEntity: {
+            "@type": "ItemList",
+            itemListElement: (articles || []).slice(0, 24).map((article, index) => ({
+                "@type": "ListItem",
+                position: index + 1,
+                url: `https://www.fizikhub.com/makale/${article.slug}`,
+                name: article.title,
+            })),
+        },
+    };
+
     return (
-        <ArticleFeed
-            articles={articles || []}
-            categories={cats}
-            activeCategory={category}
-            sortParam={sort}
-            searchQuery={searchQuery}
-        />
+        <>
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+            />
+            <ArticleFeed
+                articles={articles || []}
+                categories={cats}
+                activeCategory={category}
+                sortParam={sort}
+                searchQuery={searchQuery}
+            />
+        </>
     );
 }

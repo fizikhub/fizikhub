@@ -3,22 +3,20 @@ import { createStaticClient } from '@/lib/supabase-server';
 import { simulations } from '@/components/simulations/data';
 import { slugify } from '@/lib/slug';
 import { getDictionaryTerms } from '@/lib/api';
+import { SEO_PRIORITY_SLUG_SET } from '@/lib/seo-priority';
+import { getSiteUrl, isLikelyIndexableTitle, toAbsoluteUrl } from '@/lib/seo-utils';
 
 export const revalidate = 3600; // Revalidate sitemap every hour
 
-const STATIC_LAST_MODIFIED = new Date('2026-04-17T00:00:00.000Z');
+const STATIC_LAST_MODIFIED = new Date('2026-05-13T00:00:00.000+03:00');
 
 function toLastModified(value?: string | null) {
     return value ? new Date(value) : STATIC_LAST_MODIFIED;
 }
 
-function getBaseUrl() {
-    return (process.env.NEXT_PUBLIC_APP_URL || 'https://www.fizikhub.com').replace(/\/+$/, '');
-}
-
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const supabase = createStaticClient();
-    const baseUrl = getBaseUrl();
+    const baseUrl = getSiteUrl();
 
     // Static pages with all important routes
     const staticPages: MetadataRoute.Sitemap = [
@@ -101,13 +99,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const [questionsResult, articlesResult, quizzesResult, terms] = await Promise.all([
         supabase
             .from('questions')
-            .select('id, created_at')
+            .select('id, title, created_at, updated_at')
             .order('created_at', { ascending: false })
             .limit(250),
 
         supabase
             .from('articles')
-            .select('slug, created_at, category, cover_url')
+            .select('slug, title, created_at, category, cover_url, image_url')
             .eq('status', 'published')
             .order('created_at', { ascending: false })
             .limit(1000),
@@ -121,25 +119,30 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         getDictionaryTerms(supabase),
     ]);
 
-    const questionPages: MetadataRoute.Sitemap = (questionsResult.data || []).map((question) => ({
+    const questionPages: MetadataRoute.Sitemap = (questionsResult.data || [])
+        .filter((question) => isLikelyIndexableTitle(question.title))
+        .map((question) => ({
         url: `${baseUrl}/forum/${question.id}`,
-        lastModified: toLastModified(question.created_at),
+        lastModified: toLastModified(question.updated_at || question.created_at),
         changeFrequency: 'weekly' as const,
         priority: 0.8,
     }));
 
     const articlePages: MetadataRoute.Sitemap = (articlesResult.data || []).flatMap((article) => {
-        if (!article.slug || article.category === 'Terim') return [];
+        if (!article.slug || article.category === 'Terim' || !isLikelyIndexableTitle(article.title)) return [];
 
         let urlPrefix = 'makale';
         if (article.category === 'Deney') urlPrefix = 'deney';
+        const imageUrl = toAbsoluteUrl(article.cover_url || article.image_url, baseUrl);
+        const fallbackImageUrl = `${baseUrl}/api/og?title=${encodeURIComponent(article.title || article.slug)}`;
+        const isPriorityArticle = SEO_PRIORITY_SLUG_SET.has(article.slug);
 
         return [{
             url: `${baseUrl}/${urlPrefix}/${article.slug}`,
             lastModified: toLastModified(article.created_at),
             changeFrequency: 'weekly' as const,
-            priority: 0.9,
-            ...(article.cover_url ? { images: [article.cover_url] } : { images: [`${baseUrl}/api/og?title=${encodeURIComponent(article.slug)}`] }),
+            priority: isPriorityArticle ? 0.95 : 0.85,
+            images: [imageUrl || fallbackImageUrl],
         }];
     });
 

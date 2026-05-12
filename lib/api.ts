@@ -23,6 +23,34 @@ export type Question = Database['public']['Tables']['questions']['Row'] & {
 
 export type DictionaryTerm = Database['public']['Tables']['dictionary_terms']['Row'];
 
+const PUBLIC_AUTHOR_SELECT = [
+    'id',
+    'username',
+    'full_name',
+    'avatar_url',
+    'bio',
+    'is_writer',
+    'is_verified',
+].join(', ');
+
+const PUBLIC_ARTICLE_SELECT = [
+    'id',
+    'slug',
+    'title',
+    'content',
+    'excerpt',
+    'image_url',
+    'category',
+    'author_id',
+    'created_at',
+    'published',
+    'status',
+    'cover_url',
+    'likes_count',
+    'comments_count',
+    `author:profiles!articles_author_id_fkey(${PUBLIC_AUTHOR_SELECT})`,
+].join(', ');
+
 function mergeDictionaryTerms(remoteTerms: DictionaryTerm[]) {
     const termsBySlug = new Map<string, DictionaryTerm>();
 
@@ -84,7 +112,7 @@ export const getArticleBySlug = cache(async function (_supabase: SupabaseClient<
             // First try to find by slug
             const { data, error } = await staticClient
                 .from('articles')
-                .select('*, author:profiles!articles_author_id_fkey(*)')
+                .select(PUBLIC_ARTICLE_SELECT)
                 .eq('slug', querySlug)
                 .eq('status', 'published')
                 .maybeSingle();
@@ -95,7 +123,7 @@ export const getArticleBySlug = cache(async function (_supabase: SupabaseClient<
             if (/^\d+$/.test(querySlug)) {
                 const { data: byId } = await staticClient
                     .from('articles')
-                    .select('*, author:profiles!articles_author_id_fkey(*)')
+                    .select(PUBLIC_ARTICLE_SELECT)
                     .eq('id', parseInt(querySlug))
                     .eq('status', 'published')
                     .maybeSingle();

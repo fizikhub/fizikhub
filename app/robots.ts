@@ -25,6 +25,7 @@ export default function robots(): MetadataRoute.Robots {
     ];
 
     const commonDisallow = [...privateDisallow, ...cleanupDisallow];
+    const publicAllow = ['/', '/api/og'];
 
     // Modern AI and LLM Search Crawlers (ChatGPT, Perplexity, Claude, etc.)
     const aiBots = [
@@ -45,7 +46,7 @@ export default function robots(): MetadataRoute.Robots {
 
     const aiRules = aiBots.map(bot => ({
         userAgent: bot,
-        allow: ['/', '/makale/', '/forum/', '/sozluk/', '/llms.txt', '/feed.xml', '/testler/', '/simulasyonlar/'],
+        allow: [...publicAllow, '/makale/', '/forum/', '/sozluk/', '/llms.txt', '/feed.xml', '/testler/', '/simulasyonlar/'],
         disallow: commonDisallow,
         crawlDelay: 2, // Be kind to our servers, LLMs!
     }));
@@ -55,18 +56,28 @@ export default function robots(): MetadataRoute.Robots {
             ...aiRules,
             {
                 userAgent: 'Googlebot',
-                allow: '/',
-                disallow: privateDisallow,
+                allow: publicAllow,
+                disallow: commonDisallow,
+            },
+            {
+                userAgent: 'Googlebot-Image',
+                allow: publicAllow,
+                disallow: commonDisallow,
+            },
+            {
+                userAgent: 'Googlebot-News',
+                allow: publicAllow,
+                disallow: commonDisallow,
             },
             {
                 userAgent: 'Bingbot',
-                allow: '/',
-                disallow: privateDisallow,
+                allow: publicAllow,
+                disallow: commonDisallow,
                 crawlDelay: 2,
             },
             {
                 userAgent: '*',
-                allow: ['/', '/llms.txt', '/feed.xml'],
+                allow: [...publicAllow, '/llms.txt', '/feed.xml'],
                 disallow: commonDisallow,
                 crawlDelay: 1,
             },

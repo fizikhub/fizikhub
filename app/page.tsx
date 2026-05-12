@@ -190,7 +190,7 @@ export default async function Home() {
         url: `https://www.fizikhub.com/makale/${article.slug}`,
         name: article.title,
         headline: article.title,
-        image: article.cover_url || "https://www.fizikhub.com/og-image.png",
+        image: article.cover_url || article.image_url || "https://www.fizikhub.com/og-image.jpg",
         datePublished: article.created_at,
         author: {
           '@type': 'Person',

@@ -342,18 +342,25 @@ function SearchOpportunityRoute({ articles }: { articles: LibraryArticle[] }) {
                 Google'da Arananlar
             </div>
             <div className="grid gap-2">
-                {priorityArticles.map((article) => (
-                    <Link
-                        key={article.id}
-                        href={`/makale/${article.slug}`}
-                        className="group/priority rounded-[7px] border-2 border-black bg-white px-3 py-2 text-xs font-black transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0_#000]"
-                    >
-                        <span className="line-clamp-2">{article.title}</span>
-                        <span className="mt-1 flex items-center gap-1 text-[9px] uppercase tracking-widest text-zinc-600">
-                            Hedef konu <ArrowRight className="h-3 w-3 transition-transform group-hover/priority:translate-x-1" />
-                        </span>
-                    </Link>
-                ))}
+                {priorityArticles.map((article) => {
+                    const priority = SEO_PRIORITY_ARTICLES.find((item) => item.slug === article.slug);
+
+                    return (
+                        <Link
+                            key={article.id}
+                            href={`/makale/${article.slug}`}
+                            className="group/priority rounded-[7px] border-2 border-black bg-white px-3 py-2 text-xs font-black transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0_#000]"
+                        >
+                            <span className="line-clamp-2">{priority?.title || article.title}</span>
+                            <span className="mt-1 line-clamp-2 text-[10px] font-bold leading-snug text-zinc-600">
+                                {priority?.description || article.excerpt}
+                            </span>
+                            <span className="mt-1 flex items-center gap-1 text-[9px] uppercase tracking-widest text-zinc-600">
+                                Hedef konu <ArrowRight className="h-3 w-3 transition-transform group-hover/priority:translate-x-1" />
+                            </span>
+                        </Link>
+                    );
+                })}
             </div>
         </div>
     );

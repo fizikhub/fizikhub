@@ -10,111 +10,24 @@ import { BookReviewDetail } from "@/components/book-review/book-review-detail";
 import { TermDetail } from "@/components/term/term-detail";
 import { ArticleErrorBoundary } from "@/components/blog/article-error-boundary";
 import { MarkdownRenderer } from "@/components/markdown-renderer";
+import Link from "next/link";
+import { getSeoIntentForSlug, SEO_PRIORITY_ARTICLES, SEO_PRIORITY_SLUGS, type SeoIntentArticle } from "@/lib/seo-priority";
+import { buildMetaDescription, getSiteUrl, isLikelyIndexableTitle, toAbsoluteUrl } from "@/lib/seo-utils";
 
 interface PageProps {
     params: Promise<{ slug: string }>;
 }
 
-const SEARCH_INTENT_OVERRIDES: Record<string, {
-    title: string;
-    description: string;
-    keywords: string[];
-    summaryTitle: string;
-    summary: string;
-    questions: Array<{ question: string; answer: string }>;
-}> = {
-    'kuantum-fiziginin-baslangici-kara-cisim-isimasi-1766099948990': {
-        title: 'Siyah Cisim Işıması Nedir? Kara Cisim Işıması ve Morötesi Felaket',
-        description: 'Siyah cisim ışıması nedir? Kara cisim ışıması, morötesi felaket ve Planck’ın kuantum fikrini sade örneklerle öğren.',
-        keywords: ['siyah cisim ışıması', 'kara cisim ışıması', 'morötesi felaket', 'Planck sabiti', 'kuantum fiziği'],
-        summaryTitle: 'Siyah cisim ışıması nedir?',
-        summary: 'Siyah cisim ışıması, üzerine düşen tüm ışığı soğuran ideal bir cismin sıcaklığına bağlı olarak yaydığı elektromanyetik ışımadır. Klasik fizik bu ışımayı açıklamakta zorlanınca Planck enerjinin kesikli paketler halinde yayıldığını öne sürdü ve kuantum fiziğinin kapısı açıldı.',
-        questions: [
-            {
-                question: 'Kara cisim ile siyah cisim aynı şey mi?',
-                answer: 'Evet. Türkçede iki kullanım da aynı fiziksel modeli anlatır: üzerine gelen ışığı ideal olarak soğuran ve sıcaklığına göre ışınım yapan cisim.',
-            },
-            {
-                question: 'Morötesi felaket nedir?',
-                answer: 'Klasik fiziğin kısa dalga boylarında sonsuz enerji öngörmesi problemidir. Gerçek deneyler bunu göstermediği için Planck’ın kuantum fikri ortaya çıktı.',
-            },
-            {
-                question: 'Siyah cisim ışıması neden önemlidir?',
-                answer: 'Kuantum fiziğinin doğuşuna giden en önemli deneysel problemlerden biridir ve yıldızların sıcaklığını, ışık rengini ve termal ışımayı anlamamıza yardım eder.',
-            },
-        ],
-    },
-    'fizikte-ritmi-yakalamak-basit-harmonik-hareket-nedir-mk9qw6u9gcj': {
-        title: 'Periyodik Hareket Nedir? Basit Harmonik Hareket ve Örnekleri',
-        description: 'Periyodik hareket nedir? Basit harmonik hareket, salınım, periyot, frekans ve günlük hayattan örnekleri sade şekilde öğren.',
-        keywords: ['periyodik hareket nedir', 'basit harmonik hareket nedir', 'salınım', 'periyot', 'frekans', 'BHH'],
-        summaryTitle: 'Periyodik hareket nedir?',
-        summary: 'Periyodik hareket, belirli zaman aralıklarında kendini tekrar eden harekettir. Basit harmonik hareket ise denge noktasına doğru geri çağırıcı kuvvetin uzaklıkla orantılı olduğu özel bir periyodik harekettir; sarkaç ve yay-kütle sistemi bunun en bilinen örnekleridir.',
-        questions: [
-            {
-                question: 'Basit harmonik hareket nedir?',
-                answer: 'Denge noktasından uzaklaşan bir cismin, uzaklığıyla orantılı bir geri çağırıcı kuvvetle tekrar dengeye yöneldiği düzenli salınım hareketidir.',
-            },
-            {
-                question: 'Periyodik hareket ile basit harmonik hareket aynı mı?',
-                answer: 'Hayır. Her basit harmonik hareket periyodiktir ama her periyodik hareket basit harmonik hareket değildir.',
-            },
-            {
-                question: 'Periyot ve frekans neyi anlatır?',
-                answer: 'Periyot bir tam hareketin süresidir. Frekans ise bir saniyede kaç tekrar olduğunu gösterir.',
-            },
-        ],
-    },
-    'entropi-nedir-evrenin-sonu-nasil-gelecek-1767534266662': {
-        title: 'Entropi Nedir? Entropi Ne Demek ve Günlük Hayattan Örnekler',
-        description: 'Entropi nedir? Entropi ne demek, yüksek entropi ne anlama gelir ve evrende entropi neden artar, sade örneklerle öğren.',
-        keywords: ['entropi nedir', 'entropi ne demek', 'yüksek entropi nedir', 'termodinamik', 'düzensizlik'],
-        summaryTitle: 'Entropi nedir?',
-        summary: 'Entropi, bir sistemde enerjinin ne kadar dağılmış olduğunu ve doğal süreçlerin hangi yönde ilerlediğini anlatan termodinamik büyüklüktür. Günlük dilde düzensizlik benzetmesi işe yarar, ama entropi asıl olarak enerjinin kullanılabilirliğinin azalmasıyla ilgilidir.',
-        questions: [
-            {
-                question: 'Entropi ne demek?',
-                answer: 'Entropi, enerjinin sistem içinde yayılma ve daha az kullanılabilir hale gelme eğilimini ölçen fiziksel büyüklüktür.',
-            },
-            {
-                question: 'Yüksek entropi nedir?',
-                answer: 'Yüksek entropi, enerjinin daha dağılmış olduğu ve sistemden düzenli iş çıkarmanın daha zorlaştığı durumu anlatır.',
-            },
-            {
-                question: 'Entropi neden artar?',
-                answer: 'Kapalı sistemlerde doğal süreçler genellikle enerjiyi daha dağınık hale getirir. Bu yüzden toplam entropi zamanla artma eğilimindedir.',
-            },
-        ],
-    },
-};
-
-function toAbsoluteUrl(url: string | null | undefined, baseUrl: string) {
-    if (!url) return null;
-
-    try {
-        return new URL(url).toString();
-    } catch {
-        return new URL(url, baseUrl).toString();
-    }
-}
-
-function stripMarkdownForMeta(content: string | null | undefined) {
-    return (content || "")
-        .replace(/<[^>]*>/g, " ")
-        .replace(/!\[[^\]]*]\([^)]*\)/g, " ")
-        .replace(/\[([^\]]+)]\([^)]*\)/g, "$1")
-        .replace(/[#*_>`~|[\]]/g, " ")
-        .replace(/\s+/g, " ")
-        .trim();
-}
-
 function toMetaDescription(article: any) {
-    const source = article.excerpt || article.summary || stripMarkdownForMeta(article.content);
-    const description = stripMarkdownForMeta(source).slice(0, 158).trim();
-    return description.endsWith(".") ? description : `${description}...`;
+    return buildMetaDescription(
+        [article.excerpt, article.summary, article.content],
+        `${article.title} hakkında Türkçe, sade ve örnekli Fizikhub makalesi.`,
+    );
 }
 
-function ArticleSearchIntentBlock({ override }: { override: typeof SEARCH_INTENT_OVERRIDES[string] }) {
+function ArticleSearchIntentBlock({ override, currentSlug }: { override: SeoIntentArticle; currentSlug: string }) {
+    const relatedArticles = SEO_PRIORITY_ARTICLES.filter((article) => article.slug !== currentSlug);
+
     return (
         <section className="container mx-auto max-w-4xl px-4 pt-8">
             <div className="border-y border-zinc-200 bg-zinc-50 px-4 py-6 dark:border-zinc-800 dark:bg-zinc-950 sm:px-6">
@@ -133,6 +46,36 @@ function ArticleSearchIntentBlock({ override }: { override: typeof SEARCH_INTENT
                         </div>
                     ))}
                 </div>
+                <div className="mt-6 grid gap-4 border-t border-zinc-200 pt-5 dark:border-zinc-800 sm:grid-cols-2">
+                    <div>
+                        <p className="text-xs font-black uppercase tracking-wider text-zinc-500">İlgili okumalar</p>
+                        <div className="mt-3 grid gap-2">
+                            {relatedArticles.map((article) => (
+                                <Link
+                                    key={article.slug}
+                                    href={`/makale/${article.slug}`}
+                                    className="text-sm font-black text-zinc-950 underline decoration-[#FFC800] decoration-2 underline-offset-4 hover:text-zinc-700 dark:text-white dark:hover:text-zinc-200"
+                                >
+                                    {article.title}
+                                </Link>
+                            ))}
+                        </div>
+                    </div>
+                    <div>
+                        <p className="text-xs font-black uppercase tracking-wider text-zinc-500">Aranan alt konular</p>
+                        <div className="mt-3 flex flex-wrap gap-2">
+                            {override.relatedQueries.map((query) => (
+                                <Link
+                                    key={query}
+                                    href={`/ara?q=${encodeURIComponent(query)}`}
+                                    className="rounded-[7px] border border-zinc-300 bg-white px-2.5 py-1.5 text-xs font-black text-zinc-900 hover:border-zinc-950 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100"
+                                >
+                                    {query}
+                                </Link>
+                            ))}
+                        </div>
+                    </div>
+                </div>
             </div>
         </section>
     );
@@ -150,7 +93,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
         };
     }
 
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.fizikhub.com';
+    const baseUrl = getSiteUrl();
     const authorName = article.author?.full_name || article.author?.username || 'Fizikhub';
     const category = article.category || 'Makale';
 
@@ -162,15 +105,15 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     const coverUrl = toAbsoluteUrl(article.cover_url || (article as any).image_url, baseUrl) || fallbackOgUrl.toString();
     const canonicalUrl = `${baseUrl}/makale/${article.slug || slug}`;
 
-    const intentOverride = SEARCH_INTENT_OVERRIDES[article.slug || slug];
-    const description = intentOverride?.description || toMetaDescription(article);
+    const intentOverride = getSeoIntentForSlug(article.slug || slug);
+    const description = intentOverride?.metadataDescription || toMetaDescription(article);
 
     const tags = (article as any).tags as string[] | undefined;
 
     return {
-        title: intentOverride?.title || article.title,
+        title: intentOverride?.metadataTitle || article.title,
         description,
-        keywords: intentOverride?.keywords || (tags && tags.length > 0 ? tags : ["fizik", "bilim", "fizikhub", article.category || "makale"]),
+        keywords: intentOverride ? [...intentOverride.expandedKeywords] : (tags && tags.length > 0 ? tags : ["fizik", "bilim", "fizikhub", article.category || "makale"]),
         authors: [{
             name: authorName,
             url: article.author?.username
@@ -178,7 +121,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
                 : 'https://www.fizikhub.com'
         }],
         openGraph: {
-            title: intentOverride?.title || article.title,
+            title: intentOverride?.metadataTitle || article.title,
             description,
             url: canonicalUrl,
             type: "article",
@@ -199,7 +142,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
         },
         twitter: {
             card: "summary_large_image",
-            title: intentOverride?.title || article.title,
+            title: intentOverride?.metadataTitle || article.title,
             description,
             images: [coverUrl],
         },
@@ -242,9 +185,12 @@ export async function generateStaticParams() {
         .order('created_at', { ascending: false })
         .limit(20); // Pre-render top 20 recent articles
 
-    return articles?.map((article) => ({
-        slug: article.slug,
-    })) || [];
+    const slugs = new Set([
+        ...SEO_PRIORITY_SLUGS,
+        ...(articles?.map((article) => article.slug).filter(Boolean) || []),
+    ]);
+
+    return Array.from(slugs).map((slug) => ({ slug }));
 }
 
 export default async function ArticlePage({ params }: PageProps) {
@@ -268,13 +214,15 @@ export default async function ArticlePage({ params }: PageProps) {
         supabase.from('article_likes').select('id', { count: 'exact', head: true }).eq('article_id', article.id),
         supabase.from('article_references').select('id, title, url, created_at').eq('article_id', article.id).order('created_at', { ascending: true }),
         supabase.from('article_comments').select('id, content, created_at, parent_comment_id, user_id').eq('article_id', article.id).order('created_at', { ascending: true }),
-        supabase.from('articles').select('id, title, slug, excerpt, cover_url, category, created_at, author:author_id(username, full_name, avatar_url)').eq('category', article.category || 'Genel').neq('id', article.id).order('created_at', { ascending: false }).limit(3)
+        supabase.from('articles').select('id, title, slug, excerpt, cover_url, category, created_at, author:author_id(username, full_name, avatar_url)').eq('status', 'published').eq('category', article.category || 'Genel').neq('id', article.id).not('slug', 'is', null).order('created_at', { ascending: false }).limit(8)
     ]);
 
     const dbLikeCount = likesRes.count || 0;
     const references = referencesRes.data || [];
     const commentsData = commentsRes.data || [];
-    const relatedArticles = relatedRes.data || [];
+    const relatedArticles = (relatedRes.data || [])
+        .filter((relatedArticle: any) => isLikelyIndexableTitle(relatedArticle.title))
+        .slice(0, 3);
 
     const likeCount = article.title === "Sessiz Bir Varsayım: Yerçekimi" ? 7 : dbLikeCount;
 
@@ -302,12 +250,13 @@ export default async function ArticlePage({ params }: PageProps) {
 
     // JSON-LD structured data for Article — full E-E-A-T signals
     const articleTags = (article as any).tags as string[] | undefined;
-    const intentOverride = SEARCH_INTENT_OVERRIDES[article.slug];
-    const articleDescription = intentOverride?.description || toMetaDescription(article);
-    const baseUrl = 'https://www.fizikhub.com';
+    const intentOverride = getSeoIntentForSlug(article.slug);
+    const articleDescription = intentOverride?.metadataDescription || toMetaDescription(article);
+    const baseUrl = getSiteUrl();
     const articleUrl = `${baseUrl}/makale/${article.slug}`;
     const articleImageUrl = toAbsoluteUrl(article.cover_url || (article as any).image_url, baseUrl) || `${baseUrl}/api/og?title=${encodeURIComponent(article.title)}`;
     const authorUrl = article.author?.username ? `${baseUrl}/kullanici/${article.author.username}` : baseUrl;
+    const semanticTopics = intentOverride?.expandedKeywords || (articleTags && articleTags.length > 0 ? articleTags : [article.category || 'Fizik']);
     const citations = references
         .map((reference: any) => reference.url || reference.title)
         .filter(Boolean);
@@ -318,7 +267,7 @@ export default async function ArticlePage({ params }: PageProps) {
             '@type': 'Article',
             '@id': `${articleUrl}#article`,
             url: articleUrl,
-            headline: intentOverride?.title || article.title,
+            headline: intentOverride?.metadataTitle || article.title,
             description: articleDescription,
             image: {
                 '@type': 'ImageObject',
@@ -333,12 +282,22 @@ export default async function ArticlePage({ params }: PageProps) {
             timeRequired: `PT${readingTime}M`,
             inLanguage: 'tr-TR',
             articleSection: article.category || 'Fizik',
-            keywords: intentOverride?.keywords.join(', ') || (articleTags && articleTags.length > 0 ? articleTags.join(', ') : 'fizik, bilim, fizikhub'),
+            keywords: intentOverride?.expandedKeywords.join(', ') || (articleTags && articleTags.length > 0 ? articleTags.join(', ') : 'fizik, bilim, fizikhub'),
             citation: citations.length > 0 ? citations : undefined,
             isAccessibleForFree: true,
-            about: {
+            about: semanticTopics.map((topic) => ({
                 '@type': 'Thing',
-                name: article.category || 'Fizik',
+                name: topic,
+            })),
+            mentions: intentOverride?.relatedQueries.map((topic) => ({
+                '@type': 'Thing',
+                name: topic,
+            })),
+            learningResourceType: 'Açıklayıcı makale',
+            educationalLevel: 'Lise ve lisans başlangıç',
+            audience: {
+                '@type': 'EducationalAudience',
+                educationalRole: 'student',
             },
             author: {
                 '@type': 'Person',
@@ -373,10 +332,17 @@ export default async function ArticlePage({ params }: PageProps) {
             '@type': 'WebPage',
             '@id': articleUrl,
             url: articleUrl,
-            name: intentOverride?.title || article.title,
+            name: intentOverride?.metadataTitle || article.title,
             description: articleDescription,
             inLanguage: 'tr-TR',
             isPartOf: { '@id': `${baseUrl}/#website` },
+            ...(intentOverride && {
+                mainEntity: {
+                    '@type': 'DefinedTerm',
+                    name: intentOverride.summaryTitle.replace(/\?$/, ''),
+                    description: intentOverride.summary,
+                },
+            }),
             primaryImageOfPage: {
                 '@type': 'ImageObject',
                 url: articleImageUrl,
@@ -390,7 +356,7 @@ export default async function ArticlePage({ params }: PageProps) {
             itemListElement: [
                 { '@type': 'ListItem', position: 1, name: 'Ana Sayfa', item: baseUrl },
                 { '@type': 'ListItem', position: 2, name: 'Makaleler', item: `${baseUrl}/makale` },
-                { '@type': 'ListItem', position: 3, name: intentOverride?.title || article.title, item: articleUrl },
+                { '@type': 'ListItem', position: 3, name: intentOverride?.metadataTitle || article.title, item: articleUrl },
             ],
         },
         ...(intentOverride ? [{
@@ -462,7 +428,7 @@ export default async function ArticlePage({ params }: PageProps) {
                         {/* Hero is OUTSIDE error boundary — always visible (static JSX, no JS risk) */}
                         <NeoArticleHero article={article} readingTime={formattedReadingTime} />
 
-                        {intentOverride && <ArticleSearchIntentBlock override={intentOverride} />}
+                        {intentOverride && <ArticleSearchIntentBlock override={intentOverride} currentSlug={article.slug} />}
 
                         {/* Only interactive reader is wrapped — fallback shows plain article text */}
                         <ArticleErrorBoundary fallback={

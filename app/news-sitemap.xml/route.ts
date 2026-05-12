@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
+import { getSiteUrl, isLikelyIndexableTitle, toAbsoluteUrl } from '@/lib/seo-utils';
 
 export const revalidate = 900;
 
@@ -12,10 +13,6 @@ function escapeXml(value: string): string {
         .replace(/>/g, '&gt;')
         .replace(/"/g, '&quot;')
         .replace(/'/g, '&apos;');
-}
-
-function getBaseUrl() {
-    return (process.env.NEXT_PUBLIC_APP_URL || 'https://www.fizikhub.com').replace(/\/+$/, '');
 }
 
 function getArticleUrl(baseUrl: string, article: { slug: string; category?: string | null }) {
@@ -33,12 +30,12 @@ export async function GET() {
         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!.trim()
     );
 
-    const baseUrl = getBaseUrl();
+    const baseUrl = getSiteUrl();
     const twoDaysAgo = new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString();
 
     const { data: articles } = await supabase
         .from('articles')
-        .select('title, slug, category, created_at')
+        .select('title, slug, category, created_at, cover_url, image_url')
         .eq('status', 'published')
         .not('slug', 'is', null)
         .neq('category', 'Terim')
@@ -48,8 +45,16 @@ export async function GET() {
 
     const urls = (articles || [])
         .filter((article) => article.slug && article.title && article.created_at)
+        .filter((article) => isLikelyIndexableTitle(article.title))
         .map((article) => {
             const articleUrl = getArticleUrl(baseUrl, article);
+            const imageUrl = toAbsoluteUrl(article.cover_url || article.image_url, baseUrl);
+            const imageXml = imageUrl
+                ? `
+    <image:image>
+      <image:loc>${escapeXml(imageUrl)}</image:loc>
+    </image:image>`
+                : '';
 
             return `  <url>
     <loc>${escapeXml(articleUrl)}</loc>
@@ -60,14 +65,15 @@ export async function GET() {
       </news:publication>
       <news:publication_date>${new Date(article.created_at).toISOString()}</news:publication_date>
       <news:title>${escapeXml(article.title)}</news:title>
-    </news:news>
+    </news:news>${imageXml}
   </url>`;
         })
         .join('\n');
 
     const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-  xmlns:news="http://www.google.com/schemas/sitemap-news/0.9">
+  xmlns:news="http://www.google.com/schemas/sitemap-news/0.9"
+  xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
 ${urls}
 </urlset>`;
 

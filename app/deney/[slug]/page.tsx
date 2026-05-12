@@ -6,6 +6,7 @@ import { calculateReadingTime, formatReadingTime } from "@/lib/reading-time";
 import { Metadata } from "next";
 import { ExperimentViewer } from "@/components/experiment/experiment-viewer";
 import { isAdminEmail } from "@/lib/admin";
+import { buildMetaDescription, getSiteUrl, isLikelyIndexableTitle, toAbsoluteUrl } from "@/lib/seo-utils";
 
 interface PageProps {
     params: Promise<{ slug: string }>;
@@ -23,25 +24,32 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
         };
     }
 
+    const baseUrl = getSiteUrl();
+    const description = buildMetaDescription(
+        [article.excerpt, article.summary, article.content],
+        `${article.title} deneyini Fizikhub'da adım adım incele.`,
+    );
+    const imageUrl = toAbsoluteUrl(article.cover_url || (article as { image_url?: string }).image_url, baseUrl) || `${baseUrl}/og-image.jpg`;
+
     return {
         title: article.title,
-        description: (article.excerpt || article.summary || "").substring(0, 160) + "...",
+        description,
         openGraph: {
             title: article.title,
-            description: (article.excerpt || article.summary || "").substring(0, 160) + "...",
+            description,
             type: "article",
             publishedTime: article.created_at,
             authors: ["Fizikhub"],
-            images: [article.cover_url || "https://www.fizikhub.com/og-image.jpg"],
+            images: [imageUrl],
         },
         twitter: {
             card: "summary_large_image",
             title: article.title,
-            description: (article.excerpt || article.summary || "").substring(0, 160) + "...",
-            images: [article.cover_url || "https://www.fizikhub.com/og-image.jpg"],
+            description,
+            images: [imageUrl],
         },
         alternates: {
-            canonical: `https://www.fizikhub.com/deney/${slug}`,
+            canonical: `${baseUrl}/deney/${slug}`,
         },
     };
 }
@@ -73,7 +81,7 @@ export default async function ExperimentPage({ params }: PageProps) {
         user ? supabase.from('article_likes').select('id').eq('article_id', article.id).eq('user_id', user.id).single() : Promise.resolve({ data: null }),
         user ? supabase.from('article_bookmarks').select('id').eq('article_id', article.id).eq('user_id', user.id).single() : Promise.resolve({ data: null }),
         supabase.from('article_comments').select('id, content, created_at, parent_comment_id, user_id').eq('article_id', article.id).order('created_at', { ascending: true }),
-        supabase.from('articles').select('id, title, slug, excerpt, cover_url, category, created_at, author:author_id(username, full_name)').eq('category', 'Deney').neq('id', article.id).order('created_at', { ascending: false }).limit(3)
+        supabase.from('articles').select('id, title, slug, excerpt, cover_url, category, created_at, author:author_id(username, full_name)').eq('status', 'published').eq('category', 'Deney').neq('id', article.id).not('slug', 'is', null).order('created_at', { ascending: false }).limit(8)
     ]);
 
     const likeCount = dbLikeCount;
@@ -102,14 +110,26 @@ export default async function ExperimentPage({ params }: PageProps) {
     // Calculate reading time
     const readingTime = calculateReadingTime(article.content || "");
     const formattedReadingTime = formatReadingTime(readingTime);
+    const baseUrl = getSiteUrl();
+    const articleUrl = `${baseUrl}/deney/${article.slug}`;
+    const description = buildMetaDescription(
+        [article.excerpt, article.summary, article.content],
+        `${article.title} deneyini Fizikhub'da adım adım incele.`,
+    );
+    const imageUrl = toAbsoluteUrl(article.cover_url || (article as { image_url?: string }).image_url, baseUrl) || `${baseUrl}/og-image.jpg`;
+    const filteredRelatedArticles = (relatedArticles || [])
+        .filter((relatedArticle: any) => isLikelyIndexableTitle(relatedArticle.title))
+        .slice(0, 3);
 
     // JSON-LD structured data for Article
     const jsonLd = {
         '@context': 'https://schema.org',
         '@type': 'Article',
+        '@id': `${articleUrl}#article`,
+        url: articleUrl,
         headline: article.title,
-        description: (article.excerpt || "").substring(0, 160) + "...",
-        image: article.cover_url || 'https://www.fizikhub.com/og-image.png',
+        description,
+        image: imageUrl,
         datePublished: article.created_at,
         dateModified: (article as { updated_at?: string }).updated_at || article.created_at,
         author: {
@@ -126,7 +146,7 @@ export default async function ExperimentPage({ params }: PageProps) {
         },
         mainEntityOfPage: {
             '@type': 'WebPage',
-            '@id': `https://www.fizikhub.com/deney/${article.slug}`,
+            '@id': articleUrl,
         },
     };
 
@@ -148,7 +168,7 @@ export default async function ExperimentPage({ params }: PageProps) {
                 isLoggedIn={!!user}
                 isAdmin={isAdmin}
                 userAvatar={user ? (profiles?.find(p => p.id === user.id)?.avatar_url) : undefined}
-                relatedArticles={relatedArticles || []}
+                relatedArticles={filteredRelatedArticles}
             />
         </>
     );

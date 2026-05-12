@@ -63,7 +63,7 @@ export function formatSliderArticles(articles: any[]) {
             return {
                 id: a.id,
                 title: a.title,
-                image: a.image_url || a.image,
+                image: a.cover_url || a.image_url || a.image,
                 slug: a.slug,
                 category: a.category,
                 author_name: a.author?.full_name || 'FizikHub',
