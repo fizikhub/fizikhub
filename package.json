@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "analyze": "cross-env ANALYZE=true next build --webpack",
-    "test": "vitest"
+    "test": "vitest",
+    "configure:supabase-auth-email": "node scripts/configure-supabase-auth-email.mjs"
   },
   "dependencies": {
     "@ducanh2912/next-pwa": "^10.2.6",
