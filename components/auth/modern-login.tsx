@@ -162,56 +162,31 @@ export function ModernLogin() {
     };
 
     return (
-        <div className="min-h-screen w-full flex items-center justify-center p-4 bg-transparent font-sans relative overflow-hidden selection:bg-neo-yellow/30 selection:text-neo-yellow">
-            {/* --- 10,000 STAR BACKGROUND --- */}
+        <div className="min-h-screen w-full flex items-center justify-center px-5 py-8 bg-transparent font-sans relative overflow-hidden selection:bg-neo-yellow/30 selection:text-neo-yellow">
+            {/* --- STAR BACKGROUND --- */}
             <StarBackground />
 
             {/* Main Card */}
             <motion.div
-                initial={{ opacity: 0, scale: 0.95, y: 20 }}
-                animate={{ opacity: 1, scale: 1, y: -40 }}
-                transition={{
-                    duration: 0.6,
-                    ease: "circOut"
-                }}
-                className="w-full max-w-[380px] relative z-10"
+                initial={{ opacity: 0, y: 24 }}
+                animate={{ opacity: 1, y: -30 }}
+                transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
+                className="w-full max-w-[400px] relative z-10"
             >
-                {/* The Refined Neo-Brutalist Card with Yellow Shadow */}
-                <div className="bg-[#09090b] border-4 border-[#27272a] shadow-[8px_8px_0px_0px_#facc15] p-6 sm:p-8 rounded-xl relative overflow-hidden">
+                {/* Neo-Brutalist Card — White shadow, site bg, soft rounding */}
+                <div className="bg-[#292929] border-[3px] border-white/20 shadow-[6px_6px_0px_0px_rgba(255,255,255,0.9)] p-7 sm:p-9 rounded-2xl relative overflow-hidden">
+
+                    {/* Subtle top accent */}
+                    <div className="absolute top-0 left-6 right-6 h-[2px] bg-gradient-to-r from-transparent via-white/15 to-transparent" />
                     
-                    {/* Header with DankLogo */}
+                    {/* Header — Bigger Logo */}
                     <div className="text-center mb-8 relative">
-                        <div className="inline-flex justify-center mb-1 transform hover:-translate-y-1 transition-transform duration-200">
+                        <div className="inline-flex justify-center transform hover:-translate-y-1 transition-transform duration-200 scale-[1.35] sm:scale-[1.5] origin-center">
                             <DankLogo />
                         </div>
                     </div>
 
-                    {/* Social Login */}
-                    <Button
-                        type="button"
-                        onClick={() => handleOAuthLogin('google')}
-                        disabled={loading}
-                        className="w-full h-12 bg-white hover:bg-gray-100 text-black font-black border-4 border-black transition-all rounded-none mb-6 flex items-center justify-center gap-3 text-[11px] uppercase tracking-widest shadow-[4px_4px_0px_0px_#facc15] hover:shadow-none hover:translate-x-[4px] hover:translate-y-[4px] active:shadow-none active:translate-x-[4px] active:translate-y-[4px]"
-                    >
-                        <svg className="h-4 w-4" viewBox="0 0 24 24">
-                            <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#000" />
-                            <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#000" />
-                            <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#000" />
-                            <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#000" />
-                        </svg>
-                        Google İle Bağlan
-                    </Button>
-
-                    <div className="relative mb-6">
-                        <div className="absolute inset-0 flex items-center">
-                            <span className="w-full border-t-2 border-dashed border-zinc-800" />
-                        </div>
-                        <div className="relative flex justify-center text-[10px] uppercase font-bold tracking-widest">
-                            <span className="bg-[#09090b] px-4 text-zinc-500">veya e-posta</span>
-                        </div>
-                    </div>
-
-                    {/* Form */}
+                    {/* Form — E-posta and Şifre FIRST */}
                     <form onSubmit={handleEmailAuth} className="space-y-4">
                         <AnimatePresence mode="popLayout">
                             {isSignUp && (
@@ -221,7 +196,7 @@ export function ModernLogin() {
                                     exit={{ opacity: 0, height: 0 }}
                                     className="space-y-4 overflow-hidden"
                                 >
-                                    <div className="space-y-1">
+                                    <div className="space-y-1.5">
                                         <Label className="text-[10px] font-bold uppercase text-zinc-400 tracking-widest pl-1">Kullanıcı Adı</Label>
                                         <Input
                                             placeholder="username"
@@ -232,24 +207,24 @@ export function ModernLogin() {
                                                 setUsername(value);
                                             }}
                                             required
-                                            className="h-12 bg-[#18181b] border-2 border-[#27272a] text-white placeholder:text-zinc-600 focus:bg-[#18181b] focus:border-neo-yellow focus:ring-0 rounded-none transition-colors font-mono font-bold text-sm pl-4"
+                                            className="h-11 bg-white/[0.06] border-2 border-white/10 text-white placeholder:text-zinc-600 focus:border-neo-yellow focus:ring-0 rounded-lg transition-colors font-mono font-bold text-sm pl-4"
                                         />
                                     </div>
-                                    <div className="space-y-1">
+                                    <div className="space-y-1.5">
                                         <Label className="text-[10px] font-bold uppercase text-zinc-400 tracking-widest pl-1">İsim</Label>
                                         <Input
                                             placeholder="Ad Soyad"
                                             value={fullName}
                                             onChange={(e) => setFullName(e.target.value)}
                                             required
-                                            className="h-12 bg-[#18181b] border-2 border-[#27272a] text-white placeholder:text-zinc-600 focus:bg-[#18181b] focus:border-neo-yellow focus:ring-0 rounded-none transition-colors font-mono font-bold text-sm pl-4"
+                                            className="h-11 bg-white/[0.06] border-2 border-white/10 text-white placeholder:text-zinc-600 focus:border-neo-yellow focus:ring-0 rounded-lg transition-colors font-mono font-bold text-sm pl-4"
                                         />
                                     </div>
                                 </motion.div>
                             )}
                         </AnimatePresence>
 
-                        <div className="space-y-1">
+                        <div className="space-y-1.5">
                             <Label className="text-[10px] font-bold uppercase text-zinc-400 tracking-widest pl-1">E-Posta</Label>
                             <Input
                                 type="email"
@@ -257,17 +232,17 @@ export function ModernLogin() {
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 required
-                                className="h-12 bg-[#18181b] border-2 border-[#27272a] text-white placeholder:text-zinc-600 focus:bg-[#18181b] focus:border-neo-yellow focus:ring-0 rounded-none transition-colors font-mono font-bold text-sm pl-4"
+                                className="h-11 bg-white/[0.06] border-2 border-white/10 text-white placeholder:text-zinc-600 focus:border-neo-yellow focus:ring-0 rounded-lg transition-colors font-mono font-bold text-sm pl-4"
                             />
                         </div>
 
-                        <div className="space-y-1">
+                        <div className="space-y-1.5">
                             <div className="flex justify-between items-center pl-1">
                                 <Label className="text-[10px] font-bold uppercase text-zinc-400 tracking-widest">Şifre</Label>
                                 {!isSignUp && (
                                     <Link
                                         href="/forgot-password"
-                                        className="text-[10px] font-bold text-neo-yellow hover:text-white transition-colors uppercase"
+                                        className="text-[10px] font-bold text-neo-yellow/80 hover:text-neo-yellow transition-colors uppercase"
                                     >
                                         Unuttum?
                                     </Link>
@@ -279,12 +254,12 @@ export function ModernLogin() {
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                     required
-                                    className="h-12 bg-[#18181b] border-2 border-[#27272a] text-white placeholder:text-zinc-600 focus:bg-[#18181b] focus:border-neo-yellow focus:ring-0 pr-12 rounded-none transition-colors font-mono font-bold text-sm pl-4"
+                                    className="h-11 bg-white/[0.06] border-2 border-white/10 text-white placeholder:text-zinc-600 focus:border-neo-yellow focus:ring-0 pr-12 rounded-lg transition-colors font-mono font-bold text-sm pl-4"
                                 />
                                 <button
                                     type="button"
                                     onClick={() => setShowPassword(!showPassword)}
-                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-neo-yellow transition-colors p-1"
+                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-neo-yellow transition-colors p-1"
                                 >
                                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                                 </button>
@@ -298,17 +273,17 @@ export function ModernLogin() {
                                     initial={{ opacity: 0 }}
                                     animate={{ opacity: 1 }}
                                     exit={{ opacity: 0 }}
-                                    className="flex items-start gap-3 py-2"
+                                    className="flex items-start gap-3 pt-1"
                                 >
                                     <input
                                         type="checkbox"
                                         id="terms"
-                                        className="appearance-none w-5 h-5 border-2 border-[#27272a] bg-[#18181b] rounded-none checked:bg-neo-yellow checked:border-neo-yellow checked:after:content-['✓'] checked:after:text-black checked:after:font-black checked:after:flex checked:after:justify-center checked:after:items-center checked:after:text-xs cursor-pointer mt-0.5 shrink-0 transition-colors"
+                                        className="appearance-none w-[18px] h-[18px] border-2 border-white/15 bg-white/[0.06] rounded checked:bg-neo-yellow checked:border-neo-yellow checked:after:content-['✓'] checked:after:text-black checked:after:font-black checked:after:flex checked:after:justify-center checked:after:items-center checked:after:text-[10px] cursor-pointer mt-0.5 shrink-0 transition-colors"
                                         required
                                         onInvalid={(e) => (e.target as HTMLInputElement).setCustomValidity('Lütfen şartları kabul edin.')}
                                         onInput={(e) => (e.target as HTMLInputElement).setCustomValidity('')}
                                     />
-                                    <label htmlFor="terms" className="text-[10px] text-zinc-400 leading-tight font-bold cursor-pointer select-none uppercase tracking-widest mt-1">
+                                    <label htmlFor="terms" className="text-[10px] text-zinc-500 leading-tight font-bold cursor-pointer select-none uppercase tracking-widest mt-0.5">
                                         <Link href="/kullanim-sartlari" className="text-neo-yellow hover:text-white underline decoration-dashed underline-offset-2 transition-colors mr-1">Şartları</Link>
                                         kabul ediyorum.
                                     </label>
@@ -316,8 +291,8 @@ export function ModernLogin() {
                             )}
                         </AnimatePresence>
 
-                        {/* Turnstile - Better integrated visually */}
-                        <div className="flex justify-center my-4 opacity-75 hover:opacity-100 transition-opacity">
+                        {/* Turnstile */}
+                        <div className="flex justify-center pt-2 pb-1 opacity-80 hover:opacity-100 transition-opacity">
                             <div className="cf-turnstile"
                                 data-sitekey="0x4AAAAAACI_a8NNCjdtVnjC"
                                 data-callback="onTurnstileSuccess"
@@ -325,10 +300,11 @@ export function ModernLogin() {
                             />
                         </div>
 
+                        {/* Submit Button */}
                         <Button
                             type="submit"
                             disabled={loading}
-                            className="w-full h-14 bg-neo-yellow hover:bg-yellow-400 text-black font-black uppercase tracking-widest text-[13px] rounded-none border-4 border-black shadow-[4px_4px_0px_0px_#fff] hover:shadow-none hover:translate-x-[4px] hover:translate-y-[4px] active:shadow-none active:translate-x-[4px] active:translate-y-[4px] transition-all flex items-center justify-center gap-3 mt-2"
+                            className="w-full h-[52px] bg-neo-yellow hover:bg-yellow-300 text-black font-black uppercase tracking-widest text-[13px] rounded-xl border-[3px] border-black shadow-[4px_4px_0px_0px_rgba(255,255,255,0.85)] hover:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.85)] hover:translate-x-[2px] hover:translate-y-[2px] active:shadow-none active:translate-x-[4px] active:translate-y-[4px] transition-all flex items-center justify-center gap-3"
                         >
                             {loading ? (
                                 <Loader2 className="h-5 w-5 animate-spin text-black" />
@@ -341,15 +317,44 @@ export function ModernLogin() {
                         </Button>
                     </form>
 
-                    {/* Toggle */}
+                    {/* Divider — "veya" */}
+                    <div className="relative my-5">
+                        <div className="absolute inset-0 flex items-center">
+                            <span className="w-full border-t border-white/10" />
+                        </div>
+                        <div className="relative flex justify-center text-[10px] uppercase font-bold tracking-widest">
+                            <span className="bg-[#292929] px-4 text-zinc-500">veya</span>
+                        </div>
+                    </div>
+
+                    {/* Google Login — Moved BELOW form */}
+                    <Button
+                        type="button"
+                        onClick={() => handleOAuthLogin('google')}
+                        disabled={loading}
+                        className="w-full h-11 bg-white/[0.07] hover:bg-white/[0.12] text-white font-bold border-2 border-white/15 hover:border-white/30 transition-all rounded-xl flex items-center justify-center gap-3 text-[11px] uppercase tracking-widest"
+                    >
+                        <svg className="h-4 w-4 opacity-80" viewBox="0 0 24 24">
+                            <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#fff" />
+                            <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#fff" />
+                            <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#fff" />
+                            <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#fff" />
+                        </svg>
+                        Google İle Bağlan
+                    </Button>
+
+                    {/* Sign Up / Sign In Toggle — Prominent */}
                     <div className="mt-6 text-center">
                         <button
                             type="button"
                             onClick={() => setIsSignUp(!isSignUp)}
-                            className="group/toggle px-4 py-2 hover:bg-white/5 transition-colors border border-transparent hover:border-zinc-800 rounded-none"
+                            className="w-full py-3 rounded-xl border-2 border-dashed border-white/15 hover:border-neo-yellow/50 hover:bg-white/[0.03] transition-all group/toggle"
                         >
-                            <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 group-hover/toggle:text-white transition-colors">
-                                {isSignUp ? "Zaten hesabın var mı?" : "Hesabın yok mu? Kayıt Ol"}
+                            <span className="text-[11px] font-black uppercase tracking-widest text-zinc-400 group-hover/toggle:text-white transition-colors">
+                                {isSignUp ? "Zaten hesabın var mı? " : "Hesabın yok mu? "}
+                                <span className="text-neo-yellow group-hover/toggle:text-neo-yellow">
+                                    {isSignUp ? "Giriş Yap" : "Kayıt Ol"}
+                                </span>
                             </span>
                         </button>
                     </div>
