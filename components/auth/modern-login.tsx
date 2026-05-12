@@ -1,23 +1,19 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { AnimatePresence, m as motion } from "framer-motion";
-import { ArrowRight, AtSign, Eye, EyeOff, Loader2, Lock, Mail, ShieldCheck, Sparkles, User } from "lucide-react";
-import dynamic from "next/dynamic";
-import Link from "next/link";
-import { toast } from "sonner";
-
-import { DankLogo } from "@/components/brand/dank-logo";
+import { useState, useEffect } from "react";
+import { m as motion, AnimatePresence } from "framer-motion";
+import { createClient } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { createClient } from "@/lib/supabase";
+import { Loader2, Eye, EyeOff, ArrowRight } from "lucide-react";
+import { DankLogo } from "@/components/brand/dank-logo"; // Swapped to DankLogo
+import dynamic from "next/dynamic";
+const StarBackground = dynamic(() => import("@/components/background/star-background").then(mod => mod.StarBackground), { ssr: false });
+import { toast } from "sonner";
+import Link from "next/link";
 import { cn } from "@/lib/utils";
 
-const StarBackground = dynamic(
-    () => import("@/components/background/star-background").then((mod) => mod.StarBackground),
-    { ssr: false }
-);
 
 export function ModernLogin() {
     const [loading, setLoading] = useState(false);
@@ -31,7 +27,7 @@ export function ModernLogin() {
     const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
 
     useEffect(() => {
-        const script = document.createElement("script");
+        const script = document.createElement('script');
         script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js";
         script.async = true;
         script.defer = true;
@@ -49,7 +45,7 @@ export function ModernLogin() {
         };
     }, []);
 
-    const handleOAuthLogin = async (provider: "github" | "google") => {
+    const handleOAuthLogin = async (provider: 'github' | 'google') => {
         setLoading(true);
         try {
             const { error } = await supabase.auth.signInWithOAuth({
@@ -57,11 +53,17 @@ export function ModernLogin() {
                 options: { redirectTo: `${location.origin}/auth/callback` },
             });
             if (error) throw error;
-        } catch (error: unknown) {
+        } catch (error: any) {
+            // Only show error if it's NOT a user cancellation (which often happens silently or with specific strings)
+            // But usually unexpected errors.
             console.error("OAuth Error:", error);
             toast.error("Giriş bağlantısı başlatılamadı.");
         } finally {
-            setTimeout(() => setLoading(false), 2000);
+            // We keep loading true because we are redirecting away. 
+            // If we set it false, user sees the form again before redirect.
+            // BUT if it failed synchronously, we must reset.
+            // The catch block catches synchronous failures.
+            setTimeout(() => setLoading(false), 2000); // Reset after delay just in case user comes back via history
         }
     };
 
@@ -80,14 +82,17 @@ export function ModernLogin() {
             if (isSignUp) {
                 if (username.length < 3) throw new Error("Kullanıcı adı en az 3 karakter olmalı.");
 
+                // Validate username uniqueness
                 const { data: existingUser, error: checkError } = await supabase
-                    .from("profiles")
-                    .select("username")
-                    .eq("username", username)
+                    .from('profiles')
+                    .select('username')
+                    .eq('username', username)
                     .maybeSingle();
 
                 if (checkError) {
                     console.error("Username check error:", checkError);
+                    // We don't block registration on this error, let the server handle unique constraint if needed
+                    // or throw if critical. For now, let's proceed but log it.
                 }
 
                 if (existingUser) throw new Error("Bu kullanıcı adı zaten alınmış.");
@@ -101,8 +106,8 @@ export function ModernLogin() {
                         data: {
                             username,
                             full_name: fullName,
-                            onboarding_completed: true,
-                        },
+                            onboarding_completed: true
+                        }
                     },
                 });
 
@@ -113,14 +118,16 @@ export function ModernLogin() {
                 }
 
                 toast.success("Kayıt başarılı! Yönlendiriliyorsunuz...", { id: toastId });
+                // Short delay to let user see the success message
                 setTimeout(() => {
                     window.location.href = `/auth/verify?email=${encodeURIComponent(email)}`;
                 }, 1000);
+
             } else {
                 const { error } = await supabase.auth.signInWithPassword({
                     email,
                     password,
-                    options: { captchaToken: turnstileToken },
+                    options: { captchaToken: turnstileToken }
                 });
 
                 if (error) throw error;
@@ -130,320 +137,244 @@ export function ModernLogin() {
                     window.location.href = "/";
                 }, 1000);
             }
-        } catch (error: unknown) {
+        } catch (error: any) {
             console.error("Auth error:", error);
-            setLoading(false);
-            const message = getErrorMessage(error);
 
-            if (message.includes("already registered")) {
+            // Clear loading state immediately on error
+            setLoading(false);
+
+            if (error.message.includes("already registered")) {
                 toast.error("Bu e-posta zaten kayıtlı.", { id: toastId });
-            } else if (message.includes("Invalid login")) {
+            } else if (error.message.includes("Invalid login")) {
                 toast.error("Kullanıcı adı veya şifre hatalı.", { id: toastId });
-            } else if (message.includes("Database error")) {
+            } else if (error.message.includes("Database error")) {
                 toast.error("Sunucu hatası, lütfen tekrar deneyin.", { id: toastId });
-            } else if (message.includes("rate limit")) {
-                toast.error("Çok fazla deneme yaptınız. Lütfen biraz bekleyin.", { id: toastId });
             } else {
-                toast.error("Bir hata oluştu. Lütfen bilgilerinizi kontrol edin.", { id: toastId });
+                // Fallback for other errors
+                if (error.message.includes("rate limit")) {
+                    toast.error("Çok fazla deneme yaptınız. Lütfen biraz bekleyin.", { id: toastId });
+                } else {
+                    toast.error("Bir hata oluştu. Lütfen bilgilerinizi kontrol edin.", { id: toastId });
+                }
             }
         }
+        // Note: We don't set loading(false) in success case to prevent interaction during redirect
     };
 
-    const authModeLabel = isSignUp ? "Kayıt Ol" : "Giriş Yap";
-
     return (
-        <main className="relative isolate min-h-[calc(100dvh-109px)] w-screen max-w-[100vw] overflow-hidden bg-[#020205] px-4 pb-[calc(84px+env(safe-area-inset-bottom))] pt-5 text-white selection:bg-[#ffcc18] selection:text-black sm:px-6 md:min-h-screen md:py-10">
+        <div className="min-h-screen w-full flex items-center justify-center p-4 bg-transparent font-sans relative overflow-hidden selection:bg-orange-500/30 selection:text-orange-200">
+            {/* --- 10,000 STAR BACKGROUND --- */}
             <StarBackground />
 
-            <div className="absolute inset-0 z-[1] pointer-events-none bg-[radial-gradient(circle_at_50%_0%,rgba(255,204,24,0.13),transparent_34%),linear-gradient(180deg,rgba(2,2,5,0.05),rgba(2,2,5,0.78))]" />
-
-            <motion.section
-                initial={{ opacity: 0, y: 22, scale: 0.98 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
-                className="relative z-10 mx-0 flex w-full max-w-[350px] flex-col gap-4 min-[390px]:max-w-[366px] sm:mx-auto sm:max-w-[430px]"
-                aria-labelledby="login-heading"
+            {/* Main Card */}
+            <motion.div
+                initial={{ opacity: 0, scale: 0.9, y: 30 }}
+                animate={{ opacity: 1, scale: 1, y: -40 }}
+                transition={{
+                    duration: 1.2,
+                    ease: [0.16, 1, 0.3, 1],
+                    delay: 0.2
+                }}
+                // "Chubby" and "Short" adjustment: max-w increased, vertical padding optimized
+                className="w-full max-w-[420px] relative z-10"
             >
-                <div className="flex items-center justify-between gap-3">
-                    <Link
-                        href="/"
-                        aria-label="FizikHub ana sayfa"
-                        className="rounded-xl focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#ffcc18]/60"
-                    >
-                        <DankLogo />
-                    </Link>
+                {/* Liquid Glassmorphism Container with Neo-Brutalist Shadow */}
+                <div className="relative group">
 
-                    <div className="rotate-[-2deg] border-[3px] border-black bg-[#ffcc18] px-3 py-2 text-[11px] font-black uppercase leading-none tracking-[0.12em] text-black shadow-[4px_4px_0_#000]">
-                        Üye Girişi
-                    </div>
-                </div>
+                    {/* Neo-Brutalist Shadow Layer (Black & Solid) */}
+                    <div className="absolute inset-0 bg-black rounded-[2.5rem] translate-x-4 translate-y-4 -z-10 group-hover:translate-x-5 group-hover:translate-y-5 transition-transform duration-500" />
 
-                <div className="relative">
-                    <div className="absolute inset-0 translate-x-1.5 translate-y-1.5 rounded-[26px] bg-black sm:translate-x-2 sm:translate-y-2" />
-                    <div className="relative overflow-hidden rounded-[26px] border-[4px] border-black bg-[#17171a] shadow-[0_0_0_2px_rgba(255,255,255,0.18)]">
-                        <div className="absolute inset-x-0 top-0 h-20 bg-[linear-gradient(135deg,rgba(255,204,24,0.22),transparent_45%,rgba(35,169,250,0.12))]" />
-                        <div className="absolute -right-12 top-24 h-32 w-32 rounded-full bg-[#23a9fa]/10 blur-2xl" />
-                        <div className="absolute -bottom-16 -left-10 h-36 w-36 rounded-full bg-[#ff6a00]/12 blur-2xl" />
+                    {/* The Card Itself - "Chubby" rounded-[2.5rem] */}
+                    <div className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-3xl border border-white/20 ring-1 ring-white/20 p-6 sm:p-8 rounded-[2.5rem] relative overflow-hidden">
 
-                        <div className="relative border-b-[3px] border-black bg-[#0b0b0d] px-5 py-5">
-                            <div className="mb-3 inline-flex items-center gap-2 rounded-full border-2 border-white/15 bg-white/5 px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.18em] text-zinc-300">
-                                <Sparkles className="h-3.5 w-3.5 text-[#ffcc18]" aria-hidden="true" />
-                                FizikHub hesabı
+                        {/* Internal Liquid Shine */}
+                        <div className="absolute -top-40 -left-40 w-80 h-80 bg-orange-500/10 blur-[100px] rounded-full pointer-events-none" />
+                        <div className="absolute -bottom-40 -right-40 w-80 h-80 bg-orange-600/10 blur-[100px] rounded-full pointer-events-none" />
+
+                        {/* Top Accent Line */}
+                        <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-orange-500/40 to-transparent" />
+
+                        {/* Header with DankLogo (Replaced old rocket/text) */}
+                        <div className="text-center mb-4 relative">
+                            <div className="inline-flex justify-center mb-1 transform hover:scale-110 transition-transform duration-500">
+                                <DankLogo />
                             </div>
-
-                            <h1 id="login-heading" className="text-[32px] font-black uppercase leading-[0.92] tracking-normal text-white sm:text-[42px]">
-                                Bilime
-                                <span className="block text-[#ffcc18] [text-shadow:3px_3px_0_#000]">
-                                    Bağlan
-                                </span>
-                            </h1>
-
-                            <p className="mt-3 max-w-[28rem] text-sm font-bold leading-6 text-zinc-300">
-                                Makaleler, forum ve sözlük aynı hesabın altında. Hızlıca gir, evren yine karışık.
-                            </p>
+                            {/* Title removed/simplified as requested to use the logo primarily */}
+                            <div className="h-[2px] w-20 bg-gradient-to-r from-transparent via-white/20 to-transparent mx-auto mt-2" />
                         </div>
 
-                        <div className="relative p-4 sm:p-5">
-                            <div className="mb-4 grid grid-cols-2 gap-2 rounded-[18px] border-[3px] border-black bg-black p-1.5 shadow-[0_0_0_1px_rgba(255,255,255,0.12)]" role="tablist" aria-label="Kimlik doğrulama modu">
-                                {[
-                                    { active: !isSignUp, label: "Giriş", onClick: () => setIsSignUp(false) },
-                                    { active: isSignUp, label: "Kayıt", onClick: () => setIsSignUp(true) },
-                                ].map((item) => (
-                                    <button
-                                        key={item.label}
-                                        type="button"
-                                        role="tab"
-                                        aria-selected={item.active}
-                                        onClick={item.onClick}
-                                        className={cn(
-                                            "h-12 rounded-[13px] border-2 border-transparent text-sm font-black uppercase tracking-[0.08em] transition-all focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#ffcc18]/60",
-                                            item.active
-                                                ? "border-black bg-[#ffcc18] text-black shadow-[3px_3px_0_rgba(255,255,255,0.18)]"
-                                                : "text-zinc-300 hover:bg-zinc-900 hover:text-white"
-                                        )}
+                        {/* Social Login - Optimized height */}
+                        <Button
+                            type="button"
+                            onClick={() => handleOAuthLogin('google')}
+                            disabled={loading}
+                            className="w-full h-12 bg-white/10 hover:bg-white/20 text-white font-bold border-2 border-white/10 hover:border-white/30 backdrop-blur-md transition-all rounded-2xl mb-6 flex items-center justify-center gap-4 text-xs uppercase tracking-[0.2em] group/btn"
+                        >
+                            <svg className="h-5 w-5 opacity-90 group-hover/btn:opacity-100 transition-opacity" viewBox="0 0 24 24">
+                                <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#ffff" />
+                                <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#ffff" />
+                                <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#ffff" />
+                                <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#ffff" />
+                            </svg>
+                            Google İle Bağlan
+                        </Button>
+
+                        <div className="relative mb-4">
+                            <div className="absolute inset-0 flex items-center">
+                                <span className="w-full border-t border-white/10" />
+                            </div>
+                            <div className="relative flex justify-center text-[10px] uppercase font-black tracking-[0.3em]">
+                                <span className="bg-transparent px-3 text-white/30 backdrop-blur-sm">veya</span>
+                            </div>
+                        </div>
+
+                        {/* Form - Optimized spacing for "Shorter" look */}
+                        <form onSubmit={handleEmailAuth} className="space-y-4">
+                            <AnimatePresence mode="popLayout">
+                                {isSignUp && (
+                                    <motion.div
+                                        initial={{ opacity: 0, scale: 0.9 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        exit={{ opacity: 0, scale: 0.9 }}
+                                        className="space-y-4 overflow-hidden"
                                     >
-                                        {item.label}
-                                    </button>
-                                ))}
-                            </div>
-
-                            <Button
-                                type="button"
-                                onClick={() => handleOAuthLogin("google")}
-                                disabled={loading}
-                                className="mb-4 h-14 w-full rounded-[18px] border-[3px] border-black bg-white text-sm font-black uppercase tracking-[0.14em] text-black shadow-[5px_5px_0_#000] transition-all hover:-translate-y-0.5 hover:bg-zinc-100 hover:shadow-[6px_6px_0_#000] active:translate-x-[3px] active:translate-y-[3px] active:shadow-none disabled:opacity-70"
-                            >
-                                <GoogleMark className="h-5 w-5" />
-                                Google ile bağlan
-                            </Button>
-
-                            <div className="relative mb-4 flex items-center justify-center" aria-hidden="true">
-                                <div className="h-[3px] flex-1 bg-zinc-700" />
-                                <span className="mx-3 -rotate-1 border-2 border-black bg-zinc-100 px-3 py-1 text-[10px] font-black uppercase tracking-[0.22em] text-black shadow-[3px_3px_0_#000]">
-                                    veya
-                                </span>
-                                <div className="h-[3px] flex-1 bg-zinc-700" />
-                            </div>
-
-                            <form onSubmit={handleEmailAuth} className="space-y-3.5">
-                                <AnimatePresence mode="popLayout">
-                                    {isSignUp && (
-                                        <motion.div
-                                            initial={{ opacity: 0, height: 0 }}
-                                            animate={{ opacity: 1, height: "auto" }}
-                                            exit={{ opacity: 0, height: 0 }}
-                                            transition={{ duration: 0.24 }}
-                                            className="space-y-3.5 overflow-hidden"
-                                        >
-                                            <NeoField
-                                                id="username"
-                                                label="Kullanıcı adı"
-                                                icon={AtSign}
-                                                placeholder="silginim"
+                                        <div className="space-y-2">
+                                            <Label className="text-[10px] font-black uppercase text-white/40 pl-2 tracking-widest">Kullanıcı Adı</Label>
+                                            <Input
+                                                placeholder="username"
                                                 value={username}
-                                                autoComplete="username"
-                                                onChange={(value) => {
-                                                    const nextValue = value.toLowerCase().replace(/[^a-z0-9_.-]/g, "");
-                                                    setUsername(nextValue);
+                                                onChange={(e) => {
+                                                    let value = e.target.value.toLowerCase();
+                                                    value = value.replace(/[^a-z0-9_.-]/g, '');
+                                                    setUsername(value);
                                                 }}
+                                                required
+                                                className="h-12 bg-white/5 border-2 border-white/10 text-white placeholder:text-white/10 focus:bg-white/10 focus:border-orange-500/50 focus:ring-0 rounded-2xl transition-all font-mono text-sm pl-4"
                                             />
-
-                                            <NeoField
-                                                id="full-name"
-                                                label="İsim"
-                                                icon={User}
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label className="text-[10px] font-black uppercase text-white/40 pl-2 tracking-widest">İsim</Label>
+                                            <Input
                                                 placeholder="Ad Soyad"
                                                 value={fullName}
-                                                autoComplete="name"
-                                                onChange={setFullName}
+                                                onChange={(e) => setFullName(e.target.value)}
+                                                required
+                                                className="h-12 bg-white/5 border-2 border-white/10 text-white placeholder:text-white/10 focus:bg-white/10 focus:border-orange-500/50 focus:ring-0 rounded-2xl transition-all font-mono text-sm pl-4"
                                             />
-                                        </motion.div>
-                                    )}
-                                </AnimatePresence>
+                                        </div>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
 
-                                <NeoField
-                                    id="email"
-                                    label="E-posta"
-                                    icon={Mail}
+                            <div className="space-y-2">
+                                <Label className="text-[10px] font-black uppercase text-white/40 pl-2 tracking-widest">E-Posta</Label>
+                                <Input
                                     type="email"
                                     placeholder="mail@ornek.com"
                                     value={email}
-                                    autoComplete="email"
-                                    onChange={setEmail}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    required
+                                    className="h-12 bg-white/5 border-2 border-white/10 text-white placeholder:text-white/10 focus:bg-white/10 focus:border-orange-500/50 focus:ring-0 rounded-2xl transition-all font-mono text-sm pl-4"
                                 />
+                            </div>
 
-                                <div className="space-y-2">
-                                    <div className="flex items-center justify-between gap-3 px-1">
-                                        <Label htmlFor="password" className="text-[12px] font-black uppercase tracking-[0.12em] text-zinc-200">
-                                            Şifre
-                                        </Label>
-                                        {!isSignUp && (
-                                            <Link
-                                                href="/forgot-password"
-                                                className="rounded-md text-[12px] font-black uppercase tracking-[0.08em] text-[#ffcc18] underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#ffcc18]/60"
-                                            >
-                                                Unuttum?
-                                            </Link>
-                                        )}
-                                    </div>
-                                    <div className="relative">
-                                        <Lock className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-black" aria-hidden="true" />
-                                        <Input
-                                            id="password"
-                                            type={showPassword ? "text" : "password"}
-                                            value={password}
-                                            onChange={(e) => setPassword(e.target.value)}
+                            <div className="space-y-2">
+                                <div className="flex justify-between items-center pl-2">
+                                    <Label className="text-[10px] font-black uppercase text-white/40 tracking-widest">Şifre</Label>
+                                    {!isSignUp && (
+                                        <Link
+                                            href="/forgot-password"
+                                            className="text-[10px] font-black text-orange-500/60 hover:text-orange-500 transition-colors uppercase"
+                                        >
+                                            Unuttum?
+                                        </Link>
+                                    )}
+                                </div>
+                                <div className="relative">
+                                    <Input
+                                        type={showPassword ? "text" : "password"}
+                                        value={password}
+                                        onChange={(e) => setPassword(e.target.value)}
+                                        required
+                                        className="h-12 bg-white/5 border-2 border-white/10 text-white placeholder:text-white/10 focus:bg-white/10 focus:border-orange-500/50 focus:ring-0 pr-12 rounded-2xl transition-all font-mono text-sm pl-4"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowPassword(!showPassword)}
+                                        className="absolute right-4 top-1/2 -translate-y-1/2 text-white/20 hover:text-white transition-colors"
+                                    >
+                                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                                    </button>
+                                </div>
+                            </div>
+
+                            {/* Terms Checkbox */}
+                            <AnimatePresence>
+                                {isSignUp && (
+                                    <motion.div
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
+                                        exit={{ opacity: 0 }}
+                                        className="flex items-start gap-3 py-1 px-2"
+                                    >
+                                        <input
+                                            type="checkbox"
+                                            id="terms"
+                                            className="appearance-none w-5 h-5 border-2 border-white/20 bg-white/5 rounded-lg checked:bg-orange-600 checked:border-orange-600 transition-colors cursor-pointer mt-0.5 shrink-0"
                                             required
-                                            autoComplete={isSignUp ? "new-password" : "current-password"}
-                                            className="h-14 rounded-[16px] border-[3px] border-black bg-white pl-12 pr-14 text-base font-black text-black shadow-[4px_4px_0_#000] placeholder:text-zinc-400 focus-visible:ring-4 focus-visible:ring-[#ffcc18]/60"
+                                            onInvalid={(e) => (e.target as HTMLInputElement).setCustomValidity('Lütfen şartları kabul edin.')}
+                                            onInput={(e) => (e.target as HTMLInputElement).setCustomValidity('')}
                                         />
-                                        <button
-                                            type="button"
-                                            onClick={() => setShowPassword(!showPassword)}
-                                            aria-label={showPassword ? "Şifreyi gizle" : "Şifreyi göster"}
-                                            className="absolute right-2.5 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-xl border-2 border-black bg-[#f4f4f5] text-black shadow-[2px_2px_0_#000] transition-all hover:bg-[#ffcc18] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#ffcc18]/60 active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
-                                        >
-                                            {showPassword ? <EyeOff className="h-5 w-5" aria-hidden="true" /> : <Eye className="h-5 w-5" aria-hidden="true" />}
-                                        </button>
-                                    </div>
-                                </div>
+                                        <label htmlFor="terms" className="text-[10px] text-white/40 leading-relaxed font-bold cursor-pointer select-none uppercase tracking-tighter">
+                                            <span className="text-orange-500 hover:text-orange-400 transition-colors">Kullanım Şartlarını</span> okudum ve kabul ediyorum.
+                                        </label>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
 
-                                <AnimatePresence>
-                                    {isSignUp && (
-                                        <motion.div
-                                            initial={{ opacity: 0, y: -4 }}
-                                            animate={{ opacity: 1, y: 0 }}
-                                            exit={{ opacity: 0, y: -4 }}
-                                            className="rounded-[16px] border-2 border-zinc-700 bg-black/35 p-3"
-                                        >
-                                            <label htmlFor="terms" className="flex cursor-pointer items-start gap-3 text-xs font-bold leading-5 text-zinc-300">
-                                                <input
-                                                    id="terms"
-                                                    type="checkbox"
-                                                    required
-                                                    onInvalid={(e) => (e.target as HTMLInputElement).setCustomValidity("Lütfen şartları kabul edin.")}
-                                                    onInput={(e) => (e.target as HTMLInputElement).setCustomValidity("")}
-                                                    className="mt-0.5 h-5 w-5 shrink-0 accent-[#ffcc18]"
-                                                />
-                                                <span>
-                                                    <span className="font-black text-[#ffcc18]">Kullanım şartlarını</span> okudum ve kabul ediyorum.
-                                                </span>
-                                            </label>
-                                        </motion.div>
-                                    )}
-                                </AnimatePresence>
+                            {/* Turnstile */}
+                            <div className="flex justify-center my-4 opacity-80 scale-90 translate-z-0 filter drop-shadow-[0_0_15px_rgba(255,255,255,0.1)]">
+                                <div className="cf-turnstile"
+                                    data-sitekey="0x4AAAAAACI_a8NNCjdtVnjC"
+                                    data-callback="onTurnstileSuccess"
+                                    data-theme="dark"
+                                />
+                            </div>
 
-                                <div className="rounded-[18px] border-[3px] border-black bg-[#252529] p-3 shadow-[4px_4px_0_#000]">
-                                    <div className="mb-2 flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.12em] text-zinc-300">
-                                        <ShieldCheck className="h-4 w-4 text-emerald-400" aria-hidden="true" />
-                                        Güvenlik kontrolü
-                                    </div>
-                                    <div className="flex min-h-[58px] origin-top justify-center overflow-hidden rounded-xl bg-[#101012] py-2 scale-[0.86] min-[380px]:scale-[0.92] sm:scale-100">
-                                        <div
-                                            className="cf-turnstile"
-                                            data-sitekey="0x4AAAAAACI_a8NNCjdtVnjC"
-                                            data-callback="onTurnstileSuccess"
-                                            data-theme="dark"
-                                        />
-                                    </div>
-                                </div>
+                            <Button
+                                type="submit"
+                                disabled={loading}
+                                className="w-full h-12 bg-orange-600 hover:bg-orange-500 text-white font-black uppercase tracking-[0.2em] text-sm rounded-2xl border-4 border-black shadow-[0_10px_30px_rgba(234,88,12,0.2)] hover:shadow-[0_15px_40px_rgba(234,88,12,0.3)] active:translate-y-1 transition-all flex items-center justify-center gap-3"
+                            >
+                                {loading ? (
+                                    <Loader2 className="h-6 w-6 animate-spin text-white" />
+                                ) : (
+                                    <>
+                                        {isSignUp ? "Terminale Katıl" : "Giriş Yap"}
+                                        <ArrowRight className="h-4 w-4" />
+                                    </>
+                                )}
+                            </Button>
+                        </form>
 
-                                <Button
-                                    type="submit"
-                                    disabled={loading}
-                                    className="h-14 w-full rounded-[18px] border-[4px] border-black bg-[#ffcc18] text-base font-black uppercase tracking-[0.16em] text-black shadow-[6px_6px_0_#000] transition-all hover:-translate-y-0.5 hover:bg-[#ffd84d] hover:shadow-[7px_7px_0_#000] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none disabled:opacity-70"
-                                >
-                                    {loading ? (
-                                        <Loader2 className="h-6 w-6 animate-spin" aria-hidden="true" />
-                                    ) : (
-                                        <>
-                                            {authModeLabel}
-                                            <ArrowRight className="h-5 w-5 stroke-[3px]" aria-hidden="true" />
-                                        </>
-                                    )}
-                                </Button>
-                            </form>
+                        {/* Toggle - Refined & Lifted */}
+                        <div className="mt-4 text-center">
+                            <button
+                                type="button"
+                                onClick={() => setIsSignUp(!isSignUp)}
+                                className="group/toggle px-4 py-2 rounded-full hover:bg-white/5 transition-colors"
+                            >
+                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/20 group-hover/toggle:text-white/60 transition-colors">
+                                    {isSignUp ? "Zaten bir hesabın var mı?" : "Henüz bir üye aramıza katılmadı mı?"}
+                                </span>
+                            </button>
                         </div>
                     </div>
+
+                    {/* Exterior Glass Highlights */}
+                    <div className="absolute -top-10 -right-10 w-40 h-40 bg-white/5 blur-3xl rounded-full pointer-events-none" />
                 </div>
-
-                <button
-                    type="button"
-                    onClick={() => setIsSignUp(!isSignUp)}
-                    className="mx-auto rounded-full px-3 py-2 text-center text-[12px] font-black uppercase tracking-[0.16em] text-zinc-400 transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#ffcc18]/60"
-                >
-                    {isSignUp ? "Zaten hesabın var mı? Giriş yap" : "Henüz üye değil misin? Katıl"}
-                </button>
-            </motion.section>
-        </main>
-    );
-}
-
-function getErrorMessage(error: unknown) {
-    return error instanceof Error ? error.message : "";
-}
-
-type NeoFieldProps = {
-    id: string;
-    label: string;
-    icon: typeof Mail;
-    value: string;
-    onChange: (value: string) => void;
-    type?: string;
-    placeholder?: string;
-    autoComplete?: string;
-};
-
-function NeoField({ id, label, icon: Icon, value, onChange, type = "text", placeholder, autoComplete }: NeoFieldProps) {
-    return (
-        <div className="space-y-2">
-            <Label htmlFor={id} className="px-1 text-[12px] font-black uppercase tracking-[0.12em] text-zinc-200">
-                {label}
-            </Label>
-            <div className="relative">
-                <Icon className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-black" aria-hidden="true" />
-                <Input
-                    id={id}
-                    type={type}
-                    value={value}
-                    onChange={(e) => onChange(e.target.value)}
-                    required
-                    placeholder={placeholder}
-                    autoComplete={autoComplete}
-                    className="h-14 rounded-[16px] border-[3px] border-black bg-white pl-12 pr-4 text-base font-black text-black shadow-[4px_4px_0_#000] placeholder:text-zinc-400 focus-visible:ring-4 focus-visible:ring-[#ffcc18]/60"
-                />
-            </div>
+            </motion.div>
         </div>
-    );
-}
-
-function GoogleMark({ className }: { className?: string }) {
-    return (
-        <svg className={className} viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
-            <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
-            <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" />
-            <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
-        </svg>
     );
 }
