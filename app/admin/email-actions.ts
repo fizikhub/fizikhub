@@ -51,7 +51,7 @@ function buildArticleEmailHtml(article: { title: string; slug: string; excerpt?:
     }
 
     const contentPadding = coverImage ? '20px' : '6px';
-    const excerptText = article.excerpt || "Fizikhub'da yepyeni bir makale yayınlandı. Hemen okumaya başla!";
+    const excerptText = article.excerpt || "FizikHub'da yepyeni bir makale yayınlandı. Hemen okumaya başla!";
 
     const parts = [
         '<!DOCTYPE html>',
@@ -164,7 +164,7 @@ function buildArticleEmailHtml(article: { title: string; slug: string; excerpt?:
         '</tr>',
         '<tr>',
         '<td class="bg-card" style="padding:16px 26px 20px;text-align:center;background-color:#1a1a1a;">',
-        '<p class="text-gray" style="margin:0 0 4px;font-size:11px;color:#555555;line-height:1.5;">Bu e-postayı Fizikhub bildirimleriniz açık olduğu için aldınız.</p>',
+        '<p class="text-gray" style="margin:0 0 4px;font-size:11px;color:#555555;line-height:1.5;">Bu e-postayı FizikHub bildirimleriniz açık olduğu için aldınız.</p>',
         '<a href="https://www.fizikhub.com/profil" class="text-yellow" style="font-size:11px;color:#fbbf24;text-decoration:none;font-weight:600;">Bildirim ayarlarını değiştir</a>',
         '</td>',
         '</tr>',
@@ -241,7 +241,7 @@ export async function sendArticleNotificationEmail(articleId: number) {
         const htmlContent = buildArticleEmailHtml(article);
 
         // 4. Send emails in batches using Resend Batch API
-        const FROM_EMAIL = 'Fizikhub <bildirim@fizikhub.com>';
+        const FROM_EMAIL = 'FizikHub <bildirim@fizikhub.com>';
 
         const emailObjects = toAddresses.map(email => ({
             from: FROM_EMAIL,
