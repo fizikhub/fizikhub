@@ -18,12 +18,20 @@ export const revalidate = 3600;
 
 const TERM_ARTICLE_SLUGS: Record<string, string[]> = {
     entropi: ["entropi-nedir-evrenin-sonu-nasil-gelecek-1767534266662"],
+    "planck-sabiti": ["kuantum-fiziginin-baslangici-kara-cisim-isimasi-1766099948990"],
     "siyah-cisim": ["kuantum-fiziginin-baslangici-kara-cisim-isimasi-1766099948990"],
     "kara-cisim": ["kuantum-fiziginin-baslangici-kara-cisim-isimasi-1766099948990"],
     "siyah-cisim-isimasi": ["kuantum-fiziginin-baslangici-kara-cisim-isimasi-1766099948990"],
     "kara-cisim-isimasi": ["kuantum-fiziginin-baslangici-kara-cisim-isimasi-1766099948990"],
     "periyodik-hareket": ["fizikte-ritmi-yakalamak-basit-harmonik-hareket-nedir-mk9qw6u9gcj"],
     "basit-harmonik-hareket": ["fizikte-ritmi-yakalamak-basit-harmonik-hareket-nedir-mk9qw6u9gcj"],
+    "harmonik-hareket": ["fizikte-ritmi-yakalamak-basit-harmonik-hareket-nedir-mk9qw6u9gcj"],
+    "karanlik-madde": ["karanlik-madde-nedir-nasil-gorunur"],
+    "fotoelektrik-olay": ["klasik-fizige-vurulan-ikinci-darbe-fotoelektrik-olay-1766621600619"],
+    karadelik: ["kara-delige-dusersek-ne-olur-1766107168421"],
+    "olay-ufku": ["kara-delige-dusersek-ne-olur-1766107168421"],
+    "standart-model": ["parcacik-fizigine-giris-evrenin-perde-arkasi-1767186788291"],
+    "kizila-kayma": ["evrenin-derinliklerine-bakis-james-webb-uzay-teleskobu"],
 };
 
 function truncateAtWordBoundary(text: string, limit: number) {

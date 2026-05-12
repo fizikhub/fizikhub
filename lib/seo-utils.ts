@@ -50,10 +50,39 @@ export function buildMetaDescription(
 
 export function isLikelyIndexableTitle(title: string | null | undefined) {
     const clean = stripMarkdownForMeta(title).trim();
+    const lower = clean.toLocaleLowerCase("tr-TR");
 
     if (clean.length < 4) return false;
     if (/^(.)\1+$/i.test(clean)) return false;
     if (/^[\d\W_]+$/.test(clean)) return false;
+    if (/^(test|deneme|taslak|lorem ipsum)$/i.test(lower)) return false;
+    if (lower.startsWith("lorem ipsum")) return false;
+
+    return true;
+}
+
+export function hasUsefulIndexableText(value: string | null | undefined, minLength = 80) {
+    const clean = stripMarkdownForMeta(value);
+    const lower = clean.toLocaleLowerCase("tr-TR");
+
+    if (clean.length < minLength) return false;
+    if (lower.includes("lorem ipsum dolor sit amet")) return false;
+
+    return true;
+}
+
+export function isLikelyIndexableArticle(article: {
+    title?: string | null;
+    slug?: string | null;
+    category?: string | null;
+    excerpt?: string | null;
+    content?: string | null;
+}) {
+    if (!article.slug || !isLikelyIndexableTitle(article.title)) return false;
+    if (article.category === "Terim") return false;
+
+    const visibleText = [article.excerpt, article.content].filter(Boolean).join(" ");
+    if (visibleText && !hasUsefulIndexableText(visibleText, 40)) return false;
 
     return true;
 }

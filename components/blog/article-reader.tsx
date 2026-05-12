@@ -252,6 +252,7 @@ export function ArticleReader({
                                 fontSize={fontSize}
                                 fontFamily={fontFamily}
                                 isZenMode={isZenMode}
+                                demoteH1
                             />
                         </div>
 

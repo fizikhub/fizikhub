@@ -4,7 +4,7 @@ import { simulations } from '@/components/simulations/data';
 import { slugify } from '@/lib/slug';
 import { getDictionaryTerms } from '@/lib/api';
 import { SEO_PRIORITY_SLUG_SET } from '@/lib/seo-priority';
-import { getSiteUrl, isLikelyIndexableTitle, toAbsoluteUrl } from '@/lib/seo-utils';
+import { getSiteUrl, hasUsefulIndexableText, isLikelyIndexableArticle, isLikelyIndexableTitle, toAbsoluteUrl } from '@/lib/seo-utils';
 
 export const revalidate = 3600; // Revalidate sitemap every hour
 
@@ -105,7 +105,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
         supabase
             .from('articles')
-            .select('slug, title, created_at, category, cover_url, image_url')
+            .select('slug, title, excerpt, created_at, category, cover_url, image_url')
             .eq('status', 'published')
             .order('created_at', { ascending: false })
             .limit(1000),
@@ -129,16 +129,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }));
 
     const articlePages: MetadataRoute.Sitemap = (articlesResult.data || []).flatMap((article) => {
-        if (!article.slug || article.category === 'Terim' || !isLikelyIndexableTitle(article.title)) return [];
+        const slug = article.slug;
+        if (!slug || !isLikelyIndexableArticle(article)) return [];
 
         let urlPrefix = 'makale';
         if (article.category === 'Deney') urlPrefix = 'deney';
         const imageUrl = toAbsoluteUrl(article.cover_url || article.image_url, baseUrl);
-        const fallbackImageUrl = `${baseUrl}/api/og?title=${encodeURIComponent(article.title || article.slug)}`;
-        const isPriorityArticle = SEO_PRIORITY_SLUG_SET.has(article.slug);
+        const fallbackImageUrl = `${baseUrl}/api/og?title=${encodeURIComponent(article.title || slug)}`;
+        const isPriorityArticle = SEO_PRIORITY_SLUG_SET.has(slug);
 
         return [{
-            url: `${baseUrl}/${urlPrefix}/${article.slug}`,
+            url: `${baseUrl}/${urlPrefix}/${slug}`,
             lastModified: toLastModified(article.created_at),
             changeFrequency: 'weekly' as const,
             priority: isPriorityArticle ? 0.95 : 0.85,
@@ -146,12 +147,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         }];
     });
 
-    const termPages: MetadataRoute.Sitemap = terms.map((term) => ({
-        url: `${baseUrl}/sozluk/${slugify(term.term)}`,
-        lastModified: toLastModified(term.created_at),
-        changeFrequency: 'monthly' as const,
-        priority: 0.65,
-    }));
+    const termPages: MetadataRoute.Sitemap = terms
+        .filter((term) => isLikelyIndexableTitle(term.term) && hasUsefulIndexableText(term.definition, 40))
+        .map((term) => ({
+            url: `${baseUrl}/sozluk/${slugify(term.term)}`,
+            lastModified: toLastModified(term.created_at),
+            changeFrequency: 'monthly' as const,
+            priority: 0.65,
+        }));
 
     const quizPages: MetadataRoute.Sitemap = (quizzesResult.data || []).map((quiz) => ({
         url: `${baseUrl}/testler/${quiz.slug}`,

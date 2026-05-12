@@ -19,6 +19,7 @@ interface MarkdownRendererProps {
     fontSize?: 'sm' | 'base' | 'lg' | 'xl';
     fontFamily?: 'sans' | 'serif';
     isZenMode?: boolean;
+    demoteH1?: boolean;
 }
 
 export function MarkdownRenderer({
@@ -26,7 +27,8 @@ export function MarkdownRenderer({
     className,
     fontSize = 'base',
     fontFamily = 'serif',
-    isZenMode = false
+    isZenMode = false,
+    demoteH1 = false
 }: MarkdownRendererProps) {
     // Preprocess content: convert HTML math nodes to proper LaTeX notation
     // The Tiptap editor stores math as <span data-type="math" data-latex="..."></span>
@@ -137,6 +139,13 @@ export function MarkdownRenderer({
                     rehypeHighlight,
                 ]}
                 components={{
+                    h1: ({ node, ...props }) => {
+                        if (demoteH1) {
+                            return <h2 {...props} />;
+                        }
+
+                        return <h1 {...props} />;
+                    },
                     // Only override p to handle block elements (img/video/iframe inside <p>)
                     p: ({ node, children, ...props }) => {
                         const hasBlockElement = node?.children?.some((child: any) =>

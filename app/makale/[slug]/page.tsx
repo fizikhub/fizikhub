@@ -26,7 +26,14 @@ function toMetaDescription(article: any) {
 }
 
 function ArticleSearchIntentBlock({ override, currentSlug }: { override: SeoIntentArticle; currentSlug: string }) {
-    const relatedArticles = SEO_PRIORITY_ARTICLES.filter((article) => article.slug !== currentSlug);
+    const configuredRelatedArticles = override.relatedSlugs
+        .map((slug) => SEO_PRIORITY_ARTICLES.find((article) => article.slug === slug))
+        .filter(Boolean) as SeoIntentArticle[];
+    const fallbackRelatedArticles = SEO_PRIORITY_ARTICLES.filter((article) => article.slug !== currentSlug);
+    const relatedArticles = [
+        ...configuredRelatedArticles,
+        ...fallbackRelatedArticles.filter((article) => !configuredRelatedArticles.some((related) => related.slug === article.slug)),
+    ].slice(0, 4);
 
     return (
         <section className="container mx-auto max-w-4xl px-4 pt-8">
@@ -38,7 +45,41 @@ function ArticleSearchIntentBlock({ override, currentSlug }: { override: SeoInte
                 <p className="mt-3 text-base font-medium leading-8 text-zinc-700 dark:text-zinc-300">
                     {override.summary}
                 </p>
-                <div className="mt-5 grid gap-4">
+
+                <div className="mt-6 grid gap-4 border-t border-zinc-200 pt-5 dark:border-zinc-800 sm:grid-cols-2">
+                    <div>
+                        <p className="text-xs font-black uppercase tracking-wider text-zinc-500">{override.formulaTitle}</p>
+                        <p className="mt-2 rounded-[8px] border border-zinc-300 bg-white px-3 py-2 font-mono text-sm font-black text-zinc-950 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50">
+                            {override.formula}
+                        </p>
+                        <p className="mt-2 text-sm leading-7 text-zinc-600 dark:text-zinc-400">{override.formulaExplanation}</p>
+                    </div>
+                    <div>
+                        <p className="text-xs font-black uppercase tracking-wider text-zinc-500">{override.exampleTitle}</p>
+                        <p className="mt-2 text-sm leading-7 text-zinc-600 dark:text-zinc-400">{override.example}</p>
+                    </div>
+                </div>
+
+                <div className="mt-6 border-t border-zinc-200 pt-5 dark:border-zinc-800">
+                    <h2 className="text-xl font-black tracking-normal text-zinc-950 dark:text-white">
+                        Bu konuda bilmen gereken alt başlıklar
+                    </h2>
+                    <div className="mt-3 flex flex-wrap gap-2">
+                        {override.subtopics.map((topic) => (
+                            <span
+                                key={topic}
+                                className="rounded-[7px] border border-zinc-300 bg-white px-2.5 py-1.5 text-xs font-black text-zinc-900 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100"
+                            >
+                                {topic}
+                            </span>
+                        ))}
+                    </div>
+                </div>
+
+                <div className="mt-6 grid gap-4 border-t border-zinc-200 pt-5 dark:border-zinc-800">
+                    <h2 className="text-xl font-black tracking-normal text-zinc-950 dark:text-white">
+                        Sık sorulan sorular
+                    </h2>
                     {override.questions.map((item) => (
                         <div key={item.question}>
                             <h3 className="text-base font-black text-zinc-950 dark:text-white">{item.question}</h3>
@@ -46,6 +87,7 @@ function ArticleSearchIntentBlock({ override, currentSlug }: { override: SeoInte
                         </div>
                     ))}
                 </div>
+
                 <div className="mt-6 grid gap-4 border-t border-zinc-200 pt-5 dark:border-zinc-800 sm:grid-cols-2">
                     <div>
                         <p className="text-xs font-black uppercase tracking-wider text-zinc-500">İlgili okumalar</p>
@@ -62,16 +104,24 @@ function ArticleSearchIntentBlock({ override, currentSlug }: { override: SeoInte
                         </div>
                     </div>
                     <div>
-                        <p className="text-xs font-black uppercase tracking-wider text-zinc-500">Aranan alt konular</p>
+                        <p className="text-xs font-black uppercase tracking-wider text-zinc-500">Terimler ve aranan alt konular</p>
                         <div className="mt-3 flex flex-wrap gap-2">
-                            {override.relatedQueries.map((query) => (
+                            {override.termLinks.map((link) => (
                                 <Link
+                                    key={link.href}
+                                    href={link.href}
+                                    className="rounded-[7px] border border-zinc-950 bg-[#FFC800] px-2.5 py-1.5 text-xs font-black text-black hover:bg-white"
+                                >
+                                    {link.label}
+                                </Link>
+                            ))}
+                            {override.relatedQueries.map((query) => (
+                                <span
                                     key={query}
-                                    href={`/ara?q=${encodeURIComponent(query)}`}
                                     className="rounded-[7px] border border-zinc-300 bg-white px-2.5 py-1.5 text-xs font-black text-zinc-900 hover:border-zinc-950 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100"
                                 >
                                     {query}
-                                </Link>
+                                </span>
                             ))}
                         </div>
                     </div>
@@ -234,15 +284,18 @@ export default async function ArticlePage({ params }: PageProps) {
         .in('id', userIds) : { data: [] };
 
     // Combine comments with profiles
-    const comments = commentsData?.map(comment => ({
-        ...comment,
-        profiles: profiles?.find(p => p.id === comment.user_id) || {
-            id: comment.user_id,
-            username: 'unknown',
-            full_name: null,
-            avatar_url: null
-        }
-    })) || [];
+    const comments = commentsData?.map(({ user_id, ...comment }) => {
+        const publicProfile = profiles?.find((profile) => profile.id === user_id);
+
+        return {
+            ...comment,
+            profiles: {
+                username: publicProfile?.username || 'unknown',
+                full_name: publicProfile?.full_name || null,
+                avatar_url: publicProfile?.avatar_url || null,
+            },
+        };
+    }) || [];
 
     // Calculate reading time
     const readingTime = calculateReadingTime(article.content || "");
@@ -257,6 +310,7 @@ export default async function ArticlePage({ params }: PageProps) {
     const articleImageUrl = toAbsoluteUrl(article.cover_url || (article as any).image_url, baseUrl) || `${baseUrl}/api/og?title=${encodeURIComponent(article.title)}`;
     const authorUrl = article.author?.username ? `${baseUrl}/kullanici/${article.author.username}` : baseUrl;
     const semanticTopics = intentOverride?.expandedKeywords || (articleTags && articleTags.length > 0 ? articleTags : [article.category || 'Fizik']);
+    const displayTitle = intentOverride?.h1 || article.title;
     const citations = references
         .map((reference: any) => reference.url || reference.title)
         .filter(Boolean);
@@ -264,10 +318,11 @@ export default async function ArticlePage({ params }: PageProps) {
     const jsonLd = [
         {
             '@context': 'https://schema.org',
-            '@type': 'Article',
+            '@type': 'BlogPosting',
             '@id': `${articleUrl}#article`,
             url: articleUrl,
-            headline: intentOverride?.metadataTitle || article.title,
+            headline: displayTitle,
+            alternativeHeadline: intentOverride ? article.title : undefined,
             description: articleDescription,
             image: {
                 '@type': 'ImageObject',
@@ -332,15 +387,13 @@ export default async function ArticlePage({ params }: PageProps) {
             '@type': 'WebPage',
             '@id': articleUrl,
             url: articleUrl,
-            name: intentOverride?.metadataTitle || article.title,
+            name: displayTitle,
             description: articleDescription,
             inLanguage: 'tr-TR',
             isPartOf: { '@id': `${baseUrl}/#website` },
             ...(intentOverride && {
                 mainEntity: {
-                    '@type': 'DefinedTerm',
-                    name: intentOverride.summaryTitle.replace(/\?$/, ''),
-                    description: intentOverride.summary,
+                    '@id': `${articleUrl}#defined-term`,
                 },
             }),
             primaryImageOfPage: {
@@ -349,6 +402,20 @@ export default async function ArticlePage({ params }: PageProps) {
             },
             breadcrumb: { '@id': `${articleUrl}#breadcrumb` },
         },
+        ...(intentOverride ? [{
+            '@context': 'https://schema.org',
+            '@type': 'DefinedTerm',
+            '@id': `${articleUrl}#defined-term`,
+            name: intentOverride.summaryTitle.replace(/\?$/, ''),
+            description: intentOverride.summary,
+            inDefinedTermSet: {
+                '@type': 'DefinedTermSet',
+                name: 'Fizikhub Bilim Sözlüğü',
+                url: `${baseUrl}/sozluk`,
+            },
+            url: articleUrl,
+            inLanguage: 'tr-TR',
+        }] : []),
         {
             '@context': 'https://schema.org',
             '@type': 'BreadcrumbList',
@@ -356,7 +423,7 @@ export default async function ArticlePage({ params }: PageProps) {
             itemListElement: [
                 { '@type': 'ListItem', position: 1, name: 'Ana Sayfa', item: baseUrl },
                 { '@type': 'ListItem', position: 2, name: 'Makaleler', item: `${baseUrl}/makale` },
-                { '@type': 'ListItem', position: 3, name: intentOverride?.metadataTitle || article.title, item: articleUrl },
+                { '@type': 'ListItem', position: 3, name: displayTitle, item: articleUrl },
             ],
         },
         ...(intentOverride ? [{
@@ -391,7 +458,7 @@ export default async function ArticlePage({ params }: PageProps) {
                         <div className="container max-w-4xl mx-auto px-4 py-10">
                             <h1 className="text-3xl font-black mb-4">{article.title}</h1>
                             <div className="prose dark:prose-invert max-w-none">
-                                <MarkdownRenderer content={article.content || ""} />
+                                <MarkdownRenderer content={article.content || ""} demoteH1 />
                             </div>
                         </div>
                     }>
@@ -411,7 +478,7 @@ export default async function ArticlePage({ params }: PageProps) {
                         <div className="container max-w-4xl mx-auto px-4 py-10">
                             <h1 className="text-3xl font-black mb-4">{article.title}</h1>
                             <div className="prose dark:prose-invert max-w-none">
-                                <MarkdownRenderer content={article.content || ""} />
+                                <MarkdownRenderer content={article.content || ""} demoteH1 />
                             </div>
                         </div>
                     }>
@@ -426,7 +493,12 @@ export default async function ArticlePage({ params }: PageProps) {
                 ) : (
                     <>
                         {/* Hero is OUTSIDE error boundary — always visible (static JSX, no JS risk) */}
-                        <NeoArticleHero article={article} readingTime={formattedReadingTime} />
+                        <NeoArticleHero
+                            article={article}
+                            readingTime={formattedReadingTime}
+                            titleOverride={intentOverride?.h1}
+                            introOverride={intentOverride?.summary}
+                        />
 
                         {intentOverride && <ArticleSearchIntentBlock override={intentOverride} currentSlug={article.slug} />}
 
@@ -434,7 +506,7 @@ export default async function ArticlePage({ params }: PageProps) {
                         <ArticleErrorBoundary fallback={
                             <div className="container max-w-4xl mx-auto px-4 py-10">
                                 <div className="prose dark:prose-invert max-w-none">
-                                    <MarkdownRenderer content={article.content || ""} />
+                                    <MarkdownRenderer content={article.content || ""} demoteH1 />
                                 </div>
                             </div>
                         }>

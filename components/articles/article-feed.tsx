@@ -328,13 +328,7 @@ function ReadingRoute({ articles }: { articles: LibraryArticle[] }) {
     );
 }
 
-function SearchOpportunityRoute({ articles }: { articles: LibraryArticle[] }) {
-    const priorityArticles = SEO_PRIORITY_ARTICLES
-        .map((priority) => articles.find((article) => article.slug === priority.slug))
-        .filter(Boolean) as LibraryArticle[];
-
-    if (priorityArticles.length === 0) return null;
-
+function SearchOpportunityRoute() {
     return (
         <div className="min-w-0 rounded-[8px] border-[3px] border-black bg-[#ffcc00] p-2 text-black shadow-[4px_4px_0_#000] sm:p-3 sm:shadow-[6px_6px_0_#000]">
             <div className="mb-2 flex items-center gap-2 px-1 text-[9px] font-black uppercase tracking-[0.2em] sm:mb-3 sm:text-[10px]">
@@ -342,25 +336,21 @@ function SearchOpportunityRoute({ articles }: { articles: LibraryArticle[] }) {
                 Google'da Arananlar
             </div>
             <div className="grid gap-2">
-                {priorityArticles.map((article) => {
-                    const priority = SEO_PRIORITY_ARTICLES.find((item) => item.slug === article.slug);
-
-                    return (
-                        <Link
-                            key={article.id}
-                            href={`/makale/${article.slug}`}
-                            className="group/priority rounded-[7px] border-2 border-black bg-white px-3 py-2 text-xs font-black transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0_#000]"
-                        >
-                            <span className="line-clamp-2">{priority?.title || article.title}</span>
-                            <span className="mt-1 line-clamp-2 text-[10px] font-bold leading-snug text-zinc-600">
-                                {priority?.description || article.excerpt}
-                            </span>
-                            <span className="mt-1 flex items-center gap-1 text-[9px] uppercase tracking-widest text-zinc-600">
-                                Hedef konu <ArrowRight className="h-3 w-3 transition-transform group-hover/priority:translate-x-1" />
-                            </span>
-                        </Link>
-                    );
-                })}
+                {SEO_PRIORITY_ARTICLES.slice(0, 6).map((article) => (
+                    <Link
+                        key={article.slug}
+                        href={`/makale/${article.slug}`}
+                        className="group/priority rounded-[7px] border-2 border-black bg-white px-3 py-2 text-xs font-black transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0_#000]"
+                    >
+                        <span className="line-clamp-2">{article.title}</span>
+                        <span className="mt-1 line-clamp-2 text-[10px] font-bold leading-snug text-zinc-600">
+                            {article.description}
+                        </span>
+                        <span className="mt-1 flex items-center gap-1 text-[9px] uppercase tracking-widest text-zinc-600">
+                            Hedef konu <ArrowRight className="h-3 w-3 transition-transform group-hover/priority:translate-x-1" />
+                        </span>
+                    </Link>
+                ))}
             </div>
         </div>
     );
@@ -514,7 +504,7 @@ export function ArticleFeed({ articles, categories, activeCategory, sortParam, s
 
                     <div className="grid min-w-0 gap-3">
                         <CategoryShelf categories={visibleCategories} activeCategory={activeCategory} searchQuery={searchQuery} />
-                        <SearchOpportunityRoute articles={sortedArticles} />
+                        <SearchOpportunityRoute />
                         <ReadingRoute articles={routeArticles} />
                     </div>
                 </section>

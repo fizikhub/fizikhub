@@ -15,7 +15,7 @@ const getCachedProfile = cache(async (username: string) => {
     const supabase = createStaticClient();
     const { data: profile } = await supabase
         .from('profiles')
-        .select('*')
+        .select('id, username, full_name, avatar_url, cover_url, bio, website, location, created_at, updated_at, reputation, role, is_writer, is_verified, level, xp_current, xp_next')
         .eq('username', username)
         .maybeSingle();
     return profile;
@@ -104,7 +104,7 @@ export default async function PublicProfilePage({ params }: PageProps) {
         // 4. User articles
         supabase
             .from('articles')
-            .select('*, profiles(full_name, avatar_url, username)')
+            .select('id, title, slug, excerpt, summary, content, cover_url, image_url, category, created_at, likes_count, comments_count, profiles(full_name, avatar_url, username)')
             .eq('author_id', profile.id)
             .eq('status', 'published')
             .order('created_at', { ascending: false }),
@@ -112,7 +112,7 @@ export default async function PublicProfilePage({ params }: PageProps) {
         // 5. User questions
         supabase
             .from('questions')
-            .select('*, profiles(full_name, avatar_url, username)')
+            .select('id, title, content, created_at, category, votes, tags, profiles(full_name, avatar_url, username)')
             .eq('author_id', profile.id)
             .order('created_at', { ascending: false }),
 

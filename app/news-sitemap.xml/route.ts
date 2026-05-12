@@ -1,5 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
-import { getSiteUrl, isLikelyIndexableTitle, toAbsoluteUrl } from '@/lib/seo-utils';
+import { getSiteUrl, isLikelyIndexableArticle, toAbsoluteUrl } from '@/lib/seo-utils';
 
 export const revalidate = 900;
 
@@ -19,7 +19,6 @@ function getArticleUrl(baseUrl: string, article: { slug: string; category?: stri
     let urlPrefix = 'makale';
 
     if (article.category === 'Deney') urlPrefix = 'deney';
-    else if (article.category === 'Kitap İncelemesi') urlPrefix = 'kitap-inceleme';
 
     return `${baseUrl}/${urlPrefix}/${article.slug}`;
 }
@@ -35,7 +34,7 @@ export async function GET() {
 
     const { data: articles } = await supabase
         .from('articles')
-        .select('title, slug, category, created_at, cover_url, image_url')
+        .select('title, slug, excerpt, category, created_at, cover_url, image_url')
         .eq('status', 'published')
         .not('slug', 'is', null)
         .neq('category', 'Terim')
@@ -44,10 +43,11 @@ export async function GET() {
         .limit(1000);
 
     const urls = (articles || [])
-        .filter((article) => article.slug && article.title && article.created_at)
-        .filter((article) => isLikelyIndexableTitle(article.title))
-        .map((article) => {
-            const articleUrl = getArticleUrl(baseUrl, article);
+        .flatMap((article) => {
+            if (!article.slug || !article.created_at || !isLikelyIndexableArticle(article)) return [];
+
+            const articleUrl = getArticleUrl(baseUrl, { ...article, slug: article.slug });
+            const title = article.title || article.slug;
             const imageUrl = toAbsoluteUrl(article.cover_url || article.image_url, baseUrl);
             const imageXml = imageUrl
                 ? `
@@ -64,7 +64,7 @@ export async function GET() {
         <news:language>${PUBLICATION_LANGUAGE}</news:language>
       </news:publication>
       <news:publication_date>${new Date(article.created_at).toISOString()}</news:publication_date>
-      <news:title>${escapeXml(article.title)}</news:title>
+      <news:title>${escapeXml(title)}</news:title>
     </news:news>${imageXml}
   </url>`;
         })

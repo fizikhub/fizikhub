@@ -1,5 +1,3 @@
-"use client";
-
 import Image from "next/image";
 import Link from "next/link";
 import { format } from "date-fns";
@@ -10,11 +8,14 @@ import { ArrowLeft, Calendar, Clock, Tag } from "lucide-react";
 interface NeoArticleHeroProps {
     article: Article;
     readingTime: string;
+    titleOverride?: string;
+    introOverride?: string;
 }
 
-export function NeoArticleHero({ article, readingTime }: NeoArticleHeroProps) {
+export function NeoArticleHero({ article, readingTime, titleOverride, introOverride }: NeoArticleHeroProps) {
     const authorName = article.author?.full_name || article.author?.username || "FizikHub Editörü";
     const authorAvatar = article.author?.avatar_url || "/images/default-avatar.png";
+    const displayTitle = titleOverride || article.title;
 
     return (
         <div className="w-full mb-0 relative overflow-hidden">
@@ -40,7 +41,7 @@ export function NeoArticleHero({ article, readingTime }: NeoArticleHeroProps) {
                     <div className="relative w-[calc(100vw-2rem)] sm:w-full max-w-full aspect-[16/9] rounded-lg sm:rounded-2xl border-[3px] sm:border-4 border-black dark:border-zinc-700 overflow-hidden shadow-[3px_3px_0px_0px_#000] sm:shadow-[8px_8px_0px_0px_#000] dark:shadow-[3px_3px_0px_0px_rgba(0,0,0,0.6)] sm:dark:shadow-[8px_8px_0px_0px_rgba(0,0,0,0.8)] bg-zinc-100 group mb-5 sm:mb-8">
                         <Image
                             src={article.cover_url || (article as { image_url?: string }).image_url || ''}
-                            alt={article.title}
+                            alt={displayTitle}
                             fill
                             className="object-cover group-hover:scale-[1.02] transition-transform duration-500"
                             priority
@@ -65,8 +66,14 @@ export function NeoArticleHero({ article, readingTime }: NeoArticleHeroProps) {
 
                     {/* Title */}
                     <h1 className="w-[calc(100vw-2rem)] max-w-full sm:w-auto sm:max-w-3xl text-[2rem] sm:text-4xl lg:text-5xl font-black text-foreground leading-[1.08] tracking-normal break-words mb-4 sm:mb-6 selection:bg-[#FFC800] selection:text-black">
-                        {article.title}
+                        {displayTitle}
                     </h1>
+
+                    {introOverride && (
+                        <p className="mb-4 max-w-3xl text-base font-semibold leading-8 text-zinc-700 dark:text-zinc-300 sm:mb-6 sm:text-lg">
+                            {introOverride}
+                        </p>
+                    )}
 
                     {/* 4. META BAR — Compact Inline Layout */}
                     <div className="flex flex-wrap items-center gap-x-3 gap-y-2 sm:gap-4">

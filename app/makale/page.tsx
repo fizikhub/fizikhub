@@ -2,7 +2,8 @@ import { createClient as createBrowserClient } from "@supabase/supabase-js";
 import { ArticleFeed } from "@/components/articles/article-feed";
 import type { Metadata } from "next";
 import { unstable_cache } from "next/cache";
-import { isLikelyIndexableTitle } from "@/lib/seo-utils";
+import { SEO_PRIORITY_ARTICLES } from "@/lib/seo-priority";
+import { isLikelyIndexableArticle } from "@/lib/seo-utils";
 
 export const revalidate = 60;
 
@@ -22,10 +23,10 @@ export async function generateMetadata({ searchParams }: PageProps): Promise<Met
         : "https://www.fizikhub.com/makale";
     const title = category
         ? `${category} Makaleleri ve Bilimsel Yazılar`
-        : "Fizik Makaleleri, Bilimsel Yazılar ve Araştırmalar";
+        : "Fizik Makaleleri: Kuantum, Uzay, Entropi ve Bilim Yazıları";
     const description = category
         ? `${category} üzerine Türkçe bilimsel makaleler, popüler bilim yazıları ve FizikHub içerikleri.`
-        : "Kuantum fiziği, astrofizik, görelilik ve modern fizik üzerine Türkçe bilimsel makaleler. Akademik düzeyde yazılar ve popüler bilim içerikleri.";
+        : "Kuantum fiziği, astrofizik, görelilik, entropi ve temel fizik konularında sade, örnekli ve güncel Türkçe bilim makaleleri.";
 
     return {
         title,
@@ -118,7 +119,7 @@ const getCachedArticles = (category?: string, sort?: string, searchQuery?: strin
             console.error("Supabase Error fetching articles in Makale feed:", error, "Query details:", { category, sort });
             return [];
         }
-        return (data as FeedArticleRow[] | null)?.filter((article) => isLikelyIndexableTitle(article.title)).map((article) => ({
+        return (data as FeedArticleRow[] | null)?.filter((article) => isLikelyIndexableArticle(article)).map((article) => ({
             id: article.id,
             title: article.title,
             slug: article.slug,
@@ -195,6 +196,11 @@ export default async function MakalePage({ searchParams }: PageProps) {
             : "Fizik, uzay, kuantum, astrofizik ve popüler bilim üzerine Türkçe makale arşivi.",
         inLanguage: "tr-TR",
         isPartOf: { "@id": "https://www.fizikhub.com/#website" },
+        about: SEO_PRIORITY_ARTICLES.map((article) => ({
+            "@type": "Thing",
+            name: article.title,
+            url: `https://www.fizikhub.com/makale/${article.slug}`,
+        })),
         mainEntity: {
             "@type": "ItemList",
             itemListElement: (articles || []).slice(0, 24).map((article, index) => ({

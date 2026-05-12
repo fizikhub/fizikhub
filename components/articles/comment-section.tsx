@@ -14,7 +14,6 @@ interface Comment {
     created_at: string;
     parent_comment_id: number | null;
     profiles: {
-        id: string;
         username: string;
         full_name: string | null;
         avatar_url: string | null;

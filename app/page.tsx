@@ -7,6 +7,7 @@ import { FeedSkeleton } from "@/components/home/performance-skeletons";
 import { processFeedData, formatSliderArticles } from "@/lib/feed-helpers";
 import { SEO_PRIORITY_ARTICLES, SEO_PRIORITY_SLUGS } from "@/lib/seo-priority";
 import { LazyDesktopSidebar } from "@/components/home/lazy-desktop-sidebar";
+import { isLikelyIndexableArticle } from "@/lib/seo-utils";
 
 // Dynamic Imports (Client boundaries lazy loaded automatically)
 const ScrollProgress = dynamic(() => import("@/components/ui/scroll-progress").then(mod => mod.ScrollProgress));
@@ -111,8 +112,8 @@ const getCachedFeedData = unstable_cache(
         .limit(12)
     ]);
 
-    const latestArticles = articlesResult.data || [];
-    const priorityArticles = priorityArticlesResult.data || [];
+    const latestArticles = (articlesResult.data || []).filter((article: any) => isLikelyIndexableArticle(article));
+    const priorityArticles = (priorityArticlesResult.data || []).filter((article: any) => isLikelyIndexableArticle(article));
     const seenSlugs = new Set(priorityArticles.map((article: any) => article.slug));
 
     return {
@@ -181,23 +182,39 @@ export default async function Home() {
   // JSON-LD Structured Data for Homepage (ItemList)
   const jsonLd = {
     '@context': 'https://schema.org',
-    '@type': 'ItemList',
-    itemListElement: articles.map((article: any, index: number) => ({
-      '@type': 'ListItem',
-      position: index + 1,
-      item: {
-        '@type': 'Article',
-        url: `https://www.fizikhub.com/makale/${article.slug}`,
-        name: article.title,
-        headline: article.title,
-        image: article.cover_url || article.image_url || "https://www.fizikhub.com/og-image.jpg",
-        datePublished: article.created_at,
-        author: {
-          '@type': 'Person',
-          name: article.author?.full_name || article.author?.username || 'FizikHub Yazarı'
-        }
+    '@graph': [
+      {
+        '@type': 'CollectionPage',
+        '@id': 'https://www.fizikhub.com/#collection',
+        url: 'https://www.fizikhub.com',
+        name: 'Fizikhub Ana Sayfa',
+        description: 'Fizik, uzay, kuantum ve bilim içerikleri için güncel Türkçe keşif akışı.',
+        inLanguage: 'tr-TR',
+        isPartOf: { '@id': 'https://www.fizikhub.com/#website' },
+        mainEntity: { '@id': 'https://www.fizikhub.com/#latest-articles' },
+      },
+      {
+        '@type': 'ItemList',
+        '@id': 'https://www.fizikhub.com/#latest-articles',
+        name: 'Öne çıkan Fizikhub makaleleri',
+        itemListElement: articles.map((article: any, index: number) => ({
+          '@type': 'ListItem',
+          position: index + 1,
+          item: {
+            '@type': 'Article',
+            url: `https://www.fizikhub.com/makale/${article.slug}`,
+            name: article.title,
+            headline: article.title,
+            image: article.cover_url || article.image_url || "https://www.fizikhub.com/og-image.jpg",
+            datePublished: article.created_at,
+            author: {
+              '@type': 'Person',
+              name: article.author?.full_name || article.author?.username || 'FizikHub Yazarı'
+            }
+          }
+        }))
       }
-    }))
+    ]
   };
 
   return (

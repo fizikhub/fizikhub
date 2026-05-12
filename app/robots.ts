@@ -25,7 +25,7 @@ export default function robots(): MetadataRoute.Robots {
     ];
 
     const commonDisallow = [...privateDisallow, ...cleanupDisallow];
-    const publicAllow = ['/', '/api/og'];
+    const publicAllow = ['/', '/api/og', '/opengraph-image', '/og-image.jpg', '/icon-512.png', '/new-logo.svg', '/_next/image'];
 
     // Modern AI and LLM Search Crawlers (ChatGPT, Perplexity, Claude, etc.)
     const aiBots = [
