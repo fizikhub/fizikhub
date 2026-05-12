@@ -107,7 +107,7 @@ const payload = {
   mailer_autoconfirm: false,
   smtp_admin_email: "bildirim@fizikhub.com",
   smtp_host: "smtp.resend.com",
-  smtp_port: 465,
+  smtp_port: "465",
   smtp_user: "resend",
   smtp_pass: resendApiKey,
   smtp_sender_name: "Fizikhub",
