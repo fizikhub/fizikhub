@@ -26,9 +26,9 @@ export const NewArticleEmail = ({
   excerpt,
   articleUrl,
   imageUrl,
-  authorName = 'Fizikhub Ekibi',
+  authorName = 'FizikHub Ekibi',
 }: NewArticleEmailProps) => {
-  const previewText = `${title} başlıklı yeni makale Fizikhub'da yayında!`;
+  const previewText = `${title} başlıklı yeni makale FizikHub'da yayında!`;
 
   return (
     <Html>
@@ -40,7 +40,7 @@ export const NewArticleEmail = ({
             <Section className="mt-[32px]">
               {/* If you have a logo, you can use it here */}
               <Text className="text-[#000000] text-[24px] font-bold text-center p-0 my-[30px] mx-0">
-                Fizikhub
+                FizikHub
               </Text>
             </Section>
             <Heading className="text-black text-[24px] font-normal text-center p-0 my-[30px] mx-0">
@@ -77,7 +77,7 @@ export const NewArticleEmail = ({
             </Section>
 
             <Text className="text-[#666666] text-[12px] leading-[24px]">
-              Bu e-postayı Fizikhub bildirim ayarlarınız açık olduğu için aldınız.
+              Bu e-postayı FizikHub bildirim ayarlarınız açık olduğu için aldınız.
               Bildirimleri kapatmak için profil ayarlarınızı ziyaret edebilirsiniz.
             </Text>
             

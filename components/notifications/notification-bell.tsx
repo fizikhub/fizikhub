@@ -188,7 +188,7 @@ export function NotificationBell({ className }: { className?: string }) {
                 if (notification.resource_type === 'system') {
                     return <span className="font-medium text-primary">{notification.content}</span>;
                 }
-                return "Fizikhub'a hoş geldin! 🚀";
+                return "FizikHub'a hoş geldin! 🚀";
             case 'report':
                 return <><span className="font-semibold">{name}</span> bir içerik bildirdi.</>;
             default:
