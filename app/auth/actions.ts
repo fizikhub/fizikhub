@@ -140,7 +140,7 @@ export async function signupWithEmailOtp(input: SignupWithEmailOtpInput) {
             data: {
                 username,
                 full_name: fullName,
-                onboarding_completed: true,
+                onboarding_completed: false,
             },
         },
     });

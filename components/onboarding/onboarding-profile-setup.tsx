@@ -3,9 +3,12 @@
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { uploadAvatar, uploadCover, updateProfile, updateUsername } from "@/app/profil/actions";
-import { Camera, Loader2, ArrowRight, AtSign, User as UserIcon, Upload } from "lucide-react";
+import { Camera, Loader2, ArrowRight, AtSign, User as UserIcon, Upload, Image as ImageIcon } from "lucide-react";
 import { toast } from "sonner";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { DankLogo } from "@/components/brand/dank-logo";
+import dynamic from "next/dynamic";
+const StarBackground = dynamic(() => import("@/components/background/star-background").then(mod => mod.StarBackground), { ssr: false });
 
 interface OnboardingProfileSetupProps {
     user: any;
@@ -100,102 +103,106 @@ export function OnboardingProfileSetup({ user, profile }: OnboardingProfileSetup
         }
     };
 
+    const inputCls = "w-full h-11 bg-white/[0.05] border-2 border-white/[0.08] text-white placeholder:text-zinc-600 focus:border-neo-yellow/70 focus:bg-white/[0.07] focus:ring-0 rounded-xl transition-all font-mono font-bold text-sm pl-10 pr-4";
+
     return (
-        <div className="min-h-screen font-sans bg-[#0a0a0a] relative selection:bg-orange-500/30">
-            {/* NOISE TEXTURE */}
-            <div className="fixed inset-0 opacity-[0.03] pointer-events-none mix-blend-multiply z-0"
-                style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 250 250' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }}
-            />
+        <div className="min-h-screen w-full flex items-center justify-center px-4 py-8 bg-transparent font-sans relative overflow-hidden selection:bg-neo-yellow/30 selection:text-neo-yellow">
+            <StarBackground />
 
-            <div className="container max-w-2xl mx-auto px-4 relative z-10 pt-12 pb-20">
-
+            <div className="w-full max-w-[480px] relative z-10 pt-10 pb-20">
                 {/* HEADER */}
                 <div className="text-center mb-8">
-                    <h1 className="text-3xl font-black text-white uppercase tracking-tight mb-2">
+                    <div className="inline-flex justify-center transform hover:-translate-y-0.5 transition-transform duration-200 scale-[1.3] mb-5">
+                        <DankLogo />
+                    </div>
+                    <h1 className="text-xl sm:text-2xl font-black text-white uppercase tracking-tight mb-2">
                         PROFİLİNİ TAMAMLA
                     </h1>
-                    <p className="text-zinc-500 font-bold text-sm">
+                    <p className="text-zinc-500 font-bold text-[11px] uppercase tracking-widest">
                         Evrene adım atmadan önce sana nasıl sesleneceğimizi seç.
                     </p>
                 </div>
 
                 <form onSubmit={handleSubmit}>
-                    {/* MAIN CARD */}
-                    <div className="bg-[#27272a] border-[3px] border-black shadow-[8px_8px_0px_0px_#000] rounded-xl overflow-hidden relative">
-
+                    {/* THE CARD */}
+                    <div className="bg-[#292929] border-2 border-white/[0.12] shadow-[6px_6px_0px_0px_rgba(255,255,255,0.8)] rounded-2xl relative overflow-hidden">
+                        
                         {/* COVER PHOTO AREA */}
-                        <div className="relative h-48 sm:h-60 bg-zinc-900 border-b-[3px] border-black group cursor-pointer overflow-hidden"
-                            onClick={() => coverInputRef.current?.click()}>
-
+                        <div 
+                            className="relative h-40 sm:h-48 bg-zinc-900 border-b-2 border-white/[0.12] group cursor-pointer overflow-hidden"
+                            onClick={() => coverInputRef.current?.click()}
+                        >
                             {coverPreview ? (
                                 <img src={coverPreview} alt="Cover" className="w-full h-full object-cover opacity-80 group-hover:opacity-60 transition-opacity" />
                             ) : (
-                                <div className="absolute inset-0 bg-gradient-to-tr from-orange-500/20 via-purple-500/10 to-blue-500/20" />
+                                <div className="absolute inset-0 bg-white/[0.02]" />
                             )}
 
-                            {/* Overlay Pattern */}
-                            <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 pointer-events-none" />
+                            {/* Default Graphic if no cover */}
+                            {!coverPreview && (
+                                <div className="absolute inset-0 flex items-center justify-center opacity-40">
+                                    <ImageIcon className="w-12 h-12 text-zinc-600" />
+                                </div>
+                            )}
 
-                            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-10">
-                                <div className="bg-black text-white px-4 py-2 rounded-lg font-bold flex items-center gap-2 border-2 border-white shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)]">
-                                    <Camera className="w-5 h-5" />
-                                    <span>Kapak Fotoğrafı Ekle</span>
+                            {/* Hover Overlay */}
+                            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/40 z-10">
+                                <div className="bg-white/10 backdrop-blur-md text-white px-4 py-2 rounded-xl font-bold flex items-center gap-2 border border-white/20 text-xs uppercase tracking-widest">
+                                    <Camera className="w-4 h-4" />
+                                    <span>Kapak Ekle</span>
                                 </div>
                             </div>
                             <input ref={coverInputRef} type="file" accept="image/*" hidden onChange={handleCoverChange} />
                         </div>
 
                         {/* CONTENT AREA */}
-                        <div className="px-6 pb-8 pt-16 relative">
+                        <div className="px-6 pb-8 sm:px-8 relative pt-14">
 
                             {/* AVATAR - Overlapping */}
-                            <div className="absolute -top-16 left-6 cursor-pointer group" onClick={() => avatarInputRef.current?.click()}>
-                                <div className="w-28 h-28 sm:w-32 sm:h-32 rounded-2xl border-[3px] border-black bg-[#27272a] p-1 shadow-[4px_4px_0px_0px_#000] relative overflow-hidden">
-                                    <Avatar className="w-full h-full rounded-xl border border-black/10">
+                            <div className="absolute -top-14 left-6 sm:left-8 cursor-pointer group" onClick={() => avatarInputRef.current?.click()}>
+                                <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl border-2 border-white/[0.12] bg-[#292929] p-1 shadow-[4px_4px_0px_0px_rgba(255,255,255,0.6)] relative overflow-hidden transition-transform group-hover:-translate-y-1 group-hover:-translate-x-1">
+                                    <Avatar className="w-full h-full rounded-xl">
                                         <AvatarImage src={avatarPreview} className="object-cover" />
-                                        <AvatarFallback className="text-3xl font-black bg-orange-500 text-black">
-                                            {fullName?.[0] || "?"}
+                                        <AvatarFallback className="text-2xl font-black bg-white/[0.05] text-zinc-400">
+                                            {fullName?.[0]?.toUpperCase() || "?"}
                                         </AvatarFallback>
                                     </Avatar>
 
                                     {/* Edit Overlay */}
-                                    <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center z-20">
-                                        <Camera className="w-8 h-8 text-white" />
+                                    <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center rounded-xl m-1 z-20">
+                                        <Camera className="w-6 h-6 text-white" />
                                     </div>
                                 </div>
                                 {/* Badge */}
-                                <div className="absolute -bottom-2 -right-2 bg-white text-black p-1.5 rounded-full border-2 border-black shadow-[2px_2px_0px_0px_#000] z-30">
-                                    <Upload className="w-4 h-4 stroke-[3px]" />
+                                <div className="absolute -bottom-1 -right-1 bg-neo-yellow text-black p-1.5 rounded-xl border-2 border-black shadow-[2px_2px_0px_0px_rgba(255,255,255,0.6)] z-30">
+                                    <Upload className="w-3.5 h-3.5 stroke-[3px]" />
                                 </div>
                                 <input ref={avatarInputRef} type="file" accept="image/*" hidden onChange={handleAvatarChange} />
                             </div>
 
                             {/* FORM FIELDS */}
-                            <div className="space-y-6 mt-6">
-
+                            <div className="space-y-4">
                                 {/* Full Name */}
-                                <div className="space-y-1.5">
-                                    <label className="text-xs font-black uppercase tracking-wider text-zinc-500 ml-1">İsim Soyisim</label>
-                                    <div className="relative group">
-                                        <UserIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500 group-focus-within:text-orange-500 transition-colors" />
+                                <div className="space-y-1">
+                                    <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 pl-1">İsim Soyisim</label>
+                                    <div className="relative">
+                                        <UserIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-600 pointer-events-none" />
                                         <input
                                             type="text"
                                             value={fullName}
                                             onChange={(e) => setFullName(e.target.value)}
                                             placeholder="Adınız Soyadınız"
                                             required
-                                            className="w-full bg-zinc-900 text-white font-bold border-2 border-black h-12 pl-12 pr-4 rounded-lg focus:outline-none focus:border-orange-500 focus:shadow-[4px_4px_0px_0px_#ea580c] focus:-translate-y-1 transition-all placeholder:text-zinc-600"
+                                            className={inputCls}
                                         />
                                     </div>
                                 </div>
 
                                 {/* Username */}
-                                <div className="space-y-1.5">
-                                    <div className="flex justify-between items-center px-1">
-                                        <label className="text-xs font-black uppercase tracking-wider text-zinc-500">Kullanıcı Adı</label>
-                                    </div>
-                                    <div className="relative group">
-                                        <AtSign className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500 group-focus-within:text-orange-500 transition-colors" />
+                                <div className="space-y-1">
+                                    <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 pl-1">Kullanıcı Adı</label>
+                                    <div className="relative">
+                                        <AtSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-600 pointer-events-none" />
                                         <input
                                             type="text"
                                             value={username}
@@ -206,44 +213,44 @@ export function OnboardingProfileSetup({ user, profile }: OnboardingProfileSetup
                                             }}
                                             placeholder="kullaniciadi"
                                             required
-                                            className="w-full bg-zinc-900 text-white font-bold border-2 border-black h-12 pl-12 pr-4 rounded-lg focus:outline-none focus:border-orange-500 focus:shadow-[4px_4px_0px_0px_#ea580c] focus:-translate-y-1 transition-all placeholder:text-zinc-600"
+                                            className={inputCls}
                                         />
                                     </div>
                                 </div>
 
                                 {/* Bio */}
-                                <div className="space-y-1.5">
-                                    <div className="flex justify-between items-center px-1">
-                                        <label className="text-xs font-black uppercase tracking-wider text-zinc-500">Biyografi (İsteğe Bağlı)</label>
-                                        <span className="text-[10px] font-bold text-zinc-500">
+                                <div className="space-y-1">
+                                    <div className="flex justify-between items-center px-1 mb-1">
+                                        <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">Biyografi</label>
+                                        <span className="text-[10px] font-bold text-zinc-600">
                                             {bio.length}/160
                                         </span>
                                     </div>
                                     <textarea
                                         value={bio}
                                         onChange={(e) => setBio(e.target.value.slice(0, 160))}
-                                        placeholder="Kısaca kendinden bahset... (Laboratuvardaki ilk gününmüş gibi)"
+                                        placeholder="Kısaca kendinden bahset..."
                                         rows={3}
-                                        className="w-full bg-zinc-900 text-white font-medium border-2 border-black p-4 rounded-lg focus:outline-none focus:border-orange-500 focus:shadow-[4px_4px_0px_0px_#ea580c] focus:-translate-y-1 transition-all placeholder:text-zinc-600 resize-none"
+                                        className="w-full bg-white/[0.05] text-white font-mono font-bold text-sm border-2 border-white/[0.08] p-3 rounded-xl focus:outline-none focus:border-neo-yellow/70 focus:bg-white/[0.07] transition-all placeholder:text-zinc-600 resize-none"
                                     />
                                 </div>
 
-                                {/* ACTION BUTTONS */}
-                                <div className="pt-4">
+                                {/* ACTION BUTTON */}
+                                <div className="pt-2">
                                     <button
                                         type="submit"
                                         disabled={isLoading}
-                                        className="w-full bg-orange-600 text-white font-black uppercase tracking-widest text-sm h-14 rounded-xl border-4 border-black shadow-[6px_6px_0px_0px_#000] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[4px_4px_0px_0px_#000] transition-all flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed group"
+                                        className="w-full h-[52px] bg-neo-yellow hover:bg-yellow-300 text-black font-black uppercase tracking-widest text-[13px] rounded-xl border-[3px] border-black shadow-[4px_4px_0px_0px_rgba(255,255,255,0.85)] hover:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.85)] hover:translate-x-[2px] hover:translate-y-[2px] active:shadow-none active:translate-x-[4px] active:translate-y-[4px] transition-all flex items-center justify-center gap-2.5 disabled:opacity-50 disabled:cursor-not-allowed group"
                                     >
                                         {isLoading ? (
                                             <>
-                                                <Loader2 className="w-6 h-6 animate-spin" />
+                                                <Loader2 className="w-5 h-5 animate-spin" />
                                                 KAYDEDİLİYOR...
                                             </>
                                         ) : (
                                             <>
-                                                BAŞLA
-                                                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                                                PROFİLİ TAMAMLA
+                                                <ArrowRight className="w-4.5 h-4.5 group-hover:translate-x-1 transition-transform stroke-[3px]" />
                                             </>
                                         )}
                                     </button>

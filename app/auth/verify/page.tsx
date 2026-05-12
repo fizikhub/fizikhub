@@ -35,7 +35,7 @@ function VerifyContent() {
 
             if (result.success) {
                 toast.success("Erişim izni onaylandı.");
-                router.push("/");
+                router.push("/kurulum");
             } else {
                 toast.error(result.error);
             }
