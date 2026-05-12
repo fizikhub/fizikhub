@@ -97,7 +97,7 @@ export function ModernLogin() {
 
                 if (existingUser) throw new Error("Bu kullanıcı adı zaten alınmış.");
 
-                const { error } = await supabase.auth.signUp({
+                const { data, error } = await supabase.auth.signUp({
                     email,
                     password,
                     options: {
@@ -112,6 +112,10 @@ export function ModernLogin() {
                 });
 
                 if (error) throw error;
+                if (!data.user) throw new Error("Kayıt oluşturulamadı.");
+                if (data.user.identities && data.user.identities.length === 0) {
+                    throw new Error("Bu e-posta zaten kayıtlı.");
+                }
 
                 toast.success("Kayıt başarılı! Yönlendiriliyorsunuz...", { id: toastId });
                 // Short delay to let user see the success message
