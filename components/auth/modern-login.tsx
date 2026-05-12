@@ -13,6 +13,7 @@ const StarBackground = dynamic(() => import("@/components/background/star-backgr
 import { toast } from "sonner";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { signupWithEmailOtp } from "@/app/auth/actions";
 
 
 export function ModernLogin() {
@@ -97,25 +98,16 @@ export function ModernLogin() {
 
                 if (existingUser) throw new Error("Bu kullanıcı adı zaten alınmış.");
 
-                const { data, error } = await supabase.auth.signUp({
+                const result = await signupWithEmailOtp({
                     email,
                     password,
-                    options: {
-                        captchaToken: turnstileToken,
-                        emailRedirectTo: `${location.origin}/auth/callback`,
-                        data: {
-                            username,
-                            full_name: fullName,
-                            onboarding_completed: true
-                        }
-                    },
+                    username,
+                    fullName,
+                    captchaToken: turnstileToken,
+                    redirectTo: `${location.origin}/auth/callback`,
                 });
 
-                if (error) throw error;
-                if (!data.user) throw new Error("Kayıt oluşturulamadı.");
-                if (data.user.identities && data.user.identities.length === 0) {
-                    throw new Error("Bu e-posta zaten kayıtlı.");
-                }
+                if (!result.success) throw new Error(result.error || "Kayıt oluşturulamadı.");
 
                 toast.success("Kayıt başarılı! Yönlendiriliyorsunuz...", { id: toastId });
                 // Short delay to let user see the success message
@@ -382,4 +374,3 @@ export function ModernLogin() {
         </div>
     );
 }
-

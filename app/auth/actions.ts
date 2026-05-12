@@ -3,7 +3,9 @@
 import { createClient } from "@/lib/supabase-server";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { headers } from "next/headers";
+import { createClient as createSupabaseClient } from "@supabase/supabase-js";
+import { Resend } from "resend";
+import { buildConfirmationTemplate } from "../../scripts/auth-email-templates.mjs";
 
 export async function login(formData: FormData) {
     const supabase = await createClient();
@@ -47,6 +49,126 @@ export async function signup(formData: FormData) {
 
     revalidatePath("/", "layout");
     redirect("/auth/verify");
+}
+
+type SignupWithEmailOtpInput = {
+    email: string;
+    password: string;
+    fullName: string;
+    username: string;
+    captchaToken: string;
+    redirectTo?: string;
+};
+
+async function verifyTurnstileToken(token: string) {
+    const secret = process.env.TURNSTILE_SECRET_KEY;
+
+    if (!secret) {
+        return { success: false, error: "Turnstile yapılandırması eksik." };
+    }
+
+    const formData = new FormData();
+    formData.append("secret", secret);
+    formData.append("response", token);
+
+    const response = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
+        method: "POST",
+        body: formData,
+    });
+
+    const result = await response.json() as { success?: boolean; "error-codes"?: string[] };
+
+    if (!result.success) {
+        return { success: false, error: "Robot doğrulaması başarısız oldu." };
+    }
+
+    return { success: true };
+}
+
+export async function signupWithEmailOtp(input: SignupWithEmailOtpInput) {
+    const email = input.email.trim().toLowerCase();
+    const username = input.username.trim();
+    const fullName = input.fullName.trim();
+
+    if (!email || !input.password || !username || !fullName) {
+        return { success: false, error: "Lütfen tüm alanları doldurun." };
+    }
+
+    if (username.length < 3) {
+        return { success: false, error: "Kullanıcı adı en az 3 karakter olmalı." };
+    }
+
+    const turnstile = await verifyTurnstileToken(input.captchaToken);
+    if (!turnstile.success) {
+        return { success: false, error: turnstile.error };
+    }
+
+    const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    const resendApiKey = process.env.RESEND_API_KEY;
+
+    if (!serviceRoleKey || !resendApiKey) {
+        return { success: false, error: "E-posta doğrulama sistemi yapılandırması eksik." };
+    }
+
+    const supabaseAdmin = createSupabaseClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        serviceRoleKey,
+        {
+            auth: {
+                autoRefreshToken: false,
+                persistSession: false,
+            },
+        }
+    );
+
+    const { data: existingProfile } = await supabaseAdmin
+        .from("profiles")
+        .select("id")
+        .eq("username", username)
+        .maybeSingle();
+
+    if (existingProfile) {
+        return { success: false, error: "Bu kullanıcı adı zaten alınmış." };
+    }
+
+    const { data, error } = await supabaseAdmin.auth.admin.generateLink({
+        type: "signup",
+        email,
+        password: input.password,
+        options: {
+            redirectTo: input.redirectTo,
+            data: {
+                username,
+                full_name: fullName,
+                onboarding_completed: true,
+            },
+        },
+    });
+
+    if (error || !data?.properties?.email_otp || !data.user) {
+        const message = error?.message || "Kayıt doğrulama kodu oluşturulamadı.";
+
+        if (message.toLowerCase().includes("already")) {
+            return { success: false, error: "Bu e-posta zaten kayıtlı." };
+        }
+
+        return { success: false, error: message };
+    }
+
+    const resend = new Resend(resendApiKey);
+    const result = await resend.emails.send({
+        from: "FizikHub <bildirim@fizikhub.com>",
+        to: email,
+        subject: "FizikHub doğrulama kodun",
+        html: buildConfirmationTemplate(data.properties.email_otp),
+    });
+
+    if (result.error) {
+        await supabaseAdmin.auth.admin.deleteUser(data.user.id);
+        return { success: false, error: result.error.message };
+    }
+
+    return { success: true, email };
 }
 
 export async function verifyOtp(token: string, type: 'signup' | 'recovery' | 'magiclink' = 'signup', email: string) {
