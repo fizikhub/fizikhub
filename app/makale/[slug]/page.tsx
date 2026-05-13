@@ -11,6 +11,7 @@ import { TermDetail } from "@/components/term/term-detail";
 import { ArticleErrorBoundary } from "@/components/blog/article-error-boundary";
 import { MarkdownRenderer } from "@/components/markdown-renderer";
 import Link from "next/link";
+import { CollapsibleQuickAnswer } from "@/components/articles/collapsible-quick-answer";
 import { getSeoIntentForSlug, SEO_PRIORITY_ARTICLES, SEO_PRIORITY_SLUGS, type SeoIntentArticle } from "@/lib/seo-priority";
 import { buildMetaDescription, getSiteUrl, isLikelyIndexableTitle, toAbsoluteUrl } from "@/lib/seo-utils";
 
@@ -25,110 +26,15 @@ function toMetaDescription(article: any) {
     );
 }
 
-function ArticleSearchIntentBlock({ override, currentSlug }: { override: SeoIntentArticle; currentSlug: string }) {
+function getIntentRelatedArticles(override: SeoIntentArticle, currentSlug: string) {
     const configuredRelatedArticles = override.relatedSlugs
         .map((slug) => SEO_PRIORITY_ARTICLES.find((article) => article.slug === slug))
         .filter(Boolean) as SeoIntentArticle[];
     const fallbackRelatedArticles = SEO_PRIORITY_ARTICLES.filter((article) => article.slug !== currentSlug);
-    const relatedArticles = [
+    return [
         ...configuredRelatedArticles,
         ...fallbackRelatedArticles.filter((article) => !configuredRelatedArticles.some((related) => related.slug === article.slug)),
     ].slice(0, 4);
-
-    return (
-        <section className="container mx-auto max-w-4xl px-4 pt-8">
-            <div className="border-y border-zinc-200 bg-zinc-50 px-4 py-6 dark:border-zinc-800 dark:bg-zinc-950 sm:px-6">
-                <p className="text-xs font-black uppercase tracking-wider text-zinc-500">Kısa cevap</p>
-                <h2 className="mt-2 text-2xl font-black tracking-normal text-zinc-950 dark:text-white">
-                    {override.summaryTitle}
-                </h2>
-                <p className="mt-3 text-base font-medium leading-8 text-zinc-700 dark:text-zinc-300">
-                    {override.summary}
-                </p>
-
-                <div className="mt-6 grid gap-4 border-t border-zinc-200 pt-5 dark:border-zinc-800 sm:grid-cols-2">
-                    <div>
-                        <p className="text-xs font-black uppercase tracking-wider text-zinc-500">{override.formulaTitle}</p>
-                        <p className="mt-2 rounded-[8px] border border-zinc-300 bg-white px-3 py-2 font-mono text-sm font-black text-zinc-950 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50">
-                            {override.formula}
-                        </p>
-                        <p className="mt-2 text-sm leading-7 text-zinc-600 dark:text-zinc-400">{override.formulaExplanation}</p>
-                    </div>
-                    <div>
-                        <p className="text-xs font-black uppercase tracking-wider text-zinc-500">{override.exampleTitle}</p>
-                        <p className="mt-2 text-sm leading-7 text-zinc-600 dark:text-zinc-400">{override.example}</p>
-                    </div>
-                </div>
-
-                <div className="mt-6 border-t border-zinc-200 pt-5 dark:border-zinc-800">
-                    <h2 className="text-xl font-black tracking-normal text-zinc-950 dark:text-white">
-                        Bu konuda bilmen gereken alt başlıklar
-                    </h2>
-                    <div className="mt-3 flex flex-wrap gap-2">
-                        {override.subtopics.map((topic) => (
-                            <span
-                                key={topic}
-                                className="rounded-[7px] border border-zinc-300 bg-white px-2.5 py-1.5 text-xs font-black text-zinc-900 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100"
-                            >
-                                {topic}
-                            </span>
-                        ))}
-                    </div>
-                </div>
-
-                <div className="mt-6 grid gap-4 border-t border-zinc-200 pt-5 dark:border-zinc-800">
-                    <h2 className="text-xl font-black tracking-normal text-zinc-950 dark:text-white">
-                        Sık sorulan sorular
-                    </h2>
-                    {override.questions.map((item) => (
-                        <div key={item.question}>
-                            <h3 className="text-base font-black text-zinc-950 dark:text-white">{item.question}</h3>
-                            <p className="mt-1 text-sm leading-7 text-zinc-600 dark:text-zinc-400">{item.answer}</p>
-                        </div>
-                    ))}
-                </div>
-
-                <div className="mt-6 grid gap-4 border-t border-zinc-200 pt-5 dark:border-zinc-800 sm:grid-cols-2">
-                    <div>
-                        <p className="text-xs font-black uppercase tracking-wider text-zinc-500">İlgili okumalar</p>
-                        <div className="mt-3 grid gap-2">
-                            {relatedArticles.map((article) => (
-                                <Link
-                                    key={article.slug}
-                                    href={`/makale/${article.slug}`}
-                                    className="text-sm font-black text-zinc-950 underline decoration-[#FFC800] decoration-2 underline-offset-4 hover:text-zinc-700 dark:text-white dark:hover:text-zinc-200"
-                                >
-                                    {article.title}
-                                </Link>
-                            ))}
-                        </div>
-                    </div>
-                    <div>
-                        <p className="text-xs font-black uppercase tracking-wider text-zinc-500">Terimler ve aranan alt konular</p>
-                        <div className="mt-3 flex flex-wrap gap-2">
-                            {override.termLinks.map((link) => (
-                                <Link
-                                    key={link.href}
-                                    href={link.href}
-                                    className="rounded-[7px] border border-zinc-950 bg-[#FFC800] px-2.5 py-1.5 text-xs font-black text-black hover:bg-white"
-                                >
-                                    {link.label}
-                                </Link>
-                            ))}
-                            {override.relatedQueries.map((query) => (
-                                <span
-                                    key={query}
-                                    className="rounded-[7px] border border-zinc-300 bg-white px-2.5 py-1.5 text-xs font-black text-zinc-900 hover:border-zinc-950 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100"
-                                >
-                                    {query}
-                                </span>
-                            ))}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-    );
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -496,7 +402,7 @@ export default async function ArticlePage({ params }: PageProps) {
                             introOverride={intentOverride?.summary}
                         />
 
-                        {intentOverride && <ArticleSearchIntentBlock override={intentOverride} currentSlug={article.slug} />}
+
 
                         {/* Only interactive reader is wrapped — fallback shows plain article text */}
                         <ArticleErrorBoundary fallback={
@@ -520,6 +426,13 @@ export default async function ArticlePage({ params }: PageProps) {
                                 references={references || []}
                             />
                         </ArticleErrorBoundary>
+
+                        {intentOverride && (
+                            <CollapsibleQuickAnswer
+                                override={intentOverride}
+                                relatedArticles={getIntentRelatedArticles(intentOverride, article.slug)}
+                            />
+                        )}
                     </>
                 )}
             </div>
