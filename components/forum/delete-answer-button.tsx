@@ -16,35 +16,14 @@ import {
 } from "@/components/ui/alert-dialog";
 import { deleteAnswer } from "@/app/forum/actions";
 import { toast } from "sonner";
-import { createClient } from "@/lib/supabase";
-import { isAdminEmail } from "@/lib/admin-shared";
 
 interface DeleteAnswerButtonProps {
     answerId: number;
     questionId: number;
-    authorId: string;
 }
 
-export function DeleteAnswerButton({ answerId, questionId, authorId }: DeleteAnswerButtonProps) {
+export function DeleteAnswerButton({ answerId, questionId }: DeleteAnswerButtonProps) {
     const [isDeleting, setIsDeleting] = useState(false);
-    const [canDelete, setCanDelete] = useState(false);
-    // Fix: Initialize supabase client once
-    const [supabase] = useState(() => createClient());
-
-    useState(() => {
-        const checkPermission = async () => {
-            const { data: { user } } = await supabase.auth.getUser();
-            if (!user) return;
-
-            const isAdmin = isAdminEmail(user.email);
-            const isAuthor = user.id === authorId;
-
-            if (isAdmin || isAuthor) {
-                setCanDelete(true);
-            }
-        };
-        checkPermission();
-    });
 
     const handleDelete = async () => {
         setIsDeleting(true);
@@ -61,8 +40,6 @@ export function DeleteAnswerButton({ answerId, questionId, authorId }: DeleteAns
             setIsDeleting(false);
         }
     };
-
-    if (!canDelete) return null;
 
     return (
         <AlertDialog>

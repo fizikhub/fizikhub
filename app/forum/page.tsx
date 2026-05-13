@@ -6,6 +6,7 @@ import { QuestionOfTheWeek } from "@/components/forum/question-of-the-week";
 import { Ghost } from "lucide-react";
 import { BreadcrumbJsonLd } from "@/lib/breadcrumbs";
 import { sanitizeSearchQuery } from "@/lib/security";
+import { getSiteUrl, stripMarkdownForMeta } from "@/lib/seo-utils";
 import type { Metadata } from "next";
 
 // Revalidate every 2 minutes for active active forum
@@ -76,7 +77,7 @@ export default async function ForumPage({ searchParams }: ForumPageProps) {
     let query = supabase
         .from('questions')
         .select(`
-            id, title, content, created_at, category, votes, author_id, tags,
+            id, title, content, created_at, category, votes, tags,
             profiles(username, full_name, avatar_url, is_verified),
             answers(count)
         `);
@@ -125,19 +126,37 @@ export default async function ForumPage({ searchParams }: ForumPageProps) {
 
     const userVotes = new Map<number, number>();
 
+    const baseUrl = getSiteUrl();
+    const canonicalUrl = `${baseUrl}/forum`;
+
     const jsonLd = {
         '@context': 'https://schema.org',
         '@type': 'CollectionPage',
         name: 'Fizikhub Bilim Forumu',
         description: 'Fizik sorularını sor, tartışmalara katıl ve topluluktan öğren.',
-        url: 'https://www.fizikhub.com/forum',
+        url: canonicalUrl,
         mainEntity: {
             '@type': 'ItemList',
             itemListElement: questions?.map((q, i) => ({
                 '@type': 'ListItem',
                 position: i + 1,
-                url: `https://www.fizikhub.com/forum/${q.id}`,
-                name: q.title
+                url: `${baseUrl}/forum/${q.id}`,
+                name: q.title,
+                item: {
+                    '@type': 'DiscussionForumPosting',
+                    '@id': `${baseUrl}/forum/${q.id}#discussion`,
+                    url: `${baseUrl}/forum/${q.id}`,
+                    headline: q.title,
+                    text: stripMarkdownForMeta(q.content).slice(0, 500),
+                    articleSection: q.category || 'Fizik',
+                    datePublished: q.created_at,
+                    commentCount: q.answers?.[0]?.count || 0,
+                    interactionStatistic: {
+                        '@type': 'InteractionCounter',
+                        interactionType: 'https://schema.org/LikeAction',
+                        userInteractionCount: q.votes || 0,
+                    },
+                },
             })) || []
         }
     };

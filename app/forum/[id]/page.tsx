@@ -29,30 +29,39 @@ import { ReplyButton } from "@/components/forum/reply-button";
 import { ReadingProgress } from "@/components/forum/reading-progress";
 import { ShareDrawer } from "@/components/forum/share-drawer";
 import { BreadcrumbJsonLd } from "@/lib/breadcrumbs";
+import { getSiteUrl, hasUsefulIndexableText, isLikelyIndexableTitle, stripMarkdownForMeta, truncateForMeta } from "@/lib/seo-utils";
 
-import { Metadata } from "next";
+import type { Metadata } from "next";
 
 interface PageProps {
     params: Promise<{ id: string }>;
 }
 
+type PublicProfile = {
+    username: string | null;
+    full_name: string | null;
+    avatar_url: string | null;
+    is_verified?: boolean | null;
+};
+
 // ISR: Regenerate every 30 seconds for forum questions
 export const revalidate = 30;
 
-// Strip markdown/HTML for clean meta descriptions
-function stripMarkdownForMeta(text: string): string {
-    return text
-        .replace(/#{1,6}\s?/g, '') // headings
-        .replace(/\*\*([^*]+)\*\*/g, '$1') // bold
-        .replace(/\*([^*]+)\*/g, '$1') // italic
-        .replace(/`([^`]+)`/g, '$1') // inline code
-        .replace(/```[\s\S]*?```/g, '') // code blocks
-        .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1') // links
-        .replace(/!\[([^\]]*)\]\([^)]+\)/g, '') // images
-        .replace(/<[^>]*>/g, '') // HTML tags
-        .replace(/\n+/g, ' ') // newlines
-        .replace(/\s+/g, ' ') // multiple spaces
-        .trim();
+function getPublicProfile(profile: PublicProfile | PublicProfile[] | null | undefined): PublicProfile | null {
+    return Array.isArray(profile) ? profile[0] || null : profile || null;
+}
+
+function getAnswerCount(question: { answers?: Array<{ count?: number | null }> | null }) {
+    return Number(question.answers?.[0]?.count || 0);
+}
+
+function isIndexableForumQuestion(question: {
+    title?: string | null;
+    content?: string | null;
+    answers?: Array<{ count?: number | null }> | null;
+}) {
+    const visibleText = [question.title, question.content].filter(Boolean).join(" ");
+    return isLikelyIndexableTitle(question.title) && (hasUsefulIndexableText(visibleText, 40) || getAnswerCount(question) > 0);
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -72,14 +81,16 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
         };
     }
 
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.fizikhub.com';
+    const baseUrl = getSiteUrl();
     const canonicalUrl = `${baseUrl}/forum/${id}`;
     const category = question.category || 'Genel';
     const cleanContent = stripMarkdownForMeta(question.content);
-    const description = cleanContent.length > 155
-        ? cleanContent.substring(0, 155).trimEnd() + '…'
-        : cleanContent;
+    const description = truncateForMeta(
+        cleanContent || `${question.title} sorusu için Fizikhub ${category} forumunda topluluk cevapları ve bilimsel tartışmalar.`,
+        155
+    );
     const seoTitle = `${question.title} — ${category} Forumu`;
+    const shouldIndex = isIndexableForumQuestion(question);
 
     // Dynamic keywords from category + tags
     const dynamicKeywords = [
@@ -99,7 +110,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
         title: seoTitle,
         description,
         keywords: dynamicKeywords,
-        robots: { index: true, follow: true },
+        robots: shouldIndex ? { index: true, follow: true } : { index: false, follow: true },
         openGraph: {
             title: seoTitle,
             description,
@@ -131,17 +142,22 @@ export default async function QuestionPage({ params }: PageProps) {
     const supabase = await createClient();
 
     // Fetch question details
-    const { data: question, error } = await supabase.from('questions')
+    const { data: rawQuestion, error } = await supabase.from('questions')
         .select(`
-            *,
+            id, title, content, created_at, updated_at, category, tags, votes, views, author_id,
             profiles(username, full_name, avatar_url, is_verified)
         `)
         .eq('id', id)
         .single();
 
-    if (error || !question) {
+    if (error || !rawQuestion) {
         notFound();
     }
+
+    const question = {
+        ...rawQuestion,
+        profiles: getPublicProfile(rawQuestion.profiles),
+    };
 
     // Check if user is admin
     const { data: { user } } = await supabase.auth.getUser();
@@ -157,7 +173,7 @@ export default async function QuestionPage({ params }: PageProps) {
         supabase
             .from('answers')
             .select(`
-                *,
+                id, question_id, author_id, content, created_at, updated_at, votes, is_accepted,
                 profiles(username, full_name, avatar_url, is_verified)
             `)
             .eq('question_id', id)
@@ -184,7 +200,11 @@ export default async function QuestionPage({ params }: PageProps) {
 
     // Fetch like counts and user likes for all answers
     // Extract answer IDs
-    const answerIds = (answers || []).map(a => a.id);
+    const normalizedAnswers = (answers || []).map((answer) => ({
+        ...answer,
+        profiles: getPublicProfile(answer.profiles),
+    }));
+    const answerIds = normalizedAnswers.map(a => a.id);
     const hasAnswers = answerIds.length > 0;
 
     // Fetch all related data in parallel for answers
@@ -212,12 +232,17 @@ export default async function QuestionPage({ params }: PageProps) {
         hasAnswers ? supabase
             .from('answer_comments')
             .select(`
-                *,
+                id, answer_id, author_id, content, created_at,
                 profiles(username, full_name, avatar_url, is_verified)
             `)
             .in('answer_id', answerIds)
             .order('created_at', { ascending: true }) : Promise.resolve({ data: [] })
     ]);
+
+    const normalizedCommentsData = (allCommentsData || []).map((comment) => ({
+        ...comment,
+        profiles: getPublicProfile(comment.profiles),
+    }));
 
     const commentIds = (allCommentsData || []).map(c => c.id);
     const hasComments = commentIds.length > 0;
@@ -242,22 +267,35 @@ export default async function QuestionPage({ params }: PageProps) {
     ]);
 
     // Aggregate in memory (O(N) operations, entirely eliminates N+1 DB calls)
-    const answersWithLikes = (answers || []).map((answer) => {
+    const answersWithLikes = normalizedAnswers.map((answer) => {
+        const { author_id: answerAuthorId, ...answerForClient } = answer;
         // Count Answer Likes
         const likeCount = (allAnswerLikesData || []).filter(l => l.answer_id === answer.id).length;
         // Check User Answer Like
         const isLiked = (allAnswerUserLikesData || []).some(l => l.answer_id === answer.id);
 
         // Map Comments
-        const answerComments = (allCommentsData || []).filter(c => c.answer_id === answer.id);
+        const answerComments = normalizedCommentsData.filter(c => c.answer_id === answer.id);
         const commentsWithLikes = answerComments.map((comment) => {
+            const { author_id: commentAuthorId, ...commentForClient } = comment;
             const commentLikeCount = (allCommentLikesData || []).filter(cl => cl.comment_id === comment.id).length;
             const isCommentLiked = (allCommentUserLikesData || []).some(cl => cl.comment_id === comment.id);
 
-            return { ...comment, likeCount: commentLikeCount, isLiked: isCommentLiked };
+            return {
+                ...commentForClient,
+                canDelete: isAdmin || user?.id === commentAuthorId,
+                likeCount: commentLikeCount,
+                isLiked: isCommentLiked
+            };
         });
 
-        return { ...answer, likeCount, isLiked, comments: commentsWithLikes };
+        return {
+            ...answerForClient,
+            canDelete: isAdmin || user?.id === answerAuthorId,
+            likeCount,
+            isLiked,
+            comments: commentsWithLikes
+        };
     });
 
 
@@ -271,19 +309,23 @@ export default async function QuestionPage({ params }: PageProps) {
     const acceptedAnswer = answersWithLikes?.find(a => a.is_accepted);
     const suggestedAnswers = answersWithLikes?.filter(a => !a.is_accepted);
 
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.fizikhub.com';
+    const baseUrl = getSiteUrl();
 
     // QAPage JSON-LD — Google Rich Results for Q&A
     const jsonLd = {
         '@context': 'https://schema.org',
         '@type': 'QAPage',
+        '@id': `${baseUrl}/forum/${question.id}#qapage`,
+        url: `${baseUrl}/forum/${question.id}`,
         mainEntity: {
             '@type': 'Question',
+            '@id': `${baseUrl}/forum/${question.id}#question`,
             name: question.title,
-            text: question.content, // Full text required by Google
+            text: stripMarkdownForMeta(question.content), // Full text required by Google
             answerCount: answers?.length || 0,
             upvoteCount: question.votes || 0,
             dateCreated: question.created_at,
+            datePublished: question.created_at,
             ...(question.updated_at && { dateModified: question.updated_at }),
             author: {
                 '@type': 'Person',
@@ -293,8 +335,9 @@ export default async function QuestionPage({ params }: PageProps) {
             ...(acceptedAnswer && {
                 acceptedAnswer: {
                     '@type': 'Answer',
-                    text: acceptedAnswer.content,
+                    text: stripMarkdownForMeta(acceptedAnswer.content),
                     dateCreated: acceptedAnswer.created_at,
+                    datePublished: acceptedAnswer.created_at,
                     upvoteCount: acceptedAnswer.votes || 0,
                     url: `${baseUrl}/forum/${question.id}#answer-${acceptedAnswer.id}`,
                     author: {
@@ -305,10 +348,11 @@ export default async function QuestionPage({ params }: PageProps) {
                 },
             }),
             ...(suggestedAnswers && suggestedAnswers.length > 0 && {
-                suggestedAnswer: suggestedAnswers.map(answer => ({
+                suggestedAnswer: suggestedAnswers.slice(0, 10).map(answer => ({
                     '@type': 'Answer',
-                    text: answer.content,
+                    text: stripMarkdownForMeta(answer.content),
                     dateCreated: answer.created_at,
+                    datePublished: answer.created_at,
                     upvoteCount: answer.votes || 0,
                     url: `${baseUrl}/forum/${question.id}#answer-${answer.id}`,
                     author: {
@@ -318,53 +362,6 @@ export default async function QuestionPage({ params }: PageProps) {
                     },
                 })),
             }),
-        },
-    };
-
-    // DiscussionForumPosting JSON-LD — Google's recommended schema for forums
-    const discussionJsonLd = {
-        '@context': 'https://schema.org',
-        '@type': 'DiscussionForumPosting',
-        '@id': `${baseUrl}/forum/${question.id}`,
-        headline: question.title,
-        text: question.content,
-        url: `${baseUrl}/forum/${question.id}`,
-        datePublished: question.created_at,
-        ...(question.updated_at && { dateModified: question.updated_at }),
-        author: {
-            '@type': 'Person',
-            name: question.profiles?.username || 'Anonim',
-            url: question.profiles?.username ? `${baseUrl}/kullanici/${question.profiles.username}` : baseUrl,
-        },
-        interactionStatistic: [
-            {
-                '@type': 'InteractionCounter',
-                interactionType: 'https://schema.org/LikeAction',
-                userInteractionCount: question.votes || 0,
-            },
-            {
-                '@type': 'InteractionCounter',
-                interactionType: 'https://schema.org/CommentAction',
-                userInteractionCount: answers?.length || 0,
-            },
-        ],
-        ...(answersWithLikes && answersWithLikes.length > 0 && {
-            comment: answersWithLikes.map(answer => ({
-                '@type': 'Comment',
-                text: answer.content,
-                dateCreated: answer.created_at,
-                author: {
-                    '@type': 'Person',
-                    name: answer.profiles?.username || 'Anonim',
-                    url: answer.profiles?.username ? `${baseUrl}/kullanici/${answer.profiles.username}` : baseUrl,
-                },
-                url: `${baseUrl}/forum/${question.id}#answer-${answer.id}`,
-            })),
-        }),
-        isPartOf: {
-            '@type': 'DiscussionForum',
-            name: 'Fizikhub Bilim Forumu',
-            url: `${baseUrl}/forum`,
         },
     };
 
@@ -387,10 +384,6 @@ export default async function QuestionPage({ params }: PageProps) {
             <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-            />
-            <script
-                type="application/ld+json"
-                dangerouslySetInnerHTML={{ __html: JSON.stringify(discussionJsonLd) }}
             />
 
             <div className="container max-w-7xl mx-auto py-2 sm:py-6 md:py-8 px-0 sm:px-4 md:px-6 relative z-10">
@@ -571,7 +564,6 @@ export default async function QuestionPage({ params }: PageProps) {
                             <AnswerList
                                 questionId={question.id}
                                 initialAnswers={answersWithLikes || []}
-                                questionAuthorId={question.author_id}
                                 currentUser={user}
                             />
                         </section>
@@ -615,7 +607,7 @@ export default async function QuestionPage({ params }: PageProps) {
                             <div className="border-[2.5px] border-red-400 dark:border-red-500/40 bg-red-50 dark:bg-red-950/20 rounded-[10px] p-5 shadow-[3px_3px_0_0_rgba(239,68,68,0.3)]">
                                 <h3 className="font-black text-sm text-red-700 dark:text-red-400 uppercase tracking-wider mb-3">Yönetim</h3>
                                 <div className="space-y-3">
-                                    <DeleteQuestionButton questionId={question.id} authorId={question.author_id} />
+                                    <DeleteQuestionButton questionId={question.id} />
                                 </div>
                             </div>
                         )}

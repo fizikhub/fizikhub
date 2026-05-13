@@ -260,8 +260,14 @@ export async function createAnswer(formData: { content: string; questionId: numb
         is_flagged: modResult.isFlagged
     })
         .select(`
-        *,
-        profiles(username, full_name)
+        id,
+        question_id,
+        author_id,
+        content,
+        created_at,
+        votes,
+        is_accepted,
+        profiles(username, full_name, avatar_url, is_verified)
     `)
         .single();
 
@@ -301,8 +307,10 @@ export async function createAnswer(formData: { content: string; questionId: numb
         p_reference_id: data.id
     });
 
+    const { author_id, ...clientData } = data;
+
     revalidatePath(`/forum/${formData.questionId}`);
-    return { success: true, data };
+    return { success: true, data: { ...clientData, canDelete: true } };
 }
 
 export async function voteQuestion(questionId: number, voteType: 1 | -1) {
@@ -650,7 +658,11 @@ export async function createAnswerComment(formData: {
             is_flagged: modResult.isFlagged
         })
         .select(`
-            *,
+            id,
+            answer_id,
+            content,
+            author_id,
+            created_at,
             profiles(username, full_name, avatar_url, is_verified)
         `)
         .single();
@@ -660,8 +672,10 @@ export async function createAnswerComment(formData: {
         return { success: false, error: `Hata: ${error.message}` };
     }
 
+    const { author_id, ...clientData } = data;
+
     revalidatePath(`/forum/${formData.questionId}`);
-    return { success: true, data };
+    return { success: true, data: { ...clientData, canDelete: true } };
 }
 
 export async function deleteAnswerComment(commentId: number, questionId: number) {

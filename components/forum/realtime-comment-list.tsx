@@ -23,7 +23,7 @@ export function RealtimeCommentList({
     onDelete,
     onCommentsChange
 }: RealtimeCommentListProps) {
-    const comments = useRealtimeComments(answerId, initialComments);
+    const comments = useRealtimeComments(answerId, initialComments, currentUserId, currentUserEmail);
     const onCommentsChangeRef = useRef(onCommentsChange);
 
     // Update ref when prop changes

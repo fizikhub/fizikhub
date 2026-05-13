@@ -27,7 +27,7 @@ interface Comment {
     id: number;
     content: string;
     created_at: string;
-    author_id: string;
+    canDelete?: boolean;
     likeCount?: number;
     isLiked?: boolean;
     profiles?: {
@@ -124,7 +124,7 @@ export function AnswerCommentList({ comments, currentUserId, currentUserEmail, q
                                         isLoggedIn={!!currentUserId}
                                     />
 
-                                    {(currentUserId === comment.author_id || isAdmin) && (
+                                    {(comment.canDelete || isAdmin) && (
                                         <AlertDialog>
                                             <AlertDialogTrigger asChild>
                                                 <button className="text-xs text-red-400 dark:text-red-500/60 font-bold hover:text-red-500 dark:hover:text-red-400 transition-colors">

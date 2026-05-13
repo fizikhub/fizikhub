@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,34 +16,13 @@ import {
 } from "@/components/ui/alert-dialog";
 import { deleteQuestion } from "@/app/forum/actions";
 import { toast } from "sonner";
-import { createClient } from "@/lib/supabase";
-import { isAdminEmail } from "@/lib/admin-shared";
 
 interface DeleteQuestionButtonProps {
     questionId: number;
-    authorId: string;
 }
 
-export function DeleteQuestionButton({ questionId, authorId }: DeleteQuestionButtonProps) {
+export function DeleteQuestionButton({ questionId }: DeleteQuestionButtonProps) {
     const [isDeleting, setIsDeleting] = useState(false);
-    const [canDelete, setCanDelete] = useState(false);
-    // Fix: Initialize supabase client once
-    const [supabase] = useState(() => createClient());
-
-    useEffect(() => {
-        const checkPermission = async () => {
-            const { data: { user } } = await supabase.auth.getUser();
-            if (!user) return;
-
-            const isAdmin = isAdminEmail(user.email);
-            const isAuthor = user.id === authorId;
-
-            if (isAdmin || isAuthor) {
-                setCanDelete(true);
-            }
-        };
-        checkPermission();
-    }, [authorId]);
 
     const handleDelete = async () => {
         setIsDeleting(true);
@@ -60,8 +39,6 @@ export function DeleteQuestionButton({ questionId, authorId }: DeleteQuestionBut
             setIsDeleting(false);
         }
     };
-
-    if (!canDelete) return null;
 
     return (
         <AlertDialog>

@@ -88,6 +88,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
             priority: 0.3,
         },
         {
+            url: `${baseUrl}/rozetler`,
+            lastModified: STATIC_LAST_MODIFIED,
+            changeFrequency: 'monthly',
+            priority: 0.35,
+        },
+        {
+            url: `${baseUrl}/kvkk`,
+            lastModified: STATIC_LAST_MODIFIED,
+            changeFrequency: 'yearly',
+            priority: 0.2,
+        },
+        {
             url: `${baseUrl}/gizlilik-politikasi`,
             lastModified: STATIC_LAST_MODIFIED,
             changeFrequency: 'yearly',
@@ -105,13 +117,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const [questionsResult, articlesResult, quizzesResult, terms] = await Promise.all([
         supabase
             .from('questions')
-            .select('id, title, created_at, updated_at')
+            .select('id, title, content, created_at, updated_at, votes, answers(count)')
             .order('created_at', { ascending: false })
             .limit(250),
 
         supabase
             .from('articles')
-            .select('slug, title, excerpt, created_at, category, cover_url, image_url')
+            .select('slug, title, excerpt, content, created_at, updated_at, category, cover_url, image_url')
             .eq('status', 'published')
             .order('created_at', { ascending: false })
             .limit(1000),
@@ -126,13 +138,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ]);
 
     const questionPages: MetadataRoute.Sitemap = (questionsResult.data || [])
-        .filter((question) => isLikelyIndexableTitle(question.title))
+        .filter((question) => {
+            const answerCount = Number(question.answers?.[0]?.count || 0);
+            const visibleText = [question.title, question.content].filter(Boolean).join(' ');
+            return isLikelyIndexableTitle(question.title) && (hasUsefulIndexableText(visibleText, 40) || answerCount > 0);
+        })
         .map((question) => ({
-        url: `${baseUrl}/forum/${question.id}`,
-        lastModified: toLastModified(question.updated_at || question.created_at),
-        changeFrequency: 'weekly' as const,
-        priority: 0.8,
-    }));
+            url: `${baseUrl}/forum/${question.id}`,
+            lastModified: toLastModified(question.updated_at || question.created_at),
+            changeFrequency: Number(question.answers?.[0]?.count || 0) > 0 ? 'weekly' as const : 'monthly' as const,
+            priority: Number(question.answers?.[0]?.count || 0) > 0 || (question.votes || 0) > 2 ? 0.75 : 0.55,
+        }));
 
     const articlePages: MetadataRoute.Sitemap = (articlesResult.data || []).flatMap((article) => {
         const slug = article.slug;
@@ -146,7 +162,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
         return [{
             url: `${baseUrl}/${urlPrefix}/${slug}`,
-            lastModified: toLastModified(article.created_at),
+            lastModified: toLastModified(article.updated_at || article.created_at),
             changeFrequency: 'weekly' as const,
             priority: isPriorityArticle ? 0.95 : 0.85,
             images: [imageUrl || fallbackImageUrl],

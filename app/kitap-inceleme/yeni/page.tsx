@@ -1,10 +1,15 @@
 import { createClient } from "@/lib/supabase-server";
 import { redirect } from "next/navigation";
 import { BookReviewEditor } from "@/components/book-review/book-review-editor";
+import type { Metadata } from "next";
 
-export const metadata = {
+export const metadata: Metadata = {
     title: "Yeni Kitap İncelemesi | Fizikhub",
     description: "Okuduğun bir kitabı incele ve toplulukla paylaş.",
+    robots: { index: false, follow: true },
+    alternates: {
+        canonical: "https://www.fizikhub.com/kitap-inceleme/yeni",
+    },
 };
 
 export default async function NewBookReviewPage() {

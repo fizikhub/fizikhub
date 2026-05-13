@@ -25,27 +25,49 @@ import { ShareDrawer } from "@/components/forum/share-drawer";
 import { cn } from "@/lib/utils";
 import { isAdminEmail } from "@/lib/admin-shared";
 
-type Answer = Database['public']['Tables']['answers']['Row'] & {
+type PublicProfile = {
+    username: string | null;
+    full_name: string | null;
+    avatar_url: string | null;
+    is_verified?: boolean | null;
+};
+
+type RawAnswer = Database['public']['Tables']['answers']['Row'] & {
     is_accepted: boolean | null;
-    profiles: {
-        username: string | null;
-        full_name: string | null;
-        avatar_url: string | null;
-        is_verified?: boolean | null;
-    } | null;
+    votes?: number | null;
+    updated_at?: string | null;
+    profiles: PublicProfile | PublicProfile[] | null;
     likeCount?: number;
     isLiked?: boolean;
     comments?: any[];
 };
 
+type Answer = Omit<RawAnswer, "author_id" | "profiles"> & {
+    profiles: PublicProfile | null;
+    canDelete?: boolean;
+};
+
 interface AnswerListProps {
     questionId: number;
     initialAnswers: Answer[];
-    questionAuthorId: string;
     currentUser: any;
 }
 
-export function AnswerList({ questionId, initialAnswers, questionAuthorId, currentUser }: AnswerListProps) {
+function getPublicProfile(profile: PublicProfile | PublicProfile[] | null | undefined): PublicProfile | null {
+    return Array.isArray(profile) ? profile[0] || null : profile || null;
+}
+
+function toClientAnswer(answer: RawAnswer | (Omit<RawAnswer, "author_id"> & { author_id?: string; canDelete?: boolean }), user: any): Answer {
+    const { author_id, profiles, canDelete, ...clientAnswer } = answer as RawAnswer & { canDelete?: boolean };
+
+    return {
+        ...clientAnswer,
+        profiles: getPublicProfile(profiles),
+        canDelete: canDelete ?? (user?.id === author_id || isAdminEmail(user?.email)),
+    };
+}
+
+export function AnswerList({ questionId, initialAnswers, currentUser }: AnswerListProps) {
     type SortOption = "newest" | "popular";
     const [sortBy, setSortBy] = useState<SortOption>("newest");
     const [answers, setAnswers] = useState<Answer[]>(initialAnswers);
@@ -142,7 +164,7 @@ export function AnswerList({ questionId, initialAnswers, questionAuthorId, curre
                     if (newAnswer) {
                         setAnswers((current) => {
                             if (current.some(a => a.id === newAnswer.id)) return current;
-                            return [...current, { ...newAnswer, comments: [] }];
+                            return [...current, toClientAnswer({ ...newAnswer, comments: [] } as RawAnswer, user)];
                         });
                     }
                 }
@@ -156,10 +178,16 @@ export function AnswerList({ questionId, initialAnswers, questionAuthorId, curre
                     filter: `question_id=eq.${questionId}`
                 },
                 (payload) => {
+                    const { author_id: removedAuthorId, profiles, ...clientUpdate } = payload.new as Partial<RawAnswer>;
+                    void removedAuthorId;
+                    const normalizedUpdate = {
+                        ...clientUpdate,
+                        ...(profiles !== undefined ? { profiles: getPublicProfile(profiles) } : {}),
+                    } as Partial<Answer>;
                     setAnswers((current) =>
                         current.map((a) =>
                             a.id === payload.new.id
-                                ? { ...a, ...payload.new }
+                                ? { ...a, ...normalizedUpdate }
                                 : a
                         )
                     );
@@ -185,7 +213,7 @@ export function AnswerList({ questionId, initialAnswers, questionAuthorId, curre
             subscription.unsubscribe();
             supabase.removeChannel(channel);
         };
-    }, [supabase, questionId]);
+    }, [supabase, questionId, user]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -207,7 +235,10 @@ export function AnswerList({ questionId, initialAnswers, questionAuthorId, curre
             }
 
             if (result.data) {
-                setAnswers([...answers, result.data]);
+                setAnswers((current) => [
+                    ...current,
+                    toClientAnswer({ ...result.data, comments: [] } as unknown as RawAnswer & { canDelete?: boolean }, user)
+                ]);
             }
             setNewAnswer("");
             toast.success("Cevabınız gönderildi!");
@@ -399,11 +430,10 @@ export function AnswerList({ questionId, initialAnswers, questionAuthorId, curre
                                             {/* Actions Menu */}
                                             <div className="flex items-center opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity gap-1">
 
-                                                {(user?.id === answer.author_id || isAdminEmail(user?.email)) && (
+                                                {answer.canDelete && (
                                                     <DeleteAnswerButton
                                                         answerId={answer.id}
                                                         questionId={questionId}
-                                                        authorId={answer.author_id}
                                                     />
                                                 )}
 
