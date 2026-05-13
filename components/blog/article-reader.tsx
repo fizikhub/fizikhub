@@ -205,7 +205,7 @@ export function ArticleReader({
             )}>
                 <div className={cn(
                     "container mx-auto max-w-[100vw] overflow-x-hidden",
-                    isZenMode ? "max-w-3xl" : "max-w-3xl px-4 pt-5 pb-8 sm:pt-8 sm:pb-10"
+                    isZenMode ? "max-w-3xl" : "max-w-3xl px-3 pt-4 pb-8 min-[380px]:px-4 sm:pt-8 sm:pb-10"
                 )}>
                     {/* Article Content */}
                     <article className="article-body-wrapper block">
@@ -221,26 +221,26 @@ export function ArticleReader({
 
                         {/* Content - NeoBrutalist High Contrast */}
                         <div className={cn(
-                            "prose prose-base sm:prose-lg dark:prose-invert max-w-none mb-10 sm:mb-16 overflow-x-hidden",
+                            "prose prose-base sm:prose-lg dark:prose-invert max-w-none mb-10 overflow-x-hidden sm:mb-16",
                             // Headings
                             "prose-headings:font-black prose-headings:tracking-normal prose-headings:text-foreground",
                             "prose-h1:text-2xl sm:prose-h1:text-4xl md:prose-h1:text-5xl prose-h1:!mb-8 sm:prose-h1:!mb-12 prose-h1:leading-[1.15]",
-                            "prose-h2:text-[1.35rem] sm:prose-h2:text-3xl md:prose-h2:text-4xl prose-h2:mt-10 sm:prose-h2:mt-16 prose-h2:!mb-5 sm:prose-h2:!mb-8 prose-h2:border-l-[5px] sm:prose-h2:border-l-[8px] prose-h2:border-[#FFC800] prose-h2:pl-3.5 sm:prose-h2:pl-5 prose-h2:leading-[1.25]",
-                            "prose-h3:text-[1.18rem] sm:prose-h3:text-2xl md:prose-h3:text-3xl prose-h3:mt-8 sm:prose-h3:mt-12 prose-h3:!mb-4 sm:prose-h3:!mb-6 prose-h3:font-bold prose-h3:border-l-[4px] sm:prose-h3:border-l-[6px] prose-h3:border-[#23A9FA] prose-h3:pl-3 sm:prose-h3:pl-4 prose-h3:leading-[1.25]",
+                            "prose-h2:text-[1.32rem] sm:prose-h2:text-3xl md:prose-h2:text-4xl prose-h2:mt-9 sm:prose-h2:mt-16 prose-h2:!mb-4 sm:prose-h2:!mb-8 prose-h2:border-l-[4px] sm:prose-h2:border-l-[8px] prose-h2:border-[#FFC800] prose-h2:pl-3 sm:prose-h2:pl-5 prose-h2:leading-[1.25]",
+                            "prose-h3:text-[1.14rem] sm:prose-h3:text-2xl md:prose-h3:text-3xl prose-h3:mt-7 sm:prose-h3:mt-12 prose-h3:!mb-3.5 sm:prose-h3:!mb-6 prose-h3:font-bold prose-h3:border-l-[4px] sm:prose-h3:border-l-[6px] prose-h3:border-[#23A9FA] prose-h3:pl-3 sm:prose-h3:pl-4 prose-h3:leading-[1.25]",
                             "prose-h4:text-base sm:prose-h4:text-xl prose-h4:mt-6 prose-h4:!mb-4 prose-h4:font-black prose-h4:text-foreground",
                             // Paragraphs & Text — optimized for mobile readability
-                            "prose-p:text-[16px] sm:prose-p:text-[17px] md:prose-p:text-[18px] prose-p:text-[#1a1a1a] dark:prose-p:text-[#e5e5e5] prose-p:leading-[1.76] sm:prose-p:leading-[1.86] prose-p:mb-5 sm:prose-p:mb-7 prose-p:font-[450]",
+                            "prose-p:text-[17px] sm:prose-p:text-[17px] md:prose-p:text-[18px] prose-p:text-[#1a1a1a] dark:prose-p:text-[#e5e5e5] prose-p:leading-[1.82] sm:prose-p:leading-[1.86] prose-p:mb-5 sm:prose-p:mb-7 prose-p:font-[450]",
                             "prose-strong:text-black dark:prose-strong:text-white prose-strong:font-black prose-strong:bg-[#FFC800]/20 dark:prose-strong:bg-[#23A9FA]/20 prose-strong:px-1 prose-strong:rounded-sm",
                             // Links — break long URLs
                             "prose-a:text-black dark:prose-a:text-white prose-a:font-black prose-a:no-underline prose-a:border-b-[3px] prose-a:border-[#23A9FA] dark:prose-a:border-[#FFC800] hover:prose-a:bg-[#23A9FA] dark:hover:prose-a:bg-[#FFC800] hover:prose-a:text-white dark:hover:prose-a:text-black prose-a:break-all prose-a:px-0.5",
                             // Lists
-                            "prose-li:text-[16px] sm:prose-li:text-[17px] md:prose-li:text-[18px] prose-li:text-zinc-800 dark:prose-li:text-zinc-300 prose-li:leading-[1.78] sm:prose-li:leading-relaxed prose-li:marker:text-[#FFC800] prose-li:marker:font-black prose-li:font-[450]",
+                            "prose-li:text-[16.5px] sm:prose-li:text-[17px] md:prose-li:text-[18px] prose-li:text-zinc-800 dark:prose-li:text-zinc-300 prose-li:leading-[1.78] sm:prose-li:leading-relaxed prose-li:marker:text-[#FFC800] prose-li:marker:font-black prose-li:font-[450]",
                             "prose-ul:pl-5 sm:prose-ul:pl-8 prose-ol:pl-5 sm:prose-ol:pl-8",
                             // Blockquotes
                             "prose-blockquote:border-l-[5px] sm:prose-blockquote:border-l-[8px] prose-blockquote:border-black dark:prose-blockquote:border-[#FFC800] prose-blockquote:bg-[#FFC800]/10 dark:prose-blockquote:bg-[#FFC800]/5 prose-blockquote:py-4 sm:prose-blockquote:py-8 prose-blockquote:px-4 sm:prose-blockquote:px-10 prose-blockquote:my-7 sm:prose-blockquote:my-12 prose-blockquote:rounded-r-xl sm:prose-blockquote:rounded-r-2xl prose-blockquote:not-italic prose-blockquote:font-bold prose-blockquote:text-base sm:prose-blockquote:text-2xl prose-blockquote:leading-relaxed prose-blockquote:text-black dark:prose-blockquote:text-zinc-100",
                             // Code
                             "prose-code:bg-zinc-100 dark:prose-code:bg-zinc-800 prose-code:border-2 prose-code:border-black dark:prose-code:border-zinc-700 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded-md prose-code:text-[#FF3366] dark:prose-code:text-[#FFC800] prose-code:font-mono prose-code:text-[0.8em] sm:prose-code:text-[0.9em] prose-code:font-black prose-code:before:content-none prose-code:after:content-none prose-code:shadow-[2px_2px_0px_0px_#000] dark:prose-code:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.1)] prose-code:break-all",
-                            "prose-pre:bg-zinc-950 prose-pre:border-4 prose-pre:border-black dark:prose-pre:border-zinc-700 prose-pre:rounded-xl prose-pre:shadow-[8px_8px_0px_0px_#000] dark:prose-pre:shadow-[8px_8px_0px_0px_rgba(0,0,0,0.8)] prose-pre:overflow-x-auto prose-pre:max-w-full",
+                            "prose-pre:bg-zinc-950 prose-pre:border-[3px] sm:prose-pre:border-4 prose-pre:border-black dark:prose-pre:border-zinc-700 prose-pre:rounded-xl prose-pre:shadow-[4px_4px_0px_0px_#000] sm:prose-pre:shadow-[8px_8px_0px_0px_#000] dark:prose-pre:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)] sm:dark:prose-pre:shadow-[8px_8px_0px_0px_rgba(0,0,0,0.8)] prose-pre:overflow-x-auto prose-pre:max-w-full",
                             // Images
                             "prose-img:rounded-xl prose-img:border-4 prose-img:border-black dark:prose-img:border-zinc-800 prose-img:shadow-[8px_8px_0px_0px_#000] dark:prose-img:shadow-[8px_8px_0px_0px_rgba(0,0,0,0.6)] prose-img:my-7 sm:prose-img:my-10 prose-img:mx-auto prose-img:max-w-full",
                             // HR
@@ -379,6 +379,83 @@ export function ArticleReader({
                             </div>
                         )}
 
+                        {/* Mobile Reading Dock */}
+                        {!isZenMode && (
+                            <div className="fixed inset-x-0 bottom-[calc(0.75rem+env(safe-area-inset-bottom))] z-40 px-3 md:hidden">
+                                <div className="mx-auto flex max-w-[420px] items-center justify-between gap-1 rounded-2xl border-[3px] border-black bg-white/95 p-1.5 shadow-[4px_4px_0px_0px_#000] backdrop-blur-xl dark:bg-zinc-900/95 dark:border-zinc-700 dark:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.6)]">
+                                    <div className="flex items-center gap-0.5">
+                                        <LikeButton
+                                            articleId={article.id}
+                                            initialLiked={userContext.isLiked}
+                                            initialCount={likeCount || 0}
+                                        />
+                                        <BookmarkButton
+                                            type="article"
+                                            itemId={article.id}
+                                            initialBookmarked={userContext.isBookmarked}
+                                            className="h-9 px-2"
+                                        />
+                                    </div>
+
+                                    <div className="flex items-center gap-0.5">
+                                        <ShareButtons title={article.title} slug={article.slug} variant="minimal" className="h-9 w-9" />
+
+                                        <DropdownMenu>
+                                            <DropdownMenuTrigger asChild>
+                                                <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full text-neutral-700 dark:text-neutral-200">
+                                                    <Type className="h-4 w-4" />
+                                                </Button>
+                                            </DropdownMenuTrigger>
+                                            <DropdownMenuContent side="top" align="end" className="mb-3 w-64 rounded-2xl border-2 border-black/10 p-4 shadow-xl dark:border-white/10">
+                                                <div className="space-y-4" onClick={(e) => e.stopPropagation()}>
+                                                    <div className="flex items-center justify-between">
+                                                        <span className="text-[10px] font-black uppercase tracking-widest text-neutral-400">Yazı Boyutu</span>
+                                                        <div className="flex gap-1.5">
+                                                            <Button variant="outline" size="icon" className="h-8 w-8 rounded-lg" onClick={() => { const steps: ('sm'|'base'|'lg'|'xl')[] = ['sm','base','lg','xl']; const i = steps.indexOf(fontSize); if(i>0) setFontSize(steps[i-1]); }} disabled={fontSize === 'sm'}>
+                                                                <Minus className="h-3.5 w-3.5" />
+                                                            </Button>
+                                                            <Button variant="outline" size="icon" className="h-8 w-8 rounded-lg" onClick={() => { const steps: ('sm'|'base'|'lg'|'xl')[] = ['sm','base','lg','xl']; const i = steps.indexOf(fontSize); if(i<3) setFontSize(steps[i+1]); }} disabled={fontSize === 'xl'}>
+                                                                <Plus className="h-3.5 w-3.5" />
+                                                            </Button>
+                                                        </div>
+                                                    </div>
+                                                    <div className="grid grid-cols-2 gap-2">
+                                                        <Button variant={fontFamily === 'sans' ? 'default' : 'outline'} size="sm" className="h-9 rounded-lg text-xs font-black" onClick={() => setFontFamily('sans')}>
+                                                            Modern
+                                                        </Button>
+                                                        <Button variant={fontFamily === 'serif' ? 'default' : 'outline'} size="sm" className="h-9 rounded-lg text-xs font-black" onClick={() => setFontFamily('serif')}>
+                                                            Klasik
+                                                        </Button>
+                                                    </div>
+                                                </div>
+                                            </DropdownMenuContent>
+                                        </DropdownMenu>
+
+                                        <AnimatePresence>
+                                            {showScrollTop && (
+                                                <motion.div
+                                                    initial={{ width: 0, opacity: 0 }}
+                                                    animate={{ width: 'auto', opacity: 1 }}
+                                                    exit={{ width: 0, opacity: 0 }}
+                                                    className="overflow-hidden"
+                                                >
+                                                    <Button
+                                                        variant="default"
+                                                        size="icon"
+                                                        onClick={scrollToTop}
+                                                        className="h-9 w-9 rounded-full bg-[#FFC800] text-black"
+                                                        aria-label="Başa dön"
+                                                    >
+                                                        <ArrowUp className="h-4 w-4 stroke-[3px]" />
+                                                    </Button>
+                                                </motion.div>
+                                            )}
+                                        </AnimatePresence>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
                         {/* Zen Mode Exit Button */}
                         {isZenMode && (
                             <div className="fixed bottom-6 right-6 z-50">
@@ -396,7 +473,7 @@ export function ArticleReader({
 
                         {/* Footer Section */}
                         {!isZenMode && (
-                            <div className="mt-10 sm:mt-12 space-y-10 sm:space-y-16 pb-24 sm:pb-40">
+                            <div className="mt-10 sm:mt-12 space-y-10 sm:space-y-16 pb-32 sm:pb-40">
 
 
                                 {/* Author */}

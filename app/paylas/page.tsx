@@ -19,6 +19,8 @@ import { GlitchText } from "@/components/magicui/glitch-text";
 import { createClient } from "@/lib/supabase";
 import { TiltCard } from "@/components/magicui/tilt-card";
 import dynamic from "next/dynamic";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 // PERF: Lazy-load heavy Three.js WebGL canvas to prevent main-thread blocking
 const RealisticStars = dynamic(() => import("@/components/share/realistic-stars").then(mod => mod.RealisticStars), {
@@ -62,15 +64,23 @@ interface FreshCardProps {
     showBorderBeam?: boolean;
     isLarge?: boolean;
     badge?: string;
+    onProtectedClick?: (href: string, title: string) => void;
 }
 
-function FreshCard({ title, description, href, icon: Icon, color, accentColor, eyebrow, colSpan = "col-span-1", rowSpan = "row-span-1", showBorderBeam, isLarge, badge }: FreshCardProps) {
+function FreshCard({ title, description, href, icon: Icon, color, accentColor, eyebrow, colSpan = "col-span-1", rowSpan = "row-span-1", showBorderBeam, isLarge, badge, onProtectedClick }: FreshCardProps) {
+    const handleClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
+        if (!onProtectedClick) return;
+
+        event.preventDefault();
+        onProtectedClick(href, title);
+    };
+
     return (
         <motion.div
             variants={item}
             className={cn("relative group w-full h-full [perspective:1000px] hover:-translate-y-1.5 hover:scale-[1.015] active:scale-[0.98] transition-transform duration-300", colSpan, rowSpan)}
         >
-            <Link prefetch={false} href={href} aria-label={`${title} paylaş`} className="block h-full">
+            <Link prefetch={false} href={href} aria-label={`${title} paylaş`} className="block h-full" onClick={handleClick}>
                 <TiltCard className="h-full w-full" rotationFactor={8}>
                     <div className={cn(
                         "relative h-full w-full bg-white flex flex-col justify-between overflow-hidden",
@@ -163,8 +173,10 @@ function FreshCard({ title, description, href, icon: Icon, color, accentColor, e
 
 export default function PaylasPage() {
     const [userName, setUserName] = useState<string | null>(null);
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [loaded, setLoaded] = useState(false);
     const [supabase] = useState(() => createClient());
+    const router = useRouter();
 
     useEffect(() => {
         let isMounted = true;
@@ -172,6 +184,7 @@ export default function PaylasPage() {
         const fetchUser = async () => {
             const { data: { user } } = await supabase.auth.getUser();
             if (user) {
+                if (isMounted) setIsAuthenticated(true);
                 const { data: profile } = await supabase
                     .from('profiles')
                     .select('full_name, username')
@@ -183,6 +196,8 @@ export default function PaylasPage() {
                 } else {
                     if (isMounted) setUserName("Bilim İnsanı");
                 }
+            } else if (isMounted) {
+                setIsAuthenticated(false);
             }
             if (isMounted) setLoaded(true);
         };
@@ -201,6 +216,25 @@ export default function PaylasPage() {
             clearTimeout(timeout);
         };
     }, [supabase]);
+
+    const requireAuth = (href: string, title: string) => {
+        if (isAuthenticated) {
+            router.push(href);
+            return;
+        }
+
+        const label = title === "SORU" ? "soru sormak" : title === "KİTAP" ? "kitap incelemesi yazmak" : title === "BLOG" ? "blog yazmak" : `${title.toLocaleLowerCase("tr-TR")} paylaşmak`;
+
+        toast(`Fizikhub'a giriş yapmalısın`, {
+            description: `${label.charAt(0).toLocaleUpperCase("tr-TR") + label.slice(1)} için giriş yapmalı veya üye olmalısın.`,
+            className: "dynamic-island-toast",
+            duration: 1800,
+        });
+
+        window.setTimeout(() => {
+            router.push(`/login?next=${encodeURIComponent(href)}`);
+        }, 850);
+    };
 
     return (
         <div className="min-h-screen bg-background px-3 pb-[calc(6.5rem+env(safe-area-inset-bottom))] pt-4 font-sans relative overflow-hidden sm:px-4 md:pt-20">
@@ -276,6 +310,7 @@ export default function PaylasPage() {
                         showBorderBeam={true}
                         isLarge={true}
                         badge="POPÜLER TERCİH"
+                        onProtectedClick={!isAuthenticated ? requireAuth : undefined}
                     />
 
                     {/* 2. Question: Single Block - Very Vibrant */}
@@ -288,6 +323,7 @@ export default function PaylasPage() {
                         accentColor="#FB7185"
                         eyebrow="Topluluk sorusu"
                         colSpan="md:col-span-1 lg:col-span-2"
+                        onProtectedClick={!isAuthenticated ? requireAuth : undefined}
                     />
 
                     {/* 3. Experiment: Single Block - Vertical Reach */}
@@ -301,6 +337,7 @@ export default function PaylasPage() {
                         eyebrow="Kanıt ve simülasyon"
                         colSpan="md:col-span-1 lg:col-span-1"
                         rowSpan="md:row-span-2 lg:row-span-1"
+                        onProtectedClick={!isAuthenticated ? requireAuth : undefined}
                     />
 
                     {/* 4. Book: Wide Block */}
@@ -313,6 +350,7 @@ export default function PaylasPage() {
                         accentColor="#60A5FA"
                         eyebrow="Okuma notu"
                         colSpan="md:col-span-2 lg:col-span-2"
+                        onProtectedClick={!isAuthenticated ? requireAuth : undefined}
                     />
 
                     {/* 5. Term: Wide Block Bottom */}
@@ -325,6 +363,7 @@ export default function PaylasPage() {
                         accentColor="#C084FC"
                         eyebrow="Bilim sözlüğü"
                         colSpan="md:col-span-1 lg:col-span-1"
+                        onProtectedClick={!isAuthenticated ? requireAuth : undefined}
                     />
 
                 </motion.div>

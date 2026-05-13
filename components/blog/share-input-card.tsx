@@ -34,6 +34,7 @@ const CATEGORIES = [
 
 export function ShareInputCard({ user: initialUser }: ShareInputCardProps) {
     const [user, setUser] = useState(initialUser);
+    const [isAuthenticated, setIsAuthenticated] = useState(!!initialUser);
     const [supabase] = useState(() => createClient());
 
     useEffect(() => {
@@ -41,12 +42,15 @@ export function ShareInputCard({ user: initialUser }: ShareInputCardProps) {
             try {
                 const { data: { user: authUser } } = await supabase.auth.getUser();
                 if (authUser) {
+                    setIsAuthenticated(true);
                     const { data: profile } = await supabase
                         .from("profiles")
                         .select("*")
                         .eq("id", authUser.id)
                         .maybeSingle();
                     if (profile) setUser(profile);
+                } else {
+                    setIsAuthenticated(false);
                 }
             } catch {
                 // Silently fail in restricted environments
@@ -71,6 +75,26 @@ export function ShareInputCard({ user: initialUser }: ShareInputCardProps) {
     const dropdownRef = useRef<HTMLDivElement>(null);
     const triggerRef = useRef<HTMLButtonElement>(null);
 
+    const requireAuth = (intent: "blog" | "question" | "book" | "term" | "experiment", target = "/login") => {
+        const labels = {
+            blog: "Blog yazmak",
+            question: "Soru sormak",
+            book: "Kitap incelemesi yazmak",
+            term: "Terim eklemek",
+            experiment: "Deney paylaşmak",
+        };
+
+        toast("Fizikhub'a giriş yapmalısın", {
+            description: `${labels[intent]} için giriş yapmalı veya üye olmalısın.`,
+            className: "dynamic-island-toast",
+            duration: 1800,
+        });
+
+        window.setTimeout(() => {
+            router.push(`/login?next=${encodeURIComponent(target)}`);
+        }, 850);
+    };
+
     useEffect(() => {
         function handleClickOutside(event: MouseEvent) {
             if (
@@ -88,6 +112,10 @@ export function ShareInputCard({ user: initialUser }: ShareInputCardProps) {
 
     const handleQuickQuestion = (e: React.MouseEvent) => {
         e.preventDefault();
+        if (!isAuthenticated) {
+            requireAuth("question", "/forum?create=true");
+            return;
+        }
         setMode("question");
         setIsOpen(true);
     };
@@ -122,7 +150,7 @@ export function ShareInputCard({ user: initialUser }: ShareInputCardProps) {
             } else {
                 toast.error(result.error);
             }
-        } catch (error) {
+        } catch {
             toast.error("Bir hata oluştu.");
         } finally {
             setIsSubmitting(false);
@@ -252,7 +280,19 @@ export function ShareInputCard({ user: initialUser }: ShareInputCardProps) {
                             ) : (
                                 <button
                                     ref={triggerRef}
-                                    onClick={() => isOpen ? handleClose() : setIsOpen(true)}
+                                    onClick={() => {
+                                        if (isOpen) {
+                                            handleClose();
+                                            return;
+                                        }
+
+                                        if (!isAuthenticated) {
+                                            requireAuth("blog", "/makale/yeni?type=blog");
+                                            return;
+                                        }
+
+                                        setIsOpen(true);
+                                    }}
                                     className={cn(
                                         "w-full h-10 sm:h-12 text-left px-3 sm:px-4 flex items-center justify-between transition-all duration-200 group/input relative",
                                         "bg-zinc-900/60 backdrop-blur-sm",
@@ -298,13 +338,23 @@ export function ShareInputCard({ user: initialUser }: ShareInputCardProps) {
                                         <div className="px-3 py-2 text-[10px] font-bold tracking-widest uppercase text-zinc-600">Seçenekler</div>
 
                                         {[
-                                            { href: "/kitap-inceleme/yeni", icon: LibraryBig, label: "Kitap İncelemesi", sub: "Puanla ve İncele", color: "bg-red-500" },
-                                            { href: null, action: handleQuickQuestion, icon: BrainCircuit, label: "Hızlı Soru Sor", sub: "Buradan Hızlıca Sor", color: "bg-yellow-400" },
-                                            { href: "/makale/yeni?type=term", icon: WholeWord, label: "Terim Ekle", sub: "Sözlüğe Katkı Yap", color: "bg-blue-500" },
-                                            { href: "/makale/yeni?type=experiment", icon: Atom, label: "Deney Paylaş", sub: "Bilimsel Çalışman", color: "bg-emerald-500" }
+                                            { href: "/kitap-inceleme/yeni", intent: "book", icon: LibraryBig, label: "Kitap İncelemesi", sub: "Puanla ve İncele", color: "bg-red-500" },
+                                            { href: null, intent: "question", action: handleQuickQuestion, icon: BrainCircuit, label: "Hızlı Soru Sor", sub: "Buradan Hızlıca Sor", color: "bg-yellow-400" },
+                                            { href: "/makale/yeni?type=term", intent: "term", icon: WholeWord, label: "Terim Ekle", sub: "Sözlüğe Katkı Yap", color: "bg-blue-500" },
+                                            { href: "/makale/yeni?type=experiment", intent: "experiment", icon: Atom, label: "Deney Paylaş", sub: "Bilimsel Çalışman", color: "bg-emerald-500" }
                                         ].map((item, idx) => {
                                             const Comp = item.href ? Link : 'button';
-                                            const props = item.href ? { href: item.href } : { onClick: item.action };
+                                            const props = item.href
+                                                ? {
+                                                    href: item.href,
+                                                    onClick: (event: React.MouseEvent<HTMLAnchorElement>) => {
+                                                        if (!isAuthenticated) {
+                                                            event.preventDefault();
+                                                            requireAuth(item.intent as "blog" | "question" | "book" | "term" | "experiment", item.href);
+                                                        }
+                                                    }
+                                                }
+                                                : { onClick: item.action };
                                             return (
                                                 // @ts-expect-error Dynamic component props (Link vs button)
                                                 <Comp
@@ -334,7 +384,12 @@ export function ShareInputCard({ user: initialUser }: ShareInputCardProps) {
             <div className="px-3 py-2.5 sm:px-5 sm:py-3 border-t border-zinc-800/80 bg-zinc-950/80 backdrop-blur-sm flex items-center justify-center rounded-b-2xl relative z-10">
                 <div className="flex items-center gap-2 sm:gap-3 w-full justify-center">
 
-                    <Link prefetch={false} href="/makale/yeni" className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3 sm:px-5 h-8 sm:h-9 rounded-lg bg-transparent text-zinc-400 border border-zinc-700/60 hover:bg-zinc-800 hover:text-white hover:border-zinc-600 transition-all cursor-pointer text-[10px] sm:text-[11px] font-semibold uppercase tracking-wide">
+                    <Link prefetch={false} href="/makale/yeni?type=blog" onClick={(event) => {
+                        if (!isAuthenticated) {
+                            event.preventDefault();
+                            requireAuth("blog", "/makale/yeni?type=blog");
+                        }
+                    }} className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3 sm:px-5 h-8 sm:h-9 rounded-lg bg-transparent text-zinc-400 border border-zinc-700/60 hover:bg-zinc-800 hover:text-white hover:border-zinc-600 transition-all cursor-pointer text-[10px] sm:text-[11px] font-semibold uppercase tracking-wide">
                         <PenTool className="w-3.5 h-3.5" />
                         Blog
                     </Link>
@@ -344,7 +399,13 @@ export function ShareInputCard({ user: initialUser }: ShareInputCardProps) {
                         Soru
                     </button>
 
-                    <button onClick={() => setIsOpen(!isOpen)} className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3 sm:px-5 h-8 sm:h-9 rounded-lg bg-yellow-400 text-zinc-900 hover:bg-yellow-300 shadow-lg shadow-yellow-400/20 hover:shadow-yellow-400/30 transition-all cursor-pointer text-[10px] sm:text-[11px] font-bold uppercase tracking-wide">
+                    <button onClick={() => {
+                        if (!isAuthenticated) {
+                            requireAuth("blog", "/makale/yeni?type=blog");
+                            return;
+                        }
+                        setIsOpen(!isOpen);
+                    }} className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3 sm:px-5 h-8 sm:h-9 rounded-lg bg-yellow-400 text-zinc-900 hover:bg-yellow-300 shadow-lg shadow-yellow-400/20 hover:shadow-yellow-400/30 transition-all cursor-pointer text-[10px] sm:text-[11px] font-bold uppercase tracking-wide">
                         <Plus className="w-3.5 h-3.5 stroke-[3px]" />
                         Ekle
                     </button>
