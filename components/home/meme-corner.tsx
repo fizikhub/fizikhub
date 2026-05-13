@@ -13,11 +13,8 @@ export function MemeCorner() {
     const [load3D, setLoad3D] = useState(false);
 
     useEffect(() => {
-        const shouldSkip3D =
-            window.matchMedia("(max-width: 767px)").matches ||
-            window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-        if (shouldSkip3D) return;
+        // Skip only for users who prefer reduced motion
+        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
         const enable3D = () => setLoad3D(true);
 

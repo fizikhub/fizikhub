@@ -366,12 +366,7 @@ export default function MemeCornerCanvas() {
     useEffect(() => {
         setMounted(true);
         const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        const isMobile = window.innerWidth <= 768;
-        const hardwareConcurrency = navigator.hardwareConcurrency || 4;
-        // @ts-ignore
-        const deviceMemory = navigator.deviceMemory || 4;
-
-        if (prefersReducedMotion || (isMobile && (hardwareConcurrency < 4 || deviceMemory < 4))) {
+        if (prefersReducedMotion) {
             setIsLowEnd(true);
         }
     }, []);
@@ -389,7 +384,7 @@ export default function MemeCornerCanvas() {
                 powerPreference: "high-performance",
                 alpha: true
             }}
-            dpr={[1, 2.5]}
+            dpr={[1, Math.min(window.devicePixelRatio, 2)]}
         >
             <group>
                 <BackgroundStars />

@@ -2,10 +2,10 @@ import { createClient } from "@supabase/supabase-js";
 import { unstable_cache } from "next/cache";
 import type { Metadata } from "next";
 import dynamic from "next/dynamic";
-import Link from "next/link";
+
 import { FeedSkeleton } from "@/components/home/performance-skeletons";
 import { processFeedData, formatSliderArticles } from "@/lib/feed-helpers";
-import { SEO_PRIORITY_ARTICLES, SEO_PRIORITY_SLUGS } from "@/lib/seo-priority";
+import { SEO_PRIORITY_SLUGS } from "@/lib/seo-priority";
 import { LazyDesktopSidebar } from "@/components/home/lazy-desktop-sidebar";
 import { isLikelyIndexableArticle } from "@/lib/seo-utils";
 
@@ -152,50 +152,9 @@ const getCachedFeedData = unstable_cache(
   { revalidate: 60, tags: ['feed'] }
 );
 
-function SearchOpportunityLinks() {
-    return (
-    <section className="mt-3 mb-3 rounded-[8px] border border-foreground/10 bg-background/80 px-3 py-3 sm:px-4" aria-label="Popüler fizik konu rehberleri">
-      <div className="mb-3 max-w-3xl">
-        <h2 className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
-          En çok aranan fizik rehberleri
-        </h2>
-        <p className="mt-1 text-sm font-semibold leading-6 text-muted-foreground">
-          FizikHub'da kuantum fiziği, kara delikler, entropi, karanlık madde ve temel fizik konuları kısa cevap, formül ve örneklerle anlatılır.
-        </p>
-      </div>
-      <div className="flex flex-wrap items-center gap-2">
-        <Link
-          href="/konular"
-          className="rounded-[7px] border border-black bg-yellow-400 px-2.5 py-1.5 text-[11px] font-black text-black transition-colors hover:bg-white sm:text-xs"
-        >
-          Fizik konuları
-        </Link>
-        {SEO_PRIORITY_ARTICLES.map((article) => (
-          <Link
-            key={article.slug}
-            href={`/makale/${article.slug}`}
-            className="rounded-[7px] border border-foreground/15 bg-foreground px-2.5 py-1.5 text-[11px] font-black text-background transition-colors hover:bg-yellow-400 hover:text-black sm:text-xs"
-          >
-            {article.title}
-          </Link>
-        ))}
-      </div>
-    </section>
-  );
-}
 
-function HomepageSearchSummary() {
-  return (
-    <section className="mb-3 mt-2 max-w-4xl px-1" aria-labelledby="homepage-search-title">
-      <h1 id="homepage-search-title" className="text-2xl font-black leading-tight tracking-normal text-foreground sm:text-3xl">
-        Fizikhub: Türkçe fizik, uzay ve kuantum rehberi
-      </h1>
-      <p className="mt-2 max-w-3xl text-sm font-semibold leading-7 text-muted-foreground sm:text-base">
-        Kara deliklerden entropiye, fotoelektrik olaydan James Webb'e kadar merak edilen fizik ve astronomi konularını sade cevaplar, formüller, örnekler ve topluluk tartışmalarıyla keşfet.
-      </p>
-    </section>
-  );
-}
+
+
 
 export default async function Home() {
   const { articles, questions, suggestedUsers, stories, groups } = await getCachedFeedData();
@@ -257,8 +216,6 @@ export default async function Home() {
 
           <div className="lg:col-span-12 mt-0 sm:px-0">
             <CompactHero />
-            <HomepageSearchSummary />
-            <SearchOpportunityLinks />
             <div data-nosnippet>
               <NexusStories initialStories={stories} initialGroups={groups} />
             </div>
