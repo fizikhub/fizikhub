@@ -7,7 +7,7 @@ import { FeedSkeleton } from "@/components/home/performance-skeletons";
 import { processFeedData, formatSliderArticles } from "@/lib/feed-helpers";
 import { SEO_PRIORITY_SLUGS } from "@/lib/seo-priority";
 import { LazyDesktopSidebar } from "@/components/home/lazy-desktop-sidebar";
-import { isLikelyIndexableArticle } from "@/lib/seo-utils";
+import { getSiteUrl, isLikelyIndexableArticle, toAbsoluteUrl } from "@/lib/seo-utils";
 
 // Dynamic Imports (Client boundaries lazy loaded automatically)
 const ScrollProgress = dynamic(() => import("@/components/ui/scroll-progress").then(mod => mod.ScrollProgress));
@@ -63,7 +63,7 @@ const getCachedFeedData = unstable_cache(
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!.trim()
     );
 
-    const articleSelect = 'id, title, slug, excerpt, content, cover_url, image_url, category, created_at, status, author:profiles!articles_author_id_fkey(full_name, username, avatar_url, is_writer)';
+    const articleSelect = 'id, title, slug, excerpt, cover_url, image_url, category, created_at, status, author:profiles!articles_author_id_fkey(full_name, username, avatar_url, is_writer)';
 
     const [articlesResult, priorityArticlesResult, questionsResult, profilesResult, storiesResult, groupsResult] = await Promise.all([
       // Fetch Articles & Blogs (using same table)
@@ -148,7 +148,7 @@ const getCachedFeedData = unstable_cache(
       }))
     };
   },
-  ['feed-data-v5-homepage-load-more'], // Bump version to invalidate cache
+  ['feed-data-v6-homepage-lean-articles'], // Bump version to invalidate cache
   { revalidate: 60, tags: ['feed'] }
 );
 
@@ -158,9 +158,15 @@ const getCachedFeedData = unstable_cache(
 
 export default async function Home() {
   const { articles, questions, suggestedUsers, stories, groups } = await getCachedFeedData();
+  const baseUrl = getSiteUrl();
 
   // Process and Merge Data
   const feedItems = processFeedData(articles, questions);
+  const latestArticleDate = articles
+    .map((article: any) => article.created_at)
+    .filter(Boolean)
+    .sort()
+    .at(-1);
 
   // JSON-LD Structured Data for Homepage (ItemList)
   const jsonLd = {
@@ -168,32 +174,38 @@ export default async function Home() {
     '@graph': [
       {
         '@type': 'CollectionPage',
-        '@id': 'https://www.fizikhub.com/#collection',
-        url: 'https://www.fizikhub.com',
+        '@id': `${baseUrl}/#collection`,
+        url: baseUrl,
         name: 'Fizikhub Ana Sayfa',
         description: 'Fizik, uzay, kuantum ve bilim içerikleri için güncel Türkçe keşif akışı.',
         inLanguage: 'tr-TR',
-        isPartOf: { '@id': 'https://www.fizikhub.com/#website' },
-        mainEntity: { '@id': 'https://www.fizikhub.com/#latest-articles' },
+        isPartOf: { '@id': `${baseUrl}/#website` },
+        mainEntity: { '@id': `${baseUrl}/#latest-articles` },
+        publisher: { '@id': `${baseUrl}/#organization` },
+        dateModified: latestArticleDate,
       },
       {
         '@type': 'ItemList',
-        '@id': 'https://www.fizikhub.com/#latest-articles',
+        '@id': `${baseUrl}/#latest-articles`,
         name: 'Öne çıkan Fizikhub makaleleri',
-        itemListElement: articles.map((article: any, index: number) => ({
+        itemListElement: articles.slice(0, 12).map((article: any, index: number) => ({
           '@type': 'ListItem',
           position: index + 1,
           item: {
             '@type': 'Article',
-            url: `https://www.fizikhub.com/makale/${article.slug}`,
+            '@id': `${baseUrl}/makale/${article.slug}#article`,
+            url: `${baseUrl}/makale/${article.slug}`,
             name: article.title,
             headline: article.title,
-            image: article.cover_url || article.image_url || "https://www.fizikhub.com/og-image.jpg",
+            description: article.excerpt || `${article.title} hakkında Fizikhub makalesi.`,
+            image: toAbsoluteUrl(article.cover_url || article.image_url, baseUrl) || `${baseUrl}/og-image.jpg`,
             datePublished: article.created_at,
             author: {
               '@type': 'Person',
               name: article.author?.full_name || article.author?.username || 'FizikHub Yazarı'
-            }
+            },
+            publisher: { '@id': `${baseUrl}/#organization` },
+            mainEntityOfPage: `${baseUrl}/makale/${article.slug}`,
           }
         }))
       }

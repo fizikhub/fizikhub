@@ -177,6 +177,14 @@ const jsonLdWebsite = {
     'https://twitter.com/fizikhub',
     'https://instagram.com/fizikhub'
   ],
+  potentialAction: {
+    '@type': 'SearchAction',
+    target: {
+      '@type': 'EntryPoint',
+      urlTemplate: 'https://www.fizikhub.com/ara?q={search_term_string}',
+    },
+    'query-input': 'required name=search_term_string',
+  },
   about: [
     'Fizik',
     'Kuantum fiziği',

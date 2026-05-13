@@ -76,12 +76,13 @@ export function isLikelyIndexableArticle(article: {
     slug?: string | null;
     category?: string | null;
     excerpt?: string | null;
+    summary?: string | null;
     content?: string | null;
 }) {
     if (!article.slug || !isLikelyIndexableTitle(article.title)) return false;
     if (article.category === "Terim") return false;
 
-    const visibleText = [article.excerpt, article.content].filter(Boolean).join(" ");
+    const visibleText = [article.excerpt, article.summary, article.content].filter(Boolean).join(" ");
     if (visibleText && !hasUsefulIndexableText(visibleText, 40)) return false;
 
     return true;
