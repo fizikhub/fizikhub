@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect } from "react";
 import { m as motion, AnimatePresence } from "framer-motion";
-import { LayoutList, MessageCircle, Bookmark, FileText, Activity } from "lucide-react";
+import { LayoutList, MessageCircle, Bookmark, FileText } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { UnifiedFeed, FeedItem } from "@/components/home/unified-feed";
 import { useUiSounds } from "@/hooks/use-ui-sounds";
@@ -177,22 +177,9 @@ export function DarkNeoFeed({
 
     return (
         <div className="w-full space-y-4 sm:space-y-6">
-            <div className="relative overflow-hidden rounded-[18px] border-[3px] border-black bg-[#27272a] p-3 text-white shadow-[5px_5px_0px_0px_#000] sm:rounded-[22px] sm:p-4">
-                <div className="mb-3 flex items-center justify-between gap-3 border-b-2 border-dashed border-white/10 pb-3">
-                    <div className="flex items-center gap-2">
-                        <span className="flex h-9 w-9 items-center justify-center rounded-[10px] border-2 border-black bg-[#23A9FA] text-black shadow-[2px_2px_0px_0px_#000]">
-                            <Activity className="h-4 w-4 stroke-[3px]" />
-                        </span>
-                        <div>
-                            <h2 className="text-sm font-black uppercase tracking-wider">Profil Akışı</h2>
-                            <p className="text-[11px] font-bold text-zinc-500">Yayınlar, sorular ve kayıtlı içerikler</p>
-                        </div>
-                    </div>
-                </div>
-
-                {/* TABS - Vivid & Chunky & Sticky */}
-                <div className="sticky top-[53px] z-40 -mx-1 bg-[#27272a]/95 px-1 pt-1 pb-1.5 backdrop-blur-sm sm:top-[72px] md:top-0">
-                    <div className="grid grid-cols-2 gap-2 sm:flex sm:items-center sm:gap-3">
+            {/* TABS - Vivid & Chunky & Sticky */}
+            <div className="sticky top-[53px] z-40 mb-2 border-b-2 border-dashed border-black/20 bg-background/95 pt-2 pb-2 backdrop-blur-sm sm:top-[72px] sm:mb-3 sm:pb-3 md:top-0">
+                <div className="grid grid-cols-2 gap-2 sm:flex sm:items-center sm:gap-3">
                 {tabs.map((tab) => {
                     const Icon = tab.icon;
                     const isActive = activeTab === tab.id;
@@ -210,10 +197,10 @@ export function DarkNeoFeed({
                             key={tab.id}
                             onClick={handleTabClick}
                             className={cn(
-                                "group relative flex min-h-11 min-w-0 items-center justify-center gap-1.5 rounded-[12px] border-2 px-2.5 py-2 text-[11px] font-black transition-all active:scale-95 sm:min-h-12 sm:flex-shrink-0 sm:justify-start sm:gap-2 sm:px-4 sm:text-xs",
+                                "group relative flex min-h-10 min-w-0 items-center justify-center gap-1.5 rounded-xl border-2 px-2.5 py-2 text-[11px] font-black transition-all active:scale-95 sm:min-h-11 sm:flex-shrink-0 sm:justify-start sm:gap-2 sm:px-4 sm:text-xs",
                                 isActive
-                                    ? `${tab.color} border-black shadow-[3px_3px_0px_0px_#000] translate-x-[-1px] translate-y-[-1px]`
-                                    : "bg-zinc-950/70 border-black text-zinc-500 hover:text-white hover:shadow-[2px_2px_0px_0px_#000] hover:translate-x-[-1px] hover:translate-y-[-1px]"
+                                    ? `${tab.color} border-black shadow-[2px_2px_0px_0px_#000] translate-x-[-1px] translate-y-[-1px]`
+                                    : "bg-background border-black dark:border-zinc-800 text-zinc-500 hover:text-foreground hover:shadow-[2px_2px_0px_0px_#000] hover:translate-x-[-1px] hover:translate-y-[-1px]"
                             )}
                         >
                             <Icon className={cn("h-3.5 w-3.5 shrink-0 stroke-[2.5px]", isActive && "stroke-current")} />
@@ -229,7 +216,6 @@ export function DarkNeoFeed({
                         </button>
                     );
                 })}
-                    </div>
                 </div>
             </div>
 
