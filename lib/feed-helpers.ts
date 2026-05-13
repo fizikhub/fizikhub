@@ -1,6 +1,28 @@
 
 import { FeedItem } from "@/components/home/unified-feed";
 
+function buildArticlePreview(article: any) {
+    const explicitPreview = article.excerpt || article.summary;
+    if (explicitPreview) return explicitPreview;
+
+    if (!article.content) return "";
+
+    return article.content
+        .replace(/<style[\s\S]*?<\/style>/gi, " ")
+        .replace(/<script[\s\S]*?<\/script>/gi, " ")
+        .replace(/<[^>]+>/g, " ")
+        .replace(/!\[[^\]]*\]\([^)]*\)/g, " ")
+        .replace(/\[[^\]]+\]\([^)]*\)/g, (match: string) => match.match(/\[([^\]]+)\]/)?.[1] || " ")
+        .replace(/[#>*_`~-]+/g, " ")
+        .replace(/&nbsp;/g, " ")
+        .replace(/&amp;/g, "&")
+        .replace(/&lt;/g, "<")
+        .replace(/&gt;/g, ">")
+        .replace(/\s+/g, " ")
+        .trim()
+        .slice(0, 360);
+}
+
 export function processFeedData(articles: any[], questions: any[]): FeedItem[] {
     const feedItems: FeedItem[] = [];
 
@@ -17,8 +39,8 @@ export function processFeedData(articles: any[], questions: any[]): FeedItem[] {
         }
 
         // Homepage feed must never ship full article bodies to the browser.
-        // Use DB-provided excerpts as the card summary and leave detail parsing to detail pages.
-        a.summary = a.excerpt || a.summary || "";
+        // Build a short fallback preview server-side for cards without an explicit excerpt.
+        a.summary = buildArticlePreview(a);
         delete a.content;
 
         feedItems.push({
