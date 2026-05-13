@@ -280,6 +280,7 @@ const withPWA = require("@ducanh2912/next-pwa").default({
     "!audio/**/*",
     "!badges/**/*",
     "!cats/**/*",
+    "!email/**/*",
     "!img/**/*",
     "!retro/**/*",
     "!rive/**/*",

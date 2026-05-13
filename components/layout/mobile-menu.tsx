@@ -13,6 +13,7 @@ import { PhysicsFactModal } from "@/components/ui/physics-fact-modal";
 
 const menuItems = [
     { href: '/', label: 'Ana Sayfa', icon: Home, color: 'group-hover:text-[#FFC800]', iconColor: 'text-[#FFC800]' },
+    { href: '/konular', label: 'Konular', icon: Compass, color: 'group-hover:text-[#23A9FA]', iconColor: 'text-[#23A9FA]' },
     { href: '/simulasyonlar', label: 'Simülasyon', icon: Atom, color: 'group-hover:text-[#23A9FA]', iconColor: 'text-[#23A9FA]' },
     { href: '/siralamalar', label: 'Sıralama', icon: Trophy, color: 'group-hover:text-[#FFC800]', iconColor: 'text-[#FFC800]' },
     { href: '/sozluk', label: 'Sözlük', icon: Book, color: 'group-hover:text-[#00F0A0]', iconColor: 'text-[#00F0A0]' },

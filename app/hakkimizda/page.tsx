@@ -1,9 +1,11 @@
 import { Metadata } from "next";
 import { BreadcrumbJsonLd } from "@/lib/breadcrumbs";
 
+const ABOUT_DESCRIPTION = "Fizikhub, fiziği sevdirmek ve anlaşılır kılmak amacıyla kurulmuş bir bilim platformudur. Güncel bilim haberleri, detaylı fizik makaleleri ve interaktif araçlar.";
+
 export const metadata: Metadata = {
     title: "Hakkımızda | Fizikhub",
-    description: "Fizikhub, fiziği sevdirmek ve anlaşılır kılmak amacıyla kurulmuş bir bilim platformudur. Güncel bilim haberleri, detaylı fizik makaleleri ve interaktif araçlar.",
+    description: ABOUT_DESCRIPTION,
     openGraph: {
         title: "Hakkımızda — Fizikhub",
         description: "Fizikhub, fiziği sevdirmek ve anlaşılır kılmak amacıyla kurulmuş bir bilim platformudur.",
@@ -14,41 +16,22 @@ export const metadata: Metadata = {
 };
 
 export default function AboutPage() {
-    const faqJsonLd = {
+    const aboutJsonLd = {
         '@context': 'https://schema.org',
-        '@type': 'FAQPage',
-        mainEntity: [
-            {
-                '@type': 'Question',
-                name: 'FizikHub nedir?',
-                acceptedAnswer: {
-                    '@type': 'Answer',
-                    text: 'FizikHub, fiziği sevdirmek ve anlaşılır kılmak amacıyla kurulmuş bir bilim platformudur. Güncel bilim haberleri, fizik makaleleri, soru-cevap forumu ve interaktif araçlar sunar.'
-                }
-            },
-            {
-                '@type': 'Question',
-                name: 'FizikHub\'da neler yapabilirim?',
-                acceptedAnswer: {
-                    '@type': 'Answer',
-                    text: 'Soru sorabilir, makale yazabilir, testler çözebilir, bilim sözlüğünü inceleyebilir ve topluluk ile fizik tartışmalarına katılabilirsiniz.'
-                }
-            },
-            {
-                '@type': 'Question',
-                name: 'FizikHub ücretsiz mi?',
-                acceptedAnswer: {
-                    '@type': 'Answer',
-                    text: 'Evet, FizikHub tamamen ücretsiz bir bilim platformudur. Tüm içeriklere ve araçlara ücretsiz erişebilirsiniz.'
-                }
-            }
-        ]
+        '@type': 'AboutPage',
+        '@id': 'https://www.fizikhub.com/hakkimizda#webpage',
+        url: 'https://www.fizikhub.com/hakkimizda',
+        name: 'Hakkımızda | Fizikhub',
+        description: ABOUT_DESCRIPTION,
+        isPartOf: { '@id': 'https://www.fizikhub.com/#website' },
+        about: { '@id': 'https://www.fizikhub.com/#organization' },
+        inLanguage: 'tr-TR',
     };
 
     return (
         <>
             <BreadcrumbJsonLd items={[{ name: 'Hakkımızda', href: '/hakkimizda' }]} />
-            <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />
+            <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(aboutJsonLd) }} />
             <div className="container max-w-4xl py-10">
                 <h1 className="mb-6 text-3xl font-bold">Hakkımızda</h1>
                 <div className="prose dark:prose-invert">

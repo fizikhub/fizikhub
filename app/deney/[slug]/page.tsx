@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import { ReadingProgress } from "@/components/blog/reading-progress";
 import { createClient } from "@/lib/supabase-server";
 import { getArticleBySlug } from "@/lib/api";
@@ -30,10 +30,15 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
         `${article.title} deneyini Fizikhub'da adım adım incele.`,
     );
     const imageUrl = toAbsoluteUrl(article.cover_url || (article as { image_url?: string }).image_url, baseUrl) || `${baseUrl}/og-image.jpg`;
+    const canonicalPath = article.category === 'Deney' ? `/deney/${article.slug || slug}` : `/makale/${article.slug || slug}`;
 
     return {
         title: article.title,
         description,
+        robots: {
+            index: article.category === 'Deney',
+            follow: true,
+        },
         openGraph: {
             title: article.title,
             description,
@@ -49,7 +54,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
             images: [imageUrl],
         },
         alternates: {
-            canonical: `${baseUrl}/deney/${slug}`,
+            canonical: `${baseUrl}${canonicalPath}`,
         },
     };
 }
@@ -64,6 +69,10 @@ export default async function ExperimentPage({ params }: PageProps) {
 
     if (!article) {
         notFound();
+    }
+
+    if (article.category !== 'Deney') {
+        permanentRedirect(`/makale/${article.slug || slug}`);
     }
 
     // Get current user
@@ -94,15 +103,18 @@ export default async function ExperimentPage({ params }: PageProps) {
         .in('id', userIds) : { data: [] };
 
     // Combine comments with profiles
-    const comments = commentsData?.map(comment => ({
-        ...comment,
-        profiles: profiles?.find(p => p.id === comment.user_id) || {
-            id: comment.user_id,
-            username: 'unknown',
-            full_name: null,
-            avatar_url: null
-        }
-    })) || [];
+    const comments = commentsData?.map(({ user_id, ...comment }) => {
+        const publicProfile = profiles?.find(p => p.id === user_id);
+
+        return {
+            ...comment,
+            profiles: {
+                username: publicProfile?.username || 'unknown',
+                full_name: publicProfile?.full_name || null,
+                avatar_url: publicProfile?.avatar_url || null,
+            },
+        };
+    }) || [];
 
     // Check if user is admin
     const isAdmin = isAdminEmail(user?.email);

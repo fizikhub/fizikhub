@@ -11,6 +11,7 @@ const NAV_SECTIONS = [
     {
         title: "İçerik",
         links: [
+            { label: "Konu Rehberi", href: "/konular" },
             { label: "Kütüphane", href: "/makale" },
             { label: "Simülasyon", href: "/simulasyonlar" },
             { label: "Sözlük", href: "/sozluk" },

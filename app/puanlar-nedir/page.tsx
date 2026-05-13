@@ -2,9 +2,11 @@ import { Metadata } from "next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BreadcrumbJsonLd } from "@/lib/breadcrumbs";
 
+const POINTS_DESCRIPTION = "FizikHub puan sistemi ve rütbeler hakkında her şey. Soru sorarak, cevap vererek ve makale yazarak puan kazanın, liderlik tablosunda yükselin.";
+
 export const metadata: Metadata = {
     title: "Hub Puan Sistemi | Fizikhub",
-    description: "FizikHub puan sistemi ve rütbeler hakkında her şey. Soru sorarak, cevap vererek ve makale yazarak puan kazanın, liderlik tablosunda yükselin.",
+    description: POINTS_DESCRIPTION,
     openGraph: {
         title: "Hub Puan Sistemi — Fizikhub",
         description: "Puan kazanarak rütbenizi yükseltin ve toplulukta yerinizi alın.",
@@ -33,41 +35,21 @@ import { Button } from "@/components/ui/button";
 import { CustomBadgeIcon } from "@/components/profile/custom-badge-icon";
 
 export default function PointsInfoPage() {
-    const faqJsonLd = {
+    const webPageJsonLd = {
         '@context': 'https://schema.org',
-        '@type': 'FAQPage',
-        mainEntity: [
-            {
-                '@type': 'Question',
-                name: 'Nasıl puan kazanılır?',
-                acceptedAnswer: {
-                    '@type': 'Answer',
-                    text: 'Soru sorarak, cevap vererek, makale yazarak ve test çözerek puan kazanabilirsiniz.'
-                }
-            },
-            {
-                '@type': 'Question',
-                name: 'Rütbeler nasıl çalışır?',
-                acceptedAnswer: {
-                    '@type': 'Answer',
-                    text: 'Topladığınız puanlarla otomatik olarak rütbeniz yükselir. Çırak, Kalfa, Usta, Üstad ve Fizik Lordu gibi rütbeler mevcuttur.'
-                }
-            },
-            {
-                '@type': 'Question',
-                name: 'Puanlar ne işe yarar?',
-                acceptedAnswer: {
-                    '@type': 'Answer',
-                    text: 'Puanlar liderlik tablosundaki sıralamanızı belirler ve topluluk içindeki itibarınızı gösterir.'
-                }
-            }
-        ]
+        '@type': 'WebPage',
+        '@id': 'https://www.fizikhub.com/puanlar-nedir#webpage',
+        url: 'https://www.fizikhub.com/puanlar-nedir',
+        name: 'Hub Puan Sistemi | Fizikhub',
+        description: POINTS_DESCRIPTION,
+        isPartOf: { '@id': 'https://www.fizikhub.com/#website' },
+        inLanguage: 'tr-TR',
     };
 
     return (
         <>
             <BreadcrumbJsonLd items={[{ name: 'Puan Sistemi', href: '/puanlar-nedir' }]} />
-            <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />
+            <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageJsonLd) }} />
             <div className="container mx-auto py-12 px-4 max-w-5xl">
                 {/* Header */}
                 <div className="mb-12 border-b-4 border-black dark:border-white pb-8">

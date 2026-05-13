@@ -58,6 +58,7 @@ type LibraryArticle = {
     date: string;
     author: string;
     slug: string;
+    href: string;
     readingTime: number;
 };
 
@@ -91,6 +92,10 @@ function readingTime(content?: string | null) {
     return Math.max(1, Math.ceil(words / 220));
 }
 
+function articleHref(article: { slug: string; category?: string | null }) {
+    return article.category === "Deney" ? `/deney/${article.slug}` : `/makale/${article.slug}`;
+}
+
 function formatDate(date: string) {
     return new Intl.DateTimeFormat("tr-TR", { day: "numeric", month: "short" }).format(new Date(date));
 }
@@ -101,7 +106,7 @@ function ArticleBook({ article, index, featured = false }: { article: LibraryArt
             className={cn("group h-full feed-card-enter", featured && "lg:col-span-2")}
             style={{ animationDelay: `${Math.min(index * 25, 120)}ms` }}
         >
-            <Link href={`/makale/${article.slug}`} className="block h-full">
+            <Link href={article.href} className="block h-full">
                 <div
                     className={cn(
                         "relative h-full min-h-[340px] overflow-hidden rounded-[8px] border-[3px] border-black bg-[#08152b] text-white sm:min-h-[390px]",
@@ -175,7 +180,7 @@ function CompactArticleRow({ article, index }: { article: LibraryArticle; index:
             className="feed-card-enter"
             style={{ animationDelay: `${Math.min(index * 20, 120)}ms` }}
         >
-            <Link href={`/makale/${article.slug}`} className="group block">
+            <Link href={article.href} className="group block">
                 <div className="grid grid-cols-[86px_1fr] gap-3 rounded-[8px] border-[3px] border-black bg-[#27272a] p-2 text-white shadow-[5px_5px_0_#000] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0_#000] sm:grid-cols-[118px_1fr] sm:gap-4 sm:p-3">
                     <div className="relative min-h-[122px] overflow-hidden rounded-[6px] border-[3px] border-black bg-[#07132a] sm:min-h-[154px]">
                         <Image
@@ -426,6 +431,7 @@ export function ArticleFeed({ articles, categories, activeCategory, sortParam, s
                 date: a.created_at,
                 author: a.author?.full_name || a.profiles?.full_name || "FizikHub Editör",
                 slug: a.slug,
+                href: articleHref(a),
                 readingTime: readingTime(a.content),
             })),
         [articles]

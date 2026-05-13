@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import { ReadingProgress } from "@/components/blog/reading-progress";
 import { NeoArticleHero } from "@/components/articles/neo-article-hero";
 import { createStaticClient } from "@/lib/supabase-server";
@@ -153,7 +153,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     fallbackOgUrl.searchParams.set('category', category);
 
     const coverUrl = toAbsoluteUrl(article.cover_url || (article as any).image_url, baseUrl) || fallbackOgUrl.toString();
-    const canonicalUrl = `${baseUrl}/makale/${article.slug || slug}`;
+    const canonicalPath = article.category === 'Deney'
+        ? `/deney/${article.slug || slug}`
+        : `/makale/${article.slug || slug}`;
+    const canonicalUrl = `${baseUrl}${canonicalPath}`;
 
     const intentOverride = getSeoIntentForSlug(article.slug || slug);
     const description = intentOverride?.metadataDescription || toMetaDescription(article);
@@ -200,10 +203,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
             canonical: canonicalUrl,
         },
         robots: {
-            index: true,
+            index: article.category !== 'Deney',
             follow: true,
             googleBot: {
-                index: true,
+                index: article.category !== 'Deney',
                 follow: true,
                 "max-image-preview": "large",
                 "max-snippet": -1,
@@ -231,13 +234,15 @@ export async function generateStaticParams() {
     );
     const { data: articles } = await supabase
         .from('articles')
-        .select('slug')
+        .select('slug, category')
+        .eq('status', 'published')
+        .not('slug', 'is', null)
         .order('created_at', { ascending: false })
         .limit(20); // Pre-render top 20 recent articles
 
     const slugs = new Set([
         ...SEO_PRIORITY_SLUGS,
-        ...(articles?.map((article) => article.slug).filter(Boolean) || []),
+        ...(articles?.filter((article) => article.category !== 'Deney').map((article) => article.slug).filter(Boolean) || []),
     ]);
 
     return Array.from(slugs).map((slug) => ({ slug }));
@@ -250,6 +255,10 @@ export default async function ArticlePage({ params }: PageProps) {
 
     if (!article) {
         notFound();
+    }
+
+    if (article.category === 'Deney') {
+        permanentRedirect(`/deney/${article.slug || slug}`);
     }
 
     // Group all independent sequential queries into a Promise.all block
@@ -426,19 +435,6 @@ export default async function ArticlePage({ params }: PageProps) {
                 { '@type': 'ListItem', position: 3, name: displayTitle, item: articleUrl },
             ],
         },
-        ...(intentOverride ? [{
-            '@context': 'https://schema.org',
-            '@type': 'FAQPage',
-            '@id': `${articleUrl}#faq`,
-            mainEntity: intentOverride.questions.map((item) => ({
-                '@type': 'Question',
-                name: item.question,
-                acceptedAnswer: {
-                    '@type': 'Answer',
-                    text: item.answer,
-                },
-            })),
-        }] : []),
     ];
 
     return (

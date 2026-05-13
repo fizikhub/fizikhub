@@ -168,10 +168,24 @@ const jsonLdWebsite = {
   '@type': 'WebSite',
   '@id': 'https://www.fizikhub.com/#website',
   name: 'Fizikhub',
+  alternateName: ['FizikHub', 'Fizik Hub'],
   url: 'https://www.fizikhub.com',
   description: 'Türkçe bilim platformu: fizik makaleleri, forum, sözlük, testler ve simülasyonlar.',
   publisher: { '@id': 'https://www.fizikhub.com/#organization' },
   inLanguage: 'tr-TR',
+  sameAs: [
+    'https://twitter.com/fizikhub',
+    'https://instagram.com/fizikhub'
+  ],
+  about: [
+    'Fizik',
+    'Kuantum fiziği',
+    'Kara delikler',
+    'Entropi',
+    'Karanlık madde',
+    'Astrofizik',
+    'Fizik formülleri'
+  ],
   potentialAction: {
     '@type': 'SearchAction',
     target: {

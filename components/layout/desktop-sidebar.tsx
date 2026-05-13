@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { Home, BookOpen, Atom, Trophy, Book, Zap, Plus, User, LogIn, MessageCircle, Search } from "lucide-react";
+import { Home, BookOpen, Atom, Trophy, Book, Zap, Plus, User, LogIn, MessageCircle, Search, Tags } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { DankLogo } from "@/components/brand/dank-logo";
 import { ViewTransitionLink } from "@/components/ui/view-transition-link";
@@ -18,6 +18,7 @@ const menuItems = [
     { href: '/', label: 'Ana Sayfa', icon: Home },
     { isAction: true, label: 'Ara', icon: Search, actionName: 'search' },
     { href: '/makale', label: 'Keşfet', icon: BookOpen },
+    { href: '/konular', label: 'Konu Rehberi', icon: Tags, override: 'Konular' },
     { href: '/forum', label: 'Forum', icon: MessageCircle },
     { href: '/simulasyonlar', label: 'Simülasyon', icon: Atom },
     { href: '/siralamalar', label: 'Sıhiyerarşi', icon: Trophy, override: 'Sıralama' },

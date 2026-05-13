@@ -104,7 +104,7 @@ export default async function PublicProfilePage({ params }: PageProps) {
         // 4. User articles
         supabase
             .from('articles')
-            .select('id, title, slug, excerpt, summary, content, cover_url, image_url, category, created_at, likes_count, comments_count, profiles(full_name, avatar_url, username)')
+            .select('id, title, slug, excerpt, summary, cover_url, image_url, category, created_at, likes_count, comments_count, profiles(full_name, avatar_url, username)')
             .eq('author_id', profile.id)
             .eq('status', 'published')
             .order('created_at', { ascending: false }),
@@ -193,7 +193,7 @@ export default async function PublicProfilePage({ params }: PageProps) {
                     {/* LEFT: MAIN FEED (7 Columns) */}
                     <div className="order-2 space-y-6 lg:col-span-12 xl:order-1 xl:col-span-7">
                         <DarkNeoFeed
-                            articles={(articles || []).map(a => ({ ...a, content: a.content ? a.content.slice(0, 300) : '' }))}
+                            articles={(articles || []).map(a => ({ ...a, content: '' }))}
                             questions={(questions || []).map(q => ({ ...q, content: q.content ? q.content.slice(0, 300) : '' }))}
                             answers={(answers || []).map(ans => ({ ...ans, content: ans.content ? ans.content.slice(0, 300) : '' }))}
                             drafts={[]} // No drafts on public profile
