@@ -168,7 +168,10 @@ export function NeoArticleCard({
                     </h3>
 
                     {/* Preview Text - Lighter Grey for Contrast */}
-                    <p className="font-[family-name:var(--font-inter)] text-[13px] sm:text-sm font-medium text-neutral-600 dark:text-zinc-400 line-clamp-3 sm:line-clamp-4 leading-relaxed tracking-normal">
+                    <p
+                        data-nosnippet
+                        className="font-[family-name:var(--font-inter)] text-[13px] sm:text-sm font-medium text-neutral-600 dark:text-zinc-400 line-clamp-3 sm:line-clamp-4 leading-relaxed tracking-normal"
+                    >
                         {previewText}
                     </p>
 

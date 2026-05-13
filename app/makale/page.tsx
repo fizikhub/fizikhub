@@ -170,6 +170,26 @@ const getCachedCategories = unstable_cache(
     { revalidate: 3600, tags: ['articles'] }
 );
 
+function MakaleArchiveIntro({ category }: { category?: string }) {
+    const title = category
+        ? `${category} makaleleri ve konu anlatımları`
+        : "Fizik makaleleri, formüller ve bilim rehberleri";
+    const description = category
+        ? `${category} alanındaki Fizikhub yazılarını kısa cevap, örnek, formül ve ilgili kavram bağlantılarıyla keşfet.`
+        : "Kuantum fiziği, kara delikler, entropi, karanlık madde, mekanik ve astronomi konularında sade Türkçe bilim yazıları.";
+
+    return (
+        <section className="mx-auto max-w-[1180px] px-3 pt-5 sm:px-6 sm:pt-8" aria-labelledby="makale-archive-title">
+            <h1 id="makale-archive-title" className="max-w-4xl text-2xl font-black leading-tight tracking-normal text-foreground sm:text-4xl">
+                {title}
+            </h1>
+            <p className="mt-2 max-w-3xl text-sm font-semibold leading-7 text-muted-foreground sm:text-base">
+                {description}
+            </p>
+        </section>
+    );
+}
+
 export default async function MakalePage({ searchParams }: PageProps) {
     const params = await searchParams;
     const category = typeof params.category === 'string' ? params.category : undefined;
@@ -218,6 +238,7 @@ export default async function MakalePage({ searchParams }: PageProps) {
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
             />
+            <MakaleArchiveIntro category={category} />
             <ArticleFeed
                 articles={articles || []}
                 categories={cats}

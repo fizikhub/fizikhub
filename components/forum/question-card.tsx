@@ -150,10 +150,13 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
 
                     {/* Content Snippet */}
                     <div className="relative">
-                        <p className={cn(
-                            "font-[family-name:var(--font-inter)] text-[13px] sm:text-sm font-medium text-neutral-600 dark:text-zinc-400 leading-relaxed",
-                            !isExpanded && "line-clamp-4"
-                        )}>
+                        <p
+                            data-nosnippet
+                            className={cn(
+                                "font-[family-name:var(--font-inter)] text-[13px] sm:text-sm font-medium text-neutral-600 dark:text-zinc-400 leading-relaxed",
+                                !isExpanded && "line-clamp-4"
+                            )}
+                        >
                             {cleanContent}
                             {!isExpanded && question.content?.length > 160 && "..."}
                             {isExpanded && question.content && (

@@ -32,6 +32,7 @@ export async function GET() {
     text += `## Önemli Kaynaklar (Core Pages)\n`;
     text += `- **Anasayfa**: ${baseUrl}\n`;
     text += `- **Bilim Makaleleri (Blog)**: ${baseUrl}/makale\n`;
+    text += `- **Fizik Konu Rehberleri**: ${baseUrl}/konular\n`;
     text += `- **Soru-Cevap Forumu**: ${baseUrl}/forum\n`;
     text += `- **Bilim Sözlüğü**: ${baseUrl}/sozluk\n`;
     text += `- **İnteraktif Simülasyon Merkezi**: ${baseUrl}/simulasyonlar\n`;

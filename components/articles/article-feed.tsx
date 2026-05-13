@@ -151,7 +151,7 @@ function ArticleBook({ article, index, featured = false }: { article: LibraryArt
                         >
                             {article.title}
                         </h2>
-                        <p className="mt-3 line-clamp-3 max-w-xl text-sm font-medium leading-relaxed text-zinc-200">
+                        <p data-nosnippet className="mt-3 line-clamp-3 max-w-xl text-sm font-medium leading-relaxed text-zinc-200">
                             {article.excerpt}
                         </p>
                         <div className="mt-5 flex items-center justify-between gap-4 border-t border-white/20 pt-4">
@@ -200,7 +200,7 @@ function CompactArticleRow({ article, index }: { article: LibraryArticle; index:
                         <h2 className="line-clamp-2 font-serif text-lg font-black leading-[1.05] text-white sm:text-2xl">
                             {article.title}
                         </h2>
-                        <p className="mt-2 line-clamp-2 text-xs font-bold leading-relaxed text-zinc-300 sm:line-clamp-3 sm:text-sm">
+                        <p data-nosnippet className="mt-2 line-clamp-2 text-xs font-bold leading-relaxed text-zinc-300 sm:line-clamp-3 sm:text-sm">
                             {article.excerpt}
                         </p>
                         <div className="mt-auto flex items-center justify-between gap-3 border-t-2 border-dashed border-white/15 pt-2">

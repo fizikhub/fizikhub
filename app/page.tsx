@@ -28,12 +28,12 @@ const LatestArticlesSlider = dynamic(() => import("@/components/home/latest-arti
 // "ana sayfayı sanki ınstagram veya twitterdaki gibi bir akış olmasını istiyorum" implies the feed IS the main experience.
 
 export const metadata: Metadata = {
-  title: "Fizik, Uzay ve Bilim Eğitim Platformu | Fizikhub",
-  description: "Fizikhub: En güncel bilimsel makaleler, fizik forum tartışmaları, interaktif uzay simülasyonları, kuantum fiziği ve çevrimiçi soru testleri. Türkçe bilim platformu.",
+  title: "Fizikhub: Fizik, Uzay, Kuantum ve Bilim Rehberi",
+  description: "Fizikhub'da kuantum fiziği, kara delikler, entropi, karanlık madde ve temel fizik konularını sade makaleler, formüller ve örneklerle öğren.",
   keywords: ["fizik", "bilim", "uzay", "kuantum", "astrofizik", "TYT fizik", "AYT fizik", "bilim forumu", "fizik makaleleri", "bilim sözlüğü", "türkçe bilim platformu", "interaktif fizik", "fizik deneyleri"],
   openGraph: {
-    title: "Fizikhub — Türkiye'nin Fizik, Uzay ve Bilim Merkezi",
-    description: "Türkçe bilim platformu: Fizik makaleleri, aktif bilim forumu, kavram sözlüğü, eğitim testleri ve interaktif fizik simülasyonları.",
+    title: "Fizikhub — Fizik, Uzay ve Kuantum İçin Türkçe Bilim Rehberi",
+    description: "Kuantum fiziği, kara delikler, entropi, karanlık madde ve temel fizik konularını sade makaleler, formüller ve örneklerle keşfet.",
     type: "website",
     url: "https://www.fizikhub.com",
     images: [{ url: "/og-image.jpg", width: 1200, height: 630, alt: "Fizikhub — Bilimi Ti'ye Alıyoruz" }],
@@ -42,8 +42,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Fizikhub — Türkiye'nin Fizik, Uzay ve Bilim Merkezi",
-    description: "En güncel fizik makaleleri, bilim forumu tartışmaları, kuantum sırları ve testler. Keşfetmeye anasayfadan başla.",
+    title: "Fizikhub — Fizik, Uzay ve Kuantum Rehberi",
+    description: "Fizik kavramlarını sade anlatımlar, formüller, örnekler ve bilim forumuyla keşfet.",
     images: ["/og-image.jpg"],
     creator: "@fizikhub",
   },
@@ -153,12 +153,23 @@ const getCachedFeedData = unstable_cache(
 );
 
 function SearchOpportunityLinks() {
-  return (
+    return (
     <section className="mt-3 mb-3 rounded-[8px] border border-foreground/10 bg-background/80 px-3 py-3 sm:px-4" aria-label="Popüler fizik konu rehberleri">
+      <div className="mb-3 max-w-3xl">
+        <h2 className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+          En çok aranan fizik rehberleri
+        </h2>
+        <p className="mt-1 text-sm font-semibold leading-6 text-muted-foreground">
+          FizikHub'da kuantum fiziği, kara delikler, entropi, karanlık madde ve temel fizik konuları kısa cevap, formül ve örneklerle anlatılır.
+        </p>
+      </div>
       <div className="flex flex-wrap items-center gap-2">
-        <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
-          En çok arananlar
-        </span>
+        <Link
+          href="/konular"
+          className="rounded-[7px] border border-black bg-yellow-400 px-2.5 py-1.5 text-[11px] font-black text-black transition-colors hover:bg-white sm:text-xs"
+        >
+          Fizik konuları
+        </Link>
         {SEO_PRIORITY_ARTICLES.map((article) => (
           <Link
             key={article.slug}
@@ -169,6 +180,19 @@ function SearchOpportunityLinks() {
           </Link>
         ))}
       </div>
+    </section>
+  );
+}
+
+function HomepageSearchSummary() {
+  return (
+    <section className="mb-3 mt-2 max-w-4xl px-1" aria-labelledby="homepage-search-title">
+      <h1 id="homepage-search-title" className="text-2xl font-black leading-tight tracking-normal text-foreground sm:text-3xl">
+        Fizikhub: Türkçe fizik, uzay ve kuantum rehberi
+      </h1>
+      <p className="mt-2 max-w-3xl text-sm font-semibold leading-7 text-muted-foreground sm:text-base">
+        Kara deliklerden entropiye, fotoelektrik olaydan James Webb'e kadar merak edilen fizik ve astronomi konularını sade cevaplar, formüller, örnekler ve topluluk tartışmalarıyla keşfet.
+      </p>
     </section>
   );
 }
@@ -219,7 +243,6 @@ export default async function Home() {
 
   return (
     <main className="min-h-screen bg-background relative selection:bg-emerald-500/30">
-      <h1 className="sr-only">Fizik, Bilim, Uzay ve Kuantum Evreni Platformu | Fizikhub</h1>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -234,8 +257,11 @@ export default async function Home() {
 
           <div className="lg:col-span-12 mt-0 sm:px-0">
             <CompactHero />
+            <HomepageSearchSummary />
             <SearchOpportunityLinks />
-            <NexusStories initialStories={stories} initialGroups={groups} />
+            <div data-nosnippet>
+              <NexusStories initialStories={stories} initialGroups={groups} />
+            </div>
           </div>
 
           {/* Main Feed Column */}
@@ -243,7 +269,9 @@ export default async function Home() {
             <LatestArticlesSlider
               articles={formatSliderArticles(articles)}
             />
-            <UnifiedFeed items={feedItems} suggestedUsers={suggestedUsers} />
+            <div data-nosnippet>
+              <UnifiedFeed items={feedItems} suggestedUsers={suggestedUsers} />
+            </div>
           </div>
 
           {/* Sidebar Column */}
