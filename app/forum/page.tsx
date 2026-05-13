@@ -199,10 +199,14 @@ export default async function ForumPage({ searchParams }: ForumPageProps) {
                                 </div>
                             ) : (
                                 <QuestionList
-                                    initialQuestions={questions.map((q: any) => ({
-                                        ...q,
-                                        content: q.content ? q.content.slice(0, 350) : ''
-                                    }))}
+                                    initialQuestions={questions.map((q: any) => {
+                                        const { answers, ...questionForClient } = q;
+                                        return {
+                                            ...questionForClient,
+                                            content: q.content ? q.content.slice(0, 350) : '',
+                                            answer_count: answers?.[0]?.count || 0
+                                        };
+                                    })}
                                     userVotes={userVotes}
                                     latestArticle={latestArticle}
                                 />

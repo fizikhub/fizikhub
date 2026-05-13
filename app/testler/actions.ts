@@ -8,7 +8,7 @@ export async function getQuizzes() {
 
     const { data, error } = await supabase
         .from('quizzes')
-        .select('*')
+        .select('id, title, slug, description, points, created_at')
         .order('created_at', { ascending: false });
 
     if (error) {
@@ -24,7 +24,7 @@ export async function getQuizBySlug(slug: string) {
 
     const { data: quiz, error } = await supabase
         .from('quizzes')
-        .select('*')
+        .select('id, title, slug, description, points, created_at')
         .eq('slug', slug)
         .single();
 
@@ -37,24 +37,29 @@ export async function getQuizBySlug(slug: string) {
         return null;
     }
 
+    const quizWithQuestions = {
+        ...quiz,
+        questions: [] as any[],
+    };
+
     // Fetch questions separately to avoid relationship issues
     const { data: questions, error: questionsError } = await supabase
         .from('quiz_questions')
-        .select('*')
+        .select('id, quiz_id, question_text, options, correct_answer, order, created_at')
         .eq('quiz_id', quiz.id)
         .order('order', { ascending: true });
 
     if (questionsError) {
         console.error("Error fetching questions:", questionsError);
-        quiz.questions = [];
+        quizWithQuestions.questions = [];
     } else {
-        quiz.questions = questions || [];
+        quizWithQuestions.questions = questions || [];
     }
 
     // Double sort to be safe
-    quiz.questions.sort((a: any, b: any) => a.order - b.order);
+    quizWithQuestions.questions.sort((a: any, b: any) => a.order - b.order);
 
-    return quiz;
+    return quizWithQuestions;
 }
 
 export async function submitQuizResult(quizId: string, score: number, totalQuestions: number) {

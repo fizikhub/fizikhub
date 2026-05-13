@@ -33,7 +33,8 @@ export function processFeedData(articles: any[], questions: any[]): FeedItem[] {
     });
 
     // Add Questions
-    questions.forEach((q) => {
+    questions.forEach((originalQ) => {
+        const q = { ...originalQ };
         // --- Payload Optimization ---
         // Strip HTML and truncate question content to a max of 400 chars.
         // QuestionCard only needs the first 160-300 chars for its "Read More" state.
@@ -42,11 +43,14 @@ export function processFeedData(articles: any[], questions: any[]): FeedItem[] {
             q.content = plainContent.length > 400 ? plainContent.substring(0, 400) + '...' : plainContent;
         }
 
+        const answerCount = q.answers?.[0]?.count || 0;
+        delete q.answers;
+
         feedItems.push({
             type: 'question',
             data: {
                 ...q,
-                answer_count: q.answers?.[0]?.count || 0
+                answer_count: answerCount
             },
             sortDate: q.created_at
         });

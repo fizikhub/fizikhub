@@ -98,7 +98,7 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
         }
     };
 
-    const answerCount = question.answers?.length || question.answers?.[0]?.count || 0;
+    const answerCount = question.answer_count ?? question.answers?.[0]?.count ?? question.answers?.length ?? 0;
     const cleanContent = stripHtml(question.content || "").slice(0, 300);
 
     return (

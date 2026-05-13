@@ -11,7 +11,6 @@ import { submitQuizResult } from "@/app/testler/actions";
 import { m as motion, AnimatePresence } from "framer-motion";
 import confetti from "canvas-confetti";
 import Link from "next/link";
-import { toast } from "sonner";
 
 interface Question {
     id: string;
@@ -158,9 +157,9 @@ export function QuizRunner({ quizId, questions, title, description }: QuizRunner
                         <Badge className="mx-auto text-base py-1 px-4 border-2 border-black dark:border-white bg-primary text-primary-foreground hover:bg-primary shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] -rotate-2">
                             FİZİK TESTİ
                         </Badge>
-                        <CardTitle className="text-3xl md:text-5xl font-black uppercase tracking-tighter">
+                        <h1 className="text-3xl md:text-5xl font-black uppercase tracking-tighter">
                             {title}
-                        </CardTitle>
+                        </h1>
                         <p className="text-lg text-muted-foreground font-medium max-w-2xl mx-auto leading-relaxed">
                             {description}
                         </p>

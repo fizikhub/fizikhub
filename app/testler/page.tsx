@@ -5,32 +5,71 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { BrainCircuit, ArrowRight, Clock, Trophy } from "lucide-react";
 import { BreadcrumbJsonLd } from "@/lib/breadcrumbs";
+import type { Metadata } from "next";
 
-export const metadata = {
-    title: "Fizik Testleri & Quizler | Fizikhub",
-    description: "Fizik bilgini test et, puan kazan ve liderlik tablosunda yüksel. TYT, AYT ve genel fizik quizleri.",
+const SITE_URL = "https://www.fizikhub.com";
+
+export const metadata: Metadata = {
+    title: "Fizik Testleri: TYT, AYT ve Bilim Quizleri",
+    description: "Ücretsiz fizik testleri çöz: TYT/AYT fizik, kuantum, mekanik ve bilim quizleriyle eksiklerini gör, doğru cevabı anında öğren.",
     keywords: ["fizik testi", "fizik quiz", "TYT fizik test", "AYT fizik test", "bilim sınavı"],
     openGraph: {
-        title: "Fizik Testleri — Fizikhub",
-        description: "Bilgini test et, puan kazan ve liderlik tablosunda yüksel.",
+        title: "Fizik Testleri ve Bilim Quizleri — Fizikhub",
+        description: "TYT/AYT fizik ve genel bilim konularında ücretsiz testler çöz, doğru cevabı anında gör.",
         type: "website",
-        url: "https://www.fizikhub.com/testler",
+        url: `${SITE_URL}/testler`,
+        images: [{ url: `${SITE_URL}/og-image.jpg`, width: 1200, height: 630, alt: "Fizikhub fizik testleri" }],
     },
     twitter: {
-        card: "summary",
+        card: "summary_large_image",
         title: "Fizik Testleri — Fizikhub",
-        description: "Bilgini test et, puan kazan ve liderlik tablosunda yüksel.",
+        description: "Ücretsiz fizik testleri çöz, eksiklerini gör ve puan kazan.",
+        images: [`${SITE_URL}/og-image.jpg`],
     },
-    alternates: { canonical: "https://www.fizikhub.com/testler" },
+    alternates: { canonical: `${SITE_URL}/testler` },
 };
 
 export const revalidate = 1800;
 
 export default async function QuizzesPage() {
     const quizzes = await getQuizzes();
+    const jsonLd = {
+        "@context": "https://schema.org",
+        "@type": "CollectionPage",
+        "@id": `${SITE_URL}/testler#collection`,
+        url: `${SITE_URL}/testler`,
+        name: "Fizikhub Fizik Testleri",
+        description: "TYT, AYT ve genel bilim konularında ücretsiz çevrimiçi fizik testleri.",
+        inLanguage: "tr-TR",
+        isPartOf: { "@id": `${SITE_URL}/#website` },
+        mainEntity: {
+            "@type": "ItemList",
+            itemListElement: quizzes.map((quiz, index) => ({
+                "@type": "ListItem",
+                position: index + 1,
+                url: `${SITE_URL}/testler/${quiz.slug}`,
+                name: quiz.title,
+                item: {
+                    "@type": "Quiz",
+                    "@id": `${SITE_URL}/testler/${quiz.slug}#quiz`,
+                    name: quiz.title,
+                    description: quiz.description || `${quiz.title} fizik testi`,
+                    url: `${SITE_URL}/testler/${quiz.slug}`,
+                    inLanguage: "tr-TR",
+                    educationalLevel: "Lise",
+                    about: { "@type": "Thing", name: "Fizik" },
+                    isAccessibleForFree: true,
+                },
+            })),
+        },
+    };
 
     return (
         <>
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+            />
             <BreadcrumbJsonLd items={[{ name: 'Testler', href: '/testler' }]} />
             <div className="container max-w-7xl py-12 px-4 mx-auto min-h-screen">
                 <div className="flex flex-col md:flex-row gap-8 items-end mb-12 border-b-4 border-black dark:border-white pb-8">
@@ -40,12 +79,12 @@ export default async function QuizzesPage() {
                                 <BrainCircuit className="h-8 w-8" />
                             </div>
                             <h1 className="text-4xl md:text-6xl font-black uppercase tracking-tighter">
-                                QUİZLER
+                                FİZİK TESTLERİ
                             </h1>
                         </div>
                         <p className="text-xl text-muted-foreground font-medium max-w-2xl">
-                            Kendini dene, eksiklerini gör ve puanları topla.
-                            Her test sana yeni bir şeyler öğretecek.
+                            Ücretsiz fizik testleri çöz, eksiklerini gör ve doğru cevabı anında öğren.
+                            TYT/AYT fizik, kuantum, mekanik ve popüler bilim konularında kısa quizlerle pratik yap.
                         </p>
                     </div>
                 </div>

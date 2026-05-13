@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase-server";
+import { SEO_PRIORITY_ARTICLES } from "@/lib/seo-priority";
 
 // ISR: Cache for 1 hour to keep it fresh for AI crawlers without hitting DB every request
 export const revalidate = 3600;
@@ -38,6 +39,13 @@ export async function GET() {
     text += `- **İnteraktif Simülasyon Merkezi**: ${baseUrl}/simulasyonlar\n`;
     text += `- **Ücretsiz Çevrimiçi Fizik Testleri**: ${baseUrl}/testler\n`;
     text += `- **Sıralamalar & Liderlik Tablosu**: ${baseUrl}/siralamalar\n\n`;
+
+    text += `## Arama ve AI Cevapları İçin Öncelikli Konu Rehberleri\n`;
+    SEO_PRIORITY_ARTICLES.forEach((article) => {
+        text += `- [${article.title}](${baseUrl}/makale/${article.slug})\n`;
+        text += `  Kısa açıklama: ${article.description}\n`;
+    });
+    text += `\n`;
 
     text += `## Güncel ve Popüler Canlı İçerikler (Real-time Feed)\n\n`;
 
