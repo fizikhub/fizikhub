@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useMemo } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
@@ -22,6 +22,71 @@ interface MarkdownRendererProps {
     demoteH1?: boolean;
 }
 
+function normalizeMarkdownHeadings(content: string) {
+    const lines = content.split('\n');
+    const normalized: string[] = [];
+    let inFence = false;
+
+    lines.forEach((line) => {
+        if (/^[ \t]{0,3}(```|~~~)/.test(line)) {
+            inFence = !inFence;
+            normalized.push(line);
+            return;
+        }
+
+        if (!inFence) {
+            const headingMatch = line.match(/^([ \t]{0,3})(#{1,6})(?:[ \t]+)(.*?)\s*$/);
+
+            if (headingMatch) {
+                const [, indent, hashes, rawText] = headingMatch;
+                const text = rawText.replace(/[ \t]+#+[ \t]*$/, '').trim();
+
+                if (text) {
+                    normalized.push(`${indent}${hashes} ${text}`);
+                    return;
+                }
+            }
+        }
+
+        normalized.push(line);
+    });
+
+    return normalized.join('\n');
+}
+
+export function preprocessMarkdownContent(content: string) {
+    if (!content) return "";
+    let c = content;
+
+    // Step 0: Normalize — remove zero-width spaces, normalize line endings
+    c = c.replace(/[\u200B\u200C\u200D\uFEFF]/g, '');
+    c = c.replace(/\r\n/g, '\n');
+
+    // Step 1: Normalize ATX headings without splitting the marker from its text.
+    c = normalizeMarkdownHeadings(c);
+
+    // Step 2: Convert <p> containing ONLY a math span → block math $$...$$
+    c = c.replace(/<p>\s*<span[^>]*data-type="math"[^>]*data-latex="([^"]*)"[^>]*>[^<]*<\/span>\s*<\/p>/gi, (_, latex) => `\n\n$$\n${latex.trim()}\n$$\n\n`);
+    c = c.replace(/<p>\s*<span[^>]*data-latex="([^"]*)"[^>]*data-type="math"[^>]*>[^<]*<\/span>\s*<\/p>/gi, (_, latex) => `\n\n$$\n${latex.trim()}\n$$\n\n`);
+
+    // Step 3: Remaining inline math spans (mixed with text in a paragraph)
+    c = c.replace(/<span[^>]*data-type="math"[^>]*data-latex="([^"]*)"[^>]*>[^<]*<\/span>/gi, (_, latex) => `$${latex.trim()}$`);
+    c = c.replace(/<span[^>]*data-latex="([^"]*)"[^>]*data-type="math"[^>]*>[^<]*<\/span>/gi, (_, latex) => `$${latex.trim()}$`);
+
+    // Step 4: Self-closing math spans
+    c = c.replace(/<span[^>]*data-type="math"[^>]*data-latex="([^"]*)"[^>]*\/>/gi, (_, latex) => `$${latex.trim()}$`);
+
+    // Step 5: Auto-promote standalone $...$ on their own line to block $$...$$
+    c = c.replace(/^[ \t]*\$([^$\n]+)\$[ \t]*$/gm, (_, latex) => `\n\n$$\n${latex}\n$$\n\n`);
+    c = c.replace(/^[ \t]*\$\$([^$\n]+)\$\$[ \t]*$/gm, (_, latex) => `\n\n$$\n${latex}\n$$\n\n`);
+
+    // Step 6: Collapse multiple newlines — but ensure at least 2 between logical blocks
+    c = c.replace(/\n{3,}/g, '\n\n');
+
+    // Final trim to avoid leading/trailing garbage
+    return c.trim();
+}
+
 export function MarkdownRenderer({
     content,
     className,
@@ -35,37 +100,7 @@ export function MarkdownRenderer({
     // The tiptap-markdown extension serializes math as $latex$ (always inline)
     // ReactMarkdown + remarkMath only understands $...$ / $$...$$ in markdown
     const processedContent = useMemo(() => {
-        if (!content) return "";
-        let c = content;
-
-        // Step 0: Normalize — remove zero-width spaces, normalize line endings
-        c = c.replace(/[\u200B\u200C\u200D\uFEFF]/g, '');
-        c = c.replace(/\r\n/g, '\n');
-
-        // Step 1: Ensure headers starts on a new line with proper spacing
-        // This fixes "### Header" appearing as literal text if previous line ended poorly
-        c = c.replace(/^([ \t]*)#{1,6}[ \t]+/gm, (match) => `\n\n${match.trim()}\n\n`);
-
-        // Step 2: Convert <p> containing ONLY a math span → block math $$...$$
-        c = c.replace(/<p>\s*<span[^>]*data-type="math"[^>]*data-latex="([^"]*)"[^>]*>[^<]*<\/span>\s*<\/p>/gi, (_, latex) => `\n\n$$\n${latex.trim()}\n$$\n\n`);
-        c = c.replace(/<p>\s*<span[^>]*data-latex="([^"]*)"[^>]*data-type="math"[^>]*>[^<]*<\/span>\s*<\/p>/gi, (_, latex) => `\n\n$$\n${latex.trim()}\n$$\n\n`);
-
-        // Step 3: Remaining inline math spans (mixed with text in a paragraph)
-        c = c.replace(/<span[^>]*data-type="math"[^>]*data-latex="([^"]*)"[^>]*>[^<]*<\/span>/gi, (_, latex) => `$${latex.trim()}$`);
-        c = c.replace(/<span[^>]*data-latex="([^"]*)"[^>]*data-type="math"[^>]*>[^<]*<\/span>/gi, (_, latex) => `$${latex.trim()}$`);
-
-        // Step 4: Self-closing math spans
-        c = c.replace(/<span[^>]*data-type="math"[^>]*data-latex="([^"]*)"[^>]*\/>/gi, (_, latex) => `$${latex.trim()}$`);
-
-        // Step 5: Auto-promote standalone $...$ on their own line to block $$...$$
-        c = c.replace(/^[ \t]*\$([^$\n]+)\$[ \t]*$/gm, (_, latex) => `\n\n$$\n${latex}\n$$\n\n`);
-        c = c.replace(/^[ \t]*\$\$([^$\n]+)\$\$[ \t]*$/gm, (_, latex) => `\n\n$$\n${latex}\n$$\n\n`);
-
-        // Step 6: Collapse multiple newlines — but ensure at least 2 between logical blocks
-        c = c.replace(/\n{3,}/g, '\n\n');
-        
-        // Final trim to avoid leading/trailing garbage
-        return c.trim();
+        return preprocessMarkdownContent(content);
     }, [content]);
 
     const proseSizeClasses = {
