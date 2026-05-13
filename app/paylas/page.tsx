@@ -228,7 +228,7 @@ export default function PaylasPage() {
         toast(`Fizikhub'a giriş yapmalısın`, {
             description: `${label.charAt(0).toLocaleUpperCase("tr-TR") + label.slice(1)} için giriş yapmalı veya üye olmalısın.`,
             className: "dynamic-island-toast",
-            duration: 1800,
+            duration: 3800,
         });
 
         window.setTimeout(() => {

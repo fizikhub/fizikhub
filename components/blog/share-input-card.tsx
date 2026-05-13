@@ -87,7 +87,7 @@ export function ShareInputCard({ user: initialUser }: ShareInputCardProps) {
         toast("Fizikhub'a giriş yapmalısın", {
             description: `${labels[intent]} için giriş yapmalı veya üye olmalısın.`,
             className: "dynamic-island-toast",
-            duration: 1800,
+            duration: 3800,
         });
 
         window.setTimeout(() => {
