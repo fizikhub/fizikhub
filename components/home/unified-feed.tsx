@@ -41,7 +41,7 @@ interface UnifiedFeedProps {
 }
 
 export function UnifiedFeed({ items, suggestedUsers = [], showExtras = true }: UnifiedFeedProps) {
-    const [visibleCount, setVisibleCount] = useState(4);
+    const [visibleCount, setVisibleCount] = useState(12);
     
     const visibleItems = items.slice(0, visibleCount);
     const hasMore = visibleCount < items.length;
@@ -118,10 +118,10 @@ export function UnifiedFeed({ items, suggestedUsers = [], showExtras = true }: U
 
             {hasMore && (
                 <button
-                    onClick={() => setVisibleCount(prev => prev + 6)}
+                    onClick={() => setVisibleCount(prev => prev + 12)}
                     className="w-full py-4 mt-2 font-black text-sm uppercase tracking-widest bg-[#FFBD2E] text-black border-[3px] border-black rounded-[8px] sm:rounded-[10px] shadow-[4px_4px_0px_0px_#000] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_#000] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all"
                 >
-                    Daha Fazla Göster
+                    Daha Fazla İçerik Göster
                 </button>
             )}
 

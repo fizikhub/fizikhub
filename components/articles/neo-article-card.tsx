@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { ViewTransitionLink } from "@/components/ui/view-transition-link"; // [NEW]
 import { OptimizedImage, OptimizedAvatar } from "@/components/ui/optimized-image";
 import { formatDistanceToNow } from "date-fns";
@@ -28,7 +27,6 @@ interface NeoArticleCardProps {
 export function NeoArticleCard({
     article,
     initialLikes = 0,
-    initialComments = 0,
     initialIsLiked = false,
     initialIsBookmarked = false,
     className,
@@ -69,7 +67,7 @@ export function NeoArticleCard({
                     toast.error("Giriş yapmalısınız!");
                 }
             }
-        } catch (error) {
+        } catch {
             setIsLiked(previousLiked);
             setLikeCount(previousCount);
         } finally {
@@ -91,7 +89,7 @@ export function NeoArticleCard({
             } else if (!previousBookmarked) {
                 toast.success("Kaydedildi!");
             }
-        } catch (error) {
+        } catch {
             setIsBookmarked(previousBookmarked);
         }
     };
@@ -186,11 +184,12 @@ export function NeoArticleCard({
 
                         {/* Author */}
                         <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-                            <div className="relative w-7 h-7 sm:w-10 sm:h-10 flex-shrink-0 rounded-full border-[1.5px] sm:border-2 border-black overflow-hidden bg-white shadow-[1px_1px_0px_0px_#000]">
+                            <div className="relative aspect-square w-7 sm:w-10 flex-shrink-0 rounded-full border-[1.5px] sm:border-2 border-black overflow-hidden bg-white shadow-[1px_1px_0px_0px_#000]">
                                 <OptimizedAvatar
                                     src={authorAvatar}
                                     alt={authorName}
                                     size={40}
+                                    fillContainer
                                     className="w-full h-full"
                                 />
                             </div>

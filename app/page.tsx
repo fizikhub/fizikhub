@@ -72,7 +72,7 @@ const getCachedFeedData = unstable_cache(
         .select(articleSelect)
         .eq('status', 'published')
         .order('created_at', { ascending: false })
-        .limit(16), // keep homepage payload tight for mobile
+        .limit(24), // keep enough cards available for the homepage load-more flow
 
       // Keep proven Google Search Console opportunities linked from the homepage.
       supabase
@@ -86,7 +86,7 @@ const getCachedFeedData = unstable_cache(
         .from('questions')
         .select('id, title, content, created_at, category, votes, tags, profiles(username, full_name, avatar_url, is_verified), answers(count)')
         .order('created_at', { ascending: false })
-        .limit(20),
+        .limit(24),
 
       // Fetch Suggested Users (Top writers by reputation)
       supabase
@@ -148,7 +148,7 @@ const getCachedFeedData = unstable_cache(
       }))
     };
   },
-  ['feed-data-v4-content-preview'], // Bump version to invalidate cache
+  ['feed-data-v5-homepage-load-more'], // Bump version to invalidate cache
   { revalidate: 60, tags: ['feed'] }
 );
 

@@ -44,21 +44,26 @@ export function OptimizedAvatar({
     alt,
     size = 40,
     className,
+    fillContainer = false,
 }: {
     src?: string | null;
     alt: string;
     size?: number;
     className?: string;
+    fillContainer?: boolean;
 }) {
     const [hasError, setHasError] = useState(false);
+    const avatarStyle = fillContainer ? undefined : { width: size, height: size };
+
     if (!src || hasError) {
         return (
             <div
                 className={cn(
                     "rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold",
+                    fillContainer && "h-full w-full",
                     className
                 )}
-                style={{ width: size, height: size, fontSize: size * 0.4 }}
+                style={{ ...avatarStyle, fontSize: size * 0.4 }}
             >
                 {alt?.charAt(0)?.toUpperCase() || "?"}
             </div>
@@ -67,8 +72,12 @@ export function OptimizedAvatar({
 
     return (
         <div
-            className={cn("relative rounded-full overflow-hidden bg-muted", className)}
-            style={{ width: size, height: size }}
+            className={cn(
+                "relative rounded-full overflow-hidden bg-muted",
+                fillContainer && "h-full w-full",
+                className
+            )}
+            style={avatarStyle}
         >
             <NextImage
                 src={src}
