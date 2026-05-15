@@ -507,16 +507,9 @@ export function ModernLogin() {
                                 )}
                             </AnimatePresence>
 
-                            {/* Turnstile */}
-                            <div className="flex justify-center pt-1 opacity-80 hover:opacity-100 transition-opacity">
-                                <div id="turnstile-container"
-                                    className="cf-turnstile"
-                                    data-sitekey={turnstileSiteKey}
-                                    data-callback="onTurnstileSuccess"
-                                    data-expired-callback="onTurnstileExpired"
-                                    data-error-callback="onTurnstileError"
-                                    data-theme="dark"
-                                />
+                            {/* Turnstile - explicit render mode, no data attributes */}
+                            <div className="flex justify-center pt-1 opacity-80 hover:opacity-100 transition-opacity min-h-[65px]">
+                                <div id="turnstile-container" />
                             </div>
 
                             {/* CTA */}
