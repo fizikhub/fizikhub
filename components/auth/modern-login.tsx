@@ -15,6 +15,8 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { signupWithEmailOtp } from "@/app/auth/actions";
 
+const turnstileSiteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || "0x4AAAAAACI_a8NNCjdtVnjC";
+
 
 export function ModernLogin() {
     const [loading, setLoading] = useState(false);
@@ -37,14 +39,27 @@ export function ModernLogin() {
         window.onTurnstileSuccess = (token: string) => {
             setTurnstileToken(token);
         };
+        window.onTurnstileExpired = () => {
+            setTurnstileToken(null);
+        };
+        window.onTurnstileError = () => {
+            setTurnstileToken(null);
+        };
 
         return () => {
             if (document.body.contains(script)) {
                 document.body.removeChild(script);
             }
             delete window.onTurnstileSuccess;
+            delete window.onTurnstileExpired;
+            delete window.onTurnstileError;
         };
     }, []);
+
+    const resetTurnstile = () => {
+        setTurnstileToken(null);
+        window.turnstile?.reset();
+    };
 
     const handleOAuthLogin = async (provider: 'github' | 'google') => {
         setLoading(true);
@@ -122,7 +137,17 @@ export function ModernLogin() {
                     options: { captchaToken: turnstileToken }
                 });
 
-                if (error) throw error;
+                if (error) {
+                    if (error.message.toLowerCase().includes("email not confirmed")) {
+                        toast.error("E-posta doğrulaması gerekli. Kodu tekrar girebilirsin.", { id: toastId });
+                        setTimeout(() => {
+                            window.location.href = `/auth/verify?email=${encodeURIComponent(email)}`;
+                        }, 800);
+                        return;
+                    }
+
+                    throw error;
+                }
 
                 toast.success("Giriş başarılı! Yönlendiriliyorsunuz...", { id: toastId });
                 setTimeout(() => {
@@ -134,6 +159,7 @@ export function ModernLogin() {
 
             // Clear loading state immediately on error
             setLoading(false);
+            resetTurnstile();
 
             if (error.message.includes("already registered")) {
                 toast.error("Bu e-posta zaten kayıtlı.", { id: toastId });
@@ -305,8 +331,10 @@ export function ModernLogin() {
                             {/* Turnstile */}
                             <div className="flex justify-center pt-1 opacity-80 hover:opacity-100 transition-opacity">
                                 <div className="cf-turnstile"
-                                    data-sitekey="0x4AAAAAACI_a8NNCjdtVnjC"
+                                    data-sitekey={turnstileSiteKey}
                                     data-callback="onTurnstileSuccess"
+                                    data-expired-callback="onTurnstileExpired"
+                                    data-error-callback="onTurnstileError"
                                     data-theme="dark"
                                 />
                             </div>

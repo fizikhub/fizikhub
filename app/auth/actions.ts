@@ -3,7 +3,8 @@
 import { createClient } from "@/lib/supabase-server";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { createClient as createSupabaseClient } from "@supabase/supabase-js";
+import { createAdminClient } from "@/lib/supabase-admin";
+import { ensureUserProfile } from "@/lib/auth-profile";
 import { Resend } from "resend";
 import { buildConfirmationTemplate } from "../../scripts/auth-email-templates.mjs";
 
@@ -110,16 +111,7 @@ export async function signupWithEmailOtp(input: SignupWithEmailOtpInput) {
         return { success: false, error: "E-posta doğrulama sistemi yapılandırması eksik." };
     }
 
-    const supabaseAdmin = createSupabaseClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        serviceRoleKey,
-        {
-            auth: {
-                autoRefreshToken: false,
-                persistSession: false,
-            },
-        }
-    );
+    const supabaseAdmin = createAdminClient();
 
     const { data: existingProfile } = await supabaseAdmin
         .from("profiles")
@@ -174,7 +166,7 @@ export async function signupWithEmailOtp(input: SignupWithEmailOtpInput) {
 export async function verifyOtp(token: string, type: 'signup' | 'recovery' | 'magiclink' = 'signup', email: string) {
     const supabase = await createClient();
 
-    const { error } = await supabase.auth.verifyOtp({
+    const { data, error } = await supabase.auth.verifyOtp({
         email,
         token,
         type,
@@ -182,6 +174,17 @@ export async function verifyOtp(token: string, type: 'signup' | 'recovery' | 'ma
 
     if (error) {
         return { success: false, error: error.message };
+    }
+
+    const verifiedUser = data.user;
+    if (!verifiedUser) {
+        return { success: false, error: "Oturum doğrulandı ama kullanıcı bilgisi alınamadı." };
+    }
+
+    const profileResult = await ensureUserProfile(verifiedUser);
+    if (!profileResult.success) {
+        console.error("OTP profile ensure error:", profileResult.error);
+        return { success: false, error: "Profil hazırlanırken hata oluştu. Lütfen tekrar deneyin." };
     }
 
     revalidatePath("/", "layout");

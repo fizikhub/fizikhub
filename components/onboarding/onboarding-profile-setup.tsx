@@ -67,6 +67,11 @@ export function OnboardingProfileSetup({ user, profile }: OnboardingProfileSetup
         const toastId = toast.loading("Profilin oluşturuluyor...");
 
         try {
+            if (username !== profile?.username) {
+                const usernameRes = await updateUsername(username);
+                if (!usernameRes.success) throw new Error(usernameRes.error);
+            }
+
             if (avatarFile) {
                 const res = await uploadAvatar(avatarFile);
                 if (!res.success) throw new Error(res.error);
@@ -84,11 +89,6 @@ export function OnboardingProfileSetup({ user, profile }: OnboardingProfileSetup
             });
 
             if (!updateRes.success) throw new Error(updateRes.error);
-
-            if (username !== profile?.username) {
-                const usernameRes = await updateUsername(username);
-                if (!usernameRes.success) throw new Error(usernameRes.error);
-            }
 
             toast.success("Profilin hazır! Yönlendiriliyorsun...", { id: toastId });
             router.refresh();

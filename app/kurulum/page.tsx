@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase-server";
+import { ensureUserProfile } from "@/lib/auth-profile";
 import { redirect } from "next/navigation";
 import { OnboardingProfileSetup } from "@/components/onboarding/onboarding-profile-setup";
 import { Metadata } from "next";
@@ -20,11 +21,26 @@ export default async function OnboardingSetupPage() {
         redirect("/login");
     }
 
-    const { data: profile } = await supabase
+    let { data: profile } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', user.id)
-        .single();
+        .maybeSingle();
+
+    if (!profile) {
+        const ensured = await ensureUserProfile(user);
+        if (!ensured.success) {
+            redirect("/auth/auth-code-error?error=profile_upsert_failed");
+        }
+
+        const { data: ensuredProfile } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', user.id)
+            .maybeSingle();
+
+        profile = ensuredProfile;
+    }
 
     // If they already completed onboarding, redirect them to home so they can see the tour.
     if (profile?.onboarding_completed) {

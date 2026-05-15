@@ -27,8 +27,8 @@ describe('Profile Server Actions', () => {
 
         // Setup chained mocks
         mockSingle = vi.fn().mockResolvedValue({ data: null, error: null });
-        mockNeq = vi.fn().mockReturnValue({ single: mockSingle });
-        mockEq = vi.fn().mockReturnValue({ single: mockSingle, neq: mockNeq });
+        mockNeq = vi.fn().mockReturnValue({ single: mockSingle, maybeSingle: mockSingle });
+        mockEq = vi.fn().mockReturnValue({ single: mockSingle, maybeSingle: mockSingle, neq: mockNeq });
         mockSelect = vi.fn().mockReturnValue({ eq: mockEq });
         mockUpdate = vi.fn().mockReturnValue({ eq: mockEq });
         
@@ -56,7 +56,7 @@ describe('Profile Server Actions', () => {
         it('should fail on invalid format', async () => {
             const result = await updateUsername('invalid username@!');
             expect(result.success).toBe(false);
-            expect(result.error).toBe('Kullanıcı adı sadece harf, rakam ve alt çizgi içerebilir.');
+            expect(result.error).toBe('Kullanıcı adı sadece küçük harf, rakam, nokta, tire ve alt çizgi içerebilir.');
         });
 
         it('should fail if user has already changed username once', async () => {
@@ -93,6 +93,19 @@ describe('Profile Server Actions', () => {
             expect(result.success).toBe(true);
             expect(mockUpdate).toHaveBeenCalledWith(expect.objectContaining({
                 username: 'awesome_physics',
+                username_changes_count: 1
+            }));
+        });
+
+        it('should allow username characters accepted by signup', async () => {
+            mockSingle.mockResolvedValueOnce({ data: { id: 'user-123', username_changes_count: 0 }, error: null });
+            mockSingle.mockResolvedValueOnce({ data: null, error: null });
+
+            const result = await updateUsername('Physics.User-42');
+
+            expect(result.success).toBe(true);
+            expect(mockUpdate).toHaveBeenCalledWith(expect.objectContaining({
+                username: 'physics.user-42',
                 username_changes_count: 1
             }));
         });

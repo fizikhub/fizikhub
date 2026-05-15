@@ -88,15 +88,17 @@ async function validateAndChangeUsername(
     userEmail: string | undefined,
     newUsername: string
 ): Promise<{ success: boolean; error?: string; updateFields?: { username: string; username_changes_count: number } }> {
+    const normalizedUsername = newUsername.trim().toLowerCase();
+
     // Username boş olamaz
-    if (!newUsername || newUsername.trim().length === 0) {
+    if (!normalizedUsername) {
         return { success: false, error: "Kullanıcı adı boş olamaz." };
     }
 
-    // Username formatını kontrol et (sadece harf, rakam, alt çizgi)
-    const usernameRegex = /^[a-zA-Z0-9_]+$/;
-    if (!usernameRegex.test(newUsername)) {
-        return { success: false, error: "Kullanıcı adı sadece harf, rakam ve alt çizgi içerebilir." };
+    // Kayıt ekranıyla aynı formatı kabul et.
+    const usernameRegex = /^[a-z0-9_.-]+$/;
+    if (!usernameRegex.test(normalizedUsername)) {
+        return { success: false, error: "Kullanıcı adı sadece küçük harf, rakam, nokta, tire ve alt çizgi içerebilir." };
     }
 
     // Mevcut profil bilgilerini kontrol et
@@ -107,7 +109,7 @@ async function validateAndChangeUsername(
         .single();
 
     // Aynı username ise değişiklik gereksiz
-    if (currentProfile?.username === newUsername) {
+    if (currentProfile?.username === normalizedUsername) {
         return { success: true };
     }
 
@@ -122,9 +124,9 @@ async function validateAndChangeUsername(
     const { data: existingUser } = await supabase
         .from('profiles')
         .select('id')
-        .eq('username', newUsername)
+        .eq('username', normalizedUsername)
         .neq('id', userId)
-        .single();
+        .maybeSingle();
 
     if (existingUser) {
         return { success: false, error: "Bu kullanıcı adı zaten kullanılıyor." };
@@ -133,7 +135,7 @@ async function validateAndChangeUsername(
     return {
         success: true,
         updateFields: {
-            username: newUsername,
+            username: normalizedUsername,
             username_changes_count: changeCount + 1
         }
     };

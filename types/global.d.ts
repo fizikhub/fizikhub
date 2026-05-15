@@ -8,6 +8,11 @@ declare global {
     ) => number;
     cancelIdleCallback: (handle: number) => void;
     onTurnstileSuccess?: (token: string) => void;
+    onTurnstileExpired?: () => void;
+    onTurnstileError?: () => void;
+    turnstile?: {
+      reset: (widgetId?: string) => void;
+    };
     webkitAudioContext: typeof AudioContext;
   }
 }
