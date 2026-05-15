@@ -87,14 +87,15 @@ async function verifyTurnstileToken(token: string) {
         const result = await response.json() as { success?: boolean; "error-codes"?: string[] };
 
         if (!result.success) {
-            console.error("Turnstile verification failed:", result["error-codes"]);
-            return { success: false, error: "Robot doğrulaması başarısız oldu. Lütfen sayfayı yenileyip tekrar deneyin." };
+            const codes = result["error-codes"]?.join(", ") || "bilinmeyen";
+            console.error("Turnstile verification failed:", codes);
+            return { success: false, error: `Robot doğrulaması başarısız (${codes}). Sayfayı yenileyip tekrar deneyin.` };
         }
 
         return { success: true };
     } catch (err) {
         console.error("Turnstile verification network error:", err);
-        return { success: false, error: "Robot doğrulaması yapılamadı. Lütfen tekrar deneyin." };
+        return { success: false, error: "Robot doğrulaması yapılamadı (ağ hatası). Lütfen tekrar deneyin." };
     }
 }
 
