@@ -28,55 +28,38 @@ export function ModernLogin() {
     const [showPassword, setShowPassword] = useState(false);
     const [supabase] = useState(() => createClient());
     const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+    const [isTurnstileLoaded, setIsTurnstileLoaded] = useState(false);
     const [usernameStatus, setUsernameStatus] = useState<"idle" | "checking" | "available" | "taken">("idle");
 
     useEffect(() => {
+        // Define the global callback that Cloudflare Turnstile will call when it's ready
+        window.onloadTurnstileCallback = () => {
+            setIsTurnstileLoaded(true);
+        };
+
         const script = document.createElement('script');
-        script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
+        // Add onload callback and explicit render
+        script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onloadTurnstileCallback&render=explicit";
         script.async = true;
         script.defer = true;
         document.body.appendChild(script);
 
-        window.onTurnstileSuccess = (token: string) => {
-            setTurnstileToken(token);
-        };
-        window.onTurnstileExpired = () => {
-            setTurnstileToken(null);
-        };
-        window.onTurnstileError = () => {
-            setTurnstileToken(null);
-        };
+        window.onTurnstileSuccess = (token: string) => setTurnstileToken(token);
+        window.onTurnstileExpired = () => setTurnstileToken(null);
+        window.onTurnstileError = () => setTurnstileToken(null);
 
         return () => {
             if (document.body.contains(script)) {
                 document.body.removeChild(script);
             }
+            delete window.onloadTurnstileCallback;
             delete window.onTurnstileSuccess;
             delete window.onTurnstileExpired;
             delete window.onTurnstileError;
         };
     }, []);
 
-    // Re-render Turnstile when switching between login/signup tabs
-    useEffect(() => {
-        setTurnstileToken(null);
-        const timer = setTimeout(() => {
-            const container = document.getElementById('turnstile-container');
-            if (container && window.turnstile) {
-                container.innerHTML = '';
-                window.turnstile.render(container, {
-                    sitekey: turnstileSiteKey,
-                    callback: (token: string) => setTurnstileToken(token),
-                    'expired-callback': () => setTurnstileToken(null),
-                    'error-callback': () => setTurnstileToken(null),
-                    theme: 'dark',
-                });
-            }
-        }, 100);
-        return () => clearTimeout(timer);
-    }, [isSignUp]);
-
-    const resetTurnstile = () => {
+    const renderTurnstileWidget = () => {
         setTurnstileToken(null);
         const container = document.getElementById('turnstile-container');
         if (container && window.turnstile) {
@@ -88,6 +71,23 @@ export function ModernLogin() {
                 'error-callback': () => setTurnstileToken(null),
                 theme: 'dark',
             });
+        }
+    };
+
+    // Re-render Turnstile when switching between login/signup tabs OR when script finishes loading
+    useEffect(() => {
+        if (isTurnstileLoaded) {
+            // Small delay to ensure the container DOM element is fully mounted after a tab switch
+            const timer = setTimeout(() => {
+                renderTurnstileWidget();
+            }, 100);
+            return () => clearTimeout(timer);
+        }
+    }, [isSignUp, isTurnstileLoaded]);
+
+    const resetTurnstile = () => {
+        if (isTurnstileLoaded) {
+            renderTurnstileWidget();
         }
     };
 

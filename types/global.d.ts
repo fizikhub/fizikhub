@@ -10,6 +10,7 @@ declare global {
     onTurnstileSuccess?: (token: string) => void;
     onTurnstileExpired?: () => void;
     onTurnstileError?: () => void;
+    onloadTurnstileCallback?: () => void;
     turnstile?: {
       reset: (widgetId?: string) => void;
       render: (container: string | HTMLElement, options: {
