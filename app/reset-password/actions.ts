@@ -1,7 +1,6 @@
 "use server";
 
 import { createClient } from "@/lib/supabase-server";
-import { redirect } from "next/navigation";
 import { validatePasswordStrength } from "@/lib/security";
 
 export async function updatePassword(newPassword: string) {

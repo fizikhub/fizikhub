@@ -6,7 +6,7 @@ import { createClient } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Loader2, Eye, EyeOff, ArrowRight, Mail, Lock, User, AtSign } from "lucide-react";
+import { Loader2, Eye, EyeOff, ArrowRight, Mail, Lock, User, AtSign, CheckCircle2, AlertCircle } from "lucide-react";
 import { DankLogo } from "@/components/brand/dank-logo";
 import dynamic from "next/dynamic";
 const StarBackground = dynamic(() => import("@/components/background/star-background").then(mod => mod.StarBackground), { ssr: false });
@@ -28,6 +28,7 @@ export function ModernLogin() {
     const [showPassword, setShowPassword] = useState(false);
     const [supabase] = useState(() => createClient());
     const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+    const [usernameStatus, setUsernameStatus] = useState<"idle" | "checking" | "available" | "taken">("idle");
 
     useEffect(() => {
         const script = document.createElement('script');
@@ -60,6 +61,39 @@ export function ModernLogin() {
         setTurnstileToken(null);
         window.turnstile?.reset();
     };
+
+    useEffect(() => {
+        if (!isSignUp || username.length < 3) {
+            setUsernameStatus("idle");
+            return;
+        }
+
+        let active = true;
+        setUsernameStatus("checking");
+
+        const timer = window.setTimeout(async () => {
+            const { data, error } = await supabase
+                .from("profiles")
+                .select("id")
+                .eq("username", username)
+                .maybeSingle();
+
+            if (!active) return;
+
+            if (error) {
+                console.error("Username availability error:", error);
+                setUsernameStatus("idle");
+                return;
+            }
+
+            setUsernameStatus(data ? "taken" : "available");
+        }, 350);
+
+        return () => {
+            active = false;
+            window.clearTimeout(timer);
+        };
+    }, [isSignUp, supabase, username]);
 
     const handleOAuthLogin = async (provider: 'github' | 'google') => {
         setLoading(true);
@@ -97,6 +131,9 @@ export function ModernLogin() {
         try {
             if (isSignUp) {
                 if (username.length < 3) throw new Error("Kullanıcı adı en az 3 karakter olmalı.");
+                if (!isPasswordReady) throw new Error("Şifre güvenlik koşullarını karşılamıyor.");
+                if (usernameStatus === "checking") throw new Error("Kullanıcı adı kontrol ediliyor.");
+                if (usernameStatus === "taken") throw new Error("Bu kullanıcı adı zaten alınmış.");
 
                 // Validate username uniqueness
                 const { data: existingUser, error: checkError } = await supabase
@@ -181,6 +218,15 @@ export function ModernLogin() {
 
     /* Shared input class for consistency */
     const inputCls = "h-11 bg-white/[0.05] border-2 border-white/[0.08] text-white placeholder:text-zinc-600 focus:border-neo-yellow/70 focus:bg-white/[0.07] focus:ring-0 rounded-xl transition-all font-mono font-bold text-sm pl-10";
+    const passwordRules = [
+        { label: "8+ karakter", valid: password.length >= 8 },
+        { label: "Büyük harf", valid: /[A-Z]/.test(password) },
+        { label: "Küçük harf", valid: /[a-z]/.test(password) },
+        { label: "Rakam", valid: /[0-9]/.test(password) },
+        { label: "Özel işaret", valid: /[!@#$%^&*(),.?":{}|<>]/.test(password) },
+    ];
+    const isPasswordReady = passwordRules.every((rule) => rule.valid);
+    const isSubmitDisabled = loading || (isSignUp && (usernameStatus === "checking" || usernameStatus === "taken" || !isPasswordReady));
 
     return (
         <div className="min-h-screen w-full flex items-center justify-center px-5 py-8 bg-transparent font-sans relative overflow-hidden selection:bg-neo-yellow/30 selection:text-neo-yellow">
@@ -207,6 +253,28 @@ export function ModernLogin() {
                             <p className="text-zinc-500 text-[11px] font-bold uppercase tracking-[0.25em]">
                                 {isSignUp ? "Bilim topluluğuna katıl" : "Hesabına giriş yap"}
                             </p>
+                            <div className="mt-5 grid grid-cols-2 gap-1 rounded-xl border-2 border-white/[0.08] bg-white/[0.04] p-1">
+                                <button
+                                    type="button"
+                                    onClick={() => setIsSignUp(false)}
+                                    className={cn(
+                                        "h-9 rounded-lg text-[11px] font-black uppercase tracking-widest transition-all",
+                                        !isSignUp ? "bg-neo-yellow text-black shadow-[2px_2px_0_rgba(255,255,255,0.55)]" : "text-zinc-500 hover:text-white"
+                                    )}
+                                >
+                                    Giriş
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => setIsSignUp(true)}
+                                    className={cn(
+                                        "h-9 rounded-lg text-[11px] font-black uppercase tracking-widest transition-all",
+                                        isSignUp ? "bg-neo-yellow text-black shadow-[2px_2px_0_rgba(255,255,255,0.55)]" : "text-zinc-500 hover:text-white"
+                                    )}
+                                >
+                                    Kayıt
+                                </button>
+                            </div>
                         </div>
 
                         {/* ── Form ── */}
@@ -225,19 +293,43 @@ export function ModernLogin() {
                                             <Label className="text-[10px] font-bold uppercase text-zinc-500 tracking-widest pl-1">Kullanıcı Adı</Label>
                                             <div className="relative">
                                                 <AtSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-600 pointer-events-none" />
-                                                <Input
-                                                    placeholder="username"
-                                                    value={username}
-                                                    onChange={(e) => {
+	                                                <Input
+	                                                    placeholder="username"
+	                                                    value={username}
+	                                                    onChange={(e) => {
                                                         let value = e.target.value.toLowerCase();
                                                         value = value.replace(/[^a-z0-9_.-]/g, '');
                                                         setUsername(value);
                                                     }}
-                                                    required
-                                                    className={inputCls}
-                                                />
-                                            </div>
-                                        </div>
+	                                                    required
+	                                                    className={inputCls}
+	                                                />
+	                                            </div>
+                                                {username.length >= 3 && (
+                                                    <div className={cn(
+                                                        "flex items-center gap-1.5 pl-1 text-[10px] font-bold uppercase tracking-wider",
+                                                        usernameStatus === "available" && "text-emerald-400",
+                                                        usernameStatus === "taken" && "text-red-400",
+                                                        usernameStatus === "checking" && "text-zinc-500",
+                                                        usernameStatus === "idle" && "text-zinc-600"
+                                                    )}>
+                                                        {usernameStatus === "checking" ? (
+                                                            <Loader2 className="h-3 w-3 animate-spin" />
+                                                        ) : usernameStatus === "taken" ? (
+                                                            <AlertCircle className="h-3 w-3" />
+                                                        ) : (
+                                                            <CheckCircle2 className="h-3 w-3" />
+                                                        )}
+                                                        <span>
+                                                            {usernameStatus === "checking"
+                                                                ? "Kontrol ediliyor"
+                                                                : usernameStatus === "taken"
+                                                                    ? "Kullanıcı adı alınmış"
+                                                                    : "Kullanıcı adı uygun"}
+                                                        </span>
+                                                    </div>
+                                                )}
+	                                        </div>
                                         {/* Full Name */}
                                         <div className="space-y-1">
                                             <Label className="text-[10px] font-bold uppercase text-zinc-500 tracking-widest pl-1">İsim</Label>
@@ -300,9 +392,25 @@ export function ModernLogin() {
                                         className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-neo-yellow transition-colors"
                                     >
                                         {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                                    </button>
-                                </div>
-                            </div>
+	                                    </button>
+	                                </div>
+                                    {isSignUp && (
+                                        <div className="grid grid-cols-2 gap-1.5 pl-1 pt-1">
+                                            {passwordRules.map((rule) => (
+                                                <div
+                                                    key={rule.label}
+                                                    className={cn(
+                                                        "flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider",
+                                                        rule.valid ? "text-emerald-400" : "text-zinc-600"
+                                                    )}
+                                                >
+                                                    <CheckCircle2 className="h-3 w-3" />
+                                                    <span>{rule.label}</span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+	                            </div>
 
                             {/* Terms */}
                             <AnimatePresence>
@@ -340,9 +448,9 @@ export function ModernLogin() {
                             </div>
 
                             {/* CTA */}
-                            <Button
-                                type="submit"
-                                disabled={loading}
+	                            <Button
+	                                type="submit"
+	                                disabled={isSubmitDisabled}
                                 className="w-full h-[50px] bg-neo-yellow hover:bg-yellow-300 text-black font-black uppercase tracking-widest text-[13px] rounded-xl border-2 border-black/80 shadow-[4px_4px_0px_0px_rgba(255,255,255,0.7)] hover:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.7)] hover:translate-x-[2px] hover:translate-y-[2px] active:shadow-none active:translate-x-[4px] active:translate-y-[4px] transition-all flex items-center justify-center gap-2.5"
                             >
                                 {loading ? (

@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createAdminClient } from "@/lib/supabase-admin";
 import { ensureUserProfile } from "@/lib/auth-profile";
+import { validatePasswordStrength } from "@/lib/security";
 import { Resend } from "resend";
 import { buildConfirmationTemplate } from "../../scripts/auth-email-templates.mjs";
 
@@ -97,6 +98,11 @@ export async function signupWithEmailOtp(input: SignupWithEmailOtpInput) {
 
     if (username.length < 3) {
         return { success: false, error: "Kullanıcı adı en az 3 karakter olmalı." };
+    }
+
+    const passwordError = validatePasswordStrength(input.password);
+    if (passwordError) {
+        return { success: false, error: passwordError };
     }
 
     const turnstile = await verifyTurnstileToken(input.captchaToken);
@@ -192,15 +198,38 @@ export async function verifyOtp(token: string, type: 'signup' | 'recovery' | 'ma
 }
 
 export async function resendOtp(email: string) {
-    const supabase = await createClient();
+    const normalizedEmail = email.trim().toLowerCase();
+    const resendApiKey = process.env.RESEND_API_KEY;
 
-    const { error } = await supabase.auth.resend({
-        type: 'signup',
-        email,
+    if (!normalizedEmail) {
+        return { success: false, error: "E-posta adresi bulunamadı." };
+    }
+
+    if (!resendApiKey) {
+        return { success: false, error: "E-posta doğrulama sistemi yapılandırması eksik." };
+    }
+
+    const supabaseAdmin = createAdminClient();
+    const resendSignupParams = {
+        type: "signup",
+        email: normalizedEmail,
+    } as Parameters<typeof supabaseAdmin.auth.admin.generateLink>[0];
+    const { data, error } = await supabaseAdmin.auth.admin.generateLink(resendSignupParams);
+
+    if (error || !data?.properties?.email_otp) {
+        return { success: false, error: error?.message || "Yeni doğrulama kodu oluşturulamadı." };
+    }
+
+    const resend = new Resend(resendApiKey);
+    const result = await resend.emails.send({
+        from: "FizikHub <bildirim@fizikhub.com>",
+        to: normalizedEmail,
+        subject: "FizikHub doğrulama kodun",
+        html: buildConfirmationTemplate(data.properties.email_otp),
     });
 
-    if (error) {
-        return { success: false, error: error.message };
+    if (result.error) {
+        return { success: false, error: result.error.message };
     }
 
     return { success: true };

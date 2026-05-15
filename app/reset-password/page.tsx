@@ -5,7 +5,7 @@ import { m as motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Eye, EyeOff, Lock, ArrowRight, Shield, Loader2 } from "lucide-react";
+import { Eye, EyeOff, ArrowRight, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { updatePassword } from "./actions";
 import { toast } from "sonner";

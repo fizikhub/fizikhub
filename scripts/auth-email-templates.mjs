@@ -180,20 +180,24 @@ export function buildConfirmationTemplate(token = "{{ .Token }}") {
 
 export const confirmationTemplate = buildConfirmationTemplate();
 
-export const recoveryTemplate = renderEmailShell({
-  title: "FizikHub şifre sıfırlama",
-  preheader: "FizikHub şifreni sıfırlamak için bağlantın hazır.",
-  body: `
+export function buildRecoveryTemplate(resetUrl = "{{ .ConfirmationURL }}") {
+  return renderEmailShell({
+    title: "FizikHub şifre sıfırlama",
+    preheader: "FizikHub şifreni sıfırlamak için bağlantın hazır.",
+    body: `
     <tr>
       <td class="bg-card" style="background-color:#171719;background-image:linear-gradient(#171719,#171719);border:3px solid #000000;border-radius:0 0 8px 8px;box-shadow:7px 7px 0 #000000;padding:28px;">
         <h1 class="text-white" style="margin:0 0 14px;color:#f8f8f8;font-size:32px;line-height:36px;font-weight:900;">Şifreyi toparlayalım.</h1>
         <p class="text-soft" style="margin:0 0 22px;color:#b9bac4;font-size:16px;line-height:26px;font-weight:700;">FizikHub şifreni sıfırlamak için aşağıdaki bağlantıyı kullan.</p>
-        <a href="{{ .ConfirmationURL }}" class="text-yellow" style="display:inline-block;background-color:#09090b;background-image:linear-gradient(#09090b,#09090b);color:#ffd400;border:3px solid #ffd400;border-radius:5px;padding:13px 18px;font-size:13px;line-height:13px;font-weight:900;letter-spacing:1px;text-transform:uppercase;text-decoration:none;box-shadow:4px 4px 0 #000000;">ŞİFREMİ SIFIRLA</a>
+        <a href="${resetUrl}" class="text-yellow" style="display:inline-block;background-color:#09090b;background-image:linear-gradient(#09090b,#09090b);color:#ffd400;border:3px solid #ffd400;border-radius:5px;padding:13px 18px;font-size:13px;line-height:13px;font-weight:900;letter-spacing:1px;text-transform:uppercase;text-decoration:none;box-shadow:4px 4px 0 #000000;">ŞİFREMİ SIFIRLA</a>
         <p class="text-muted" style="margin:24px 0 0;color:#848791;font-size:13px;line-height:21px;font-weight:700;">Bu isteği sen yapmadıysan bu e-postayı yok sayabilirsin.</p>
       </td>
     </tr>
   `,
-});
+  });
+}
+
+export const recoveryTemplate = buildRecoveryTemplate();
 
 export const magicLinkTemplate = renderEmailShell({
   title: "FizikHub giriş bağlantın",

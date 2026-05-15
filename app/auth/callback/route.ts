@@ -9,6 +9,7 @@ export async function GET(request: Request) {
     // Validate 'next' parameter to prevent open redirect attacks
     const rawNext = searchParams.get('next') ?? '/'
     const next = (rawNext.startsWith('/') && !rawNext.startsWith('//')) ? rawNext : '/'
+    const isPasswordReset = next.startsWith('/reset-password')
 
     if (code) {
         const cookieStore = await cookies()
@@ -46,7 +47,7 @@ export async function GET(request: Request) {
                     return NextResponse.redirect(`${origin}/auth/auth-code-error?error=profile_upsert_failed`)
                 }
 
-                if (!profileResult.profile?.onboardingCompleted) {
+                if (!isPasswordReset && !profileResult.profile?.onboardingCompleted) {
                     return NextResponse.redirect(`${origin}/kurulum`)
                 }
             }
