@@ -150,7 +150,7 @@ export function ModernLogin() {
         e.preventDefault();
 
         if (!turnstileToken) {
-            toast.error("Lütfen robot olmadığınızı doğrulayın.");
+            toast.error("Lütfen robot olmadığınızı doğrulayın. [ERR_CAPTCHA_MISSING]");
             return;
         }
 
@@ -159,12 +159,33 @@ export function ModernLogin() {
 
         try {
             if (isSignUp) {
-                if (username.length < 3) throw new Error("Kullanıcı adı en az 3 karakter olmalı.");
-                if (!isPasswordReady) throw new Error("Şifre güvenlik koşullarını karşılamıyor.");
-                if (usernameStatus === "checking") throw new Error("Kullanıcı adı kontrol ediliyor.");
-                if (usernameStatus === "taken") throw new Error("Bu kullanıcı adı zaten alınmış.");
+                // ── Client-side validations (no server call needed) ──
+                if (username.length < 3) {
+                    toast.error("Kullanıcı adı en az 3 karakter olmalı. [ERR_SIGNUP_USERNAME_SHORT]", { id: toastId });
+                    setLoading(false);
+                    resetTurnstile();
+                    return;
+                }
+                if (!isPasswordReady) {
+                    toast.error("Şifre güvenlik koşullarını karşılamıyor. [ERR_SIGNUP_PASSWORD_WEAK]", { id: toastId });
+                    setLoading(false);
+                    resetTurnstile();
+                    return;
+                }
+                if (usernameStatus === "checking") {
+                    toast.error("Kullanıcı adı kontrol ediliyor, lütfen bekleyin. [ERR_SIGNUP_USERNAME_CHECKING]", { id: toastId });
+                    setLoading(false);
+                    resetTurnstile();
+                    return;
+                }
+                if (usernameStatus === "taken") {
+                    toast.error("Bu kullanıcı adı zaten alınmış. [ERR_SIGNUP_USERNAME_TAKEN]", { id: toastId });
+                    setLoading(false);
+                    resetTurnstile();
+                    return;
+                }
 
-                // Validate username uniqueness
+                // ── Client-side username uniqueness check ──
                 const { data: existingUser, error: checkError } = await supabase
                     .from('profiles')
                     .select('username')
@@ -173,12 +194,20 @@ export function ModernLogin() {
 
                 if (checkError) {
                     console.error("Username check error:", checkError);
-                    // We don't block registration on this error, let the server handle unique constraint if needed
-                    // or throw if critical. For now, let's proceed but log it.
+                    toast.error(`Kullanıcı adı kontrolü başarısız: ${checkError.message} [ERR_SIGNUP_USERNAME_CHECK]`, { id: toastId });
+                    setLoading(false);
+                    resetTurnstile();
+                    return;
                 }
 
-                if (existingUser) throw new Error("Bu kullanıcı adı zaten alınmış.");
+                if (existingUser) {
+                    toast.error("Bu kullanıcı adı zaten alınmış. [ERR_SIGNUP_USERNAME_EXISTS]", { id: toastId });
+                    setLoading(false);
+                    resetTurnstile();
+                    return;
+                }
 
+                // ── Server action call ──
                 const result = await signupWithEmailOtp({
                     email,
                     password,
@@ -188,15 +217,22 @@ export function ModernLogin() {
                     redirectTo: `${location.origin}/auth/callback`,
                 });
 
-                if (!result.success) throw new Error(result.error || "Kayıt oluşturulamadı.");
+                if (!result.success) {
+                    const serverError = result.error || "Bilinmeyen sunucu hatası.";
+                    console.error("Signup server error:", serverError);
+                    toast.error(`${serverError} [ERR_SIGNUP_SERVER]`, { id: toastId });
+                    setLoading(false);
+                    resetTurnstile();
+                    return;
+                }
 
                 toast.success("Kayıt başarılı! Yönlendiriliyorsunuz...", { id: toastId });
-                // Short delay to let user see the success message
                 setTimeout(() => {
                     window.location.href = `/auth/verify?email=${encodeURIComponent(email)}`;
                 }, 1000);
 
             } else {
+                // ── Login flow ──
                 const { error } = await supabase.auth.signInWithPassword({
                     email,
                     password,
@@ -204,15 +240,26 @@ export function ModernLogin() {
                 });
 
                 if (error) {
+                    console.error("Login error:", error.message);
+                    setLoading(false);
+                    resetTurnstile();
+
                     if (error.message.toLowerCase().includes("email not confirmed")) {
-                        toast.error("E-posta doğrulaması gerekli. Kodu tekrar girebilirsin.", { id: toastId });
+                        toast.error("E-posta doğrulaması gerekli. Kodu tekrar girebilirsin. [ERR_LOGIN_UNVERIFIED]", { id: toastId });
                         setTimeout(() => {
                             window.location.href = `/auth/verify?email=${encodeURIComponent(email)}`;
                         }, 800);
                         return;
                     }
 
-                    throw error;
+                    if (error.message.includes("Invalid login")) {
+                        toast.error("Kullanıcı adı veya şifre hatalı. [ERR_LOGIN_INVALID]", { id: toastId });
+                    } else if (error.message.includes("rate limit")) {
+                        toast.error("Çok fazla deneme yaptınız. Lütfen biraz bekleyin. [ERR_LOGIN_RATE_LIMIT]", { id: toastId });
+                    } else {
+                        toast.error(`${error.message} [ERR_LOGIN_UNKNOWN]`, { id: toastId });
+                    }
+                    return;
                 }
 
                 toast.success("Giriş başarılı! Yönlendiriliyorsunuz...", { id: toastId });
@@ -221,32 +268,12 @@ export function ModernLogin() {
                 }, 1000);
             }
         } catch (error: any) {
-            console.error("Auth error:", error);
-
-            // Clear loading state immediately on error
+            // This catch is ONLY for truly unexpected errors (network failures, etc.)
+            console.error("Unexpected auth error:", error);
             setLoading(false);
             resetTurnstile();
-
-            const msg = error?.message || "";
-
-            if (msg.includes("already registered") || msg.includes("already been registered")) {
-                toast.error("Bu e-posta zaten kayıtlı.", { id: toastId });
-            } else if (msg.includes("Invalid login")) {
-                toast.error("Kullanıcı adı veya şifre hatalı.", { id: toastId });
-            } else if (msg.includes("Database error")) {
-                toast.error("Sunucu hatası, lütfen tekrar deneyin.", { id: toastId });
-            } else if (msg.includes("rate limit")) {
-                toast.error("Çok fazla deneme yaptınız. Lütfen biraz bekleyin.", { id: toastId });
-            } else if (msg.includes("Robot doğrulaması") || msg.includes("Turnstile")) {
-                toast.error("Robot doğrulaması başarısız oldu. Lütfen sayfayı yenileyip tekrar deneyin.", { id: toastId });
-            } else if (msg.includes("yapılandırması eksik")) {
-                toast.error("Sistem yapılandırma hatası. Lütfen daha sonra tekrar deneyin.", { id: toastId });
-            } else if (msg) {
-                // Show the actual error message from the server
-                toast.error(msg, { id: toastId });
-            } else {
-                toast.error("Bir hata oluştu. Lütfen bilgilerinizi kontrol edin.", { id: toastId });
-            }
+            const rawMsg = error?.message || error?.toString() || "";
+            toast.error(`Beklenmeyen hata: ${rawMsg || "Bağlantı hatası."} [ERR_UNEXPECTED]`, { id: toastId });
         }
         // Note: We don't set loading(false) in success case to prevent interaction during redirect
     };
