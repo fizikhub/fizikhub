@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
-import { Search } from "lucide-react";
+import { Search, Dices } from "lucide-react";
 import { m as motion, AnimatePresence } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 import { DictionaryTerm } from "@/lib/api";
@@ -23,20 +23,32 @@ export function DictionaryList({ initialTerms }: DictionaryListProps) {
 
     return (
         <>
-            {/* Search Input - NEO STYLE */}
-            <div className="relative mb-8 max-w-2xl">
-                <div className="relative group">
+            {/* Search Input & Random Button - NEO STYLE */}
+            <div className="mb-8 flex w-full max-w-3xl flex-col gap-3 sm:flex-row">
+                <div className="relative group flex-grow">
                     <div className="absolute left-[6px] top-[6px] h-full w-full rounded-xl bg-black transition-all duration-200 group-focus-within:left-[2px] group-focus-within:top-[2px]"></div>
                     <div className="relative">
                         <Search className="absolute left-4 top-1/2 z-10 h-5 w-5 -translate-y-1/2 text-black sm:h-6 sm:w-6" />
                         <Input
                             placeholder="Terim ara (örn: Entropi)..."
-                            className="h-14 rounded-xl border-[3px] border-black bg-white pl-12 text-base font-bold transition-all placeholder:font-medium placeholder:text-zinc-400 focus-visible:ring-0 focus-visible:ring-offset-0 dark:bg-zinc-100 dark:text-black sm:h-16 sm:pl-14 sm:text-xl"
+                            className="h-14 w-full rounded-xl border-[3px] border-black bg-white pl-12 text-base font-bold transition-all placeholder:font-medium placeholder:text-zinc-400 focus-visible:ring-0 focus-visible:ring-offset-0 dark:bg-zinc-100 dark:text-black sm:h-16 sm:pl-14 sm:text-xl"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
                     </div>
                 </div>
+                <button
+                    onClick={() => {
+                        if (initialTerms.length > 0) {
+                            const randomIndex = Math.floor(Math.random() * initialTerms.length);
+                            setSearchTerm(initialTerms[randomIndex].term);
+                        }
+                    }}
+                    className="flex h-14 shrink-0 items-center justify-center gap-2 rounded-xl border-[3px] border-black bg-[#33EAA1] px-6 font-black text-black shadow-[4px_4px_0px_0px_#000] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:bg-[#20CA86] hover:shadow-[2px_2px_0px_0px_#000] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none sm:h-16"
+                >
+                    <Dices className="h-5 w-5 stroke-[2.5px]" />
+                    Rastgele
+                </button>
             </div>
 
             {/* Terms Grid */}

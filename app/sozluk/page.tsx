@@ -3,6 +3,7 @@ import { Book, Hash, Search } from "lucide-react";
 import { createClient } from "@/lib/supabase-server";
 import { getDictionaryTerms } from "@/lib/api";
 import { DictionaryList } from "@/components/dictionary/dictionary-list";
+import { Badge } from "@/components/ui/badge";
 import { BreadcrumbJsonLd } from "@/lib/breadcrumbs";
 import { slugify } from "@/lib/slug";
 
@@ -131,12 +132,13 @@ export default async function DictionaryPage() {
                     
                     <div className="relative z-10 mt-5 flex flex-wrap gap-2 lg:mt-0 lg:max-w-[280px] lg:justify-end">
                         {categories.slice(0, 5).map((category) => (
-                            <span
+                            <Badge
                                 key={category}
-                                className="rounded-full border-[1.5px] border-black bg-zinc-100 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-black dark:bg-zinc-800 dark:text-white"
+                                variant="outline"
+                                className="rounded-full border-2 border-black bg-white px-3 py-1 text-[10px] font-black uppercase tracking-wider text-black shadow-[2px_2px_0px_0px_#000] transition-transform hover:-translate-y-0.5 dark:bg-zinc-800 dark:text-white dark:border-zinc-700"
                             >
                                 {category}
-                            </span>
+                            </Badge>
                         ))}
                     </div>
                     
