@@ -1,10 +1,10 @@
-import { createClient } from "@/lib/supabase-server";
+import { createClient, createStaticClient } from "@/lib/supabase-server";
 import { notFound } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { formatDistanceToNow } from "date-fns";
 import { tr } from "date-fns/locale";
-import { Eye, MessageSquare, User, ArrowLeft, CheckCircle2, Flame, Zap, BadgeCheck, Edit2, Share2 } from "lucide-react";
+import { Eye, MessageSquare, ArrowLeft, CheckCircle2, Flame, BadgeCheck, Share2 } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { BackgroundWrapper } from "@/components/home/background-wrapper";
@@ -13,13 +13,11 @@ import { isAdminEmail } from "@/lib/admin";
 
 import { AnswerList } from "@/components/forum/answer-list";
 import { DeleteQuestionButton } from "@/components/forum/delete-question-button";
-import { ScrollToAnswerButton } from "@/components/forum/scroll-to-answer-button";
 import { MarkdownRenderer } from "@/components/markdown-renderer";
 import { VoteButton } from "@/components/forum/vote-button";
 import { ViewTracker } from "@/components/forum/view-tracker";
 import { BookmarkButton } from "@/components/bookmark-button";
 import { ReportButton } from "@/components/report-button";
-import { Flag } from "lucide-react";
 import { EditQuestionDialog } from "@/components/forum/edit-question-dialog";
 // import { ScrollFixer } from "@/components/ui/scroll-fixer";
 import { StickyActionBar } from "@/components/forum/sticky-action-bar";
@@ -55,6 +53,14 @@ function getAnswerCount(question: { answers?: Array<{ count?: number | null }> |
     return Number(question.answers?.[0]?.count || 0);
 }
 
+function parseQuestionId(rawId: string) {
+    const match = rawId.match(/^\d+/);
+    if (!match) return null;
+
+    const questionId = Number.parseInt(match[0], 10);
+    return Number.isSafeInteger(questionId) ? questionId : null;
+}
+
 function isIndexableForumQuestion(question: {
     title?: string | null;
     content?: string | null;
@@ -66,12 +72,21 @@ function isIndexableForumQuestion(question: {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
     const { id } = await params;
-    const supabase = await createClient();
+    const questionId = parseQuestionId(id);
+
+    if (!questionId) {
+        return {
+            title: "Soru Bulunamadı",
+            robots: { index: false, follow: false },
+        };
+    }
+
+    const supabase = createStaticClient();
 
     const { data: question } = await supabase
         .from('questions')
-        .select('title, content, category, tags, created_at, updated_at, votes, profiles(username), answers(count)')
-        .eq('id', id)
+        .select('title, content, category, tags, created_at, votes, profiles(username), answers(count)')
+        .eq('id', questionId)
         .single();
 
     if (!question) {
@@ -82,7 +97,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     }
 
     const baseUrl = getSiteUrl();
-    const canonicalUrl = `${baseUrl}/forum/${id}`;
+    const canonicalUrl = `${baseUrl}/forum/${questionId}`;
     const category = question.category || 'Genel';
     const cleanContent = stripMarkdownForMeta(question.content);
     const description = truncateForMeta(
@@ -139,15 +154,21 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function QuestionPage({ params }: PageProps) {
     const { id } = await params;
-    const supabase = await createClient();
+    const questionId = parseQuestionId(id);
+
+    if (!questionId) {
+        notFound();
+    }
+
+    const publicSupabase = createStaticClient();
 
     // Fetch question details
-    const { data: rawQuestion, error } = await supabase.from('questions')
+    const { data: rawQuestion, error } = await publicSupabase.from('questions')
         .select(`
-            id, title, content, created_at, updated_at, category, tags, votes, views, author_id,
+            id, title, content, created_at, category, tags, votes, views, author_id,
             profiles(username, full_name, avatar_url, is_verified)
         `)
-        .eq('id', id)
+        .eq('id', questionId)
         .single();
 
     if (error || !rawQuestion) {
@@ -156,10 +177,12 @@ export default async function QuestionPage({ params }: PageProps) {
 
     const question = {
         ...rawQuestion,
+        updated_at: null,
         profiles: getPublicProfile(rawQuestion.profiles),
     };
 
     // Check if user is admin
+    const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
     const isAdmin = isAdminEmail(user?.email);
 
@@ -170,20 +193,20 @@ export default async function QuestionPage({ params }: PageProps) {
         { data: userBookmark }
     ] = await Promise.all([
         // 1. Fetch answers
-        supabase
+        publicSupabase
             .from('answers')
             .select(`
-                id, question_id, author_id, content, created_at, updated_at, votes, is_accepted,
+                id, question_id, author_id, content, created_at, is_accepted,
                 profiles(username, full_name, avatar_url, is_verified)
             `)
-            .eq('question_id', id)
+            .eq('question_id', question.id)
             .order('created_at', { ascending: true }),
 
         // 2. Check if user has voted (only if logged in)
         user ? supabase
             .from('question_votes')
             .select('vote_type')
-            .eq('question_id', id)
+            .eq('question_id', question.id)
             .eq('user_id', user.id)
             .maybeSingle() : Promise.resolve({ data: null }),
 
@@ -191,7 +214,7 @@ export default async function QuestionPage({ params }: PageProps) {
         user ? supabase
             .from('question_bookmarks')
             .select('id')
-            .eq('question_id', id)
+            .eq('question_id', question.id)
             .eq('user_id', user.id)
             .maybeSingle() : Promise.resolve({ data: null })
     ]);
@@ -202,6 +225,8 @@ export default async function QuestionPage({ params }: PageProps) {
     // Extract answer IDs
     const normalizedAnswers = (answers || []).map((answer) => ({
         ...answer,
+        votes: 0,
+        updated_at: null,
         profiles: getPublicProfile(answer.profiles),
     }));
     const answerIds = normalizedAnswers.map(a => a.id);
@@ -216,7 +241,7 @@ export default async function QuestionPage({ params }: PageProps) {
         // 1. All answer likes (using view/count or full select grouped by id)
         // Note: For counts, getting all records is acceptable if the dataset per question is small.
         // A better approach long-term is an RPC, but fetching 'answer_id' to group in memory works for now.
-        hasAnswers ? supabase
+        hasAnswers ? publicSupabase
             .from('answer_likes')
             .select('answer_id')
             .in('answer_id', answerIds) : Promise.resolve({ data: [] }),
@@ -229,7 +254,7 @@ export default async function QuestionPage({ params }: PageProps) {
             .in('answer_id', answerIds) : Promise.resolve({ data: [] }),
 
         // 3. All comments for these answers
-        hasAnswers ? supabase
+        hasAnswers ? publicSupabase
             .from('answer_comments')
             .select(`
                 id, answer_id, author_id, content, created_at,
@@ -253,7 +278,7 @@ export default async function QuestionPage({ params }: PageProps) {
         { data: allCommentUserLikesData }
     ] = await Promise.all([
         // 1. All comment likes
-        hasComments ? supabase
+        hasComments ? publicSupabase
             .from('answer_comment_likes')
             .select('comment_id')
             .in('comment_id', commentIds) : Promise.resolve({ data: [] }),
@@ -302,8 +327,6 @@ export default async function QuestionPage({ params }: PageProps) {
 
     // Status indicators
     const isSolved = answersWithLikes?.some(a => a.is_accepted) || false;
-    const isHot = (question.votes || 0) > 5;
-    const isNew = new Date(question.created_at) > new Date(Date.now() - 24 * 60 * 60 * 1000);
 
     // JSON-LD Structured Data for Q&A
     const acceptedAnswer = answersWithLikes?.find(a => a.is_accepted);
@@ -326,7 +349,6 @@ export default async function QuestionPage({ params }: PageProps) {
             upvoteCount: question.votes || 0,
             dateCreated: question.created_at,
             datePublished: question.created_at,
-            ...(question.updated_at && { dateModified: question.updated_at }),
             author: {
                 '@type': 'Person',
                 name: question.profiles?.username || 'Anonim',
@@ -379,7 +401,7 @@ export default async function QuestionPage({ params }: PageProps) {
             <BackgroundWrapper />
             <BreadcrumbJsonLd items={[
                 { name: 'Forum', href: '/forum' },
-                { name: question.title, href: `/forum/${id}` }
+                { name: question.title, href: `/forum/${question.id}` }
             ]} />
             <script
                 type="application/ld+json"
@@ -475,14 +497,6 @@ export default async function QuestionPage({ params }: PageProps) {
                                 <div className="prose prose-sm sm:prose-base prose-neutral dark:prose-invert max-w-none break-words leading-[1.8] font-[family-name:var(--font-inter)] text-neutral-700 dark:text-zinc-300">
                                     <MarkdownRenderer content={question.content} />
                                 </div>
-
-                                {/* Edit Timestamp */}
-                                {question.updated_at && new Date(question.updated_at).getTime() > new Date(question.created_at).getTime() + 60000 && (
-                                    <div className="mt-5 flex items-center gap-1.5 text-[11px] font-medium text-neutral-400 dark:text-zinc-500">
-                                        <Edit2 className="h-3 w-3" />
-                                        Düzenlendi: {formatDistanceToNow(new Date(question.updated_at), { addSuffix: true, locale: tr })}
-                                    </div>
-                                )}
 
                                 {/* Tags & Badges */}
                                 {question.tags && question.tags.length > 0 && (

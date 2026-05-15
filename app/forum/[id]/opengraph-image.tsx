@@ -1,13 +1,30 @@
 import { ImageResponse } from "next/og";
-import { createClient } from "@/lib/supabase-server";
+import { createStaticClient } from "@/lib/supabase-server";
 
 export const runtime = "edge";
 export const alt = "FizikHub Forum Sorusu";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
+function parseQuestionId(rawId: string) {
+    const match = rawId.match(/^\d+/);
+    if (!match) return null;
+
+    const questionId = Number.parseInt(match[0], 10);
+    return Number.isSafeInteger(questionId) ? questionId : null;
+}
+
+function getProfile(profile: { username?: string | null } | { username?: string | null }[] | null | undefined) {
+    return Array.isArray(profile) ? profile[0] || null : profile || null;
+}
+
+function getAnswerCount(answers: { count?: number | null }[] | null | undefined) {
+    return Number(answers?.[0]?.count || 0);
+}
+
 export default async function Image({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
+    const questionId = parseQuestionId(id);
 
     // Fetch question title and metadata for a rich OG image
     let title = `Soru #${id}`;
@@ -16,18 +33,20 @@ export default async function Image({ params }: { params: Promise<{ id: string }
     let answerCount = 0;
 
     try {
-        const supabase = await createClient();
-        const { data: question } = await supabase
-            .from('questions')
-            .select('title, category, profiles(username), answers(count)')
-            .eq('id', id)
-            .single();
+        const supabase = createStaticClient();
+        const { data: question } = questionId
+            ? await supabase
+                .from('questions')
+                .select('title, category, profiles(username), answers(count)')
+                .eq('id', questionId)
+                .single()
+            : { data: null };
 
         if (question) {
             title = question.title || title;
             category = question.category || category;
-            authorName = (question.profiles as any)?.username || "";
-            answerCount = (question.answers as any)?.[0]?.count || 0;
+            authorName = getProfile(question.profiles)?.username || "";
+            answerCount = getAnswerCount(question.answers);
         }
     } catch {
         // Fallback to generic OG image if DB fails
@@ -143,7 +162,7 @@ export default async function Image({ params }: { params: Promise<{ id: string }
                             display: "flex",
                         }}
                     >
-                        fizikhub.com/forum/{id}
+                        fizikhub.com/forum/{questionId || id}
                     </span>
                 </div>
 
