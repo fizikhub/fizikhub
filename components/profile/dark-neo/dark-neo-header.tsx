@@ -41,7 +41,7 @@ export function DarkNeoHeader({ profile, stats, isOwnProfile, isFollowing }: Dar
             <div className="relative overflow-hidden bg-background border-[2px] border-black dark:border-zinc-800 rounded-xl shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] sm:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_0px_rgba(0,0,0,0.5)] dark:sm:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.5)]">
 
                 {/* COVER BANNER */}
-                <div className="relative h-[94px] overflow-visible border-b-[2.5px] border-black bg-[#27272a] shadow-inner sm:h-52 md:h-60">
+                <div className="relative h-36 overflow-visible border-b-[2.5px] border-black bg-[#27272a] shadow-inner sm:h-52 md:h-60">
                     {hasCoverPhoto ? (
                         <Image
                             src={profile.cover_url}
@@ -79,16 +79,16 @@ export function DarkNeoHeader({ profile, stats, isOwnProfile, isFollowing }: Dar
                 </div>
 
                 {/* INFO SECTION */}
-                <div className="relative px-4 pb-4 pt-10 sm:px-6 sm:pb-5 sm:pt-20">
+                <div className="relative px-4 pb-4 pt-16 sm:px-6 sm:pb-5 sm:pt-20">
 
                     {/* FLOATING AVATAR */}
-                    <div className="absolute -top-8 left-4 sm:-top-14 sm:left-6">
+                    <div className="absolute -top-12 left-4 sm:-top-14 sm:left-6">
                         <motion.div
                             initial={{ scale: 0.9, opacity: 0 }}
                             animate={{ scale: 1, opacity: 1 }}
                             className="relative group"
                         >
-                            <div className="relative z-10 h-[70px] w-[70px] overflow-hidden rounded-2xl border-2 border-black bg-background p-1 shadow-[3px_3px_0px_0px_#000] transition-transform group-hover:scale-[1.02] dark:border-zinc-800 sm:h-32 sm:w-32 sm:shadow-[4px_4px_0px_0px_#000]">
+                            <div className="relative z-10 h-24 w-24 overflow-hidden rounded-2xl border-2 border-black bg-background p-1 shadow-[3px_3px_0px_0px_#000] transition-transform group-hover:scale-[1.02] dark:border-zinc-800 sm:h-32 sm:w-32 sm:shadow-[4px_4px_0px_0px_#000]">
                                 <Avatar className="h-full w-full rounded-xl border border-black/10 dark:border-white/10">
                                     <AvatarImage src={profile?.avatar_url} className="object-cover scale-110" />
                                     <AvatarFallback className="text-3xl font-black bg-[#FFC800] text-black rounded-none">
@@ -143,25 +143,25 @@ export function DarkNeoHeader({ profile, stats, isOwnProfile, isFollowing }: Dar
                     </div>
 
                     {/* ACTION BUTTONS & HUB SCORE */}
-                    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+                    <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
                         {/* Action Toolbar */}
-                        <div className="flex gap-2 overflow-x-auto pb-1 sm:flex-wrap sm:overflow-visible sm:pb-0">
+                        <div className="grid grid-cols-2 gap-2 w-full sm:flex sm:flex-wrap sm:w-auto sm:pb-0">
                             {isOwnProfile ? (
                                 <>
-                                    <Link prefetch={false} href="/profil/duzenle" onClick={handleActionClick} className="min-w-[126px] flex-shrink-0 sm:min-w-0">
+                                    <Link prefetch={false} href="/profil/duzenle" onClick={handleActionClick} className="w-full sm:w-auto">
                                         <button className="flex min-h-10 w-full items-center justify-center gap-1.5 rounded-lg border-2 border-black bg-white px-3 py-2 text-[11px] font-black text-black shadow-[2px_2px_0px_0px_#000] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:bg-neo-pink hover:text-white hover:shadow-[1px_1px_0px_0px_#000] active:translate-x-[2px] active:translate-y-[2px] active:scale-95 active:shadow-none sm:w-auto sm:gap-2 sm:px-4 sm:py-2.5 sm:text-xs">
                                             <Edit3 className="w-3.5 h-3.5 stroke-[2.5px]" />
                                             <span>Düzenle</span>
                                         </button>
                                     </Link>
-                                    <Link prefetch={false} href="/mesajlar" onClick={handleActionClick} className="min-w-[126px] flex-shrink-0 sm:min-w-0">
+                                    <Link prefetch={false} href="/mesajlar" onClick={handleActionClick} className="w-full sm:w-auto">
                                         <button className="flex min-h-10 w-full items-center justify-center gap-1.5 rounded-lg border-2 border-black bg-zinc-950 px-3 py-2 text-[11px] font-black text-white shadow-[2px_2px_0px_0px_#000] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:bg-neo-blue hover:shadow-[1px_1px_0px_0px_#000] active:translate-x-[2px] active:translate-y-[2px] active:scale-95 active:shadow-none md:dark:border-zinc-700 sm:w-auto sm:gap-2 sm:px-4 sm:py-2.5 sm:text-xs">
                                             <MessageCircle className="w-3.5 h-3.5 stroke-[2.5px]" />
                                             <span>Mesajlar</span>
                                         </button>
                                     </Link>
                                     {profile?.is_writer && (
-                                        <Link prefetch={false} href="/yazar/yeni" onClick={handleActionClick} className="min-w-[126px] flex-shrink-0 sm:min-w-0">
+                                        <Link prefetch={false} href="/yazar/yeni" onClick={handleActionClick} className="w-full sm:w-auto">
                                             <button className="flex min-h-10 w-full items-center justify-center gap-1.5 rounded-lg border-2 border-black bg-[#FFBD2E] px-3 py-2 text-[11px] font-black text-black shadow-[2px_2px_0px_0px_#000] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:bg-[#FFD268] hover:shadow-[1px_1px_0px_0px_#000] active:translate-x-[2px] active:translate-y-[2px] active:scale-95 active:shadow-none sm:w-auto sm:gap-2 sm:px-4 sm:py-2.5 sm:text-xs">
                                                 <PenSquare className="w-3.5 h-3.5 stroke-[2.5px]" />
                                                 <span>Yaz</span>
@@ -169,7 +169,7 @@ export function DarkNeoHeader({ profile, stats, isOwnProfile, isFollowing }: Dar
                                         </Link>
                                     )}
                                     {isAuthorMode && (
-                                        <Link prefetch={false} href="/yazar-paneli" onClick={handleActionClick} className="min-w-[126px] flex-shrink-0 sm:min-w-0">
+                                        <Link prefetch={false} href="/yazar-paneli" onClick={handleActionClick} className="w-full sm:w-auto">
                                             <button className="flex min-h-10 w-full items-center justify-center gap-1.5 rounded-lg border-2 border-black bg-[#33EAA1] px-3 py-2 text-[11px] font-black text-black shadow-[2px_2px_0px_0px_#000] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:bg-[#20CA86] hover:shadow-[1px_1px_0px_0px_#000] active:translate-x-[2px] active:translate-y-[2px] active:scale-95 active:shadow-none sm:w-auto sm:gap-2 sm:px-4 sm:py-2.5 sm:text-xs">
                                                 <ShieldCheck className="w-3.5 h-3.5 stroke-[2.5px]" />
                                                 <span>Paneli</span>
@@ -178,13 +178,13 @@ export function DarkNeoHeader({ profile, stats, isOwnProfile, isFollowing }: Dar
                                     )}
                                     {isAdmin && (
                                         <>
-                                            <Link prefetch={false} href="/yonetim/hikaye-olustur" onClick={handleActionClick} className="min-w-[126px] flex-shrink-0 sm:min-w-0">
+                                            <Link prefetch={false} href="/yonetim/hikaye-olustur" onClick={handleActionClick} className="w-full sm:w-auto">
                                                 <button className="flex min-h-10 w-full items-center justify-center gap-1.5 rounded-lg border-2 border-black bg-[#9333EA] px-3 py-2 text-[11px] font-black text-white shadow-[2px_2px_0px_0px_#000] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:bg-[#7E22CE] hover:shadow-[1px_1px_0px_0px_#000] active:translate-x-[2px] active:translate-y-[2px] active:scale-95 active:shadow-none sm:w-auto sm:gap-2 sm:px-4 sm:py-2.5 sm:text-xs">
                                                     <PlusCircle className="w-3.5 h-3.5 stroke-[2.5px]" />
                                                     Hikaye
                                                 </button>
                                             </Link>
-                                            <Link prefetch={false} href="/admin" onClick={handleActionClick} className="min-w-[126px] flex-shrink-0 sm:min-w-0">
+                                            <Link prefetch={false} href="/admin" onClick={handleActionClick} className="w-full sm:w-auto">
                                                 <button className="flex min-h-10 w-full items-center justify-center gap-1.5 rounded-lg border-2 border-black bg-[#FF3366] px-3 py-2 text-[11px] font-black text-white shadow-[2px_2px_0px_0px_#000] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:bg-[#E6004C] hover:shadow-[1px_1px_0px_0px_#000] active:translate-x-[2px] active:translate-y-[2px] active:scale-95 active:shadow-none sm:w-auto sm:gap-2 sm:px-4 sm:py-2.5 sm:text-xs">
                                                     <Settings className="w-3.5 h-3.5 stroke-[2.5px]" />
                                                     Admin
@@ -195,14 +195,14 @@ export function DarkNeoHeader({ profile, stats, isOwnProfile, isFollowing }: Dar
                                 </>
                             ) : (
                                 <>
-                                    <div className="min-w-[126px] flex-shrink-0 sm:min-w-0" onClick={handleActionClick}>
+                                    <div className="w-full sm:w-auto" onClick={handleActionClick}>
                                         <FollowButton
                                             targetUserId={profile.id}
                                             initialIsFollowing={isFollowing}
                                             className="min-h-10 w-full justify-center rounded-lg border-2 border-black px-4 py-2 text-[11px] font-black shadow-[2px_2px_0px_0px_#000] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_0px_#000] active:translate-x-[2px] active:translate-y-[2px] active:scale-95 active:shadow-none sm:w-auto sm:px-5 sm:py-2.5 sm:text-xs"
                                         />
                                     </div>
-                                    <Link prefetch={false} href={`/mesajlar?to=${profile.id}`} onClick={handleActionClick} className="min-w-[126px] flex-shrink-0 sm:min-w-0">
+                                    <Link prefetch={false} href={`/mesajlar?to=${profile.id}`} onClick={handleActionClick} className="w-full sm:w-auto">
                                         <button className="flex min-h-10 w-full items-center justify-center gap-1.5 rounded-lg border-2 border-black bg-zinc-950 px-4 py-2 text-[11px] font-black text-white shadow-[2px_2px_0px_0px_#000] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:bg-neo-blue hover:shadow-[1px_1px_0px_0px_#000] active:translate-x-[2px] active:translate-y-[2px] active:scale-95 active:shadow-none dark:border-zinc-700 sm:w-auto sm:gap-2 sm:px-4 sm:py-2.5 sm:text-xs">
                                             <MessageCircle className="w-3.5 h-3.5 stroke-[2.5px]" />
                                             <span>Mesaj</span>
