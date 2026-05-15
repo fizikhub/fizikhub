@@ -79,7 +79,7 @@ const nextConfig: NextConfig = {
     },
   },
   compiler: {
-    removeConsole: process.env.NODE_ENV === "production",
+    removeConsole: process.env.NODE_ENV === "production" ? { exclude: ['error', 'warn'] } : false,
   },
 
   // Redirects for broken links (e.g. arXiv links)
@@ -244,7 +244,7 @@ const nextConfig: NextConfig = {
           },
           {
             key: 'Cross-Origin-Resource-Policy',
-            value: 'same-site',
+            value: 'cross-origin',
           },
           {
             key: 'Origin-Agent-Cluster',

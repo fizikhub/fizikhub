@@ -66,25 +66,36 @@ async function verifyTurnstileToken(token: string) {
     const secret = process.env.TURNSTILE_SECRET_KEY;
 
     if (!secret) {
+        console.error("Turnstile secret key is not configured");
         return { success: false, error: "Turnstile yapılandırması eksik." };
     }
 
-    const formData = new FormData();
-    formData.append("secret", secret);
-    formData.append("response", token);
-
-    const response = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
-        method: "POST",
-        body: formData,
-    });
-
-    const result = await response.json() as { success?: boolean; "error-codes"?: string[] };
-
-    if (!result.success) {
-        return { success: false, error: "Robot doğrulaması başarısız oldu." };
+    if (!token) {
+        return { success: false, error: "Robot doğrulaması tamamlanmadı. Lütfen tekrar deneyin." };
     }
 
-    return { success: true };
+    try {
+        const formData = new FormData();
+        formData.append("secret", secret);
+        formData.append("response", token);
+
+        const response = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
+            method: "POST",
+            body: formData,
+        });
+
+        const result = await response.json() as { success?: boolean; "error-codes"?: string[] };
+
+        if (!result.success) {
+            console.error("Turnstile verification failed:", result["error-codes"]);
+            return { success: false, error: "Robot doğrulaması başarısız oldu. Lütfen sayfayı yenileyip tekrar deneyin." };
+        }
+
+        return { success: true };
+    } catch (err) {
+        console.error("Turnstile verification network error:", err);
+        return { success: false, error: "Robot doğrulaması yapılamadı. Lütfen tekrar deneyin." };
+    }
 }
 
 export async function signupWithEmailOtp(input: SignupWithEmailOtpInput) {

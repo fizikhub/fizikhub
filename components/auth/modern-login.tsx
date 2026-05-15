@@ -32,7 +32,7 @@ export function ModernLogin() {
 
     useEffect(() => {
         const script = document.createElement('script');
-        script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js";
+        script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
         script.async = true;
         script.defer = true;
         document.body.appendChild(script);
@@ -57,9 +57,38 @@ export function ModernLogin() {
         };
     }, []);
 
+    // Re-render Turnstile when switching between login/signup tabs
+    useEffect(() => {
+        setTurnstileToken(null);
+        const timer = setTimeout(() => {
+            const container = document.getElementById('turnstile-container');
+            if (container && window.turnstile) {
+                container.innerHTML = '';
+                window.turnstile.render(container, {
+                    sitekey: turnstileSiteKey,
+                    callback: (token: string) => setTurnstileToken(token),
+                    'expired-callback': () => setTurnstileToken(null),
+                    'error-callback': () => setTurnstileToken(null),
+                    theme: 'dark',
+                });
+            }
+        }, 100);
+        return () => clearTimeout(timer);
+    }, [isSignUp]);
+
     const resetTurnstile = () => {
         setTurnstileToken(null);
-        window.turnstile?.reset();
+        const container = document.getElementById('turnstile-container');
+        if (container && window.turnstile) {
+            container.innerHTML = '';
+            window.turnstile.render(container, {
+                sitekey: turnstileSiteKey,
+                callback: (token: string) => setTurnstileToken(token),
+                'expired-callback': () => setTurnstileToken(null),
+                'error-callback': () => setTurnstileToken(null),
+                theme: 'dark',
+            });
+        }
     };
 
     useEffect(() => {
@@ -198,19 +227,25 @@ export function ModernLogin() {
             setLoading(false);
             resetTurnstile();
 
-            if (error.message.includes("already registered")) {
+            const msg = error?.message || "";
+
+            if (msg.includes("already registered") || msg.includes("already been registered")) {
                 toast.error("Bu e-posta zaten kayıtlı.", { id: toastId });
-            } else if (error.message.includes("Invalid login")) {
+            } else if (msg.includes("Invalid login")) {
                 toast.error("Kullanıcı adı veya şifre hatalı.", { id: toastId });
-            } else if (error.message.includes("Database error")) {
+            } else if (msg.includes("Database error")) {
                 toast.error("Sunucu hatası, lütfen tekrar deneyin.", { id: toastId });
+            } else if (msg.includes("rate limit")) {
+                toast.error("Çok fazla deneme yaptınız. Lütfen biraz bekleyin.", { id: toastId });
+            } else if (msg.includes("Robot doğrulaması") || msg.includes("Turnstile")) {
+                toast.error("Robot doğrulaması başarısız oldu. Lütfen sayfayı yenileyip tekrar deneyin.", { id: toastId });
+            } else if (msg.includes("yapılandırması eksik")) {
+                toast.error("Sistem yapılandırma hatası. Lütfen daha sonra tekrar deneyin.", { id: toastId });
+            } else if (msg) {
+                // Show the actual error message from the server
+                toast.error(msg, { id: toastId });
             } else {
-                // Fallback for other errors
-                if (error.message.includes("rate limit")) {
-                    toast.error("Çok fazla deneme yaptınız. Lütfen biraz bekleyin.", { id: toastId });
-                } else {
-                    toast.error("Bir hata oluştu. Lütfen bilgilerinizi kontrol edin.", { id: toastId });
-                }
+                toast.error("Bir hata oluştu. Lütfen bilgilerinizi kontrol edin.", { id: toastId });
             }
         }
         // Note: We don't set loading(false) in success case to prevent interaction during redirect
@@ -438,7 +473,8 @@ export function ModernLogin() {
 
                             {/* Turnstile */}
                             <div className="flex justify-center pt-1 opacity-80 hover:opacity-100 transition-opacity">
-                                <div className="cf-turnstile"
+                                <div id="turnstile-container"
+                                    className="cf-turnstile"
                                     data-sitekey={turnstileSiteKey}
                                     data-callback="onTurnstileSuccess"
                                     data-expired-callback="onTurnstileExpired"
