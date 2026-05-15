@@ -218,9 +218,9 @@ export function ModernLogin() {
                 });
 
                 if (!result.success) {
-                    const serverError = result.error || "Bilinmeyen sunucu hatası.";
+                    const serverError = result.error || "Bilinmeyen sunucu hatası. [ERR_SIGNUP_UNKNOWN]";
                     console.error("Signup server error:", serverError);
-                    toast.error(`${serverError} [ERR_SIGNUP_SERVER]`, { id: toastId });
+                    toast.error(serverError, { id: toastId });
                     setLoading(false);
                     resetTurnstile();
                     return;
