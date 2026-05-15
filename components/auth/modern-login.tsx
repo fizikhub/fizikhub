@@ -32,16 +32,16 @@ export function ModernLogin() {
     const [usernameStatus, setUsernameStatus] = useState<"idle" | "checking" | "available" | "taken">("idle");
 
     useEffect(() => {
-        // Define the global callback that Cloudflare Turnstile will call when it's ready
-        window.onloadTurnstileCallback = () => {
+        const script = document.createElement('script');
+        // Use explicit render, but rely on standard DOM onload instead of URL callback
+        script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
+        script.async = true;
+        script.defer = true;
+        
+        script.onload = () => {
             setIsTurnstileLoaded(true);
         };
 
-        const script = document.createElement('script');
-        // Add onload callback and explicit render
-        script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onloadTurnstileCallback&render=explicit";
-        script.async = true;
-        script.defer = true;
         document.body.appendChild(script);
 
         window.onTurnstileSuccess = (token: string) => setTurnstileToken(token);
@@ -52,25 +52,34 @@ export function ModernLogin() {
             if (document.body.contains(script)) {
                 document.body.removeChild(script);
             }
-            delete window.onloadTurnstileCallback;
             delete window.onTurnstileSuccess;
             delete window.onTurnstileExpired;
             delete window.onTurnstileError;
         };
     }, []);
 
-    const renderTurnstileWidget = () => {
+    const renderTurnstileWidget = (retryCount = 0) => {
         setTurnstileToken(null);
         const container = document.getElementById('turnstile-container');
+        
         if (container && window.turnstile) {
             container.innerHTML = '';
-            window.turnstile.render(container, {
-                sitekey: turnstileSiteKey,
-                callback: (token: string) => setTurnstileToken(token),
-                'expired-callback': () => setTurnstileToken(null),
-                'error-callback': () => setTurnstileToken(null),
-                theme: 'dark',
-            });
+            try {
+                window.turnstile.render(container, {
+                    sitekey: turnstileSiteKey,
+                    callback: (token: string) => setTurnstileToken(token),
+                    'expired-callback': () => setTurnstileToken(null),
+                    'error-callback': () => setTurnstileToken(null),
+                    theme: 'dark',
+                });
+            } catch (err) {
+                console.error("Turnstile render error:", err);
+            }
+        } else if (retryCount < 10) {
+            // If window.turnstile isn't ready yet, retry a few times
+            setTimeout(() => renderTurnstileWidget(retryCount + 1), 200);
+        } else {
+            console.error("Turnstile failed to load after multiple retries");
         }
     };
 
