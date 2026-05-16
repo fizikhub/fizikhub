@@ -63,7 +63,7 @@ const getCachedFeedData = unstable_cache(
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!.trim()
     );
 
-    const articleSelect = 'id, title, slug, excerpt, cover_url, image_url, category, created_at, status, author:profiles!articles_author_id_fkey(full_name, username, avatar_url, is_writer)';
+    const articleSelect = 'id, title, slug, excerpt, content, cover_url, image_url, category, created_at, status, author:profiles!articles_author_id_fkey(full_name, username, avatar_url, is_writer)';
 
     const [articlesResult, priorityArticlesResult, questionsResult, profilesResult, storiesResult, groupsResult] = await Promise.all([
       // Fetch Articles & Blogs (using same table)
@@ -148,7 +148,7 @@ const getCachedFeedData = unstable_cache(
       }))
     };
   },
-  ['feed-data-v6-homepage-lean-articles'], // Bump version to invalidate cache
+  ['feed-data-v7-homepage-content-previews'], // Bump version to invalidate cache
   { revalidate: 60, tags: ['feed'] }
 );
 
