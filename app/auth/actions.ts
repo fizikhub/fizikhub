@@ -358,12 +358,12 @@ export async function getOnboardingStatus() {
 
         const { data: profile } = await supabase
             .from('profiles')
-            .select('has_seen_onboarding')
+            .select('onboarding_completed, has_seen_onboarding')
             .eq('id', user.id)
             .maybeSingle();
 
         return {
-            shouldShowOnboarding: profile && !profile.has_seen_onboarding
+            shouldShowOnboarding: Boolean(profile?.onboarding_completed && !profile.has_seen_onboarding)
         };
     } catch (error) {
         console.error("Onboarding status check failed:", error);

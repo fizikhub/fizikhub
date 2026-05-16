@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
+import { usePathname } from "next/navigation";
 import { getOnboardingStatus } from "@/app/auth/actions";
 
 const PremiumTour = dynamic(() => import("@/components/onboarding/premium-tour").then((mod) => mod.PremiumTour), {
@@ -10,8 +11,13 @@ const PremiumTour = dynamic(() => import("@/components/onboarding/premium-tour")
 
 export function OnboardingCheck() {
     const [showOnboarding, setShowOnboarding] = useState(false);
+    const pathname = usePathname();
 
     useEffect(() => {
+        if (pathname === "/kurulum") {
+            return;
+        }
+
         // Fetch onboarding status client-side to avoid calling cookies() in layout
         // This prevents 500 errors when Instagram bots/WebView hit the page
         const checkStatus = async () => {
@@ -31,9 +37,9 @@ export function OnboardingCheck() {
         } else {
             setTimeout(checkStatus, 1500);
         }
-    }, []);
+    }, [pathname]);
 
-    if (!showOnboarding) return null;
+    if (pathname === "/kurulum" || !showOnboarding) return null;
 
     return <PremiumTour />;
 }
