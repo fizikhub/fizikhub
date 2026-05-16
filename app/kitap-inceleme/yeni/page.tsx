@@ -17,7 +17,7 @@ export default async function NewBookReviewPage() {
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) {
-        redirect("/giris?next=/kitap-inceleme/yeni");
+        redirect("/login?next=/kitap-inceleme/yeni");
     }
 
     return (

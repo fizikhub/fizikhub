@@ -17,8 +17,23 @@ import { signupWithEmailOtp } from "@/app/auth/actions";
 
 const turnstileSiteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || "0x4AAAAAACI_a8NNCjdtVnjC";
 
+function getSafeNextPath(value?: string | null) {
+    if (!value || !value.startsWith("/") || value.startsWith("//")) {
+        return "/";
+    }
 
-export function ModernLogin() {
+    if (value.startsWith("/login") || value.startsWith("/auth/verify")) {
+        return "/";
+    }
+
+    return value;
+}
+
+interface ModernLoginProps {
+    nextPath?: string;
+}
+
+export function ModernLogin({ nextPath }: ModernLoginProps) {
     const [loading, setLoading] = useState(false);
     const [email, setEmail] = useState("");
     const [username, setUsername] = useState("");
@@ -30,6 +45,7 @@ export function ModernLogin() {
     const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
     const [isTurnstileLoaded, setIsTurnstileLoaded] = useState(false);
     const [usernameStatus, setUsernameStatus] = useState<"idle" | "checking" | "available" | "taken">("idle");
+    const safeNextPath = getSafeNextPath(nextPath);
 
     useEffect(() => {
         const script = document.createElement('script');
@@ -138,7 +154,7 @@ export function ModernLogin() {
         try {
             const { error } = await supabase.auth.signInWithOAuth({
                 provider,
-                options: { redirectTo: `${location.origin}/auth/callback` },
+                options: { redirectTo: `${location.origin}/auth/callback?next=${encodeURIComponent(safeNextPath)}` },
             });
             if (error) throw error;
         } catch (error: any) {
@@ -273,7 +289,7 @@ export function ModernLogin() {
 
                 toast.success("Giriş başarılı! Yönlendiriliyorsunuz...", { id: toastId });
                 setTimeout(() => {
-                    window.location.href = "/";
+                    window.location.href = safeNextPath;
                 }, 1000);
             }
         } catch (error: any) {

@@ -10,6 +10,15 @@ export const metadata: Metadata = {
     },
 };
 
-export default function LoginPage() {
-    return <ModernLogin />;
+type LoginPageProps = {
+    searchParams?: Promise<{
+        next?: string | string[];
+    }>;
+};
+
+export default async function LoginPage({ searchParams }: LoginPageProps) {
+    const params = await searchParams;
+    const next = Array.isArray(params?.next) ? params.next[0] : params?.next;
+
+    return <ModernLogin nextPath={next} />;
 }
