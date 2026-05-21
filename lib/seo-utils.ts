@@ -1,7 +1,22 @@
 const DEFAULT_SITE_URL = "https://www.fizikhub.com";
 
+function normalizeProductionSiteUrl(url: string) {
+    const cleanUrl = url.replace(/\/+$/, "");
+
+    try {
+        const parsed = new URL(cleanUrl);
+        if (parsed.hostname === "fizikhub.com" || parsed.hostname === "www.fizikhub.com") {
+            return DEFAULT_SITE_URL;
+        }
+    } catch {
+        return cleanUrl;
+    }
+
+    return cleanUrl;
+}
+
 export function getSiteUrl() {
-    return (process.env.NEXT_PUBLIC_APP_URL || DEFAULT_SITE_URL).replace(/\/+$/, "");
+    return normalizeProductionSiteUrl(process.env.NEXT_PUBLIC_APP_URL || DEFAULT_SITE_URL);
 }
 
 export function toAbsoluteUrl(url: string | null | undefined, baseUrl = getSiteUrl()) {

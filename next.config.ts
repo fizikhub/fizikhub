@@ -1,5 +1,32 @@
 import type { NextConfig } from "next";
 
+const noindexHeader = [
+  {
+    key: 'X-Robots-Tag',
+    value: 'noindex, nofollow',
+  },
+];
+
+const privateNoindexRoutes = [
+  '/login',
+  '/forgot-password',
+  '/reset-password',
+  '/profil/:path*',
+  '/admin/:path*',
+  '/yazar/:path*',
+  '/yazar-paneli/:path*',
+  '/makale/yeni',
+  '/makale/duzenle/:path*',
+  '/mesajlar/:path*',
+  '/notifications/:path*',
+  '/kurulum',
+  '/time-limit/:path*',
+  '/yonetim/:path*',
+  '/basvuru/yazar',
+  '/kitap-inceleme/yeni',
+  '/paylas',
+];
+
 const nextConfig: NextConfig = {
   images: {
     formats: ['image/avif', 'image/webp'],
@@ -87,7 +114,7 @@ const nextConfig: NextConfig = {
     return [
       {
         source: '/kesfet',
-        destination: '/ara',
+        destination: '/makale',
         permanent: true,
       },
       {
@@ -101,24 +128,18 @@ const nextConfig: NextConfig = {
   // Security & Caching Headers
   async headers() {
     return [
+      ...privateNoindexRoutes.map((source) => ({
+        source,
+        headers: noindexHeader,
+      })),
       // Prevent indexing of font/media assets to clean up GSC "Crawled - not indexed" warnings
       {
         source: '/_next/static/media/:all*',
-        headers: [
-          {
-            key: 'X-Robots-Tag',
-            value: 'noindex, nofollow',
-          },
-        ],
+        headers: noindexHeader,
       },
       {
         source: '/:all*(woff|woff2)',
-        headers: [
-          {
-            key: 'X-Robots-Tag',
-            value: 'noindex, nofollow',
-          },
-        ],
+        headers: noindexHeader,
       },
       // Immutable static assets (fonts, images, etc.)
       {
@@ -138,10 +159,7 @@ const nextConfig: NextConfig = {
             key: 'Cache-Control',
             value: 'public, max-age=31536000, immutable',
           },
-          {
-            key: 'X-Robots-Tag',
-            value: 'noindex, nofollow',
-          },
+          ...noindexHeader,
         ],
       },
       // PWA Files (Service Worker & Manifest)
@@ -152,10 +170,7 @@ const nextConfig: NextConfig = {
             key: 'Cache-Control',
             value: 'public, max-age=0, must-revalidate',
           },
-          {
-            key: 'X-Robots-Tag',
-            value: 'noindex, nofollow',
-          }
+          ...noindexHeader,
         ]
       },
       {
@@ -165,10 +180,7 @@ const nextConfig: NextConfig = {
             key: 'Cache-Control',
             value: 'public, max-age=31536000, immutable',
           },
-          {
-            key: 'X-Robots-Tag',
-            value: 'noindex, nofollow',
-          },
+          ...noindexHeader,
         ],
       },
       // Global security headers for all routes

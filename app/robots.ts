@@ -3,28 +3,14 @@ import { MetadataRoute } from 'next';
 export default function robots(): MetadataRoute.Robots {
     const baseUrl = (process.env.NEXT_PUBLIC_APP_URL || 'https://www.fizikhub.com').replace(/\/+$/, '');
 
-    const privateDisallow = [
-        '/api/',
-        '/profil/',
-        '/onboarding/',
-        '/admin/',
-        '/yazar/',
-        '/yazar-paneli/',
-        '/makale/yeni',
-        '/mesajlar/',
-        '/notifications/',
-        '/kurulum/',
-        '/time-limit/',
-        '/yonetim/',
-    ];
-
     const cleanupDisallow = [
+        '/api/',
         '/abs/',
         '/storage/',
         '/cdn-cgi/'
     ];
 
-    const commonDisallow = [...privateDisallow, ...cleanupDisallow];
+    const commonDisallow = cleanupDisallow;
     const publicAllow = [
         '/',
         '/konular',

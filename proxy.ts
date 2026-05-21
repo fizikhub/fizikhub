@@ -106,6 +106,17 @@ function rateLimitResponse(): NextResponse {
 export async function proxy(request: NextRequest) {
     const pathname = request.nextUrl.pathname;
     const ip = getClientIP(request);
+    const host = request.headers.get('host') || '';
+    const forwardedProto = request.headers.get('x-forwarded-proto') || request.nextUrl.protocol.replace(':', '');
+    const isProductionDomain = host === 'fizikhub.com' || host === 'www.fizikhub.com';
+
+    if (isProductionDomain && (host !== 'www.fizikhub.com' || forwardedProto !== 'https')) {
+        const url = request.nextUrl.clone();
+        url.protocol = 'https';
+        url.hostname = 'www.fizikhub.com';
+        url.port = '';
+        return NextResponse.redirect(url, 301);
+    }
 
     // 301 Redirect for /index to /
     if (pathname === '/index') {
