@@ -123,7 +123,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
         supabase
             .from('articles')
-            .select('slug, title, excerpt, content, created_at, updated_at, category, cover_url, image_url')
+            .select('*')
             .eq('status', 'published')
             .order('created_at', { ascending: false })
             .limit(1000),

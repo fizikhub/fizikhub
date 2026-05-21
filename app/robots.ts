@@ -36,6 +36,7 @@ export default function robots(): MetadataRoute.Robots {
         '/email/fh-avatar.png',
         '/email/fh-avatar.svg',
         '/_next/image',
+        '/ai-index.json',
     ];
 
     // Modern AI and LLM Search Crawlers (ChatGPT, Perplexity, Claude, etc.)
@@ -57,7 +58,7 @@ export default function robots(): MetadataRoute.Robots {
 
     const aiRules = aiBots.map(bot => ({
         userAgent: bot,
-        allow: [...publicAllow, '/makale/', '/forum/', '/sozluk/', '/llms.txt', '/feed.xml', '/testler/', '/simulasyonlar/'],
+        allow: [...publicAllow, '/makale/', '/forum/', '/sozluk/', '/llms.txt', '/ai-index.json', '/feed.xml', '/testler/', '/simulasyonlar/'],
         disallow: commonDisallow,
         crawlDelay: 2, // Be kind to our servers, LLMs!
     }));
@@ -88,11 +89,18 @@ export default function robots(): MetadataRoute.Robots {
             },
             {
                 userAgent: '*',
-                allow: [...publicAllow, '/llms.txt', '/feed.xml'],
+                allow: [...publicAllow, '/llms.txt', '/ai-index.json', '/feed.xml'],
                 disallow: commonDisallow,
                 crawlDelay: 1,
             },
         ],
-        sitemap: [`${baseUrl}/sitemap.xml`, `${baseUrl}/news-sitemap.xml`],
+        sitemap: [
+            `${baseUrl}/sitemap-index.xml`,
+            `${baseUrl}/sitemap.xml`,
+            `${baseUrl}/article-sitemap.xml`,
+            `${baseUrl}/forum-sitemap.xml`,
+            `${baseUrl}/dictionary-sitemap.xml`,
+            `${baseUrl}/news-sitemap.xml`,
+        ],
     };
 }

@@ -10,10 +10,11 @@ import { BookReviewDetail } from "@/components/book-review/book-review-detail";
 import { TermDetail } from "@/components/term/term-detail";
 import { ArticleErrorBoundary } from "@/components/blog/article-error-boundary";
 import { MarkdownRenderer } from "@/components/markdown-renderer";
-import Link from "next/link";
 import { CollapsibleQuickAnswer } from "@/components/articles/collapsible-quick-answer";
 import { getSeoIntentForSlug, SEO_PRIORITY_ARTICLES, SEO_PRIORITY_SLUGS, type SeoIntentArticle } from "@/lib/seo-priority";
+import { getClustersForArticleSlug, getRelatedUrlsForCluster } from "@/lib/seo-topic-clusters";
 import { buildMetaDescription, getSiteUrl, isLikelyIndexableTitle, toAbsoluteUrl } from "@/lib/seo-utils";
+import Link from "next/link";
 
 interface PageProps {
     params: Promise<{ slug: string }>;
@@ -35,6 +36,63 @@ function getIntentRelatedArticles(override: SeoIntentArticle, currentSlug: strin
         ...configuredRelatedArticles,
         ...fallbackRelatedArticles.filter((article) => !configuredRelatedArticles.some((related) => related.slug === article.slug)),
     ].slice(0, 4);
+}
+
+function getFirstYoutubeVideo(content?: string | null) {
+    if (!content) return null;
+
+    const match = content.match(/https?:\/\/(?:www\.)?(?:youtube\.com\/watch\?v=|youtube\.com\/embed\/|youtu\.be\/)([A-Za-z0-9_-]{6,})/);
+    if (!match?.[1]) return null;
+
+    const id = match[1];
+    return {
+        id,
+        url: match[0],
+        embedUrl: `https://www.youtube.com/embed/${id}`,
+        thumbnailUrl: `https://img.youtube.com/vi/${id}/hqdefault.jpg`,
+    };
+}
+
+function ArticleTopicClusterLinks({ slug }: { slug: string }) {
+    const clusters = getClustersForArticleSlug(slug);
+    const links = clusters
+        .flatMap(getRelatedUrlsForCluster)
+        .filter((link) => link.href !== `/makale/${slug}`)
+        .filter((link, index, all) => all.findIndex((item) => item.href === link.href) === index)
+        .slice(0, 10);
+
+    if (clusters.length === 0 && links.length === 0) return null;
+
+    return (
+        <section className="mx-auto mt-6 max-w-4xl px-4" aria-labelledby="article-topic-cluster-title">
+            <div className="rounded-lg border border-border bg-card p-5">
+                <p className="text-xs font-black uppercase tracking-wider text-muted-foreground">Konu ağı</p>
+                <h2 id="article-topic-cluster-title" className="mt-2 text-lg font-black tracking-normal text-foreground">
+                    Bu makalenin bağlı olduğu fizik kümeleri
+                </h2>
+                <div className="mt-3 flex flex-wrap gap-2">
+                    {clusters.map((cluster) => (
+                        <span key={cluster.slug} className="rounded-[7px] border border-foreground/15 px-3 py-2 text-xs font-black text-foreground">
+                            {cluster.title}
+                        </span>
+                    ))}
+                </div>
+                {links.length > 0 && (
+                    <nav className="mt-4 flex flex-wrap gap-2" aria-label="Makale ile ilgili öğrenme kaynakları">
+                        {links.map((link) => (
+                            <Link
+                                key={link.href}
+                                href={link.href}
+                                className="rounded-[7px] border border-foreground/15 bg-background px-3 py-2 text-xs font-bold text-muted-foreground transition-colors hover:border-[#FFC800] hover:text-foreground"
+                            >
+                                {link.label}
+                            </Link>
+                        ))}
+                    </nav>
+                )}
+            </div>
+        </section>
+    );
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -229,6 +287,7 @@ export default async function ArticlePage({ params }: PageProps) {
     const citations = references
         .map((reference: any) => reference.url || reference.title)
         .filter(Boolean);
+    const video = getFirstYoutubeVideo(article.content);
 
     const jsonLd = [
         {
@@ -317,6 +376,32 @@ export default async function ArticlePage({ params }: PageProps) {
             },
             breadcrumb: { '@id': `${articleUrl}#breadcrumb` },
         },
+        ...(video ? [{
+            '@context': 'https://schema.org',
+            '@type': 'VideoObject',
+            '@id': `${articleUrl}#video`,
+            name: displayTitle,
+            description: articleDescription,
+            thumbnailUrl: [video.thumbnailUrl],
+            uploadDate: article.created_at,
+            embedUrl: video.embedUrl,
+            contentUrl: video.url,
+            inLanguage: 'tr-TR',
+            publisher: {
+                '@type': 'Organization',
+                '@id': `${baseUrl}/#organization`,
+                name: 'Fizikhub',
+                logo: {
+                    '@type': 'ImageObject',
+                    url: `${baseUrl}/icon-512.png`,
+                    width: 512,
+                    height: 512,
+                },
+            },
+            isPartOf: {
+                '@id': articleUrl,
+            },
+        }] : []),
         ...(intentOverride ? [{
             '@context': 'https://schema.org',
             '@type': 'DefinedTerm',
@@ -433,6 +518,7 @@ export default async function ArticlePage({ params }: PageProps) {
                                 relatedArticles={getIntentRelatedArticles(intentOverride, article.slug)}
                             />
                         )}
+                        <ArticleTopicClusterLinks slug={article.slug} />
                     </>
                 )}
             </div>

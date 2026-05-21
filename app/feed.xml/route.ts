@@ -27,25 +27,14 @@ export async function GET() {
     // Fetch latest 50 published articles
     const { data: articles } = await supabase
         .from('articles')
-        .select(`
-            title,
-            slug,
-            excerpt,
-            content,
-            image_url,
-            cover_url,
-            category,
-            created_at,
-            updated_at,
-            profiles!articles_author_id_fkey(full_name, username)
-        `)
+        .select('*, profiles!articles_author_id_fkey(full_name, username)')
         .eq('status', 'published')
         .order('created_at', { ascending: false })
         .limit(50);
 
     // Determine the most recent article date for lastBuildDate
     const lastBuildDate = articles && articles.length > 0
-        ? new Date(articles[0].created_at).toUTCString()
+        ? new Date(articles[0].updated_at || articles[0].created_at).toUTCString()
         : new Date().toUTCString();
 
     const rssItems = (articles || [])
@@ -84,7 +73,7 @@ export async function GET() {
       <description>${description}</description>
       <author>${escapeXml(authorName)}</author>
       <category>${escapeXml(rssCategory)}</category>
-      <pubDate>${new Date(article.created_at).toUTCString()}</pubDate>${imageUrl ? `
+      <pubDate>${new Date(article.updated_at || article.created_at).toUTCString()}</pubDate>${imageUrl ? `
       <enclosure url="${escapeXml(imageUrl)}" type="image/jpeg" />` : ''}
     </item>`;
         });

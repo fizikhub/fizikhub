@@ -2,10 +2,12 @@ import { createClient } from "@supabase/supabase-js";
 import { unstable_cache } from "next/cache";
 import type { Metadata } from "next";
 import dynamic from "next/dynamic";
+import Link from "next/link";
 
 import { FeedSkeleton } from "@/components/home/performance-skeletons";
 import { processFeedData, formatSliderArticles } from "@/lib/feed-helpers";
 import { SEO_PRIORITY_SLUGS } from "@/lib/seo-priority";
+import { getPrimaryClusterHref, SEO_TOPIC_CLUSTERS } from "@/lib/seo-topic-clusters";
 import { LazyDesktopSidebar } from "@/components/home/lazy-desktop-sidebar";
 import { getSiteUrl, isLikelyIndexableArticle, toAbsoluteUrl } from "@/lib/seo-utils";
 
@@ -63,7 +65,7 @@ const getCachedFeedData = unstable_cache(
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!.trim()
     );
 
-    const articleSelect = 'id, title, slug, excerpt, content, cover_url, image_url, category, created_at, status, author:profiles!articles_author_id_fkey(full_name, username, avatar_url, is_writer)';
+    const articleSelect = '*, author:profiles!articles_author_id_fkey(full_name, username, avatar_url, is_writer)';
 
     const [articlesResult, priorityArticlesResult, questionsResult, profilesResult, storiesResult, groupsResult] = await Promise.all([
       // Fetch Articles & Blogs (using same table)
@@ -152,6 +154,53 @@ const getCachedFeedData = unstable_cache(
   { revalidate: 60, tags: ['feed'] }
 );
 
+function AiSourceMap() {
+  const coreDestinations = [
+    { href: "/makale", label: "Makaleler", text: "Kısa cevap, formül, örnek ve kaynakça içeren fizik yazıları." },
+    { href: "/sozluk", label: "Bilim Sözlüğü", text: "Kavramların tanımı, bağlamı ve ilgili konu bağlantıları." },
+    { href: "/forum", label: "Bilim Forumu", text: "Topluluk soruları, cevaplar ve deneyime dayalı açıklamalar." },
+    { href: "/testler", label: "Fizik Testleri", text: "TYT, AYT ve temel fizik konuları için ölçme alıştırmaları." },
+    { href: "/simulasyonlar", label: "Simülasyonlar", text: "Mekanik, optik, dalga ve elektromanyetizma için etkileşimli araçlar." },
+  ];
+
+  return (
+    <section className="mt-6 border-y border-foreground/10 bg-background/70 py-6" aria-labelledby="ai-source-map-title">
+      <div className="mx-auto max-w-[1180px] px-3 sm:px-6">
+        <div className="max-w-3xl">
+          <p className="text-xs font-black uppercase tracking-wider text-muted-foreground">AI Arama Kaynak Haritası</p>
+          <h2 id="ai-source-map-title" className="mt-2 text-2xl font-black leading-tight tracking-normal text-foreground sm:text-3xl">
+            FizikHub&apos;da Google AI Mode, AI Overviews ve klasik arama için en güvenilir başlangıç noktaları
+          </h2>
+          <p className="mt-3 text-sm font-semibold leading-7 text-muted-foreground sm:text-base">
+            Bu bölüm fizik kavramlarını metinsel olarak okunabilir, bağlantılı ve kaynaklanabilir yüzeylere ayırır: konu anlatımı, kavram tanımı, soru-cevap, test ve simülasyon.
+          </p>
+        </div>
+
+        <nav className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-5" aria-label="FizikHub ana kaynak türleri">
+          {coreDestinations.map((item) => (
+            <Link key={item.href} href={item.href} className="rounded-[8px] border border-foreground/15 bg-card px-4 py-3 transition-colors hover:border-[#FFC800]">
+              <span className="block text-sm font-black text-foreground">{item.label}</span>
+              <span className="mt-1 block text-xs font-semibold leading-5 text-muted-foreground">{item.text}</span>
+            </Link>
+          ))}
+        </nav>
+
+        <nav className="mt-5 flex flex-wrap gap-2" aria-label="Öncelikli fizik konu kümeleri">
+          {SEO_TOPIC_CLUSTERS.map((cluster) => (
+            <Link
+              key={cluster.slug}
+              href={getPrimaryClusterHref(cluster)}
+              className="rounded-[7px] border border-foreground/15 px-3 py-2 text-xs font-black text-foreground transition-colors hover:border-[#FFC800] hover:bg-[#FFC800] hover:text-black"
+            >
+              {cluster.title}
+            </Link>
+          ))}
+        </nav>
+      </div>
+    </section>
+  );
+}
+
 
 
 
@@ -228,6 +277,7 @@ export default async function Home() {
 
           <div className="lg:col-span-12 mt-0 sm:px-0">
             <CompactHero />
+            <AiSourceMap />
             <div data-nosnippet>
               <NexusStories initialStories={stories} initialGroups={groups} />
             </div>

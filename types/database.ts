@@ -48,6 +48,7 @@ export interface Database {
                 Row: {
                     id: number
                     created_at: string
+                    updated_at: string
                     title: string
                     slug: string
                     content: string | null
@@ -61,6 +62,7 @@ export interface Database {
                 Insert: {
                     id?: number
                     created_at?: string
+                    updated_at?: string
                     title: string
                     slug: string
                     content?: string | null
@@ -74,6 +76,7 @@ export interface Database {
                 Update: {
                     id?: number
                     created_at?: string
+                    updated_at?: string
                     title?: string
                     slug?: string
                     content?: string | null

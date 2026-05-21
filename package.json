@@ -9,6 +9,8 @@
     "lint": "eslint",
     "analyze": "cross-env ANALYZE=true next build --webpack",
     "test": "vitest",
+    "seo:health": "node scripts/seo-health-check.mjs",
+    "seo:samples": "node scripts/seo-url-samples.mjs",
     "configure:supabase-auth-email": "node scripts/configure-supabase-auth-email.mjs"
   },
   "dependencies": {

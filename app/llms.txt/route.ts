@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase-server";
 import { SEO_PRIORITY_ARTICLES } from "@/lib/seo-priority";
+import { SEO_TOPIC_CLUSTERS } from "@/lib/seo-topic-clusters";
 
 // ISR: Cache for 1 hour to keep it fresh for AI crawlers without hitting DB every request
 export const revalidate = 3600;
@@ -11,7 +12,7 @@ export async function GET() {
     // Fetch latest 5 published articles
     const { data: latestArticles } = await supabase
         .from('articles')
-        .select('title, slug, excerpt, created_at, profiles!articles_author_id_fkey(username)')
+        .select('*, profiles!articles_author_id_fkey(username)')
         .eq('status', 'published')
         .order('created_at', { ascending: false })
         .limit(5);
@@ -38,7 +39,20 @@ export async function GET() {
     text += `- **Bilim Sözlüğü**: ${baseUrl}/sozluk\n`;
     text += `- **İnteraktif Simülasyon Merkezi**: ${baseUrl}/simulasyonlar\n`;
     text += `- **Ücretsiz Çevrimiçi Fizik Testleri**: ${baseUrl}/testler\n`;
-    text += `- **Sıralamalar & Liderlik Tablosu**: ${baseUrl}/siralamalar\n\n`;
+    text += `- **Sıralamalar & Liderlik Tablosu**: ${baseUrl}/siralamalar\n`;
+    text += `- **Sitemap Index**: ${baseUrl}/sitemap-index.xml\n`;
+    text += `- **AI Index JSON**: ${baseUrl}/ai-index.json\n\n`;
+
+    text += `## Öncelikli 30 Konu Kümesi\n`;
+    SEO_TOPIC_CLUSTERS.forEach((cluster) => {
+        const target = cluster.articleSlugs[0]
+            ? `${baseUrl}/makale/${cluster.articleSlugs[0]}`
+            : cluster.simulationSlugs[0]
+                ? `${baseUrl}/simulasyonlar/${cluster.simulationSlugs[0]}`
+                : `${baseUrl}/konular`;
+        text += `- [${cluster.title}](${target}) — ${cluster.intentQuestions[0] || cluster.aliases[0] || 'Fizik konu kümesi'}\n`;
+    });
+    text += `\n`;
 
     text += `## Arama ve AI Cevapları İçin Öncelikli Konu Rehberleri\n`;
     SEO_PRIORITY_ARTICLES.forEach((article) => {
@@ -53,7 +67,7 @@ export async function GET() {
         text += `### En Yeni Yayımlanan Makaleler\n`;
         latestArticles.forEach(article => {
             const authorName = Array.isArray(article.profiles) ? article.profiles[0]?.username : (article.profiles as { username?: string })?.username;
-            text += `- [${article.title}](${baseUrl}/makale/${article.slug}) (Yazar: ${authorName || 'Fizikhub Eğitmeni'} | Tarih: ${new Date(article.created_at).toLocaleDateString('tr-TR')})\n`;
+            text += `- [${article.title}](${baseUrl}/makale/${article.slug}) (Yazar: ${authorName || 'Fizikhub Eğitmeni'} | Tarih: ${new Date(article.updated_at || article.created_at).toLocaleDateString('tr-TR')})\n`;
             if (article.excerpt) text += `  Özet: ${article.excerpt}\n`;
         });
         text += `\n`;
@@ -68,7 +82,7 @@ export async function GET() {
     }
 
     const newestContentDate = [
-        ...(latestArticles || []).map((article) => article.created_at),
+        ...(latestArticles || []).map((article) => article.updated_at || article.created_at),
         ...(topQuestions || []).map((question) => question.created_at),
     ]
         .filter(Boolean)

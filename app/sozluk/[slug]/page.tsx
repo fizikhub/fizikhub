@@ -6,6 +6,7 @@ import { createStaticClient } from "@/lib/supabase-server";
 import { getDictionaryTerms } from "@/lib/api";
 import { BreadcrumbJsonLd } from "@/lib/breadcrumbs";
 import { SEO_PRIORITY_ARTICLES } from "@/lib/seo-priority";
+import { getClustersForTermSlug, getRelatedUrlsForCluster } from "@/lib/seo-topic-clusters";
 import { slugify } from "@/lib/slug";
 
 type PageProps = {
@@ -32,6 +33,17 @@ const TERM_ARTICLE_SLUGS: Record<string, string[]> = {
     "olay-ufku": ["kara-delige-dusersek-ne-olur-1766107168421"],
     "standart-model": ["parcacik-fizigine-giris-evrenin-perde-arkasi-1767186788291"],
     "kizila-kayma": ["evrenin-derinliklerine-bakis-james-webb-uzay-teleskobu"],
+};
+
+const TERM_SIMULATION_LINKS: Record<string, { href: string; label: string }[]> = {
+    "acisal-hiz": [{ href: "/simulasyonlar/gunes-sistemi", label: "Güneş Sistemi simülasyonu" }],
+    "acisal-momentum": [{ href: "/simulasyonlar/gunes-sistemi", label: "Yörünge hareketi simülasyonu" }],
+    "basit-harmonik-hareket": [{ href: "/simulasyonlar/basit-sarkac", label: "Basit sarkaç simülasyonu" }, { href: "/simulasyonlar/yay-kutle", label: "Yay-kütle simülasyonu" }],
+    "harmonik-hareket": [{ href: "/simulasyonlar/yay-kutle", label: "Yay-kütle simülasyonu" }],
+    "bernoulli-ilkesi": [{ href: "/simulasyonlar/atis-hareketi", label: "Atış hareketi simülasyonu" }],
+    "elektrik-alan": [{ href: "/simulasyonlar/elektrik-alan", label: "Elektrik alan simülasyonu" }],
+    "momentum": [{ href: "/simulasyonlar/1d-carpisma", label: "Çarpışma simülasyonu" }],
+    "snell-yasasi": [{ href: "/simulasyonlar/optik-laboratuvari", label: "Optik laboratuvarı" }],
 };
 
 function truncateAtWordBoundary(text: string, limit: number) {
@@ -130,6 +142,12 @@ export default async function DictionaryTermPage({ params }: PageProps) {
     const relatedArticles = relatedArticleSlugs
         .map((articleSlug) => SEO_PRIORITY_ARTICLES.find((article) => article.slug === articleSlug))
         .filter(Boolean) as typeof SEO_PRIORITY_ARTICLES[number][];
+    const relatedSimulations = TERM_SIMULATION_LINKS[slug] || [];
+    const clusterLinks = getClustersForTermSlug(slug)
+        .flatMap(getRelatedUrlsForCluster)
+        .filter((link) => link.href !== `/sozluk/${slug}`)
+        .filter((link, index, all) => all.findIndex((item) => item.href === link.href) === index)
+        .slice(0, 8);
 
     const combinedJsonLd = {
         "@context": "https://schema.org",
@@ -242,6 +260,45 @@ export default async function DictionaryTermPage({ params }: PageProps) {
                             </div>
                         </nav>
                     )}
+
+                    <nav className="mt-6 border-t border-zinc-800 pt-5" aria-label="İlgili öğrenme kaynakları">
+                        <h2 className="mb-3 text-sm font-black uppercase tracking-wider text-zinc-500">
+                            Test ve simülasyonla pekiştir
+                        </h2>
+                        <div className="flex flex-wrap gap-2">
+                            <Link
+                                href="/testler"
+                                className="rounded-md border border-yellow-400 bg-yellow-400 px-3 py-2 text-xs font-black text-black transition-colors hover:bg-white"
+                            >
+                                Fizik testleri
+                            </Link>
+                            {relatedSimulations.length > 0 ? relatedSimulations.map((simulation) => (
+                                <Link
+                                    key={simulation.href}
+                                    href={simulation.href}
+                                    className="rounded-md border border-zinc-700 bg-zinc-900 px-3 py-2 text-xs font-semibold text-zinc-300 transition-colors hover:border-yellow-400 hover:text-white"
+                                >
+                                    {simulation.label}
+                                </Link>
+                            )) : (
+                                <Link
+                                    href="/simulasyonlar"
+                                    className="rounded-md border border-zinc-700 bg-zinc-900 px-3 py-2 text-xs font-semibold text-zinc-300 transition-colors hover:border-yellow-400 hover:text-white"
+                                >
+                                    Fizik simülasyonları
+                                </Link>
+                            )}
+                            {clusterLinks.map((link) => (
+                                <Link
+                                    key={link.href}
+                                    href={link.href}
+                                    className="rounded-md border border-zinc-700 bg-zinc-900 px-3 py-2 text-xs font-semibold text-zinc-300 transition-colors hover:border-yellow-400 hover:text-white"
+                                >
+                                    {link.label}
+                                </Link>
+                            ))}
+                        </div>
+                    </nav>
 
                     {relatedTerms.length > 0 && (
                         <nav className="mt-6 border-t border-zinc-800 pt-5" aria-label="İlgili sözlük terimleri">

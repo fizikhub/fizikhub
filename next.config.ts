@@ -90,6 +90,11 @@ const nextConfig: NextConfig = {
         destination: '/ara',
         permanent: true,
       },
+      {
+        source: '/blog/:slug',
+        destination: '/makale/:slug',
+        permanent: true,
+      },
     ];
   },
 

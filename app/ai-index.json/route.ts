@@ -1,0 +1,210 @@
+import { simulations } from "@/components/simulations/data";
+import { getDictionaryTerms } from "@/lib/api";
+import { createStaticClient } from "@/lib/supabase-server";
+import { slugify } from "@/lib/slug";
+import { getRelatedUrlsForCluster, SEO_TOPIC_CLUSTERS } from "@/lib/seo-topic-clusters";
+import { getSiteUrl, hasUsefulIndexableText, isLikelyIndexableArticle, isLikelyIndexableTitle, truncateForMeta } from "@/lib/seo-utils";
+
+export const revalidate = 3600;
+
+type AiIndexItem = {
+    type: "article" | "forum" | "dictionary" | "quiz" | "simulation";
+    url: string;
+    title: string;
+    description: string;
+    topics: string[];
+    updatedAt: string;
+    language: "tr-TR";
+    schemaTypes: string[];
+    relatedUrls: string[];
+};
+
+function unique(values: Array<string | null | undefined>) {
+    return Array.from(new Set(values.filter(Boolean) as string[]));
+}
+
+function clusterTopicsForResource(kind: "article" | "term" | "quiz" | "simulation", slug: string) {
+    return SEO_TOPIC_CLUSTERS.filter((cluster) => {
+        if (kind === "article") return cluster.articleSlugs.includes(slug);
+        if (kind === "term") return cluster.termSlugs.includes(slug);
+        if (kind === "quiz") return cluster.quizSlugs.includes(slug);
+        return cluster.simulationSlugs.includes(slug);
+    });
+}
+
+function relatedUrlsFor(kind: "article" | "term" | "quiz" | "simulation", slug: string, baseUrl: string) {
+    return unique(clusterTopicsForResource(kind, slug)
+        .flatMap(getRelatedUrlsForCluster)
+        .map((link) => `${baseUrl}${link.href}`))
+        .filter((url) => {
+            if (kind === "article") return url !== `${baseUrl}/makale/${slug}`;
+            if (kind === "term") return url !== `${baseUrl}/sozluk/${slug}`;
+            if (kind === "quiz") return url !== `${baseUrl}/testler/${slug}`;
+            return url !== `${baseUrl}/simulasyonlar/${slug}`;
+        })
+        .slice(0, 12);
+}
+
+function topicsFor(kind: "article" | "term" | "quiz" | "simulation", slug: string, fallback: string[] = []) {
+    return unique([
+        ...clusterTopicsForResource(kind, slug).map((cluster) => cluster.title),
+        ...fallback,
+    ]).slice(0, 10);
+}
+
+function getAnswerCount(question: { answers?: Array<{ count?: number | null }> | null }) {
+    return Number(question.answers?.[0]?.count || 0);
+}
+
+export async function GET() {
+    const supabase = createStaticClient();
+    const baseUrl = getSiteUrl();
+
+    const [articlesResult, questionsResult, quizzesResult, terms] = await Promise.all([
+        supabase
+            .from("articles")
+            .select("*")
+            .eq("status", "published")
+            .not("slug", "is", null)
+            .order("created_at", { ascending: false })
+            .limit(500),
+        supabase
+            .from("questions")
+            .select("id, title, content, category, tags, created_at, updated_at, votes, answers(count)")
+            .order("created_at", { ascending: false })
+            .limit(300),
+        supabase
+            .from("quizzes")
+            .select("id, title, slug, description, created_at")
+            .order("created_at", { ascending: false })
+            .limit(200),
+        getDictionaryTerms(supabase),
+    ]);
+
+    const quizIds = (quizzesResult.data || []).map((quiz) => quiz.id).filter(Boolean);
+    const questionCounts = new Map<string, number>();
+
+    if (quizIds.length > 0) {
+        const { data: quizQuestions } = await supabase
+            .from("quiz_questions")
+            .select("quiz_id")
+            .in("quiz_id", quizIds);
+
+        for (const question of quizQuestions || []) {
+            if (!question.quiz_id) continue;
+            questionCounts.set(question.quiz_id, (questionCounts.get(question.quiz_id) || 0) + 1);
+        }
+    }
+
+    const articleItems: AiIndexItem[] = (articlesResult.data || [])
+        .flatMap((article) => {
+            if (!article.slug || !isLikelyIndexableArticle(article)) return [];
+            const isExperiment = article.category === "Deney";
+            const path = isExperiment ? "deney" : "makale";
+
+            return [{
+                type: "article",
+                url: `${baseUrl}/${path}/${article.slug}`,
+                title: article.title || article.slug,
+                description: truncateForMeta(article.excerpt || article.content || `${article.title} hakkında Fizikhub makalesi.`, 220),
+                topics: topicsFor("article", article.slug, [article.category || "Fizik"]),
+                updatedAt: new Date(article.updated_at || article.created_at || Date.now()).toISOString(),
+                language: "tr-TR",
+                schemaTypes: isExperiment ? ["BlogPosting", "WebPage"] : ["BlogPosting", "WebPage", "BreadcrumbList"],
+                relatedUrls: relatedUrlsFor("article", article.slug, baseUrl),
+            }];
+        });
+
+    const forumItems: AiIndexItem[] = (questionsResult.data || [])
+        .flatMap((question) => {
+            const visibleText = [question.title, question.content].filter(Boolean).join(" ");
+            const answerCount = getAnswerCount(question);
+            if (!isLikelyIndexableTitle(question.title) || (!hasUsefulIndexableText(visibleText, 40) && answerCount < 1)) return [];
+
+            return [{
+                type: "forum",
+                url: `${baseUrl}/forum/${question.id}`,
+                title: question.title || `Fizikhub forum sorusu ${question.id}`,
+                description: truncateForMeta(question.content || `${question.title} hakkında Fizikhub forum tartışması.`, 220),
+                topics: unique([question.category, ...(Array.isArray(question.tags) ? question.tags : [])]).slice(0, 10),
+                updatedAt: new Date(question.updated_at || question.created_at || Date.now()).toISOString(),
+                language: "tr-TR",
+                schemaTypes: answerCount > 0 ? ["QAPage", "Question", "Answer"] : ["WebPage"],
+                relatedUrls: [`${baseUrl}/forum`, `${baseUrl}/makale`, `${baseUrl}/sozluk`],
+            }];
+        });
+
+    const dictionaryItems: AiIndexItem[] = terms
+        .filter((term) => isLikelyIndexableTitle(term.term) && hasUsefulIndexableText(term.definition, 40))
+        .map((term) => {
+            const termSlug = slugify(term.term);
+            return {
+                type: "dictionary",
+                url: `${baseUrl}/sozluk/${termSlug}`,
+                title: term.term,
+                description: truncateForMeta(term.definition, 220),
+                topics: topicsFor("term", termSlug, [term.category || "Bilim sözlüğü"]),
+                updatedAt: new Date(term.created_at || Date.now()).toISOString(),
+                language: "tr-TR",
+                schemaTypes: ["DefinedTerm", "DefinedTermSet", "WebPage"],
+                relatedUrls: relatedUrlsFor("term", termSlug, baseUrl),
+            };
+        });
+
+    const quizItems: AiIndexItem[] = (quizzesResult.data || [])
+        .flatMap((quiz) => {
+            const count = quiz.id ? questionCounts.get(quiz.id) || 0 : 0;
+            if (!quiz.slug || !isLikelyIndexableTitle(quiz.title) || (count < 3 && !hasUsefulIndexableText(quiz.description, 40))) return [];
+
+            return [{
+                type: "quiz",
+                url: `${baseUrl}/testler/${quiz.slug}`,
+                title: quiz.title,
+                description: truncateForMeta(quiz.description || `${quiz.title} testiyle fizik bilgini ölç.`, 220),
+                topics: topicsFor("quiz", quiz.slug, ["Fizik testi", "TYT AYT YKS fizik"]),
+                updatedAt: new Date(quiz.created_at || Date.now()).toISOString(),
+                language: "tr-TR",
+                schemaTypes: ["Quiz", "LearningResource", "BreadcrumbList"],
+                relatedUrls: relatedUrlsFor("quiz", quiz.slug, baseUrl),
+            }];
+        });
+
+    const simulationItems: AiIndexItem[] = simulations.map((sim) => ({
+        type: "simulation",
+        url: `${baseUrl}/simulasyonlar/${sim.slug}`,
+        title: sim.title,
+        description: truncateForMeta(`${sim.description} Temel formül: ${sim.formula}.`, 220),
+        topics: topicsFor("simulation", sim.slug, sim.tags),
+        updatedAt: "2026-05-13T00:00:00.000+03:00",
+        language: "tr-TR",
+        schemaTypes: ["LearningResource", "SoftwareApplication", "BreadcrumbList"],
+        relatedUrls: relatedUrlsFor("simulation", sim.slug, baseUrl),
+    }));
+
+    return Response.json({
+        name: "Fizikhub AI Index",
+        generatedAt: new Date().toISOString(),
+        language: "tr-TR",
+        policy: {
+            summarization: "allowed",
+            citation: "required",
+            note: "Google AI Mode ve AI Overviews normal Google Search indeksleme, snippet izni ve Googlebot erişiminden beslenir. Bu manifest sitemap yerine geçmeyen yardımcı bir AI keşif yüzeyidir.",
+        },
+        sources: {
+            sitemapIndex: `${baseUrl}/sitemap-index.xml`,
+            llmsTxt: `${baseUrl}/llms.txt`,
+            rss: `${baseUrl}/feed.xml`,
+        },
+        items: [
+            ...articleItems,
+            ...forumItems,
+            ...dictionaryItems,
+            ...quizItems,
+            ...simulationItems,
+        ],
+    }, {
+        headers: {
+            "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=86400",
+        },
+    });
+}

@@ -137,6 +137,11 @@ export default async function PublicProfilePage({ params }: PageProps) {
         questionsCount: questions?.length || 0,
         answersCount: answers?.length || 0,
     };
+    const expertise = [
+        profile.is_writer ? "Fizik yazarlığı" : null,
+        profile.is_verified ? "Doğrulanmış FizikHub profili" : null,
+        ...(articles || []).slice(0, 4).map((article) => article.category || "Bilim"),
+    ].filter(Boolean) as string[];
 
 
     // JSON-LD for E-E-A-T Profile
@@ -155,6 +160,12 @@ export default async function PublicProfilePage({ params }: PageProps) {
             description: profile.bio || `${profile.full_name || profile.username} adlı kullanıcının FizikHub profili.`,
             image: profile.avatar_url || 'https://www.fizikhub.com/default-avatar.png',
             url: `https://www.fizikhub.com/kullanici/${profile.username}`,
+            knowsAbout: expertise.length > 0 ? expertise : ["Fizik", "Bilim"],
+            subjectOf: (articles || []).slice(0, 6).map((article) => ({
+                '@type': 'Article',
+                name: article.title,
+                url: `https://www.fizikhub.com/makale/${article.slug}`,
+            })),
             interactionStatistic: [
                 {
                     '@type': 'InteractionCounter',
@@ -186,6 +197,23 @@ export default async function PublicProfilePage({ params }: PageProps) {
                         stats={stats}
                     />
                 </div>
+
+                {(profile.bio || profile.is_writer || profile.is_verified || stats.articlesCount > 0) && (
+                    <section className="mb-4 rounded-lg border border-border bg-card p-4 text-card-foreground sm:mb-6" aria-label="Yazar güven sinyalleri">
+                        <div className="flex flex-wrap gap-2 text-xs font-bold text-muted-foreground">
+                            {profile.is_verified && <span className="rounded-md border border-emerald-500/40 px-2 py-1 text-emerald-400">Doğrulanmış profil</span>}
+                            {profile.is_writer && <span className="rounded-md border border-sky-500/40 px-2 py-1 text-sky-400">FizikHub yazarı</span>}
+                            <span className="rounded-md border border-border px-2 py-1">{stats.articlesCount} yayın</span>
+                            <span className="rounded-md border border-border px-2 py-1">{stats.answersCount} cevap</span>
+                            <span className="rounded-md border border-border px-2 py-1">{stats.questionsCount} soru</span>
+                        </div>
+                        {expertise.length > 0 && (
+                            <p className="mt-3 text-sm font-medium leading-6 text-muted-foreground">
+                                Uzmanlık ve katkı alanları: {Array.from(new Set(expertise)).join(", ")}.
+                            </p>
+                        )}
+                    </section>
+                )}
 
                 {/* 2. GRID CONTENT */}
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-8">

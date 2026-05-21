@@ -15,6 +15,7 @@ export type Article = Database['public']['Tables']['articles']['Row'] & {
     profiles?: Database['public']['Tables']['profiles']['Row'] | null; // Alias for author in some queries
     cover_url?: string | null;
     status?: string | null;
+    updated_at?: string | null;
 };
 
 export type Question = Database['public']['Tables']['questions']['Row'] & {
@@ -34,20 +35,7 @@ const PUBLIC_AUTHOR_SELECT = [
 ].join(', ');
 
 const PUBLIC_ARTICLE_SELECT = [
-    'id',
-    'slug',
-    'title',
-    'content',
-    'excerpt',
-    'image_url',
-    'category',
-    'author_id',
-    'created_at',
-    'published',
-    'status',
-    'cover_url',
-    'likes_count',
-    'comments_count',
+    '*',
     `author:profiles!articles_author_id_fkey(${PUBLIC_AUTHOR_SELECT})`,
 ].join(', ');
 

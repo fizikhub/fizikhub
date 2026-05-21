@@ -23,7 +23,7 @@ interface QuickAnswerProps {
 }
 
 export function CollapsibleQuickAnswer({ override, relatedArticles }: QuickAnswerProps) {
-    const [isOpen, setIsOpen] = useState(false);
+    const [isOpen, setIsOpen] = useState(true);
 
     return (
         <section className="container mx-auto max-w-3xl px-4 mt-10 sm:mt-14 mb-6">
