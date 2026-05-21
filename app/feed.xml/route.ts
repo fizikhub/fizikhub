@@ -1,5 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
-import { getSiteUrl, isLikelyIndexableArticle, toAbsoluteUrl } from '@/lib/seo-utils';
+import { getArticleCanonicalPath, getSiteUrl, isLikelyIndexableArticle, toAbsoluteUrl } from '@/lib/seo-utils';
 
 export const revalidate = 3600; // Revalidate RSS feed every hour
 
@@ -45,11 +45,9 @@ export async function GET() {
             const author = (article as { profiles?: { username?: string, full_name?: string } }).profiles;
             const authorName = author?.full_name || author?.username || 'Fizikhub';
 
-            // Determine URL prefix based on category
-            let urlPrefix = 'makale';
-            if (article.category === 'Deney') urlPrefix = 'deney';
-
-            const articleUrl = `${baseUrl}/${urlPrefix}/${article.slug}`;
+            const canonicalPath = getArticleCanonicalPath(article);
+            if (!canonicalPath) return [];
+            const articleUrl = `${baseUrl}${canonicalPath}`;
 
             // Get first 300 chars of content as description, strip HTML
             const description = article.content

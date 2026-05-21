@@ -25,7 +25,7 @@ export async function generateMetadata({ searchParams }: ForumPageProps): Promis
     const page = typeof params.page === 'string' ? params.page : undefined;
     const hasLowValueParams = Boolean(query || filter || (sort && sort !== 'newest'));
     // Self-referencing canonical: each paginated page gets its own canonical
-    let canonicalUrl = 'https://www.fizikhub.com/forum';
+    let canonicalUrl = `${getSiteUrl()}/forum`;
     const canonicalParams = new URLSearchParams();
     if (category) canonicalParams.set('category', category);
     if (page && Number(page) > 1) canonicalParams.set('page', page);
@@ -80,7 +80,8 @@ export default async function ForumPage({ searchParams }: ForumPageProps) {
             id, title, content, created_at, category, votes, tags,
             profiles(username, full_name, avatar_url, is_verified),
             answers(count)
-        `);
+        `)
+        .eq('status', 'published');
 
     // Apply filters
     if (category && category !== "Tümü") {

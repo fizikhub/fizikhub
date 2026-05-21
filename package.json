@@ -11,6 +11,8 @@
     "test": "vitest",
     "seo:health": "node scripts/seo-health-check.mjs",
     "seo:samples": "node scripts/seo-url-samples.mjs",
+    "seo:quarantine": "node scripts/seo-quarantine-content.mjs",
+    "seo:quarantine:apply": "node scripts/seo-quarantine-content.mjs --apply",
     "configure:supabase-auth-email": "node scripts/configure-supabase-auth-email.mjs"
   },
   "dependencies": {

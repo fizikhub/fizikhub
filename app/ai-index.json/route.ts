@@ -3,7 +3,7 @@ import { getDictionaryTerms } from "@/lib/api";
 import { createStaticClient } from "@/lib/supabase-server";
 import { slugify } from "@/lib/slug";
 import { getRelatedUrlsForCluster, SEO_TOPIC_CLUSTERS } from "@/lib/seo-topic-clusters";
-import { getSiteUrl, hasUsefulIndexableText, isLikelyIndexableArticle, isLikelyIndexableTitle, truncateForMeta } from "@/lib/seo-utils";
+import { getArticleCanonicalPath, getSiteUrl, hasUsefulIndexableText, isIndexableForumQuestion, isLikelyIndexableArticle, isLikelyIndexableTitle, truncateForMeta } from "@/lib/seo-utils";
 
 export const revalidate = 3600;
 
@@ -70,7 +70,8 @@ export async function GET() {
             .limit(500),
         supabase
             .from("questions")
-            .select("id, title, content, category, tags, created_at, updated_at, votes, answers(count)")
+            .select("id, title, content, category, tags, created_at, updated_at, votes, status, answers(count)")
+            .eq("status", "published")
             .order("created_at", { ascending: false })
             .limit(300),
         supabase
@@ -100,11 +101,12 @@ export async function GET() {
         .flatMap((article) => {
             if (!article.slug || !isLikelyIndexableArticle(article)) return [];
             const isExperiment = article.category === "Deney";
-            const path = isExperiment ? "deney" : "makale";
+            const canonicalPath = getArticleCanonicalPath(article);
+            if (!canonicalPath) return [];
 
             return [{
                 type: "article",
-                url: `${baseUrl}/${path}/${article.slug}`,
+                url: `${baseUrl}${canonicalPath}`,
                 title: article.title || article.slug,
                 description: truncateForMeta(article.excerpt || article.content || `${article.title} hakkında Fizikhub makalesi.`, 220),
                 topics: topicsFor("article", article.slug, [article.category || "Fizik"]),
@@ -117,9 +119,8 @@ export async function GET() {
 
     const forumItems: AiIndexItem[] = (questionsResult.data || [])
         .flatMap((question) => {
-            const visibleText = [question.title, question.content].filter(Boolean).join(" ");
             const answerCount = getAnswerCount(question);
-            if (!isLikelyIndexableTitle(question.title) || (!hasUsefulIndexableText(visibleText, 40) && answerCount < 1)) return [];
+            if (!isIndexableForumQuestion(question)) return [];
 
             return [{
                 type: "forum",

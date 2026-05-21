@@ -1,13 +1,14 @@
 import { createClient } from "@/lib/supabase-server";
 import { SEO_PRIORITY_ARTICLES } from "@/lib/seo-priority";
 import { SEO_TOPIC_CLUSTERS } from "@/lib/seo-topic-clusters";
+import { getArticleCanonicalPath, getSiteUrl, isIndexableForumQuestion, isLikelyIndexableArticle } from "@/lib/seo-utils";
 
 // ISR: Cache for 1 hour to keep it fresh for AI crawlers without hitting DB every request
 export const revalidate = 3600;
 
 export async function GET() {
     const supabase = await createClient();
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.fizikhub.com';
+    const baseUrl = getSiteUrl();
 
     // Fetch latest 5 published articles
     const { data: latestArticles } = await supabase
@@ -15,14 +16,15 @@ export async function GET() {
         .select('*, profiles!articles_author_id_fkey(username)')
         .eq('status', 'published')
         .order('created_at', { ascending: false })
-        .limit(5);
+        .limit(20);
 
     // Fetch top 5 forum questions
     const { data: topQuestions } = await supabase
         .from('questions')
-        .select('id, title, category, votes, created_at')
+        .select('id, title, content, category, votes, status, created_at, answers(count)')
+        .eq('status', 'published')
         .order('votes', { ascending: false })
-        .limit(5);
+        .limit(20);
 
     // Construct the LLM plaintext Markdown representation
     let text = `# Fizikhub - Türkçe Bilim & Fizik Platformu\n\n`;
@@ -63,27 +65,31 @@ export async function GET() {
 
     text += `## Güncel ve Popüler Canlı İçerikler (Real-time Feed)\n\n`;
 
-    if (latestArticles && latestArticles.length > 0) {
+    const indexableArticles = (latestArticles || []).filter((article) => article.slug && isLikelyIndexableArticle(article)).slice(0, 5);
+    const indexableQuestions = (topQuestions || []).filter(isIndexableForumQuestion).slice(0, 5);
+
+    if (indexableArticles.length > 0) {
         text += `### En Yeni Yayımlanan Makaleler\n`;
-        latestArticles.forEach(article => {
+        indexableArticles.forEach(article => {
             const authorName = Array.isArray(article.profiles) ? article.profiles[0]?.username : (article.profiles as { username?: string })?.username;
-            text += `- [${article.title}](${baseUrl}/makale/${article.slug}) (Yazar: ${authorName || 'Fizikhub Eğitmeni'} | Tarih: ${new Date(article.updated_at || article.created_at).toLocaleDateString('tr-TR')})\n`;
+            const canonicalPath = getArticleCanonicalPath(article) || `/makale/${article.slug}`;
+            text += `- [${article.title}](${baseUrl}${canonicalPath}) (Yazar: ${authorName || 'Fizikhub Eğitmeni'} | Tarih: ${new Date(article.updated_at || article.created_at).toLocaleDateString('tr-TR')})\n`;
             if (article.excerpt) text += `  Özet: ${article.excerpt}\n`;
         });
         text += `\n`;
     }
 
-    if (topQuestions && topQuestions.length > 0) {
+    if (indexableQuestions.length > 0) {
         text += `### Trend Olan Güncel Forum Tartışmaları\n`;
-        topQuestions.forEach(q => {
+        indexableQuestions.forEach(q => {
             text += `- [${q.title}](${baseUrl}/forum/${q.id}) (Kategori: ${q.category || 'Genel'} | Topluluk Oyu: ${q.votes || 0})\n`;
         });
         text += `\n`;
     }
 
     const newestContentDate = [
-        ...(latestArticles || []).map((article) => article.updated_at || article.created_at),
-        ...(topQuestions || []).map((question) => question.created_at),
+        ...indexableArticles.map((article) => article.updated_at || article.created_at),
+        ...indexableQuestions.map((question) => question.created_at),
     ]
         .filter(Boolean)
         .sort()

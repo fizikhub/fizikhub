@@ -1,5 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
-import { getSiteUrl, isLikelyIndexableArticle, toAbsoluteUrl } from '@/lib/seo-utils';
+import { getArticleCanonicalPath, getSiteUrl, isLikelyIndexableArticle, toAbsoluteUrl } from '@/lib/seo-utils';
 
 export const revalidate = 900;
 
@@ -13,14 +13,6 @@ function escapeXml(value: string): string {
         .replace(/>/g, '&gt;')
         .replace(/"/g, '&quot;')
         .replace(/'/g, '&apos;');
-}
-
-function getArticleUrl(baseUrl: string, article: { slug: string; category?: string | null }) {
-    let urlPrefix = 'makale';
-
-    if (article.category === 'Deney') urlPrefix = 'deney';
-
-    return `${baseUrl}/${urlPrefix}/${article.slug}`;
 }
 
 export async function GET() {
@@ -46,7 +38,9 @@ export async function GET() {
         .flatMap((article) => {
             if (!article.slug || !article.created_at || !isLikelyIndexableArticle(article)) return [];
 
-            const articleUrl = getArticleUrl(baseUrl, { ...article, slug: article.slug });
+            const canonicalPath = getArticleCanonicalPath(article);
+            if (!canonicalPath) return [];
+            const articleUrl = `${baseUrl}${canonicalPath}`;
             const title = article.title || article.slug;
             const imageUrl = toAbsoluteUrl(article.cover_url || article.image_url, baseUrl);
             const imageXml = imageUrl

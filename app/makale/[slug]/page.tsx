@@ -13,7 +13,7 @@ import { MarkdownRenderer } from "@/components/markdown-renderer";
 import { CollapsibleQuickAnswer } from "@/components/articles/collapsible-quick-answer";
 import { getSeoIntentForSlug, SEO_PRIORITY_ARTICLES, SEO_PRIORITY_SLUGS, type SeoIntentArticle } from "@/lib/seo-priority";
 import { getClustersForArticleSlug, getRelatedUrlsForCluster } from "@/lib/seo-topic-clusters";
-import { buildMetaDescription, getSiteUrl, isLikelyIndexableTitle, toAbsoluteUrl } from "@/lib/seo-utils";
+import { buildMetaDescription, getArticleCanonicalPath, getSiteUrl, isLikelyIndexableArticle, isLikelyIndexableTitle, toAbsoluteUrl } from "@/lib/seo-utils";
 import Link from "next/link";
 
 interface PageProps {
@@ -117,10 +117,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     fallbackOgUrl.searchParams.set('category', category);
 
     const coverUrl = toAbsoluteUrl(article.cover_url || (article as any).image_url, baseUrl) || fallbackOgUrl.toString();
-    const canonicalPath = article.category === 'Deney'
-        ? `/deney/${article.slug || slug}`
-        : `/makale/${article.slug || slug}`;
+    const canonicalPath = getArticleCanonicalPath(article) || `/makale/${article.slug || slug}`;
     const canonicalUrl = `${baseUrl}${canonicalPath}`;
+    const shouldIndex = isLikelyIndexableArticle(article) && article.category !== 'Deney';
 
     const intentOverride = getSeoIntentForSlug(article.slug || slug);
     const description = intentOverride?.metadataDescription || toMetaDescription(article);
@@ -167,10 +166,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
             canonical: canonicalUrl,
         },
         robots: {
-            index: article.category !== 'Deney',
+            index: shouldIndex,
             follow: true,
             googleBot: {
-                index: article.category !== 'Deney',
+                index: shouldIndex,
                 follow: true,
                 "max-image-preview": "large",
                 "max-snippet": -1,

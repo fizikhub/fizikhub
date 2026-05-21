@@ -4,7 +4,7 @@ import { simulations } from '@/components/simulations/data';
 import { slugify } from '@/lib/slug';
 import { getDictionaryTerms } from '@/lib/api';
 import { SEO_PRIORITY_SLUG_SET } from '@/lib/seo-priority';
-import { getSiteUrl, hasUsefulIndexableText, isLikelyIndexableArticle, isLikelyIndexableTitle, toAbsoluteUrl } from '@/lib/seo-utils';
+import { getArticleCanonicalPath, getSiteUrl, hasUsefulIndexableText, isIndexableForumQuestion, isLikelyIndexableArticle, isLikelyIndexableTitle, toAbsoluteUrl } from '@/lib/seo-utils';
 
 export const revalidate = 3600; // Revalidate sitemap every hour
 
@@ -117,7 +117,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const [questionsResult, articlesResult, quizzesResult, terms] = await Promise.all([
         supabase
             .from('questions')
-            .select('id, title, content, created_at, updated_at, votes, answers(count)')
+            .select('id, title, content, created_at, updated_at, votes, status, answers(count)')
+            .eq('status', 'published')
             .order('created_at', { ascending: false })
             .limit(250),
 
@@ -138,11 +139,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ]);
 
     const questionPages: MetadataRoute.Sitemap = (questionsResult.data || [])
-        .filter((question) => {
-            const answerCount = Number(question.answers?.[0]?.count || 0);
-            const visibleText = [question.title, question.content].filter(Boolean).join(' ');
-            return isLikelyIndexableTitle(question.title) && (hasUsefulIndexableText(visibleText, 40) || answerCount > 0);
-        })
+        .filter(isIndexableForumQuestion)
         .map((question) => ({
             url: `${baseUrl}/forum/${question.id}`,
             lastModified: toLastModified(question.updated_at || question.created_at),
@@ -154,14 +151,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         const slug = article.slug;
         if (!slug || !isLikelyIndexableArticle(article)) return [];
 
-        let urlPrefix = 'makale';
-        if (article.category === 'Deney') urlPrefix = 'deney';
+        const canonicalPath = getArticleCanonicalPath(article);
+        if (!canonicalPath) return [];
         const imageUrl = toAbsoluteUrl(article.cover_url || article.image_url, baseUrl);
         const fallbackImageUrl = `${baseUrl}/api/og?title=${encodeURIComponent(article.title || slug)}`;
         const isPriorityArticle = SEO_PRIORITY_SLUG_SET.has(slug);
 
         return [{
-            url: `${baseUrl}/${urlPrefix}/${slug}`,
+            url: `${baseUrl}${canonicalPath}`,
             lastModified: toLastModified(article.updated_at || article.created_at),
             changeFrequency: 'weekly' as const,
             priority: isPriorityArticle ? 0.95 : 0.85,

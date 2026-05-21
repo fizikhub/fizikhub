@@ -1,12 +1,8 @@
 import { createStaticClient } from "@/lib/supabase-server";
 import { escapeXml } from "@/lib/xml";
-import { getSiteUrl, isLikelyIndexableArticle, toAbsoluteUrl } from "@/lib/seo-utils";
+import { getArticleCanonicalPath, getSiteUrl, isLikelyIndexableArticle, toAbsoluteUrl } from "@/lib/seo-utils";
 
 export const revalidate = 3600;
-
-function getArticleUrl(baseUrl: string, article: { slug: string; category?: string | null }) {
-    return `${baseUrl}/${article.category === "Deney" ? "deney" : "makale"}/${article.slug}`;
-}
 
 export async function GET() {
     const supabase = createStaticClient();
@@ -28,7 +24,9 @@ export async function GET() {
         .flatMap((article) => {
             if (!article.slug || !isLikelyIndexableArticle(article)) return [];
 
-            const loc = getArticleUrl(baseUrl, { ...article, slug: article.slug });
+            const canonicalPath = getArticleCanonicalPath(article);
+            if (!canonicalPath) return [];
+            const loc = `${baseUrl}${canonicalPath}`;
             const imageUrl = toAbsoluteUrl(article.cover_url || article.image_url, baseUrl);
             const imageXml = imageUrl
                 ? `

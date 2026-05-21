@@ -27,7 +27,7 @@ import { ReplyButton } from "@/components/forum/reply-button";
 import { ReadingProgress } from "@/components/forum/reading-progress";
 import { ShareDrawer } from "@/components/forum/share-drawer";
 import { BreadcrumbJsonLd } from "@/lib/breadcrumbs";
-import { getSiteUrl, hasUsefulIndexableText, isLikelyIndexableTitle, stripMarkdownForMeta, truncateForMeta } from "@/lib/seo-utils";
+import { getSiteUrl, isIndexableForumQuestion, stripMarkdownForMeta, truncateForMeta } from "@/lib/seo-utils";
 
 import type { Metadata } from "next";
 
@@ -49,25 +49,12 @@ function getPublicProfile(profile: PublicProfile | PublicProfile[] | null | unde
     return Array.isArray(profile) ? profile[0] || null : profile || null;
 }
 
-function getAnswerCount(question: { answers?: Array<{ count?: number | null }> | null }) {
-    return Number(question.answers?.[0]?.count || 0);
-}
-
 function parseQuestionId(rawId: string) {
     const match = rawId.match(/^\d+/);
     if (!match) return null;
 
     const questionId = Number.parseInt(match[0], 10);
     return Number.isSafeInteger(questionId) ? questionId : null;
-}
-
-function isIndexableForumQuestion(question: {
-    title?: string | null;
-    content?: string | null;
-    answers?: Array<{ count?: number | null }> | null;
-}) {
-    const visibleText = [question.title, question.content].filter(Boolean).join(" ");
-    return isLikelyIndexableTitle(question.title) && (hasUsefulIndexableText(visibleText, 40) || getAnswerCount(question) > 0);
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -85,8 +72,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
     const { data: question } = await supabase
         .from('questions')
-        .select('title, content, category, tags, created_at, votes, profiles(username), answers(count)')
+        .select('title, content, category, tags, created_at, votes, status, profiles(username), answers(count)')
         .eq('id', questionId)
+        .eq('status', 'published')
         .single();
 
     if (!question) {
@@ -165,10 +153,11 @@ export default async function QuestionPage({ params }: PageProps) {
     // Fetch question details
     const { data: rawQuestion, error } = await publicSupabase.from('questions')
         .select(`
-            id, title, content, created_at, category, tags, votes, views, author_id,
+            id, title, content, created_at, category, tags, votes, views, author_id, status,
             profiles(username, full_name, avatar_url, is_verified)
         `)
         .eq('id', questionId)
+        .eq('status', 'published')
         .single();
 
     if (error || !rawQuestion) {

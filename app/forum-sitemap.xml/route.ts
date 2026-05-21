@@ -1,20 +1,11 @@
 import { createStaticClient } from "@/lib/supabase-server";
 import { escapeXml } from "@/lib/xml";
-import { getSiteUrl, hasUsefulIndexableText, isLikelyIndexableTitle } from "@/lib/seo-utils";
+import { getSiteUrl, isIndexableForumQuestion } from "@/lib/seo-utils";
 
 export const revalidate = 1800;
 
 function getAnswerCount(question: { answers?: Array<{ count?: number | null }> | null }) {
     return Number(question.answers?.[0]?.count || 0);
-}
-
-function isIndexableQuestion(question: {
-    title?: string | null;
-    content?: string | null;
-    answers?: Array<{ count?: number | null }> | null;
-}) {
-    const visibleText = [question.title, question.content].filter(Boolean).join(" ");
-    return isLikelyIndexableTitle(question.title) && (hasUsefulIndexableText(visibleText, 40) || getAnswerCount(question) > 0);
 }
 
 export async function GET() {
@@ -23,7 +14,8 @@ export async function GET() {
 
     const { data: questions, error } = await supabase
         .from("questions")
-        .select("id, title, content, created_at, votes, answers(count)")
+        .select("id, title, content, created_at, votes, status, answers(count)")
+        .eq("status", "published")
         .order("created_at", { ascending: false })
         .limit(1000);
 
@@ -32,7 +24,7 @@ export async function GET() {
     }
 
     const urls = (questions || [])
-        .filter(isIndexableQuestion)
+        .filter(isIndexableForumQuestion)
         .map((question) => {
             const answerCount = getAnswerCount(question);
             return `  <url>
@@ -56,4 +48,3 @@ ${urls}
         },
     });
 }
-

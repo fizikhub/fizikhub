@@ -6,7 +6,7 @@ import { calculateReadingTime, formatReadingTime } from "@/lib/reading-time";
 import { Metadata } from "next";
 import { ExperimentViewer } from "@/components/experiment/experiment-viewer";
 import { isAdminEmail } from "@/lib/admin";
-import { buildMetaDescription, getSiteUrl, isLikelyIndexableTitle, toAbsoluteUrl } from "@/lib/seo-utils";
+import { buildMetaDescription, getArticleCanonicalPath, getSiteUrl, isLikelyIndexableArticle, isLikelyIndexableTitle, toAbsoluteUrl } from "@/lib/seo-utils";
 
 interface PageProps {
     params: Promise<{ slug: string }>;
@@ -30,13 +30,14 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
         `${article.title} deneyini Fizikhub'da adım adım incele.`,
     );
     const imageUrl = toAbsoluteUrl(article.cover_url || (article as { image_url?: string }).image_url, baseUrl) || `${baseUrl}/og-image.jpg`;
-    const canonicalPath = article.category === 'Deney' ? `/deney/${article.slug || slug}` : `/makale/${article.slug || slug}`;
+    const canonicalPath = getArticleCanonicalPath(article) || `/deney/${article.slug || slug}`;
+    const shouldIndex = article.category === 'Deney' && isLikelyIndexableArticle(article);
 
     return {
         title: article.title,
         description,
         robots: {
-            index: article.category === 'Deney',
+            index: shouldIndex,
             follow: true,
         },
         openGraph: {

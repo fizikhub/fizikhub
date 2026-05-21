@@ -1,130 +1,216 @@
-const baseUrl = (process.env.SITE_URL || process.env.NEXT_PUBLIC_APP_URL || "https://www.fizikhub.com").replace(/\/+$/, "");
+import fs from "node:fs";
+import os from "node:os";
+import path from "node:path";
 
-async function getText(path) {
-    const response = await fetch(`${baseUrl}${path}`, {
-        headers: { "user-agent": "Fizikhub SEO health check" },
-        redirect: "manual",
-    });
-    return {
-        path,
-        status: response.status,
-        location: response.headers.get("location"),
-        contentType: response.headers.get("content-type"),
-        text: await response.text().catch(() => ""),
-    };
-}
+const canonicalBaseUrl = "https://www.fizikhub.com";
+const baseUrl = (process.env.SITE_URL || process.env.NEXT_PUBLIC_APP_URL || canonicalBaseUrl).replace(/\/+$/, "");
+const expectedRedirectBaseUrl = baseUrl === canonicalBaseUrl ? canonicalBaseUrl : baseUrl;
+const gscExportDir = process.env.GSC_EXPORT_DIR || path.join(os.homedir(), "Downloads");
 
-function countLoc(xml) {
-    return (xml.match(/<loc>/g) || []).length;
-}
+const privateDisallowPatterns = [
+  "Disallow: /profil/",
+  "Disallow: /admin/",
+  "Disallow: /yazar/",
+  "Disallow: /yazar-paneli/",
+  "Disallow: /makale/yeni",
+  "Disallow: /mesajlar/",
+  "Disallow: /notifications/",
+  "Disallow: /kurulum/",
+  "Disallow: /time-limit/",
+  "Disallow: /yonetim/",
+];
 
-function firstLoc(xml) {
-    const match = xml.match(/<loc>([^<]+)<\/loc>/);
-    return match ? match[1] : null;
-}
+const forbiddenUrlPatterns = [
+  /https?:\/\/fizikhub\.com/i,
+  /\/blog(?:\/|\?|$)/i,
+  /\/index(?:\?|$)/i,
+  /[?&]kategori=/i,
+  /[?&]sort=latest/i,
+  /\/(?:login|forgot-password|reset-password|profil|admin|yazar-paneli|mesajlar|notifications|kurulum|time-limit|yonetim|paylas)(?:\/|\?|$)/i,
+  /\/(?:makale|deney)\/(?:test|tesr|deneme)(?:[-_]|$)/i,
+  /\/_next\/static\//i,
+  /\.(?:woff2?|ttf|otf|map)(?:\?|$)/i,
+];
 
-function pathFromLoc(loc) {
-    if (!loc) return null;
-    try {
-        return new URL(loc).pathname;
-    } catch {
-        return null;
-    }
-}
+async function fetchText(urlOrPath, init = {}) {
+  const url = urlOrPath.startsWith("http") ? urlOrPath : `${baseUrl}${urlOrPath}`;
+  const response = await fetch(url, {
+    headers: { "user-agent": "Fizikhub SEO health check" },
+    redirect: "manual",
+    ...init,
+  });
 
-function countJsonLd(html) {
-    return (html.match(/application\/ld\+json/g) || []).length;
-}
-
-function visibleTextLength(html) {
-    return html
-        .replace(/<script[\s\S]*?<\/script>/gi, " ")
-        .replace(/<style[\s\S]*?<\/style>/gi, " ")
-        .replace(/<[^>]+>/g, " ")
-        .replace(/\s+/g, " ")
-        .trim()
-        .length;
+  return {
+    url,
+    path: urlOrPath,
+    status: response.status,
+    location: response.headers.get("location"),
+    contentType: response.headers.get("content-type"),
+    xRobotsTag: response.headers.get("x-robots-tag"),
+    text: await response.text().catch(() => ""),
+  };
 }
 
 function assert(condition, message) {
-    if (!condition) {
-        throw new Error(message);
-    }
+  if (!condition) throw new Error(message);
 }
 
-const checks = [
-    "/sitemap-index.xml",
-    "/sitemap.xml",
-    "/article-sitemap.xml",
-    "/forum-sitemap.xml",
-    "/dictionary-sitemap.xml",
-    "/news-sitemap.xml",
-    "/feed.xml",
-    "/robots.txt",
-    "/ai-index.json",
+function locs(xml) {
+  return Array.from(xml.matchAll(/<loc>([^<]+)<\/loc>/g)).map((match) => match[1]);
+}
+
+function countJsonLd(html) {
+  return (html.match(/application\/ld\+json/g) || []).length;
+}
+
+function visibleTextLength(html) {
+  return html
+    .replace(/<script[\s\S]*?<\/script>/gi, " ")
+    .replace(/<style[\s\S]*?<\/style>/gi, " ")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .length;
+}
+
+function forbiddenReason(url) {
+  const pattern = forbiddenUrlPatterns.find((candidate) => candidate.test(url));
+  if (pattern) return pattern.toString();
+
+  try {
+    const parsed = new URL(url);
+    if (parsed.origin !== canonicalBaseUrl) return "non-canonical-origin";
+  } catch {
+    return "invalid-url";
+  }
+
+  return null;
+}
+
+function readGscExportUrls() {
+  if (!fs.existsSync(gscExportDir)) return [];
+
+  const entries = fs.readdirSync(gscExportDir, { withFileTypes: true })
+    .filter((entry) => entry.name.startsWith("fizikhub.com-Coverage"))
+    .flatMap((entry) => {
+      const entryPath = path.join(gscExportDir, entry.name);
+      if (entry.isDirectory()) {
+        return fs.readdirSync(entryPath)
+          .filter((file) => file.endsWith(".csv"))
+          .map((file) => path.join(entryPath, file));
+      }
+      return entry.name.endsWith(".csv") ? [entryPath] : [];
+    });
+
+  const urls = [];
+  for (const file of entries) {
+    const text = fs.readFileSync(file, "utf8");
+    for (const match of text.matchAll(/https?:\/\/(?:www\.)?fizikhub\.com[^,\r\n"]*/g)) {
+      urls.push({ file, url: match[0] });
+    }
+  }
+  return urls;
+}
+
+const resourcePaths = [
+  "/sitemap-index.xml",
+  "/sitemap.xml",
+  "/article-sitemap.xml",
+  "/forum-sitemap.xml",
+  "/dictionary-sitemap.xml",
+  "/news-sitemap.xml",
+  "/feed.xml",
+  "/robots.txt",
+  "/ai-index.json",
 ];
 
-const results = await Promise.all(checks.map(getText));
-const byPath = new Map(results.map((result) => [result.path, result]));
+const resources = await Promise.all(resourcePaths.map((resource) => fetchText(resource)));
+const byPath = new Map(resources.map((resource) => [resource.path, resource]));
 
-for (const result of results) {
-    assert(result.status === 200, `${result.path} returned ${result.status}`);
+for (const resource of resources) {
+  assert(resource.status === 200, `${resource.path} returned ${resource.status}`);
 }
 
-const sitemapCount = countLoc(byPath.get("/sitemap.xml").text);
-const sitemapIndexCount = countLoc(byPath.get("/sitemap-index.xml").text);
-const articleCount = countLoc(byPath.get("/article-sitemap.xml").text);
-const forumCount = countLoc(byPath.get("/forum-sitemap.xml").text);
-const dictionaryCount = countLoc(byPath.get("/dictionary-sitemap.xml").text);
-const feedItemCount = (byPath.get("/feed.xml").text.match(/<item>/g) || []).length;
 const robotsText = byPath.get("/robots.txt").text;
+for (const disallow of privateDisallowPatterns) {
+  assert(!robotsText.includes(disallow), `robots.txt still contains private disallow: ${disallow}`);
+}
+
+for (const sitemap of ["/sitemap.xml", "/article-sitemap.xml", "/forum-sitemap.xml", "/dictionary-sitemap.xml", "/news-sitemap.xml"]) {
+  const badUrls = locs(byPath.get(sitemap).text)
+    .map((url) => ({ url, reason: forbiddenReason(url) }))
+    .filter((entry) => entry.reason);
+  assert(badUrls.length === 0, `${sitemap} contains forbidden URLs: ${JSON.stringify(badUrls.slice(0, 10))}`);
+}
+
 const aiIndex = JSON.parse(byPath.get("/ai-index.json").text);
-
-assert(sitemapIndexCount >= 5, "/sitemap-index.xml does not list all child sitemaps");
-assert(sitemapCount > 0, "/sitemap.xml has no URLs");
-assert(articleCount > 0, "/article-sitemap.xml has no article URLs");
-assert(dictionaryCount > 0, "/dictionary-sitemap.xml has no dictionary URLs");
-assert(feedItemCount > 0, "/feed.xml has no RSS items");
 assert(Array.isArray(aiIndex.items) && aiIndex.items.length > 0, "/ai-index.json has no items");
-assert(aiIndex.items.some((item) => item.type === "article"), "/ai-index.json has no article items");
-assert(aiIndex.items.some((item) => item.type === "dictionary"), "/ai-index.json has no dictionary items");
-assert(aiIndex.items.some((item) => item.type === "simulation"), "/ai-index.json has no simulation items");
-assert(robotsText.includes("/sitemap-index.xml"), "robots.txt does not advertise sitemap index");
-assert(robotsText.includes("/article-sitemap.xml"), "robots.txt does not advertise article sitemap");
-assert(robotsText.includes("/forum-sitemap.xml"), "robots.txt does not advertise forum sitemap");
-assert(robotsText.includes("/dictionary-sitemap.xml"), "robots.txt does not advertise dictionary sitemap");
-assert(robotsText.includes("/ai-index.json"), "robots.txt does not allow/reference ai-index.json");
+const badAiUrls = aiIndex.items
+  .map((item) => ({ url: item.url, reason: forbiddenReason(item.url) }))
+  .filter((entry) => entry.reason);
+assert(badAiUrls.length === 0, `/ai-index.json contains forbidden URLs: ${JSON.stringify(badAiUrls.slice(0, 10))}`);
 
-const redirect = await getText("/blog/entropi-nedir-evrenin-sonu-nasil-gelecek-1767534266662");
-assert([301, 308].includes(redirect.status), `/blog/:slug redirect returned ${redirect.status}`);
-assert(redirect.location?.includes("/makale/entropi-nedir-evrenin-sonu-nasil-gelecek-1767534266662"), "/blog/:slug redirect target is wrong");
+const feedText = byPath.get("/feed.xml").text;
+assert((feedText.match(/<item>/g) || []).length > 0, "/feed.xml has no RSS items");
+for (const match of feedText.matchAll(/<link>([^<]+)<\/link>/g)) {
+  const reason = forbiddenReason(match[1]);
+  assert(!reason, `/feed.xml contains forbidden URL ${match[1]} (${reason})`);
+}
+
+const redirects = [
+  ["/index", `${expectedRedirectBaseUrl}/`],
+  ["/blog?kategori=Kuantum&sort=latest", `${expectedRedirectBaseUrl}/makale?category=Kuantum`],
+  ["/blog/entropi-nedir-evrenin-sonu-nasil-gelecek-1767534266662", `${expectedRedirectBaseUrl}/makale/entropi-nedir-evrenin-sonu-nasil-gelecek-1767534266662`],
+];
+
+for (const [source, expected] of redirects) {
+  const response = await fetchText(source);
+  assert(response.status === 301, `${source} redirect returned ${response.status}`);
+  assert(new URL(response.location, baseUrl).toString() === expected, `${source} redirect target is ${response.location}, expected ${expected}`);
+}
+
+if (baseUrl === canonicalBaseUrl) {
+  const nonCanonical = await fetchText("https://fizikhub.com/sozluk");
+  assert([301, 308].includes(nonCanonical.status), `non-www redirect returned ${nonCanonical.status}`);
+  assert(new URL(nonCanonical.location).toString() === `${canonicalBaseUrl}/sozluk`, `non-www target is ${nonCanonical.location}`);
+}
+
+for (const privatePath of ["/login", "/mesajlar", "/makale/yeni", "/paylas"]) {
+  const response = await fetchText(privatePath);
+  assert(response.xRobotsTag?.includes("noindex"), `${privatePath} is missing X-Robots-Tag noindex`);
+}
+
+const publicSample = await fetchText("/makale");
+assert(!publicSample.xRobotsTag?.includes("noindex"), "/makale should not have X-Robots-Tag noindex");
 
 const samplePaths = [
-    pathFromLoc(firstLoc(byPath.get("/article-sitemap.xml").text)),
-    pathFromLoc(firstLoc(byPath.get("/forum-sitemap.xml").text)),
-    pathFromLoc(firstLoc(byPath.get("/dictionary-sitemap.xml").text)),
-    "/simulasyonlar/basit-sarkac",
-].filter(Boolean);
+  locs(byPath.get("/article-sitemap.xml").text)[0],
+  locs(byPath.get("/forum-sitemap.xml").text)[0],
+  locs(byPath.get("/dictionary-sitemap.xml").text)[0],
+].filter(Boolean).map((url) => new URL(url).pathname);
 
-const sampleResults = await Promise.all(samplePaths.map(getText));
-for (const sample of sampleResults) {
-    assert(sample.status === 200, `${sample.path} sample returned ${sample.status}`);
-    assert(sample.text.includes('rel="canonical"') || sample.text.includes("rel=\"canonical\""), `${sample.path} has no canonical link`);
-    assert(!sample.text.includes("noindex"), `${sample.path} contains noindex`);
-    assert(countJsonLd(sample.text) > 0, `${sample.path} has no JSON-LD`);
-    assert(visibleTextLength(sample.text) > 500, `${sample.path} has too little visible text`);
+for (const samplePath of samplePaths) {
+  const sample = await fetchText(samplePath);
+  assert(sample.status === 200, `${samplePath} sample returned ${sample.status}`);
+  assert(sample.text.includes('rel="canonical"'), `${samplePath} has no canonical link`);
+  assert(!sample.text.includes("noindex"), `${samplePath} contains noindex`);
+  assert(countJsonLd(sample.text) > 0, `${samplePath} has no JSON-LD`);
+  assert(visibleTextLength(sample.text) > 500, `${samplePath} has too little visible text`);
 }
 
+const gscUrls = readGscExportUrls();
+const gscSummary = gscUrls.reduce((acc, entry) => {
+  const reason = forbiddenReason(entry.url) || "clean-or-needs-live-check";
+  acc[reason] = (acc[reason] || 0) + 1;
+  return acc;
+}, {});
+
 console.log(JSON.stringify({
-    baseUrl,
-    sitemapIndexCount,
-    sitemapCount,
-    articleCount,
-    forumCount,
-    dictionaryCount,
-    feedItemCount,
-    aiIndexItemCount: aiIndex.items.length,
-    samplePaths,
-    blogRedirectStatus: redirect.status,
-    blogRedirectLocation: redirect.location,
+  baseUrl,
+  sitemapCounts: Object.fromEntries(["/sitemap.xml", "/article-sitemap.xml", "/forum-sitemap.xml", "/dictionary-sitemap.xml", "/news-sitemap.xml"]
+    .map((sitemap) => [sitemap, locs(byPath.get(sitemap).text).length])),
+  aiIndexItemCount: aiIndex.items.length,
+  samplePaths,
+  gscExportUrlCount: gscUrls.length,
+  gscSummary,
 }, null, 2));

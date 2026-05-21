@@ -137,6 +137,7 @@ export const getQuestions = cache(async function (_supabase: SupabaseClient<Data
             const { data, error } = await staticClient
                 .from('questions')
                 .select('*, author:profiles(*)')
+                .eq('status', 'published')
                 .order('created_at', { ascending: false })
                 .limit(options?.limit || 50);
 

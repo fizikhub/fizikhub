@@ -6,6 +6,7 @@ import { cache } from "react";
 import { DarkNeoHeader } from "@/components/profile/dark-neo/dark-neo-header";
 import { DarkNeoFeed } from "@/components/profile/dark-neo/dark-neo-feed";
 import { DarkNeoSidebar } from "@/components/profile/dark-neo/dark-neo-sidebar";
+import { getSiteUrl, isIndexableProfile } from "@/lib/seo-utils";
 
 interface PageProps {
     params: Promise<{ username: string }>;
@@ -29,11 +30,24 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
     if (!profile) return { title: 'Profil Bulunamadı' };
 
+    const supabase = createStaticClient();
+    const [{ count: articleCount }, { count: questionCount }, { count: answerCount }] = await Promise.all([
+        supabase.from('articles').select('id', { count: 'exact', head: true }).eq('author_id', profile.id).eq('status', 'published'),
+        supabase.from('questions').select('id', { count: 'exact', head: true }).eq('author_id', profile.id).eq('status', 'published'),
+        supabase.from('answers').select('id', { count: 'exact', head: true }).eq('author_id', profile.id),
+    ]);
+
     const displayName = profile.full_name || `@${username}`;
     const description = profile.bio
         ? `${displayName} — ${profile.bio.substring(0, 140)}`
         : `${displayName} adlı kullanıcının FizikHub profili. Makaleler, sorular ve bilimsel katkılar.`;
-    const shouldIndex = Boolean(profile.is_writer || profile.bio);
+    const shouldIndex = isIndexableProfile({
+        ...profile,
+        articleCount,
+        questionCount,
+        answerCount,
+    });
+    const canonicalUrl = `${getSiteUrl()}/kullanici/${username}`;
 
     return {
         title: `${displayName} (@${username})`,
@@ -50,7 +64,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
             title: `${displayName} — FizikHub Profil`,
             description,
             type: 'profile',
-            url: `https://www.fizikhub.com/kullanici/${username}`,
+            url: canonicalUrl,
             ...(profile.avatar_url && {
                 images: [{ url: profile.avatar_url, width: 200, height: 200, alt: displayName }]
             }),
@@ -62,7 +76,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
             ...(profile.avatar_url && { images: [profile.avatar_url] }),
         },
         alternates: {
-            canonical: `https://www.fizikhub.com/kullanici/${username}`,
+            canonical: canonicalUrl,
         },
     };
 }
@@ -114,6 +128,7 @@ export default async function PublicProfilePage({ params }: PageProps) {
             .from('questions')
             .select('id, title, content, created_at, category, votes, tags, profiles(full_name, avatar_url, username)')
             .eq('author_id', profile.id)
+            .eq('status', 'published')
             .order('created_at', { ascending: false }),
 
         // 6. User answers

@@ -1,7 +1,8 @@
 import { MetadataRoute } from 'next';
+import { getSiteUrl } from '@/lib/seo-utils';
 
 export default function robots(): MetadataRoute.Robots {
-    const baseUrl = (process.env.NEXT_PUBLIC_APP_URL || 'https://www.fizikhub.com').replace(/\/+$/, '');
+    const baseUrl = getSiteUrl();
 
     const cleanupDisallow = [
         '/api/',
