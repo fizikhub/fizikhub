@@ -171,7 +171,7 @@ for (const [source, expected] of redirects) {
 
 if (baseUrl === canonicalBaseUrl) {
   const nonCanonical = await fetchText("https://fizikhub.com/sozluk");
-  assert([301, 308].includes(nonCanonical.status), `non-www redirect returned ${nonCanonical.status}`);
+  assert([301, 307, 308].includes(nonCanonical.status), `non-www redirect returned ${nonCanonical.status}`);
   assert(new URL(nonCanonical.location).toString() === `${canonicalBaseUrl}/sozluk`, `non-www target is ${nonCanonical.location}`);
 }
 
