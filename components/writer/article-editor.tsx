@@ -200,7 +200,7 @@ export function ArticleEditor({ article }: ArticleEditorProps) {
             }
         } catch { }
         setIsDraftLoaded(true);
-    }, []);
+    }, [article]);
 
     // Auto-save to localStorage every 5 seconds
     useEffect(() => {

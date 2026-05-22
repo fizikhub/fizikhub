@@ -281,8 +281,8 @@ export function TiptapEditor({ content, onChange }: TiptapEditorProps) {
         }
     };
 
-    // Memoize Toolbar Buttons to prevent excessive re-rendering during typing
-    const TextFormattingToolbar = useMemo(() => {
+    // Render Toolbar Buttons (Tiptap's useEditor automatically re-renders on state changes)
+    const renderTextFormattingToolbar = () => {
         if (!editor) return null;
         return (
             <div className="flex items-center gap-0.5 mr-2">
@@ -291,9 +291,9 @@ export function TiptapEditor({ content, onChange }: TiptapEditorProps) {
                 <Button type="button" variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={() => editor.chain().focus().toggleUnderline().run()} disabled={!editor.can().chain().focus().toggleUnderline().run()} data-state={editor.isActive('underline') ? 'on' : 'off'}><UnderlineIcon className="w-4 h-4" /></Button>
             </div>
         );
-    }, [editor, editor?.state.selection, editor?.isActive('bold'), editor?.isActive('italic'), editor?.isActive('underline')]);
+    };
 
-    const HeadingsToolbar = useMemo(() => {
+    const renderHeadingsToolbar = () => {
         if (!editor) return null;
         return (
              <div className="flex items-center gap-0.5 mr-2">
@@ -302,9 +302,9 @@ export function TiptapEditor({ content, onChange }: TiptapEditorProps) {
                 <Button type="button" variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()} data-state={editor.isActive('heading', { level: 3 }) ? 'on' : 'off'}><Heading3 className="w-4 h-4" /></Button>
             </div>
         );
-    }, [editor, editor?.state.selection, editor?.isActive('heading')]);
+    };
     
-    const ListsToolbar = useMemo(() => {
+    const renderListsToolbar = () => {
          if (!editor) return null;
          return (
             <div className="flex items-center gap-0.5 mr-2">
@@ -313,7 +313,7 @@ export function TiptapEditor({ content, onChange }: TiptapEditorProps) {
                 <Button type="button" variant="ghost" size="icon" className="h-8 w-8" onClick={() => editor.chain().focus().toggleBlockquote().run()} data-state={editor.isActive('blockquote') ? 'on' : 'off'}><Quote className="w-4 h-4" /></Button>
             </div>
          );
-    }, [editor, editor?.state.selection, editor?.isActive('bulletList'), editor?.isActive('orderedList'), editor?.isActive('blockquote')]);
+    };
 
     if (!editor) {
         return null;
@@ -324,17 +324,17 @@ export function TiptapEditor({ content, onChange }: TiptapEditorProps) {
             {/* Main Toolbar */}
             <div className="border-b bg-muted/30 p-2 flex flex-wrap gap-1 sticky top-0 z-10 backdrop-blur-xl items-center">
                 {/* Text Formatting */}
-                {TextFormattingToolbar}
+                {renderTextFormattingToolbar()}
 
                 <div className="w-px h-6 bg-border mx-1" />
 
                 {/* Headings */}
-                {HeadingsToolbar}
+                {renderHeadingsToolbar()}
 
                 <div className="w-px h-6 bg-border mx-1" />
 
                 {/* Lists */}
-                {ListsToolbar}
+                {renderListsToolbar()}
 
                 <div className="w-px h-6 bg-border mx-1" />
 
