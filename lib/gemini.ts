@@ -1,10 +1,22 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-const apiKey = process.env.GEMINI_API_KEY || "";
-const genAI = new GoogleGenerativeAI(apiKey);
+let geminiClient: GoogleGenerativeAI | null = null;
+
+function getGeminiClient() {
+    const apiKey = process.env.GEMINI_API_KEY || "";
+    if (!apiKey) return null;
+
+    if (!geminiClient) {
+        geminiClient = new GoogleGenerativeAI(apiKey);
+    }
+
+    return geminiClient;
+}
 
 export async function generateEmbedding(text: string): Promise<number[] | null> {
-    if (!apiKey) {
+    const genAI = getGeminiClient();
+
+    if (!genAI) {
         console.warn("GEMINI_API_KEY is not set. Semantic search will be skipped.");
         return null;
     }

@@ -180,17 +180,6 @@ const nextConfig: NextConfig = {
           },
         ],
       },
-      // JS/CSS bundles
-      {
-        source: '/_next/static/:all*',
-        headers: [
-          {
-            key: 'Cache-Control',
-            value: 'public, max-age=31536000, immutable',
-          },
-          ...noindexHeader,
-        ],
-      },
       // PWA Files (Service Worker & Manifest)
       {
         source: '/(sw.js|manifest.json|workbox-*.js)',

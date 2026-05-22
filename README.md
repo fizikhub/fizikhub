@@ -1,39 +1,69 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# FizikHub
 
-## Getting Started
+FizikHub, Türkçe fizik ve bilim içerikleri için geliştirilmiş bir Next.js uygulamasıdır. Projede makale yayını, forum, sözlük, profil/rozet sistemi, yazar paneli, admin akışları, mesajlaşma, PWA desteği, SEO çıktıları ve Supabase tabanlı veri katmanı bulunur.
 
-First, run the development server:
+## Teknoloji yığını
+
+- Next.js App Router 16, React 19 ve TypeScript
+- Tailwind CSS, shadcn/ui tabanlı yerel UI bileşenleri ve lucide-react ikonları
+- Supabase Auth, Postgres, Realtime ve Storage
+- Vitest + Testing Library ile birim/aksiyon testleri
+- Vercel Analytics, PWA ve dinamik sitemap/feed/OG rotaları
+- Gemini tabanlı içerik inceleme, copilot ve embedding yardımcıları
+
+## Geliştirme
+
+Yerel geliştirme için Node bağımlılıkları kurulu olmalıdır.
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Uygulama varsayılan olarak `http://localhost:3000` üzerinde çalışır.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Kalite komutları
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run typecheck
+npm run lint
+npm run test:run
+npm run verify
+```
 
-## Learn More
+`npm run verify`, tip kontrolü, lint ve testleri tek seferde çalıştırır. Geniş çaplı değişikliklerden önce ve sonra bu komutu çalıştırmak iyi varsayılandır.
 
-To learn more about Next.js, take a look at the following resources:
+## Ortam değişkenleri
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Projede kullanılan başlıca değişkenler:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- `SUPABASE_SERVICE_ROLE_KEY`
+- `NEXT_PUBLIC_APP_URL`
+- `GEMINI_API_KEY`
+- `GOOGLE_GENERATIVE_AI_API_KEY`
+- `GOOGLE_AI_API_KEY`
+- `RESEND_API_KEY`
+- `TURNSTILE_SECRET_KEY`
+- `NEXT_PUBLIC_TURNSTILE_SITE_KEY`
+- `SUPABASE_WEBHOOK_SECRET`
+- `UPSTASH_REDIS_REST_URL`
+- `UPSTASH_REDIS_REST_TOKEN`
 
-## Deploy on Vercel
+Gizli değerleri `.env.local` içinde tutun; `.env*` dosyaları git dışında bırakılır.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Faydalı yollar
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
-# Trigger redeploy
- 
- 
+- `app/`: App Router sayfaları, route handler'lar ve server actions
+- `components/`: UI, forum, makale, profil, simülasyon ve yazar bileşenleri
+- `lib/`: Supabase istemcileri, SEO, güvenlik, AI ve veri yardımcıları
+- `hooks/`: Client tarafı React hook'ları
+- `supabase/`: Migration ve performans/güvenlik SQL dosyaları
+- `scripts/`: Operasyonel bakım, SEO ve Supabase yardımcı scriptleri
+- `__tests__/`: Vitest testleri
+
+## Notlar
+
+- `@ducanh2912/next-pwa`, production build sırasında `public/sw.js`, `public/workbox-*.js` ve `public/fallback-*.js` üretir. Bunlar build çıktısı olarak git dışında tutulur.
+- Kök dizindeki bazı bakım scriptleri doğrudan Node ile çalıştırıldığı için CommonJS kullanır; uygulama kodu TypeScript/ESM tarafında kalır.

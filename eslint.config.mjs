@@ -23,6 +23,14 @@ const eslintConfig = defineConfig([
       "react-hooks/static-components": "warn",
     },
   },
+  {
+    files: ["*.js"],
+    rules: {
+      // Root-level maintenance scripts are executed directly by Node and still
+      // use CommonJS because the app package is not marked as ESM.
+      "@typescript-eslint/no-require-imports": "off",
+    },
+  },
   // Override default ignores of eslint-config-next.
   globalIgnores([
     // Default ignores of eslint-config-next:

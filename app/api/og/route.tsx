@@ -1,23 +1,28 @@
 import { ImageResponse } from 'next/og';
 import { NextRequest } from 'next/server';
+import { readFile } from 'node:fs/promises';
+import path from 'node:path';
 
-export const runtime = 'edge';
+export const runtime = 'nodejs';
 
-// We fetch the Lora and Inter fonts to use inside the image response
-// Edge runtime uses fetch to load assets
-async function loadFont(path: string) {
+type OgFont = {
+    name: string;
+    data: ArrayBuffer;
+    style: 'normal';
+    weight: 400;
+};
+
+async function loadFont(fileName: string) {
     try {
-        const url = new URL(path, import.meta.url);
-        const res = await fetch(url);
-        if (!res.ok) throw new Error(`Font not found: ${path}`);
-        return await res.arrayBuffer();
+        const fontBuffer = await readFile(path.join(process.cwd(), 'public', 'fonts', fileName));
+        return fontBuffer.buffer.slice(fontBuffer.byteOffset, fontBuffer.byteOffset + fontBuffer.byteLength) as ArrayBuffer;
     } catch (e) {
-        console.warn(`Failed to load font ${path}:`, e);
+        console.warn(`Failed to load font ${fileName}:`, e);
         return null;
     }
 }
 
-const interRegularPromise = loadFont('../../../public/fonts/Inter-Regular.ttf');
+const interRegularPromise = loadFont('Inter-Regular.ttf');
 
 export async function GET(req: NextRequest) {
     try {
@@ -36,7 +41,7 @@ export async function GET(req: NextRequest) {
 
         const interFont = await interRegularPromise;
 
-        const fonts: any[] = [];
+        const fonts: OgFont[] = [];
         if (interFont && interFont.byteLength > 0) {
             // Basic check for font validity (magic numbers for TTF are 0x00 0x01 0x00 0x00 or 'OTTO')
             const view = new Uint8Array(interFont);
@@ -166,9 +171,10 @@ export async function GET(req: NextRequest) {
                 fonts: fonts,
             }
         );
-    } catch (e: any) {
+    } catch (e: unknown) {
         console.error('OG Image generation error:', e);
-        return new Response(`Failed to generate the image: ${e.message}`, {
+        const message = e instanceof Error ? e.message : 'Unknown error';
+        return new Response(`Failed to generate the image: ${message}`, {
             status: 500,
         });
     }

@@ -2,8 +2,22 @@
 
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY || process.env.NEXT_PUBLIC_GEMINI_API_KEY || process.env.GOOGLE_AI_API_KEY || "";
-const genAI = new GoogleGenerativeAI(apiKey);
+let geminiClient: GoogleGenerativeAI | null = null;
+
+function getGeminiApiKey() {
+    return process.env.GOOGLE_GENERATIVE_AI_API_KEY || process.env.NEXT_PUBLIC_GEMINI_API_KEY || process.env.GOOGLE_AI_API_KEY || "";
+}
+
+function getGeminiClient() {
+    const apiKey = getGeminiApiKey();
+    if (!apiKey) return null;
+
+    if (!geminiClient) {
+        geminiClient = new GoogleGenerativeAI(apiKey);
+    }
+
+    return geminiClient;
+}
 
 export interface AIReviewResult {
     overall_score: number;
@@ -122,7 +136,9 @@ export async function reviewArticleWithAI(
     content: string,
     references: ArticleReference[]
 ): Promise<AIReviewResult | null> {
-    if (!apiKey) {
+    const genAI = getGeminiClient();
+
+    if (!genAI) {
         console.error("[FizikHubGPT] API key not found.");
         return null;
     }

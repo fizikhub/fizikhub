@@ -1,10 +1,23 @@
 import { NextResponse } from 'next/server';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
+let geminiClient: GoogleGenerativeAI | null = null;
+
+function getGeminiClient() {
+    const apiKey = process.env.GEMINI_API_KEY || '';
+    if (!apiKey) return null;
+
+    if (!geminiClient) {
+        geminiClient = new GoogleGenerativeAI(apiKey);
+    }
+
+    return geminiClient;
+}
 
 export async function POST(req: Request) {
-    if (!process.env.GEMINI_API_KEY) {
+    const genAI = getGeminiClient();
+
+    if (!genAI) {
         return NextResponse.json({ error: 'AI servisi şu an kullanılamıyor (API Key eksik).' }, { status: 500 });
     }
 
