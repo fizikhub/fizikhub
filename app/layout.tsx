@@ -64,7 +64,6 @@ export const metadata: Metadata = {
   authors: [{ name: "Fizikhub Ekibi", url: "https://www.fizikhub.com" }],
   creator: "Fizikhub",
   publisher: "Fizikhub",
-  manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     title: "Fizikhub",

@@ -18,12 +18,13 @@ import {
     Bold, Italic, List, ListOrdered, Quote,
     Heading1, Heading2, Heading3, Undo, Redo,
     ImagePlus, Loader2, Link as LinkIcon, Youtube as YoutubeIcon,
-    Underline as UnderlineIcon, Calculator, MonitorPlay, GitBranch
+    Underline as UnderlineIcon, Calculator, MonitorPlay, GitBranch, Sparkles, Wand2
 } from "lucide-react"
 import { useCallback, useRef, useState, useEffect, useMemo, lazy, Suspense } from "react"
 import { uploadArticleImage } from "@/app/yazar/actions"
 import { toast } from "sonner"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from "@/components/ui/dialog"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { MathExtension } from './extensions/math-extension'
 import { IframeExtension } from './extensions/iframe-extension'
 import { MermaidExtension } from './extensions/mermaid-extension'
@@ -87,6 +88,49 @@ export function TiptapEditor({ content, onChange }: TiptapEditorProps) {
     // Crop Dialog States
     const [isCropDialogOpen, setIsCropDialogOpen] = useState(false);
     const [tempImageSrc, setTempImageSrc] = useState<string>("");
+    const [isCopilotLoading, setIsCopilotLoading] = useState(false);
+
+    const handleCopilot = async (command: string) => {
+        if (!editor) return;
+        const selection = editor.state.selection;
+        let textToProcess = '';
+        
+        if (!selection.empty) {
+            textToProcess = editor.state.doc.textBetween(selection.from, selection.to, ' ');
+        } else {
+            toast.info("Lütfen işlem yapmak istediğiniz metni seçin.");
+            return;
+        }
+
+        if (!textToProcess.trim()) return;
+
+        setIsCopilotLoading(true);
+        const loadingToastId = toast.loading("FizikHub Copilot düşünüyor...");
+
+        try {
+            const response = await fetch('/api/copilot', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ text: textToProcess, command })
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) throw new Error(data.error || "Bir hata oluştu.");
+
+            if (command === 'continue') {
+                editor.chain().focus().insertContentAt(selection.to, ` ${data.result}`).run();
+            } else {
+                editor.chain().focus().insertContentAt({ from: selection.from, to: selection.to }, data.result).run();
+            }
+
+            toast.success("AI işlemi başarılı!", { id: loadingToastId });
+        } catch (error: any) {
+            toast.error(error.message || "Copilot şu an meşgul.", { id: loadingToastId });
+        } finally {
+            setIsCopilotLoading(false);
+        }
+    };
 
     const katexCssLoaded = useRef(false);
 
@@ -335,6 +379,44 @@ export function TiptapEditor({ content, onChange }: TiptapEditorProps) {
 
                 {/* Lists */}
                 {renderListsToolbar()}
+
+                <div className="w-px h-6 bg-border mx-1" />
+
+                {/* AI Copilot */}
+                <div className="flex items-center mr-1">
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button 
+                                type="button" 
+                                variant="ghost" 
+                                size="sm" 
+                                className="h-8 gap-1.5 text-primary hover:text-primary hover:bg-primary/10 transition-colors"
+                                disabled={isCopilotLoading}
+                            >
+                                {isCopilotLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
+                                <span className="hidden sm:inline-block font-semibold">Copilot</span>
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="start" className="w-56 font-sans border-2 border-border shadow-[4px_4px_0_0_#000] dark:shadow-[4px_4px_0_0_#FFF]">
+                            <DropdownMenuItem className="cursor-pointer flex items-center gap-2 py-2" onClick={() => handleCopilot('improve')}>
+                                <Wand2 className="w-4 h-4 text-emerald-500" />
+                                <span>Metni İyileştir</span>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem className="cursor-pointer flex items-center gap-2 py-2" onClick={() => handleCopilot('summarize')}>
+                                <ListOrdered className="w-4 h-4 text-blue-500" />
+                                <span>Kısaca Özetle</span>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem className="cursor-pointer flex items-center gap-2 py-2" onClick={() => handleCopilot('continue')}>
+                                <Quote className="w-4 h-4 text-amber-500" />
+                                <span>Devamını Yaz</span>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem className="cursor-pointer flex items-center gap-2 py-2" onClick={() => handleCopilot('fix_spelling')}>
+                                <Italic className="w-4 h-4 text-rose-500" />
+                                <span>Yazım Hatalarını Düzelt</span>
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                </div>
 
                 <div className="w-px h-6 bg-border mx-1" />
 
