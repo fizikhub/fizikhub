@@ -8,7 +8,12 @@ export default function robots(): MetadataRoute.Robots {
         '/api/',
         '/abs/',
         '/storage/',
-        '/cdn-cgi/'
+        '/cdn-cgi/',
+        '/kullanici/',
+        '/admin/',
+        '/yonetim/',
+        '/yazar-paneli/',
+        '/*?q=*',
     ];
 
     const commonDisallow = cleanupDisallow;

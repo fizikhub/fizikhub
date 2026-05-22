@@ -2,6 +2,22 @@
 
 FizikHub'ı sadece geleneksel SEO kalıplarından kurtarıp, geleceğin teknolojisine (**GEO - Generative Engine Optimization**) uyumlu devasa bir bilgi grafiği haline getirdik. Artık siten yalnızca *taranmakla* kalmayacak, Google'ın YZ asistanları, ChatGPT, Perplexity ve Claude gibi motorlar içeriklerini birer güvenilir **kaynakça** olarak kullanabilecek. 
 
+## [Mayıs 2026] GSC (Search Console) Performans ve İndeks Hatalarının Giderilmesi
+
+FizikHub'ın arama performansını düşüren ve tıklamaları 3 ayda 70'e kadar gerileten "İçerik Yamyamlığı (Keyword Cannibalization)" ve teknik indeks hataları başarıyla onarıldı:
+
+### 1. 301 Yönlendirmeleri ile İçerik Yamyamlığı Çözüldü
+- Google, `/blog/entropi-nedir` ve `/makale/entropi-nedir` URL'lerini ayrı içerikler sanarak oylarını bölmüştü. `next.config.ts` dosyasına kalıcı **301 yönlendirmesi** eklenerek `/blog` dizinine gelen tüm linkler `/makale` yollarına akıtıldı. Böylece sayfa otoriteleri birleştirildi.
+
+### 2. İstenmeyen ve Çöp Sayfalar İndeksten Silindi
+- Kullanıcı profilleri, yönetim paneli ve site içi arama sorguları (`/*?q=*`) indekse girerek sitenin genel E-E-A-T puanını düşürüyordu. `robots.ts` güncellendi ve bu zayıf URL'ler taramaya tamamen engellendi.
+- "Test" veya "deneme" isimli kalitesiz veya yapay yayınlar tespit edildi. `seo-quarantine-content.mjs` betiği üzerinden veritabanı taranarak test sayfaları kalıcı olarak karantinaya (draft) alındı.
+
+### 3. GEO 2026: Yapay Zeka Botları (SGE) Manifesto Onayı
+- `app/llms.txt/route.ts` yolunda ChatGPT, Perplexity ve Gemini gibi botlar için halihazırda var olan AI manifestosunun güncelliği, SGE politikası ve alıntı (citation) lisansı doğrulandı. YZ asistanları için entegrasyon mükemmel çalışıyor.
+
+---
+
 ## Tamamlanan Kritik E-E-A-T Aşmaları
 
 ### 1. Profil Otoritesi (ProfilePage ve Person Schema)

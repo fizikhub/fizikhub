@@ -117,6 +117,16 @@ const nextConfig: NextConfig = {
         destination: '/makale',
         permanent: true,
       },
+      {
+        source: '/blog/:path*',
+        destination: '/makale/:path*',
+        permanent: true,
+      },
+      {
+        source: '/blog',
+        destination: '/makale',
+        permanent: true,
+      },
     ];
   },
 
