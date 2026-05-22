@@ -10,9 +10,6 @@ export default function robots(): MetadataRoute.Robots {
         '/storage/',
         '/cdn-cgi/',
         '/kullanici/',
-        '/admin/',
-        '/yonetim/',
-        '/yazar-paneli/',
         '/*?q=*',
     ];
 

@@ -109,49 +109,10 @@ const nextConfig: NextConfig = {
     removeConsole: process.env.NODE_ENV === "production" ? { exclude: ['error', 'warn'] } : false,
   },
 
-  // Redirects for broken links (e.g. arXiv links)
+  // SEO/canonical redirects live in proxy.ts so query cleanup can happen in a
+  // single hop without Next.js preserving legacy query parameters.
   async redirects() {
-    return [
-      {
-        source: '/kesfet',
-        destination: '/makale',
-        permanent: true,
-      },
-      {
-        source: '/blog/:path*',
-        destination: '/makale/:path*',
-        permanent: true,
-      },
-      {
-        source: '/blog',
-        destination: '/makale',
-        permanent: true,
-      },
-      {
-        source: '/makale',
-        has: [
-          {
-            type: 'query',
-            key: 'kategori',
-            value: '(?<cat>.*)',
-          },
-        ],
-        destination: '/makale?category=:cat',
-        permanent: true,
-      },
-      {
-        source: '/blog',
-        has: [
-          {
-            type: 'query',
-            key: 'kategori',
-            value: '(?<cat>.*)',
-          },
-        ],
-        destination: '/makale?category=:cat',
-        permanent: true,
-      },
-    ];
+    return [];
   },
 
   // Security & Caching Headers
