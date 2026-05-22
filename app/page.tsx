@@ -84,7 +84,7 @@ const getCachedFeedData = unstable_cache(
       // Fetch Questions
       supabase
         .from('questions')
-        .select('id, title, content, created_at, category, votes, tags, profiles(username, full_name, avatar_url, is_verified), answers(count)')
+        .select('id, title, content, created_at, category, votes, tags, author:profiles(username, full_name, avatar_url, is_verified), answers(count)')
         .order('created_at', { ascending: false })
         .limit(24),
 

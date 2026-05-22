@@ -36,21 +36,28 @@ export async function updateSession(request: NextRequest) {
     const isPublicPage = publicPaths.includes(request.nextUrl.pathname) ||
         publicPrefixes.some(prefix => request.nextUrl.pathname.startsWith(prefix));
 
+    let user = null
+    try {
+        if (isPublicPage) {
+            // OPTIMIZATION: Use getSession() instead of getUser() for public pages.
+            // This prevents unexpected logouts by refreshing expired tokens, 
+            // without the TTFB penalty of a DB call when the token is valid.
+            await supabase.auth.getSession()
+        } else {
+            const { data: { user: supabaseUser }, error } = await supabase.auth.getUser()
+            if (!error && supabaseUser) {
+                user = supabaseUser
+            }
+        }
+    } catch {
+        // Ignore auth errors, treat as logged out
+    }
+
     if (isPublicPage) {
         if (request.nextUrl.pathname === '/forum') {
             supabaseResponse.headers.set('Cache-Control', 'public, max-age=60, stale-while-revalidate=300');
         }
         return supabaseResponse;
-    }
-
-    let user = null
-    try {
-        const { data: { user: supabaseUser }, error } = await supabase.auth.getUser()
-        if (!error && supabaseUser) {
-            user = supabaseUser
-        }
-    } catch {
-        // Ignore auth errors, treat as logged out
     }
 
     // Protected routes — use centralized admin emails

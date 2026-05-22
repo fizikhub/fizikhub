@@ -65,7 +65,7 @@ export const getArticles = cache(async function (
     const fetchCached = unstable_cache(
         async () => {
             const staticClient = createStaticClient();
-            const selectFields = options.fields || '*, author:profiles!articles_author_id_fkey(*)';
+            const selectFields = options.fields || PUBLIC_ARTICLE_SELECT;
 
             let query = staticClient
                 .from('articles')
@@ -136,7 +136,7 @@ export const getQuestions = cache(async function (_supabase: SupabaseClient<Data
             const staticClient = createStaticClient();
             const { data, error } = await staticClient
                 .from('questions')
-                .select('*, author:profiles(*)')
+                .select(`*, author:profiles(${PUBLIC_AUTHOR_SELECT})`)
                 .eq('status', 'published')
                 .order('created_at', { ascending: false })
                 .limit(options?.limit || 50);

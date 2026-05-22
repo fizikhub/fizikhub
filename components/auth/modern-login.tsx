@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { m as motion, AnimatePresence } from "framer-motion";
 import { createClient } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
@@ -74,20 +74,30 @@ export function ModernLogin({ nextPath }: ModernLoginProps) {
         };
     }, []);
 
+    const widgetIdRef = useRef<string | null>(null);
+
     const renderTurnstileWidget = (retryCount = 0) => {
         setTurnstileToken(null);
         const container = document.getElementById('turnstile-container');
         
         if (container && window.turnstile) {
-            container.innerHTML = '';
+            if (widgetIdRef.current !== null) {
+                try {
+                    window.turnstile.remove(widgetIdRef.current);
+                } catch (e) {
+                    console.error("Error removing turnstile widget:", e);
+                }
+            }
+            container.innerHTML = ''; // Fallback cleanup
             try {
-                window.turnstile.render(container, {
+                const widgetId = window.turnstile.render(container, {
                     sitekey: turnstileSiteKey,
                     callback: (token: string) => setTurnstileToken(token),
                     'expired-callback': () => setTurnstileToken(null),
                     'error-callback': () => setTurnstileToken(null),
                     theme: 'dark',
                 });
+                widgetIdRef.current = widgetId;
             } catch (err) {
                 console.error("Turnstile render error:", err);
             }
