@@ -536,6 +536,10 @@
 
 
 /* VIEW TRANSITIONS API */
+@view-transition {
+    navigation: auto;
+}
+
 ::view-transition-old(root),
 ::view-transition-new(root) {
     /* Accelerated duration for mobile "snappiness" (0.4s -> 0.25s) */

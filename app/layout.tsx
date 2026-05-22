@@ -215,7 +215,7 @@ import { Toaster } from "sonner";
 import { NavigationWrapper } from "@/components/layout/navigation-wrapper";
 import { TimeLimitProvider } from "@/components/time-limit/time-limit-provider";
 import { MaintenanceAudioPlayer } from "@/components/maintenance/audio-player";
-
+import { RealtimeProvider } from "@/components/realtime-provider";
 
 import { Analytics } from "@vercel/analytics/react";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -330,6 +330,7 @@ export default async function RootLayout({
             </FramerMotionProvider>
           </TimeLimitProvider>
 
+          <RealtimeProvider />
           <Toaster
             position="top-center"
             toastOptions={{
