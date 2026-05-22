@@ -1,5 +1,4 @@
 import { Metadata } from "next";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BreadcrumbJsonLd } from "@/lib/breadcrumbs";
 
 const POINTS_DESCRIPTION = "FizikHub puan sistemi ve rütbeler hakkında her şey. Soru sorarak, cevap vererek ve makale yazarak puan kazanın, liderlik tablosunda yükselin.";
@@ -15,20 +14,16 @@ export const metadata: Metadata = {
     },
     alternates: { canonical: "https://www.fizikhub.com/puanlar-nedir" },
 };
-import { Badge } from "@/components/ui/badge";
 import {
     Trophy,
     MessageSquare,
     CheckCircle2,
     ThumbsUp,
     Crown,
-    Sparkles,
-    Zap,
     Target,
     ArrowLeft,
     BadgeCheck,
     BookOpen,
-    Atom
 } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -102,7 +97,7 @@ export default function PointsInfoPage() {
                                     <CheckCircle2 className="h-8 w-8 mt-1 text-green-600 dark:text-green-400" strokeWidth={1.5} />
                                     <div>
                                         <h3 className="font-bold text-lg uppercase mb-1">Cevap Onayı</h3>
-                                        <p className="text-sm text-muted-foreground font-mono">Verdiğin cevap soruyu soran kişi tarafından "Çözüm" olarak işaretlenirse.</p>
+                                        <p className="text-sm text-muted-foreground font-mono">Verdiğin cevap soruyu soran kişi tarafından &quot;Çözüm&quot; olarak işaretlenirse.</p>
                                     </div>
                                 </div>
                             </div>
@@ -172,7 +167,7 @@ export default function PointsInfoPage() {
                                         <span className="bg-sky-100 text-sky-800 dark:bg-sky-900 dark:text-sky-200 px-2 py-1 font-mono text-xs font-bold uppercase">5000+ Puan</span>
                                     </div>
                                     <p className="text-sm text-muted-foreground font-mono">
-                                        FizikHub'ın zirvesi. Topluluğun en bilge ve saygıdeğer üyesi.
+                                        FizikHub&apos;ın zirvesi. Topluluğun en bilge ve saygıdeğer üyesi.
                                     </p>
                                 </div>
                             </div>

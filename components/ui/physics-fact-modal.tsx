@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { Zap, Sparkles } from "lucide-react";
-import { cn } from "@/lib/utils";
 import { m, AnimatePresence } from "framer-motion";
 
 const FACTS = [
@@ -54,22 +53,22 @@ interface PhysicsFactModalProps {
     onOpenChange: (open: boolean) => void;
 }
 
+function pickRandomFact() {
+    return FACTS[Math.floor(Math.random() * FACTS.length)] ?? FACTS[0];
+}
+
 export function PhysicsFactModal({ open, onOpenChange }: PhysicsFactModalProps) {
-    const [currentFact, setCurrentFact] = useState(FACTS[0]);
-    const [isClient, setIsClient] = useState(false);
+    const [currentFact, setCurrentFact] = useState(pickRandomFact);
 
     useEffect(() => {
-        setIsClient(true);
-    }, []);
+        if (!open) return;
 
-    useEffect(() => {
-        if (open) {
-            const randomIndex = Math.floor(Math.random() * FACTS.length);
-            setCurrentFact(FACTS[randomIndex]);
-        }
+        const timer = window.setTimeout(() => {
+            setCurrentFact(pickRandomFact());
+        }, 0);
+
+        return () => window.clearTimeout(timer);
     }, [open]);
-
-    if (!isClient) return null;
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>

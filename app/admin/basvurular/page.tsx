@@ -1,9 +1,5 @@
 import { createClient } from "@/lib/supabase-server";
-import { formatDistanceToNow } from "date-fns";
-import { tr } from "date-fns/locale";
-import { Check, X, Coffee, PenTool } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { approveApplication, rejectApplication } from "./actions"; // We'll client-wrap these or use form actions
+import { PenTool } from "lucide-react";
 import AdminApplicationCard from "./application-card"; // Breaking into client component for interactivity
 
 export default async function AdminWriterApplicationsPage() {

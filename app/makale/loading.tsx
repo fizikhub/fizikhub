@@ -1,18 +1,14 @@
 "use client";
 
 import { m as motion } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { loadingMessages } from "@/lib/data";
 import { SiteLogo } from "@/components/icons/site-logo";
 
 export default function Loading() {
-    const [message, setMessage] = useState("");
-
-    useEffect(() => {
-        // Rastgele bir mesaj seç
-        const randomMessage = loadingMessages[Math.floor(Math.random() * loadingMessages.length)];
-        setMessage(randomMessage);
-    }, []);
+    const [message] = useState(() => (
+        loadingMessages[Math.floor(Math.random() * loadingMessages.length)] ?? "Yükleniyor..."
+    ));
 
     return (
         <div className="flex flex-col items-center justify-center min-h-[70vh] gap-6">

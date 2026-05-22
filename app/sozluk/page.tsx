@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Book, Hash, Search } from "lucide-react";
+import { Hash } from "lucide-react";
 import { createClient } from "@/lib/supabase-server";
 import { getDictionaryTerms } from "@/lib/api";
 import { DictionaryList } from "@/components/dictionary/dictionary-list";

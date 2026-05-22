@@ -213,11 +213,10 @@ export async function updateQuestion(questionId: number, content: string) {
     }
 
     // Use standard client (and fix RLS instead)
-    const { error, data } = await supabase
+    const { error } = await supabase
         .from('questions')
         .update({ content })
-        .eq('id', questionId)
-        .select();
+        .eq('id', questionId);
 
     if (error) {
         console.error("Update Question Error:", error);
@@ -307,7 +306,9 @@ export async function createAnswer(formData: { content: string; questionId: numb
         p_reference_id: data.id
     });
 
-    const { author_id, ...clientData } = data;
+    const clientData = Object.fromEntries(
+        Object.entries(data).filter(([key]) => key !== 'author_id')
+    );
 
     revalidatePath(`/forum/${formData.questionId}`);
     return { success: true, data: { ...clientData, canDelete: true } };
@@ -672,7 +673,9 @@ export async function createAnswerComment(formData: {
         return { success: false, error: `Hata: ${error.message}` };
     }
 
-    const { author_id, ...clientData } = data;
+    const clientData = Object.fromEntries(
+        Object.entries(data).filter(([key]) => key !== 'author_id')
+    );
 
     revalidatePath(`/forum/${formData.questionId}`);
     return { success: true, data: { ...clientData, canDelete: true } };

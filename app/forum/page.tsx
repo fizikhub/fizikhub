@@ -16,6 +16,18 @@ interface ForumPageProps {
     searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
+type ForumQuestionRow = {
+    id: number;
+    title: string;
+    content?: string | null;
+    created_at: string;
+    category?: string | null;
+    votes?: number | null;
+    tags?: string[] | null;
+    profiles?: unknown;
+    answers?: Array<{ count?: number | null }> | null;
+};
+
 export async function generateMetadata({ searchParams }: ForumPageProps): Promise<Metadata> {
     const params = await searchParams;
     const category = typeof params.category === 'string' && params.category !== 'Tümü' ? params.category : undefined;
@@ -67,7 +79,6 @@ export default async function ForumPage({ searchParams }: ForumPageProps) {
     const category = typeof params.category === 'string' ? params.category : undefined;
     const sort = typeof params.sort === 'string' ? params.sort : 'newest';
     const searchQuery = typeof params.q === 'string' ? params.q : undefined;
-    const filter = typeof params.filter === 'string' ? params.filter : undefined;
     const requestedPage = typeof params.page === 'string' ? Number.parseInt(params.page, 10) : 1;
     const page = Number.isFinite(requestedPage) ? Math.max(requestedPage, 1) : 1;
     const limit = 18;
@@ -200,7 +211,7 @@ export default async function ForumPage({ searchParams }: ForumPageProps) {
                                 </div>
                             ) : (
                                 <QuestionList
-                                    initialQuestions={questions.map((q: any) => {
+                                    initialQuestions={((questions || []) as ForumQuestionRow[]).map((q) => {
                                         const { answers, ...questionForClient } = q;
                                         return {
                                             ...questionForClient,

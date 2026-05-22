@@ -9,21 +9,40 @@ interface TimeExpiredProps {
     minutesUntilReset: number;
 }
 
+const ROTATING_MESSAGES = [
+    "Hadi yürü git 🚶",
+    "10 dk çok hızlı geçti ⏰",
+    "Süren bitti güle güle 👋"
+];
+
+const MOCKING_EMOJIS = ["😂", "💀", "👋", "🚫", "🪦"];
+
+function seededRandom(index: number, salt: number) {
+    const value = Math.sin(index * 12.9898 + salt * 78.233) * 43758.5453;
+    return value - Math.floor(value);
+}
+
+const STARFIELD = Array.from({ length: 100 }, (_, i) => ({
+    left: seededRandom(i, 1) * 100,
+    top: seededRandom(i, 2) * 100,
+    duration: 2 + seededRandom(i, 3) * 3,
+    delay: seededRandom(i, 4) * 2,
+}));
+
+const SAND_PARTICLES = Array.from({ length: 20 }, (_, i) => ({
+    left: 45 + seededRandom(i, 5) * 10,
+}));
+
 // Rotating messages component - shows one message at a time
 function RotatingMessages() {
-    const messages = [
-        "Hadi yürü git 🚶",
-        "10 dk çok hızlı geçti ⏰",
-        "Süren bitti güle güle 👋"
-    ];
     const [currentIndex, setCurrentIndex] = useState(0);
 
     useEffect(() => {
         const interval = setInterval(() => {
-            setCurrentIndex((prev) => (prev + 1) % messages.length);
+            setCurrentIndex((prev) => (prev + 1) % ROTATING_MESSAGES.length);
         }, 2500);
         return () => clearInterval(interval);
-    }, [messages.length]);
+    }, []);
 
     return (
         <div className="h-10 mb-6 flex items-center justify-center">
@@ -36,7 +55,7 @@ function RotatingMessages() {
                     exit={{ opacity: 0, y: -20 }}
                     transition={{ duration: 0.4 }}
                 >
-                    {messages[currentIndex]}
+                    {ROTATING_MESSAGES[currentIndex]}
                 </motion.p>
             </AnimatePresence>
         </div>
@@ -44,30 +63,26 @@ function RotatingMessages() {
 }
 
 export function TimeExpired({ hoursUntilReset, minutesUntilReset }: TimeExpiredProps) {
-    // Mocking emoji array for floating animation - reduced for mobile
-    const mockingEmojis = ["😂", "💀", "👋", "🚫", "🪦"];
-
-
     return (
         <div className="fixed inset-0 z-[9999] bg-black overflow-hidden flex items-center justify-center">
             {/* Animated starfield background */}
             <div className="absolute inset-0">
-                {[...Array(100)].map((_, i) => (
+                {STARFIELD.map((star, i) => (
                     <motion.div
                         key={i}
                         className="absolute w-1 h-1 bg-white rounded-full"
                         style={{
-                            left: `${Math.random() * 100}%`,
-                            top: `${Math.random() * 100}%`,
+                            left: `${star.left}%`,
+                            top: `${star.top}%`,
                         }}
                         animate={{
                             opacity: [0.2, 1, 0.2],
                             scale: [0.5, 1, 0.5],
                         }}
                         transition={{
-                            duration: 2 + Math.random() * 3,
+                            duration: star.duration,
                             repeat: Infinity,
-                            delay: Math.random() * 2,
+                            delay: star.delay,
                         }}
                     />
                 ))}
@@ -75,7 +90,7 @@ export function TimeExpired({ hoursUntilReset, minutesUntilReset }: TimeExpiredP
 
             {/* Floating mocking emojis - hidden on mobile for cleaner look */}
             <div className="hidden md:block">
-                {mockingEmojis.map((emoji, i) => (
+                {MOCKING_EMOJIS.map((emoji, i) => (
                     <motion.div
                         key={i}
                         className="absolute text-4xl md:text-5xl"
@@ -131,12 +146,12 @@ export function TimeExpired({ hoursUntilReset, minutesUntilReset }: TimeExpiredP
                 <div className="relative inline-block mb-6">
                     {/* Falling sand particles */}
                     <div className="absolute inset-0 flex justify-center">
-                        {[...Array(20)].map((_, i) => (
+                        {SAND_PARTICLES.map((particle, i) => (
                             <motion.div
                                 key={i}
                                 className="absolute w-1 h-1 bg-amber-400 rounded-full"
                                 style={{
-                                    left: `${45 + Math.random() * 10}%`,
+                                    left: `${particle.left}%`,
                                 }}
                                 animate={{
                                     y: [0, 100, 0],
@@ -294,7 +309,7 @@ export function TimeExpired({ hoursUntilReset, minutesUntilReset }: TimeExpiredP
                 >
                     <div className="flex items-center gap-2 text-white/40 text-sm mb-3">
                         <Moon className="w-4 h-4" />
-                        <span>Süren yenilenene kadar ders çalış �</span>
+                        <span>Süren yenilenene kadar ders çalış.</span>
                     </div>
                     <div className="flex items-center justify-center gap-4">
                         <div className="text-center">

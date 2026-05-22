@@ -1,8 +1,8 @@
 import { createClient } from "@/lib/supabase-server";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { ArrowLeft, Trash2, Plus } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { ArrowLeft, Trash2 } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { deleteQuizQuestion } from "@/app/admin/actions";
 import { DeleteQuizButton } from "@/components/admin/delete-quiz-button";
@@ -24,7 +24,7 @@ export default async function QuizManagePage({ params }: { params: Promise<{ id:
     }
 
     // Fetch questions
-    const { data: questions, error: questionsError } = await supabase
+    const { data: questions } = await supabase
         .from("quiz_questions")
         .select("*")
         .eq("quiz_id", id)

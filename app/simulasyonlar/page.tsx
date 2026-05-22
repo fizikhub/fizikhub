@@ -2,8 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { m as motion, AnimatePresence } from "framer-motion";
-import Link from "next/link";
-import { ArrowLeft, Play, Search, Trophy, Zap, ArrowUpRight, Beaker } from "lucide-react";
+import { ArrowLeft, Play, Search, Trophy, Zap, Beaker } from "lucide-react";
 import { ViewTransitionLink } from "@/components/ui/view-transition-link";
 import { cn } from "@/lib/utils";
 import { simulations } from "@/components/simulations/data";

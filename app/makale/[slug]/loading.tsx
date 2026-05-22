@@ -1,5 +1,3 @@
-import { cn } from "@/lib/utils";
-
 export default function Loading() {
     return (
         <div className="min-h-screen bg-background pb-20 animate-pulse flex flex-col items-center pt-24">

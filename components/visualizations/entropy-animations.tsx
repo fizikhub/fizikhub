@@ -1,14 +1,29 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { m as motion, AnimatePresence } from "framer-motion";
-import { RefreshCw, Play, RotateCcw } from "lucide-react";
+import { useState, useEffect } from "react";
+import { m as motion } from "framer-motion";
+import { Play, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
+
+const MICROSTATE_PARTICLE_COUNT = 25;
+
+function createRandomMicrostatePositions() {
+  return Array.from({ length: MICROSTATE_PARTICLE_COUNT }).map(() => ({
+    x: Math.random() * 200 + 10,
+    y: Math.random() * 200 + 10,
+  }));
+}
+
+function createInitialDiffusionPosition() {
+  return {
+    x: Math.random() * 45,
+    y: Math.random() * 90 + 5,
+  };
+}
 
 // --- Animasyon 1: Düzen vs Düzensizlik (Microstates) ---
 export function EntropyMicrostates() {
   const [isOrdered, setIsOrdered] = useState(true);
-  const particleCount = 25; // 5x5 grid
 
   // Grid pozisyonları (Düzenli)
   const getOrderedPos = (i: number) => ({
@@ -16,15 +31,7 @@ export function EntropyMicrostates() {
     y: Math.floor(i / 5) * 40 + 20,
   });
 
-  // Rastgele pozisyonlar (Düzensiz) - Client-side only to prevent hydration mismatch
-  const [randomPositions, setRandomPositions] = useState<{ x: number, y: number }[]>([]);
-
-  useEffect(() => {
-    setRandomPositions(Array.from({ length: particleCount }).map(() => ({
-      x: Math.random() * 200 + 10,
-      y: Math.random() * 200 + 10,
-    })));
-  }, []);
+  const [randomPositions] = useState(createRandomMicrostatePositions);
 
   const getRandomPos = (i: number) => randomPositions[i] || { x: 0, y: 0 };
 
@@ -37,10 +44,7 @@ export function EntropyMicrostates() {
       </p>
 
       <div className="relative mx-auto h-[240px] w-[240px] rounded-lg border border-white/20 bg-black/60 shadow-inner">
-        {Array.from({ length: particleCount }).map((_, i) => {
-          const target = isOrdered ? getOrderedPos(i) : getRandomPos(i);
-
-          return (
+        {Array.from({ length: MICROSTATE_PARTICLE_COUNT }).map((_, i) => (
             <motion.div
               key={i}
               initial={getOrderedPos(i)}
@@ -56,12 +60,11 @@ export function EntropyMicrostates() {
               }}
               className="absolute h-3 w-3 rounded-full shadow-sm"
               style={{
-                backgroundColor: isOrdered ? "#3b82f6" : "#ef4444", // Mavi -> Kırmızı
+                backgroundColor: isOrdered ? "#3b82f6" : "#ef4444",
                 boxShadow: isOrdered ? "0 0 5px #3b82f6" : "0 0 5px #ef4444"
               }}
             />
-          );
-        })}
+        ))}
       </div>
 
       <div className="mt-6 flex justify-center gap-4">
@@ -91,7 +94,7 @@ export function EntropyMicrostates() {
           animate={{ opacity: 1 }}
           className="mt-4 text-center text-xs text-muted-foreground italic"
         >
-          Not: Gerçek evrende "Düzeni Geri Getir" butonu yoktur.
+          Not: Gerçek evrende &quot;Düzeni Geri Getir&quot; butonu yoktur.
         </motion.p>
       )}
     </div>
@@ -141,45 +144,30 @@ export function EntropyDiffusion() {
 }
 
 function Particle({ index, barrierRemoved }: { index: number; barrierRemoved: boolean }) {
-  // Rastgele başlangıç pozisyonu (Sadece sol taraf)
-  const [pos, setPos] = useState({ x: 0, y: 0 });
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setPos({
-      x: Math.random() * 45, // %0-45 (Sol taraf) 
-      y: Math.random() * 90 + 5
-    });
-    setMounted(true);
-  }, []);
+  const [pos, setPos] = useState(createInitialDiffusionPosition);
 
   useEffect(() => {
     let interval: ReturnType<typeof setInterval> | undefined;
+    let resetTimer: ReturnType<typeof setTimeout> | undefined;
 
     if (barrierRemoved) {
-      // Engel kalktı: Rastgele hareket (Brownian motion simülasyonu)
       interval = setInterval(() => {
         setPos(prev => ({
           x: Math.max(2, Math.min(98, prev.x + (Math.random() - 0.5) * 10)),
           y: Math.max(5, Math.min(95, prev.y + (Math.random() - 0.5) * 10))
         }));
-      }, 100 + Math.random() * 200);
+      }, 100 + (index % 5) * 40);
     } else {
-      // Engel var: Sadece sol tarafa resetle
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setPos({
-        x: Math.random() * 45,
-        y: Math.random() * 90 + 5
-      });
+      resetTimer = setTimeout(() => {
+        setPos(createInitialDiffusionPosition());
+      }, 0);
     }
 
     return () => {
       if (interval) clearInterval(interval);
+      if (resetTimer) clearTimeout(resetTimer);
     };
-  }, [barrierRemoved]);
-
-  if (!mounted) return null;
+  }, [barrierRemoved, index]);
 
   return (
     <motion.div
