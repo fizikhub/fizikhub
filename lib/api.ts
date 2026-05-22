@@ -145,7 +145,7 @@ export const getQuestions = cache(async function (_supabase: SupabaseClient<Data
                 console.error('Error fetching questions:', error);
                 return [];
             }
-            return data as Question[];
+            return data as unknown as Question[];
         },
         [`questions-${options?.limit || 50}`],
         { revalidate: 60, tags: ['questions'] } // 1 minute cache for fresh forum data
