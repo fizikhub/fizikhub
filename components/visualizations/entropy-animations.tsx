@@ -146,6 +146,7 @@ function Particle({ index, barrierRemoved }: { index: number; barrierRemoved: bo
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setPos({
       x: Math.random() * 45, // %0-45 (Sol taraf) 
       y: Math.random() * 90 + 5
@@ -166,6 +167,7 @@ function Particle({ index, barrierRemoved }: { index: number; barrierRemoved: bo
       }, 100 + Math.random() * 200);
     } else {
       // Engel var: Sadece sol tarafa resetle
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setPos({
         x: Math.random() * 45,
         y: Math.random() * 90 + 5

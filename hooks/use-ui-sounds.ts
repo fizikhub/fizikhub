@@ -43,7 +43,7 @@ export function useUiSounds() {
 
             osc.start(ctx.currentTime);
             osc.stop(ctx.currentTime + 0.1);
-        } catch (e) {
+        } catch (_) {
             // Ignore if audio isn't supported or allowed yet
         }
     }, []);
@@ -75,7 +75,7 @@ export function useUiSounds() {
 
             osc.start(ctx.currentTime);
             osc.stop(ctx.currentTime + 0.05);
-        } catch (e) {
+        } catch (_) {
             // Ignore
         }
     }, []);
@@ -85,7 +85,7 @@ export function useUiSounds() {
         if (typeof navigator !== "undefined" && "vibrate" in navigator) {
             try {
                 navigator.vibrate(pattern);
-            } catch (e) {
+            } catch (_) {
                 // Ignore
             }
         }
