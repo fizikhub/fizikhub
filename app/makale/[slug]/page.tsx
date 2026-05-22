@@ -415,6 +415,19 @@ export default async function ArticlePage({ params }: PageProps) {
             url: articleUrl,
             inLanguage: 'tr-TR',
         }] : []),
+        ...(intentOverride?.questions ? [{
+            '@context': 'https://schema.org',
+            '@type': 'FAQPage',
+            '@id': `${articleUrl}#faq`,
+            mainEntity: intentOverride.questions.map(q => ({
+                '@type': 'Question',
+                name: q.question,
+                acceptedAnswer: {
+                    '@type': 'Answer',
+                    text: q.answer,
+                },
+            })),
+        }] : []),
         {
             '@context': 'https://schema.org',
             '@type': 'BreadcrumbList',

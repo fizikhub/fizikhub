@@ -43,7 +43,12 @@ export const simulations: Simulation[] = [
         color: "#E8590C",
         formula: "R = v²sin(2θ)/g",
         difficulty: "Kolay",
-        tags: ["Mekanik", "Kinematik", "Vektörler"]
+        tags: ["Mekanik", "Kinematik", "Vektörler"],
+        seo: {
+            title: "Atış Hareketi Simülasyonu - Eğik Atış ve Serbest Düşme | FizikHub",
+            description: "Eğik atış ve yatay atış hareketlerini interaktif simülasyonla öğrenin. Yerçekimi, ilk hız, açı ve menzil hesaplamalarını görselleştirerek test edin.",
+            keywords: ["atış hareketi", "eğik atış", "yatay atış", "menzil formülü", "fizik simülasyonu", "kinematik"]
+        }
     },
     {
         id: "optics",
@@ -54,7 +59,12 @@ export const simulations: Simulation[] = [
         color: "#0C8CE9",
         formula: "n₁sinθ₁ = n₂sinθ₂",
         difficulty: "Orta",
-        tags: ["Optik", "Kırılma", "Yansıma"]
+        tags: ["Optik", "Kırılma", "Yansıma"],
+        seo: {
+            title: "Optik Laboratuvarı Simülasyonu - Işığın Kırılması ve Snell Yasası | FizikHub",
+            description: "Işığın farklı ortamlardaki kırılma ve yansıma davranışını simüle edin. Snell yasası, kırıcılık indisi ve tam yansıma açısını interaktif olarak keşfedin.",
+            keywords: ["optik", "ışığın kırılması", "snell yasası", "tam yansıma", "kırıcılık indisi", "optik simülasyonu"]
+        }
     },
     {
         id: "pendulum",
@@ -65,7 +75,12 @@ export const simulations: Simulation[] = [
         color: "#D97706",
         formula: "T = 2π√(L/g)",
         difficulty: "Kolay",
-        tags: ["Harmonik Hareket", "Mekanik"]
+        tags: ["Harmonik Hareket", "Mekanik"],
+        seo: {
+            title: "Basit Sarkaç Simülasyonu - Harmonik Hareket ve Periyot | FizikHub",
+            description: "Sarkaç hareketini etkileyen yerçekimi ve ip uzunluğu gibi parametreleri değiştirerek basit harmonik hareketi ve periyot formülünü interaktif olarak deneyimleyin.",
+            keywords: ["basit sarkaç", "harmonik hareket", "sarkaç periyodu", "yerçekimi ivmesi", "fizik simülasyonu"]
+        }
     },
     {
         id: "spring",
@@ -123,7 +138,12 @@ Yay sarkacının periyodu (tam bir salınım için geçen süre), kütleye ve ya
         color: "#16A34A",
         formula: "y = A sin(kx - ωt)",
         difficulty: "Zor",
-        tags: ["Dalgalar", "Optik"]
+        tags: ["Dalgalar", "Optik"],
+        seo: {
+            title: "Dalga Girişimi ve Çift Yarık Deneyi Simülasyonu | FizikHub",
+            description: "Young deneyi ve çift yarıkta girişim desenlerini görselleştirin. Işığın ve su dalgalarının dalga doğasını, yapıcı ve yıkıcı girişimi simüle ederek öğrenin.",
+            keywords: ["dalga girişimi", "çift yarık deneyi", "young deneyi", "süperpozisyon", "optik simülasyonu"]
+        }
     },
     {
         id: "solar",
@@ -134,7 +154,12 @@ Yay sarkacının periyodu (tam bir salınım için geçen süre), kütleye ve ya
         color: "#7C3AED",
         formula: "F = G(m₁m₂)/r²",
         difficulty: "Orta",
-        tags: ["Astronomi", "Kütleçekim"]
+        tags: ["Astronomi", "Kütleçekim"],
+        seo: {
+            title: "Güneş Sistemi Simülasyonu - Kütleçekim ve Yörüngeler | FizikHub",
+            description: "Gezegenlerin yörünge hareketlerini Newton'un evrensel kütleçekim yasasıyla 3 boyutlu olarak inceleyin. Kepler yasaları ve yörünge mekaniği simülasyonu.",
+            keywords: ["güneş sistemi", "kütleçekim", "yörünge", "kepler yasaları", "astronomi simülasyonu", "newton kütleçekim"]
+        }
     },
     {
         id: "electric",
@@ -145,7 +170,12 @@ Yay sarkacının periyodu (tam bir salınım için geçen süre), kütleye ve ya
         color: "#0891B2",
         formula: "E = k·q/r²",
         difficulty: "Orta",
-        tags: ["Elektromanyetizma", "Alan Çizgileri"]
+        tags: ["Elektromanyetizma", "Alan Çizgileri"],
+        seo: {
+            title: "Elektrik Alan Çizgileri Simülasyonu - Coulomb Yasası | FizikHub",
+            description: "Noktasal elektrik yüklerinin etrafında oluşan elektrik alan çizgilerini çizin. Artı ve eksi yüklerin etkileşimini ve Coulomb kuvvetini interaktif olarak görün.",
+            keywords: ["elektrik alan", "elektrik alan çizgileri", "coulomb yasası", "elektromanyetizma", "noktasal yük", "fizik simülasyonu"]
+        }
     },
     {
         id: "collision",
@@ -156,6 +186,11 @@ Yay sarkacının periyodu (tam bir salınım için geçen süre), kütleye ve ya
         color: "#DC2626",
         formula: "P_i = P_f",
         difficulty: "Orta",
-        tags: ["Mekanik", "Momentum", "Enerji"]
+        tags: ["Mekanik", "Momentum", "Enerji"],
+        seo: {
+            title: "Esnek ve İnelaastik Çarpışma Simülasyonu (1D) | FizikHub",
+            description: "Tek boyutta momentumun korunumu ve çarpışmaları inceleyin. Kütle ve hızları değiştirerek esnek ile inelastik çarpışma arasındaki enerji farklarını görün.",
+            keywords: ["çarpışma", "momentum korunumu", "esnek çarpışma", "inelastik çarpışma", "kinetik enerji", "fizik simülasyonu"]
+        }
     }
 ];

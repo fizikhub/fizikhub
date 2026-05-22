@@ -127,6 +127,30 @@ const nextConfig: NextConfig = {
         destination: '/makale',
         permanent: true,
       },
+      {
+        source: '/makale',
+        has: [
+          {
+            type: 'query',
+            key: 'kategori',
+            value: '(?<cat>.*)',
+          },
+        ],
+        destination: '/makale?category=:cat',
+        permanent: true,
+      },
+      {
+        source: '/blog',
+        has: [
+          {
+            type: 'query',
+            key: 'kategori',
+            value: '(?<cat>.*)',
+          },
+        ],
+        destination: '/makale?category=:cat',
+        permanent: true,
+      },
     ];
   },
 

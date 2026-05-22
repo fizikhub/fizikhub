@@ -40,10 +40,13 @@ export const metadata: Metadata = {
   metadataBase: new URL('https://www.fizikhub.com'),
   applicationName: "Fizikhub",
   title: {
-    default: "Fizikhub | Fizik, Uzay ve Bilim Platformu",
+    default: "Fizikhub — Türkçe Fizik Forumu, Testler ve Bilim Sözlüğü",
     template: "%s | Fizikhub"
   },
   alternates: {
+    languages: {
+      'tr-TR': 'https://www.fizikhub.com',
+    },
     types: {
       'application/rss+xml': '/feed.xml',
     },
@@ -196,6 +199,18 @@ const jsonLdWebsite = {
   ]
 };
 
+const jsonLdNavigation = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    { '@type': 'SiteNavigationElement', name: 'Makaleler', url: 'https://www.fizikhub.com/makale' },
+    { '@type': 'SiteNavigationElement', name: 'Forum', url: 'https://www.fizikhub.com/forum' },
+    { '@type': 'SiteNavigationElement', name: 'Sözlük', url: 'https://www.fizikhub.com/sozluk' },
+    { '@type': 'SiteNavigationElement', name: 'Konular', url: 'https://www.fizikhub.com/konular' },
+    { '@type': 'SiteNavigationElement', name: 'Testler', url: 'https://www.fizikhub.com/testler' },
+    { '@type': 'SiteNavigationElement', name: 'Simülasyonlar', url: 'https://www.fizikhub.com/simulasyonlar' }
+  ]
+};
+
 import { Toaster } from "sonner";
 import { NavigationWrapper } from "@/components/layout/navigation-wrapper";
 import { TimeLimitProvider } from "@/components/time-limit/time-limit-provider";
@@ -282,6 +297,10 @@ export default async function RootLayout({
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdWebsite) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdNavigation) }}
         />
 
         {/* Skip to content — keyboard accessibility */}
