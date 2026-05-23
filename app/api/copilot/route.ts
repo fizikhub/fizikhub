@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
+import { rateLimiter } from '@/lib/upstash';
+
 let geminiClient: GoogleGenerativeAI | null = null;
 
 function getGeminiClient() {
@@ -15,6 +17,24 @@ function getGeminiClient() {
 }
 
 export async function POST(req: Request) {
+    // 1. Rate Limiting via Upstash Redis (10 requests per minute)
+    const ip = req.headers.get('x-forwarded-for') || '127.0.0.1';
+    const limitResult = await rateLimiter.limit(`copilot:${ip}`, 10, 60);
+
+    if (!limitResult.success) {
+        return NextResponse.json(
+            { error: 'Çok fazla istek gönderdiniz. Lütfen bir dakika sonra tekrar deneyin.' },
+            {
+                status: 429,
+                headers: {
+                    'X-RateLimit-Limit': limitResult.limit.toString(),
+                    'X-RateLimit-Remaining': limitResult.remaining.toString(),
+                    'X-RateLimit-Reset': limitResult.reset.toString(),
+                }
+            }
+        );
+    }
+
     const genAI = getGeminiClient();
 
     if (!genAI) {
