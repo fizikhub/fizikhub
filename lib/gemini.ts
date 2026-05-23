@@ -23,10 +23,7 @@ export async function generateEmbedding(text: string): Promise<number[] | null> 
 
     try {
         const model = genAI.getGenerativeModel({ model: "gemini-embedding-001" });
-        const result = await model.embedContent({
-            content: { parts: [{ text: text }] },
-            outputDimensionality: 768
-        });
+        const result = await model.embedContent(text);
         const embedding = result.embedding;
         return embedding.values;
     } catch (error) {

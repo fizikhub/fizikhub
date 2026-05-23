@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import React, { useState, useMemo } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
@@ -12,6 +12,7 @@ import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { ZoomIn } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { highlightDictionaryTerms } from "@/components/articles/term-tooltip";
 
 interface MarkdownRendererProps {
     content: string;
@@ -154,7 +155,25 @@ export function MarkdownRenderer({
                         if (hasBlockElement) {
                             return <div>{children}</div>;
                         }
-                        return <p {...props}>{children}</p>;
+                        
+                        const processedChildren = React.Children.map(children, (child) => {
+                            if (typeof child === "string") {
+                                return highlightDictionaryTerms(child);
+                            }
+                            return child;
+                        });
+
+                        return <p {...props}>{processedChildren}</p>;
+                    },
+                    li: ({ node, children, ...props }) => {
+                        const processedChildren = React.Children.map(children, (child) => {
+                            if (typeof child === "string") {
+                                return highlightDictionaryTerms(child);
+                            }
+                            return child;
+                        });
+
+                        return <li {...props}>{processedChildren}</li>;
                     },
                     // External links open in new tab, internal links use Next.js routing
                     a: ({ node, ...props }) => {
