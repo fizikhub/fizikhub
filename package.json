@@ -116,6 +116,9 @@
     "vitest": "^4.1.0"
   },
   "overrides": {
+    "eslint-plugin-react-hooks": {
+      "zod-validation-error": "^4.0.2"
+    },
     "next": {
       "postcss": "8.5.15"
     },

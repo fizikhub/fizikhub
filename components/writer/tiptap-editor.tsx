@@ -137,8 +137,7 @@ export function TiptapEditor({ content, onChange }: TiptapEditorProps) {
     // Load katex CSS only when math dialog opens
     useEffect(() => {
         if (isMathDialogOpen && !katexCssLoaded.current) {
-            // @ts-ignore - CSS dynamic import has no type declarations
-            import('katex/dist/katex.min.css');
+            void import('katex/dist/katex.min.css');
             katexCssLoaded.current = true;
         }
     }, [isMathDialogOpen]);

@@ -285,7 +285,6 @@ export function StarBackground() {
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const mobile = window.innerWidth <= 768;
     const hardwareConcurrency = navigator.hardwareConcurrency || 4;
-    // @ts-ignore
     const deviceMemory = navigator.deviceMemory || 4;
 
     setIsMobile(mobile);

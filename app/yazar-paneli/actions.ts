@@ -3,7 +3,6 @@
 import { createClient } from "@/lib/supabase-server";
 import { revalidatePath, revalidateTag } from "next/cache";
 import { reviewArticleWithAI } from "@/lib/ai-review";
-import { cache } from "react";
 import { getAuthorizedProfile } from "@/lib/auth-helpers";
 
 
@@ -12,6 +11,11 @@ import { getAuthorizedProfile } from "@/lib/auth-helpers";
 const isAuthorAdmin = async (userId: string) => {
     const profile = await getAuthorizedProfile(userId);
     return profile?.isAuthorized || false;
+};
+
+const revalidateArticleFeeds = () => {
+    revalidateTag("articles", { expire: 0 });
+    revalidateTag("feed", { expire: 0 });
 };
 
 
@@ -122,10 +126,7 @@ export async function approveArticle(articleId: number) {
         revalidatePath("/kesfet");
         revalidatePath("/makale");
         revalidatePath("/");
-        // @ts-ignore - Next.js 16 type definitions issue
-        revalidateTag('articles');
-        // @ts-ignore
-        revalidateTag('feed');
+        revalidateArticleFeeds();
         return { success: true, count, published: isStrictAdmin || (count && count >= 4) };
 
     } catch (err: any) {

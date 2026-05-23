@@ -2,9 +2,13 @@
 
 import { createClient } from "@/lib/supabase-server";
 import { revalidatePath, revalidateTag } from "next/cache";
-import { redirect } from "next/navigation";
 import { reviewArticleWithAI } from "@/lib/ai-review";
 import { getAuthorizedProfile } from "@/lib/auth-helpers";
+
+const revalidateArticleFeeds = () => {
+    revalidateTag("articles", { expire: 0 });
+    revalidateTag("feed", { expire: 0 });
+};
 
 
 // Helper: Save references for an article
@@ -152,10 +156,7 @@ export async function createArticle(formData: FormData) {
     revalidatePath("/kesfet");
     revalidatePath("/makale");
     revalidatePath("/");
-    // @ts-ignore
-    revalidateTag('articles');
-    // @ts-ignore
-    revalidateTag('feed');
+    revalidateArticleFeeds();
     return { success: true };
 }
 
@@ -229,10 +230,7 @@ export async function updateArticle(articleId: number, formData: FormData) {
     revalidatePath("/kesfet", "layout");
     revalidatePath("/makale", "layout");
     revalidatePath("/", "layout");
-    // @ts-ignore
-    revalidateTag('articles');
-    // @ts-ignore
-    revalidateTag('feed');
+    revalidateArticleFeeds();
     return { success: true };
 }
 
@@ -256,7 +254,7 @@ export async function uploadArticleImage(file: File | Blob) {
 
 
 
-    const { error: uploadError, data } = await supabase.storage
+    const { error: uploadError } = await supabase.storage
         .from("article-images")
         .upload(fileName, file, {
             contentType: file.type || "image/webp",

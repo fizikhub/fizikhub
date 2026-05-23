@@ -139,7 +139,6 @@ export function QuizRunner({ quizId, questions, title, description }: QuizRunner
 
         try {
             const result = await submitQuizResult(quizId, score, questions.length);
-            // @ts-ignore
             if (result.success) {
                 setPointsEarned(result.pointsEarned || 0);
                 setAlreadyCompleted(!!result.alreadyCompleted);

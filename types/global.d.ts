@@ -1,6 +1,10 @@
 export {};
 
 declare global {
+  interface Navigator {
+    deviceMemory?: number;
+  }
+
   interface Window {
     requestIdleCallback: (
       callback: (deadline: IdleDeadline) => void,
