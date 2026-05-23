@@ -25,7 +25,7 @@ const supabase = createClient(supabaseUrl, serviceKey, {
     auth: { autoRefreshToken: false, persistSession: false }
 });
 const genAI = new GoogleGenerativeAI(geminiKey);
-const embeddingModel = genAI.getGenerativeModel({ model: "embedding-001" });
+const embeddingModel = genAI.getGenerativeModel({ model: "embedding-001" }, { apiVersion: "v1" });
 
 // Helper to delay executions (avoid Gemini Rate Limits)
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
