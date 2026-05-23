@@ -48,12 +48,17 @@ function slugify(text) {
         .replace(/-+/g, '-');
 }
 
-// Helper to generate embedding via Gemini
-async function getEmbedding(text) {
+// Helper to generate embedding via Gemini with exponential backoff for 429 rate limits
+async function getEmbedding(text, retries = 5, backoffMs = 3000) {
     try {
         const result = await embeddingModel.embedContent(text);
         return result.embedding.values;
     } catch (err) {
+        if ((err.message.includes("429") || err.message.includes("quota")) && retries > 0) {
+            console.warn(`  ⚠️ Rate limited (429). Retrying in ${backoffMs / 1000}s... (Retries left: ${retries})`);
+            await delay(backoffMs);
+            return getEmbedding(text, retries - 1, backoffMs * 2);
+        }
         console.error(`  ⚠️ Embedding generation failed:`, err.message);
         return null;
     }
