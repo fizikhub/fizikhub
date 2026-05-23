@@ -11,8 +11,19 @@ import { m as motion } from "framer-motion";
 
 import { MarkdownRenderer } from "@/components/markdown-renderer";
 
+interface TermArticle {
+    title: string;
+    content: string;
+    created_at: string;
+    author?: {
+        username?: string | null;
+        full_name?: string | null;
+        avatar_url?: string | null;
+    } | null;
+}
+
 interface TermDetailProps {
-    article: any;
+    article: TermArticle;
     readingTime: string;
     likeCount: number;
     initialLiked: boolean;

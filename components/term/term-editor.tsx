@@ -63,8 +63,8 @@ export function TermEditor({}: TermEditorProps) {
             toast.success(targetStatus === "published" ? "Terim paylaşıldı!" : "Taslak kaydedildi!");
             window.location.href = "/profil"; // Redirect to profile or feed
 
-        } catch (error: any) {
-            toast.error(error?.message || "Bir hata oluştu.");
+        } catch (error: unknown) {
+            toast.error(error instanceof Error ? error.message : "Bir hata oluştu.");
             setIsSubmitting(false);
         }
     };

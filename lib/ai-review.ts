@@ -212,8 +212,8 @@ ${referencesText}
             }
             initialReviewResult = parsed;
             break; 
-        } catch (error: any) {
-            console.error(`[FizikHubGPT - Phase 1] Attempt ${attempt + 1} failed:`, error?.message || error);
+        } catch (error: unknown) {
+            console.error(`[FizikHubGPT - Phase 1] Attempt ${attempt + 1} failed:`, error instanceof Error ? error.message : error);
             if (attempt < MAX_RETRIES) await new Promise(r => setTimeout(r, 1000 * (attempt + 1)));
         }
     }
@@ -241,8 +241,8 @@ ${referencesText}
             initialReviewResult.ai_originality_analysis = JSON.parse(cleanedJson);
             initialReviewResult.ai_originality_analysis!.originality_score = clamp(initialReviewResult.ai_originality_analysis!.originality_score ?? 50, 0, 100);
             break;
-        } catch (error: any) {
-            console.error(`[FizikHubGPT - Phase 2] Attempt ${attempt + 1} failed:`, error?.message || error);
+        } catch (error: unknown) {
+            console.error(`[FizikHubGPT - Phase 2] Attempt ${attempt + 1} failed:`, error instanceof Error ? error.message : error);
             if (attempt < MAX_RETRIES) await new Promise(r => setTimeout(r, 1000 * (attempt + 1)));
         }
     }
@@ -263,8 +263,8 @@ ${referencesText}
 
             initialReviewResult.final_verdict = JSON.parse(cleanedJson);
             break;
-        } catch (error: any) {
-            console.error(`[FizikHubGPT - Phase 3] Attempt ${attempt + 1} failed:`, error?.message || error);
+        } catch (error: unknown) {
+            console.error(`[FizikHubGPT - Phase 3] Attempt ${attempt + 1} failed:`, error instanceof Error ? error.message : error);
             if (attempt < MAX_RETRIES) await new Promise(r => setTimeout(r, 1000 * (attempt + 1)));
         }
     }

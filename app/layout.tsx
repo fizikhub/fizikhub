@@ -5,6 +5,7 @@ import "./globals.css";
 
 import { ThemeProvider } from "@/components/theme-provider";
 import { FramerMotionProvider } from "@/components/providers/framer-motion-provider";
+import Image from "next/image";
 
 // Single font only — eliminates 2 render-blocking CSS files
 const inter = Inter({
@@ -247,9 +248,11 @@ export default async function RootLayout({
               <div className="relative group">
                 <div className="absolute -inset-1 bg-gradient-to-r from-amber-900 to-amber-600 rounded-lg blur opacity-25"></div>
                 <div className="relative rounded-lg border-2 border-amber-900/30 overflow-hidden shadow-2xl">
-                  <img
+                  <Image
                     src="/images/galileo-error.jpg"
                     alt="Galileo Galilei"
+                    width={400}
+                    height={400}
                     className="object-cover grayscale w-auto h-[400px]"
                   />
                 </div>

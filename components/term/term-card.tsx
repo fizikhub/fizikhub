@@ -4,8 +4,20 @@ import { cn } from "@/lib/utils";
 import { ViewTransitionLink } from "@/components/ui/view-transition-link"; // [NEW]
 import Image from "next/image";
 
+interface TermArticle {
+    title: string;
+    slug?: string;
+    content?: string;
+    excerpt?: string | null;
+    summary?: string | null;
+    author?: {
+        full_name?: string | null;
+        avatar_url?: string | null;
+    } | null;
+}
+
 interface TermCardProps {
-    article: any;
+    article: TermArticle;
     index: number;
 }
 

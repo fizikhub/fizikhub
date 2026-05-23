@@ -160,9 +160,9 @@ export function ArticleEditor({ article }: ArticleEditorProps) {
             } else {
                 toast.error(result.error || "Resim yüklenemedi");
             }
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error("Compression/Upload error:", error);
-            if (error?.message?.includes('network') || error?.message?.includes('fetch')) {
+            if (error instanceof Error && (error.message.includes('network') || error.message.includes('fetch'))) {
                 toast.error("İnternet bağlantısı sorunu. Lütfen bağlantınızı kontrol edin.");
             } else {
                 toast.error("Görsel işlenirken bir hata oluştu. Farklı bir görsel deneyin.");

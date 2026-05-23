@@ -184,9 +184,10 @@ export function MarkdownRenderer({
                     },
                     // Only override p to handle block elements (img/video/iframe inside <p>)
                     p: ({ node, children, ...props }) => {
-                        const hasBlockElement = node?.children?.some((child: any) =>
-                            ['img', 'video', 'iframe'].includes(child.tagName)
-                        );
+                        const hasBlockElement = node?.children?.some((child: unknown) => {
+                            const c = child as { tagName?: string };
+                            return ['img', 'video', 'iframe'].includes(c.tagName || '');
+                        });
                         if (hasBlockElement) {
                             return <div>{children}</div>;
                         }
@@ -230,7 +231,7 @@ export function MarkdownRenderer({
                         );
                     },
                     // Wrap KaTeX block math in overflow-x-auto container for mobile
-                    div: ({ node, children, className: divClassName, ...props }: any) => {
+                    div: ({ node, children, className: divClassName, ...props }: { node?: unknown; children?: React.ReactNode; className?: string; [key: string]: unknown }) => {
                         if (divClassName?.includes('math-display')) {
                             return (
                                 <div className="overflow-x-auto my-6 sm:my-8 py-4 px-3 sm:px-5 bg-zinc-50 dark:bg-zinc-900/60 border-2 border-black dark:border-zinc-700 rounded-xl shadow-[4px_4px_0px_0px_#000] dark:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.4)]" style={{ maxWidth: '100%' }} {...props}>
@@ -241,7 +242,7 @@ export function MarkdownRenderer({
                         return <div className={divClassName} {...props}>{children}</div>;
                     },
                     // Image with Dialog zoom
-                    img: ({ node, ...props }: any) => {
+                    img: ({ node, ...props }: { node?: unknown; src?: string; alt?: string; [key: string]: unknown }) => {
                         const src = props.src as string;
                         if (src?.endsWith(".mp4") || src?.endsWith(".webm")) {
                             return (
@@ -272,11 +273,15 @@ export function MarkdownRenderer({
                                         </div>
                                     </DialogTrigger>
                                     <DialogContent className="max-w-[95vw] h-[90vh] bg-transparent border-none shadow-none flex items-center justify-center overflow-hidden p-0">
-                                        <img
-                                            src={src}
-                                            alt={props.alt || "Makale görseli"}
-                                            className="max-w-full max-h-full object-contain rounded-md shadow-2xl"
-                                        />
+                                        <div className="relative w-[90vw] h-[85vh]">
+                                            <Image
+                                                src={src || ""}
+                                                alt={props.alt || "Makale görseli"}
+                                                fill
+                                                unoptimized
+                                                className="object-contain rounded-md shadow-2xl"
+                                            />
+                                        </div>
                                     </DialogContent>
                                 </Dialog>
                                 {props.alt && props.alt !== "Makale görseli" && (
@@ -288,7 +293,7 @@ export function MarkdownRenderer({
                         );
                     },
                     // Iframe responsive embed
-                    iframe: ({ node, ...props }: any) => (
+                    iframe: ({ node, ...props }: { node?: unknown; [key: string]: unknown }) => (
                         <div className="aspect-video w-full my-8 sm:my-12 rounded-xl overflow-hidden border-4 border-black dark:border-zinc-800 shadow-[6px_6px_0px_0px_#000] dark:shadow-[6px_6px_0px_0px_rgba(0,0,0,0.5)] bg-black/50">
                             <iframe
                                 className="w-full h-full"

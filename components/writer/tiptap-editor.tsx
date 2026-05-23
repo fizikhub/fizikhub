@@ -127,8 +127,8 @@ export function TiptapEditor({ content, onChange }: TiptapEditorProps) {
             }
 
             toast.success("AI işlemi başarılı!", { id: loadingToastId });
-        } catch (error: any) {
-            toast.error(error.message || "Copilot şu an meşgul.", { id: loadingToastId });
+        } catch (error: unknown) {
+            toast.error(error instanceof Error ? error.message : "Copilot şu an meşgul.", { id: loadingToastId });
         } finally {
             setIsCopilotLoading(false);
         }
@@ -206,7 +206,7 @@ export function TiptapEditor({ content, onChange }: TiptapEditorProps) {
             // Debounce: only call getHTML() after 1500ms of inactivity
             if (debounceTimer.current) clearTimeout(debounceTimer.current);
             debounceTimer.current = setTimeout(() => {
-                const storageAny = editor.storage as any;
+                const storageAny = editor.storage as { markdown?: { getMarkdown?: () => string } | { getMarkdown?: () => string }[] };
                 const markdown = Array.isArray(storageAny.markdown) 
                     ? storageAny.markdown[0]?.getMarkdown?.() 
                     : storageAny.markdown?.getMarkdown?.();
@@ -215,7 +215,7 @@ export function TiptapEditor({ content, onChange }: TiptapEditorProps) {
         },
         onBlur: ({ editor }) => {
             if (debounceTimer.current) clearTimeout(debounceTimer.current);
-            const storageAny = editor.storage as any;
+            const storageAny = editor.storage as { markdown?: { getMarkdown?: () => string } | { getMarkdown?: () => string }[] };
             const markdown = Array.isArray(storageAny.markdown) 
                 ? storageAny.markdown[0]?.getMarkdown?.() 
                 : storageAny.markdown?.getMarkdown?.();
@@ -278,9 +278,9 @@ export function TiptapEditor({ content, onChange }: TiptapEditorProps) {
             } else {
                 toast.error(result.error || "Yükleme başarısız. Lütfen tekrar deneyin.");
             }
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error("Compression/Upload error:", error);
-            if (error?.message?.includes('network') || error?.message?.includes('fetch')) {
+            if (error instanceof Error && (error.message.includes('network') || error.message.includes('fetch'))) {
                 toast.error("İnternet bağlantısı sorunu. Lütfen bağlantınızı kontrol edin.");
             } else {
                 toast.error("Görsel işlenirken bir hata oluştu. Farklı bir görsel deneyin.");

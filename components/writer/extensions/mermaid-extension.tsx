@@ -6,8 +6,11 @@ import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Pencil, Check } from "lucide-react";
 
-// Lazy-load mermaid only client-side
-let mermaidInstance: any = null;
+interface MermaidType {
+    initialize: (config: Record<string, unknown>) => void;
+    render: (id: string, code: string) => Promise<{ svg: string }>;
+}
+let mermaidInstance: MermaidType | null = null;
 let mermaidInitialized = false;
 
 async function getMermaid() {
@@ -29,7 +32,6 @@ async function getMermaid() {
 // --- Mermaid Node View ---
 function MermaidNodeView(props: NodeViewProps) {
     const { node, updateAttributes, selected } = props;
-    const containerRef = useRef<HTMLDivElement>(null);
     const [isEditing, setIsEditing] = useState(false);
     const [code, setCode] = useState(node.attrs.code || "");
     const [error, setError] = useState<string | null>(null);
@@ -48,9 +50,9 @@ function MermaidNodeView(props: NodeViewProps) {
                     setSvgHtml(svg);
                     setError(null);
                 }
-            } catch (e: any) {
+            } catch (e: unknown) {
                 if (!cancel) {
-                    setError(e?.message || "Geçersiz Mermaid sözdizimi");
+                    setError(e instanceof Error ? e.message : "Geçersiz Mermaid sözdizimi");
                     setSvgHtml("");
                 }
             }

@@ -3,7 +3,7 @@ import { Node, mergeAttributes } from '@tiptap/core'
 export interface IframeOptions {
     allowFullscreen: boolean,
     HTMLAttributes: {
-        [key: string]: any
+        [key: string]: unknown
     },
 }
 
@@ -75,7 +75,7 @@ export const IframeExtension = Node.create<IframeOptions>({
     addStorage() {
         return {
             markdown: {
-                serialize(state: any, node: any) {
+                serialize(state: { write: (str: string) => void }, node: { attrs: { src: string } }) {
                     state.write(`\n<iframe src="${node.attrs.src}" class="w-full h-[500px]" allowfullscreen></iframe>\n`)
                 }
             }
