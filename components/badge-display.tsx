@@ -2,6 +2,7 @@
 
 import { cn } from "@/lib/utils";
 import { CustomBadgeIcon } from "@/components/profile/custom-badge-icon";
+import { getBadgeCategoryLabel } from "@/lib/badges";
 import {
     Dialog,
     DialogContent,
@@ -33,6 +34,10 @@ interface BadgeDisplayProps {
     size?: "sm" | "md" | "lg";
 }
 
+function badgeRotation(index: number, spread = 6) {
+    return ((index * 17) % (spread * 2 + 1)) - spread;
+}
+
 export function BadgeDisplay({ userBadges, maxDisplay = 4, size = "md" }: BadgeDisplayProps) {
     const [isOpen, setIsOpen] = useState(false);
     const [selectedBadge, setSelectedBadge] = useState<UserBadge | null>(null);
@@ -40,15 +45,7 @@ export function BadgeDisplay({ userBadges, maxDisplay = 4, size = "md" }: BadgeD
     // Group badges by category
     const badgesByCategory = userBadges.reduce((acc, userBadge) => {
         const rawCat = userBadge.badges.category || "General";
-        // Category Translation Map (Review and Expand)
-        const catMap: Record<string, string> = {
-            "Special": "Özel",
-            "Milestone": "Kilometre Taşı",
-            "Engagement": "Etkileşim",
-            "Contribution": "Katkı",
-            "General": "Genel"
-        };
-        const cat = catMap[rawCat] || rawCat;
+        const cat = getBadgeCategoryLabel(rawCat);
 
         if (!acc[cat]) acc[cat] = [];
         acc[cat].push(userBadge);
@@ -190,13 +187,7 @@ export function BadgeDisplay({ userBadges, maxDisplay = 4, size = "md" }: BadgeD
                                         <div>
                                             <div className="inline-flex items-center gap-2 px-3 py-1 bg-black text-white border-2 border-black rounded-lg text-xs md:text-sm font-bold uppercase tracking-wider mb-3 md:mb-4 shadow-[3px_3px_0px_#94a3b8]">
                                                 <Star className="w-3 h-3 md:w-4 md:h-4 fill-current stroke-none" />
-                                                {/* Ensure category is translated here if needed */}
-                                                {(function () {
-                                                    const raw = selectedBadge.badges.category || "General";
-                                                    const map: Record<string, string> = { "Special": "Özel", "Milestone": "Kilometre Taşı", "Engagement": "Etkileşim", "Contribution": "Katkı", "General": "Genel" };
-                                                    const cat = map[raw] || raw;
-                                                    return cat;
-                                                })()}
+                                                {getBadgeCategoryLabel(selectedBadge.badges.category)}
                                             </div>
                                             <h2 className="text-3xl md:text-5xl font-black uppercase leading-[0.9] text-black mb-2 tracking-tighter break-words">
                                                 {selectedBadge.badges.name}
@@ -210,7 +201,7 @@ export function BadgeDisplay({ userBadges, maxDisplay = 4, size = "md" }: BadgeD
                                             <div className="p-4 md:p-6 bg-blue-50 border-[3px] border-black rounded-xl shadow-[4px_4px_0px_#000] md:shadow-[6px_6px_0px_#000]">
                                                 <h3 className="text-xs md:text-sm font-black text-blue-600 uppercase mb-2 tracking-widest">AÇIKLAMA</h3>
                                                 <p className="text-lg md:text-xl font-bold text-black leading-tight">
-                                                    "{selectedBadge.badges.description || "Bu rozet, FizikHub evrenindeki üstün başarılarınızın bir kanıtıdır."}"
+                                                    &quot;{selectedBadge.badges.description || "Bu rozet, FizikHub evrenindeki üstün başarılarınızın bir kanıtıdır."}&quot;
                                                 </p>
                                             </div>
 
@@ -254,8 +245,8 @@ export function BadgeDisplay({ userBadges, maxDisplay = 4, size = "md" }: BadgeD
                                             <div className="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3 md:gap-6">
                                                 {badgesByCategory[category].map((badge, idx) => (
                                                     <motion.button
-                                                        initial={{ opacity: 0, scale: 0.8, rotate: Math.random() * 10 - 5 }}
-                                                        animate={{ opacity: 1, scale: 1, rotate: Math.random() * 6 - 3 }}
+                                                        initial={{ opacity: 0, scale: 0.8, rotate: badgeRotation(idx, 5) }}
+                                                        animate={{ opacity: 1, scale: 1, rotate: badgeRotation(idx + catIndex, 3) }}
                                                         transition={{ delay: (catIndex * 0.1) + (idx * 0.05), type: "spring" }}
                                                         whileHover={{ scale: 1.05, rotate: 0, zIndex: 50 }}
                                                         whileTap={{ scale: 0.95 }}
@@ -271,7 +262,7 @@ export function BadgeDisplay({ userBadges, maxDisplay = 4, size = "md" }: BadgeD
                                                             <CustomBadgeIcon name={badge.badges.name} className="w-full h-full relative z-10" />
                                                         </div>
 
-                                                        <div className="text-center w-full z-10 pt-2 border-t-2 border-black/5 w-full">
+                                                        <div className="text-center z-10 pt-2 border-t-2 border-black/5 w-full">
                                                             <div className="font-black text-xs md:text-sm text-black uppercase truncate px-1">
                                                                 {badge.badges.name}
                                                             </div>

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { m as motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, Play, Search, Trophy, Zap, Beaker } from "lucide-react";
+import { ArrowLeft, Play, Search, Zap, Beaker } from "lucide-react";
 import { ViewTransitionLink } from "@/components/ui/view-transition-link";
 import { cn } from "@/lib/utils";
 import { simulations } from "@/components/simulations/data";
@@ -48,7 +48,8 @@ export default function SimulasyonlarPage() {
     useEffect(() => {
         const hasSeenTutorial = localStorage.getItem("fizikhub-sims-tutorial");
         if (!hasSeenTutorial) {
-            setTimeout(() => setShowTutorial(true), 800);
+            const timer = window.setTimeout(() => setShowTutorial(true), 800);
+            return () => window.clearTimeout(timer);
         }
     }, []);
 
@@ -72,9 +73,9 @@ export default function SimulasyonlarPage() {
                 <div className="max-w-[1400px] mx-auto px-4 py-4 md:py-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div className="flex items-center gap-4">
                         <ViewTransitionLink href="/">
-                            <button className="flex items-center justify-center w-10 h-10 bg-white dark:bg-[#27272a] border-[3px] border-black hover:bg-[#FFBD2E] dark:hover:bg-[#FFBD2E] hover:text-black transition-colors rounded-lg group cursor-pointer shadow-[2px_2px_0px_0px_#000] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none focus:outline-none">
+                            <span className="flex items-center justify-center w-10 h-10 bg-white dark:bg-[#27272a] border-[3px] border-black hover:bg-[#FFBD2E] dark:hover:bg-[#FFBD2E] hover:text-black transition-colors rounded-lg group cursor-pointer shadow-[2px_2px_0px_0px_#000] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none focus:outline-none">
                                 <ArrowLeft className="w-5 h-5 transition-colors stroke-[2.5px]" />
-                            </button>
+                            </span>
                         </ViewTransitionLink>
                         <div>
                             <h1 className="text-2xl md:text-3xl font-[family-name:var(--font-outfit)] font-black text-black dark:text-zinc-50 uppercase tracking-tighter leading-none">
@@ -89,12 +90,12 @@ export default function SimulasyonlarPage() {
                     {/* Minimal Stats Widget */}
                     <div id="sims-stats" className="hidden md:flex items-center gap-3 bg-white dark:bg-[#27272a] px-4 py-2 rounded-lg border-[3px] border-black shadow-[3px_3px_0px_0px_#000]">
                         <div className="w-8 h-8 bg-[#FFBD2E] border-2 border-black rounded-md flex items-center justify-center">
-                            <Trophy className="w-4 h-4 text-black stroke-[3px]" />
+                            <Beaker className="w-4 h-4 text-black stroke-[3px]" />
                         </div>
                         <div className="flex flex-col">
-                            <span className="text-[10px] text-neutral-500 dark:text-zinc-400 font-black uppercase tracking-widest leading-none">SEVİYE 3</span>
+                            <span className="text-[10px] text-neutral-500 dark:text-zinc-400 font-black uppercase tracking-widest leading-none">AKTİF LABORATUVAR</span>
                             <span className="text-black dark:text-white font-black text-sm tracking-tight flex items-baseline gap-1 mt-0.5 leading-none">
-                                1,250 <span className="text-[#FFBD2E] font-bold text-xs">XP</span>
+                                {simulations.length} <span className="text-[#FFBD2E] font-bold text-xs">DENEY</span>
                             </span>
                         </div>
                     </div>
@@ -239,25 +240,42 @@ export default function SimulasyonlarPage() {
                             </motion.div>
                         ))}
 
-                        {/* Practical Coming Soon Block */}
-                        <motion.div
-                            key="coming-soon"
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            className="w-full h-full"
-                        >
-                            <div className="h-full bg-white/50 dark:bg-[#27272a]/50 border-[3px] border-dashed border-black/30 dark:border-white/30 rounded-[8px] p-6 flex flex-col items-center justify-center text-center opacity-80 hover:opacity-100 transition-opacity cursor-default min-h-[250px] shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)]">
-                                <div className="w-12 h-12 bg-neutral-100 dark:bg-[#18181b] border-[3px] border-black/20 dark:border-white/20 rounded-[8px] flex items-center justify-center mb-4">
-                                    <Zap className="w-6 h-6 text-neutral-400 dark:text-zinc-600 stroke-[3px]" />
-                                </div>
-                                <h3 className="font-[family-name:var(--font-outfit)] text-xl font-black text-black dark:text-zinc-50 uppercase tracking-tighter mb-1.5">
-                                    YENİ DENEYLER
-                                </h3>
-                                <p className="font-[family-name:var(--font-inter)] text-xs font-bold text-neutral-500 dark:text-zinc-400 max-w-[200px]">
-                                    Kuantum laboratuvarı çok yakında erişimde.
+                        {filteredSims.length === 0 && (
+                            <motion.div
+                                key="empty"
+                                initial={{ opacity: 0, y: 8 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                className="md:col-span-2 lg:col-span-3 rounded-[8px] border-[3px] border-black bg-white p-8 text-center shadow-[5px_5px_0px_0px_#000] dark:bg-[#27272a]"
+                            >
+                                <h2 className="text-xl font-black uppercase tracking-tight text-black dark:text-zinc-50">
+                                    Sonuç bulunamadı
+                                </h2>
+                                <p className="mt-2 text-sm font-bold text-neutral-500 dark:text-zinc-400">
+                                    Aramayı sadeleştir veya farklı bir zorluk filtresi seç.
                                 </p>
-                            </div>
-                        </motion.div>
+                            </motion.div>
+                        )}
+
+                        {filter === "Tümü" && search.trim().length === 0 && (
+                            <motion.div
+                                key="coming-soon"
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                className="w-full h-full"
+                            >
+                                <div className="h-full bg-white/50 dark:bg-[#27272a]/50 border-[3px] border-dashed border-black/30 dark:border-white/30 rounded-[8px] p-6 flex flex-col items-center justify-center text-center opacity-80 hover:opacity-100 transition-opacity cursor-default min-h-[250px] shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)]">
+                                    <div className="w-12 h-12 bg-neutral-100 dark:bg-[#18181b] border-[3px] border-black/20 dark:border-white/20 rounded-[8px] flex items-center justify-center mb-4">
+                                        <Zap className="w-6 h-6 text-neutral-400 dark:text-zinc-600 stroke-[3px]" />
+                                    </div>
+                                    <h3 className="font-[family-name:var(--font-outfit)] text-xl font-black text-black dark:text-zinc-50 uppercase tracking-tighter mb-1.5">
+                                        YENİ DENEYLER
+                                    </h3>
+                                    <p className="font-[family-name:var(--font-inter)] text-xs font-bold text-neutral-500 dark:text-zinc-400 max-w-[200px]">
+                                        Kuantum laboratuvarı çok yakında erişimde.
+                                    </p>
+                                </div>
+                            </motion.div>
+                        )}
 
                     </AnimatePresence>
                 </div>

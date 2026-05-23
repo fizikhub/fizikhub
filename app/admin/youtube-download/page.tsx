@@ -14,15 +14,41 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { toast } from "sonner";
-import { m as motion, AnimatePresence } from "framer-motion";
+import { m as motion } from "framer-motion";
 import { getYoutubeDownloadUrl } from "../actions";
 import NextImage from "next/image";
+
+type VideoInfo = {
+    title: string;
+    thumbnail: string;
+    author: string;
+    duration: string;
+    videoId: string;
+};
+
+function getYoutubeVideoId(rawUrl: string) {
+    try {
+        const parsed = new URL(rawUrl);
+
+        if (parsed.hostname.includes("youtu.be")) {
+            return parsed.pathname.split("/").filter(Boolean)[0] ?? null;
+        }
+
+        if (parsed.hostname.includes("youtube.com")) {
+            return parsed.searchParams.get("v") || parsed.pathname.split("/").filter(Boolean).pop() || null;
+        }
+    } catch {
+        return null;
+    }
+
+    return null;
+}
 
 export default function YoutubeDownloadPage() {
     const [url, setUrl] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [isDownloading, setIsDownloading] = useState(false);
-    const [videoInfo, setVideoInfo] = useState<any>(null);
+    const [videoInfo, setVideoInfo] = useState<VideoInfo | null>(null);
 
     const handleFetchInfo = async () => {
         if (!url) return toast.error("Lütfen bir URL girin");
@@ -32,7 +58,12 @@ export default function YoutubeDownloadPage() {
 
         setIsLoading(true);
         try {
-            const videoId = url.includes("v=") ? url.split("v=")[1].split("&")[0] : url.split("/").pop();
+            const videoId = getYoutubeVideoId(url);
+
+            if (!videoId) {
+                toast.error("Video kimliği okunamadı.");
+                return;
+            }
 
             setVideoInfo({
                 title: "YouTube Video Hazır",
@@ -43,7 +74,7 @@ export default function YoutubeDownloadPage() {
             });
 
             toast.success("Video kuyruğa eklendi!");
-        } catch (error) {
+        } catch {
             toast.error("Video bilgisi alınamadı");
         } finally {
             setIsLoading(false);
@@ -66,7 +97,7 @@ export default function YoutubeDownloadPage() {
             } else {
                 toast.error(result.error || "İndirme başlatılamadı.", { id: toastId });
             }
-        } catch (error) {
+        } catch {
             toast.error("Bir hata oluştu.", { id: toastId });
         } finally {
             setIsDownloading(false);
@@ -187,4 +218,3 @@ export default function YoutubeDownloadPage() {
         </div>
     );
 }
-

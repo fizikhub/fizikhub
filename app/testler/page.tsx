@@ -1,6 +1,6 @@
 import { getQuizzes } from "./actions";
 import Link from "next/link";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { BrainCircuit, ArrowRight, Clock, Trophy } from "lucide-react";

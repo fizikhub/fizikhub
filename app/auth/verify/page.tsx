@@ -39,7 +39,7 @@ function VerifyContent() {
             } else {
                 toast.error(result.error);
             }
-        } catch (error) {
+        } catch {
             toast.error("Sistem hatası.");
         } finally {
             setLoading(false);
@@ -57,7 +57,7 @@ function VerifyContent() {
             } else {
                 toast.error(result.error || "Kod gönderilemedi.");
             }
-        } catch (error) {
+        } catch {
             toast.error("Sistem hatası.");
         } finally {
             setResending(false);

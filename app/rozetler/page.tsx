@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase-server";
 import { Award, ArrowLeft, Star } from "lucide-react";
 import Link from "next/link";
 import { CustomBadgeIcon } from "@/components/profile/custom-badge-icon";
+import { DEFAULT_BADGES, getBadgeCategoryTitle, getBadgeRequirementLabel } from "@/lib/badges";
 
 export const metadata: Metadata = {
     title: "Rozetler | FizikHub",
@@ -27,33 +28,27 @@ type BadgeRow = {
 
 export default async function RozetlerPage() {
     const supabase = await createClient();
-    const { data: badges } = await supabase
+    const { data: badges, error } = await supabase
         .from("badges")
         .select("*")
         .order("requirement_value", { ascending: true });
-    const badgeRows = (badges || []) as BadgeRow[];
-
-    // Kategori çeviri haritası
-    const catMap: Record<string, string> = {
-        milestone: "🚀 Kilometre Taşları",
-        interaction: "💬 Etkileşim",
-        contribution: "✍️ Katkı",
-        reputation: "⭐ İtibar & Seviye",
-        social: "🤝 Topluluk",
-        expertise: "🧠 Uzmanlık",
-        secret: "🔮 Gizli",
-        special: "🌙 Özel",
-    };
+    const hasLiveBadges = !error && Boolean(badges?.length);
+    const badgeRows = (hasLiveBadges ? badges : DEFAULT_BADGES) as BadgeRow[];
+    const catalogNotice = error
+        ? "Canlı rozet kataloğu şu an okunamadı; temel rozet listesi gösteriliyor."
+        : !hasLiveBadges
+            ? "Rozet kataloğu henüz boş; temel rozet listesi gösteriliyor."
+            : null;
 
     // Rozetleri kategoriye göre grupla
     const grouped: Record<string, BadgeRow[]> = {};
     badgeRows.forEach((b) => {
-        const cat = catMap[b.category ?? ""] || "🏷️ Diğer";
+        const cat = getBadgeCategoryTitle(b.category);
         if (!grouped[cat]) grouped[cat] = [];
         grouped[cat].push(b);
     });
 
-    const categoryOrder = Object.values(catMap);
+    const categoryOrder = Object.keys(grouped);
 
     return (
         <div className="min-h-screen bg-background">
@@ -79,6 +74,11 @@ export default async function RozetlerPage() {
                             <p className="text-sm md:text-base text-muted-foreground font-medium mt-1">
                                 Toplam <span className="font-black text-foreground">{badgeRows.length}</span> rozet mevcut
                             </p>
+                            {catalogNotice && (
+                                <p className="mt-2 text-xs font-bold text-muted-foreground">
+                                    {catalogNotice}
+                                </p>
+                            )}
                         </div>
                     </div>
                     <div className="h-1 w-full bg-gradient-to-r from-[#23A9FA] via-purple-500 to-[#FFC800] rounded-full" />
@@ -102,6 +102,7 @@ export default async function RozetlerPage() {
                                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                                     {catBadges.map((badge) => {
                                         const requirementValue = badge.requirement_value ?? 0;
+                                        const requirementLabel = getBadgeRequirementLabel(badge.requirement_type, requirementValue);
 
                                         return (
                                             <div
@@ -123,15 +124,10 @@ export default async function RozetlerPage() {
                                                     </p>
 
                                                     {/* Kazanım Koşulu */}
-                                                    {badge.requirement_type !== "manual" && requirementValue > 0 && (
+                                                    {badge.requirement_type !== "manual" && requirementLabel && requirementValue > 0 && (
                                                         <div className="mt-2 inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider bg-muted px-2 py-0.5 rounded-md text-muted-foreground">
                                                             <Star className="w-3 h-3" />
-                                                            {badge.requirement_type === "reputation" && `${requirementValue} HubPuan`}
-                                                            {badge.requirement_type === "question_count" && `${requirementValue} Soru`}
-                                                            {badge.requirement_type === "article_count" && `${requirementValue} Makale`}
-                                                            {badge.requirement_type === "accepted_answer_count" && `${requirementValue} Kabul Edilen Cevap`}
-                                                            {badge.requirement_type === "following_count" && `${requirementValue} Takip`}
-                                                            {badge.requirement_type === "follower_count" && `${requirementValue} Takipçi`}
+                                                            {requirementLabel}
                                                         </div>
                                                     )}
                                                 </div>

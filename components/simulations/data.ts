@@ -3,12 +3,11 @@ import {
     Zap,
     Sparkles,
     Target,
-    Magnet,
     Atom,
-    Dna,
     Lightbulb,
     Orbit,
-    Combine
+    Combine,
+    type LucideIcon,
 } from "lucide-react";
 
 export type Simulation = {
@@ -16,7 +15,7 @@ export type Simulation = {
     slug: string;
     title: string;
     description: string;
-    icon: any;
+    icon: LucideIcon;
     color: string;
     formula: string;
     difficulty: "Kolay" | "Orta" | "Zor";
@@ -188,7 +187,7 @@ Yay sarkacının periyodu (tam bir salınım için geçen süre), kütleye ve ya
         difficulty: "Orta",
         tags: ["Mekanik", "Momentum", "Enerji"],
         seo: {
-            title: "Esnek ve İnelaastik Çarpışma Simülasyonu (1D) | FizikHub",
+            title: "Esnek ve Esnek Olmayan Çarpışma Simülasyonu (1D) | FizikHub",
             description: "Tek boyutta momentumun korunumu ve çarpışmaları inceleyin. Kütle ve hızları değiştirerek esnek ile inelastik çarpışma arasındaki enerji farklarını görün.",
             keywords: ["çarpışma", "momentum korunumu", "esnek çarpışma", "inelastik çarpışma", "kinetik enerji", "fizik simülasyonu"]
         }

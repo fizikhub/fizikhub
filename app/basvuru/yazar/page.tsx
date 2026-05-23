@@ -2,7 +2,6 @@
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
 import { writerApplicationSchema, WriterApplicationFormValues } from "./schema";
 import { submitWriterApplication } from "./actions";
 import { Button } from "@/components/ui/button";
@@ -53,7 +52,7 @@ export default function WriterApplicationPage() {
                 form.reset();
                 setTimeout(() => router.push("/"), 2000);
             }
-        } catch (error) {
+        } catch {
             toast.error("Bir şeyler ters gitti via.");
         } finally {
             setIsSubmitting(false);
