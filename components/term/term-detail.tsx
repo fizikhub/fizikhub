@@ -13,7 +13,7 @@ import { MarkdownRenderer } from "@/components/markdown-renderer";
 
 interface TermArticle {
     title: string;
-    content: string;
+    content: string | null;
     created_at: string;
     author?: {
         username?: string | null;
@@ -31,8 +31,9 @@ interface TermDetailProps {
 }
 
 export function TermDetail({ article, readingTime, likeCount }: TermDetailProps) {
+    const content = article.content || "";
     // Extract metadata
-    const metadataMatch = article.content.match(/<!--meta (.*?) -->/);
+    const metadataMatch = content.match(/<!--meta (.*?) -->/);
     const metadata = metadataMatch ? JSON.parse(metadataMatch[1]) : {};
 
     // Fallback metadata
@@ -40,7 +41,7 @@ export function TermDetail({ article, readingTime, likeCount }: TermDetailProps)
     const relatedField = metadata.relatedField || "Genel Bilim";
 
     // Clean content
-    let cleanContent = article.content.replace(/<!--meta .*? -->/, "");
+    let cleanContent = content.replace(/<!--meta .*? -->/, "");
     cleanContent = cleanContent.trim();
 
     return (
@@ -86,7 +87,7 @@ export function TermDetail({ article, readingTime, likeCount }: TermDetailProps)
                             <div className="flex items-center gap-4 text-sm text-muted-foreground border-b border-border/30 pb-8">
                                 <div className="flex items-center gap-2">
                                     <Avatar className="w-8 h-8 border border-border/50">
-                                        <AvatarImage src={article.author?.avatar_url} />
+                                        <AvatarImage src={article.author?.avatar_url || undefined} />
                                         <AvatarFallback>{article.author?.full_name?.[0] || "A"}</AvatarFallback>
                                     </Avatar>
                                     <span className="font-bold text-foreground">{article.author?.full_name || article.author?.username}</span>

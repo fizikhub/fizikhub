@@ -14,7 +14,6 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { m as motion, AnimatePresence } from "framer-motion";
 import { createStoryGroup, deleteStoryGroup, getStoryGroups, updateStoryGroup, getStoriesByGroup, deleteStory, updateStory } from "@/app/stories/actions";
-import { createStoryGroup, deleteStoryGroup, getStoryGroups, updateStoryGroup, getStoriesByGroup, deleteStory, updateStory } from "@/app/stories/actions";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 
@@ -172,11 +171,11 @@ export function StoryEditor() {
 // --- STORY CREATOR (CANVAS) ---
 const getCroppedImg = async (imageSrc: string, pixelCrop: any): Promise<string> => {
     const image = await new Promise<HTMLImageElement>((resolve, reject) => {
-        const img = new Image();
+        const img = new window.Image();
         img.src = imageSrc;
         img.crossOrigin = "anonymous";
         img.onload = () => resolve(img);
-        img.onerror = (e) => reject(e);
+        img.onerror = (e: any) => reject(e);
     });
     const canvas = document.createElement('canvas');
     canvas.width = pixelCrop.width;

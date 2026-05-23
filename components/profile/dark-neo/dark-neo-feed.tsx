@@ -160,7 +160,7 @@ export function DarkNeoFeed({
                 });
             items = [...savedArticles, ...savedQuestions];
         } else if (activeTab === 'replies') {
-            items = answers.map(a => ({ type: 'answer', data: a, sortDate: a.created_at } as FeedItem));
+            items = answers.map(a => ({ type: 'answer', data: a, sortDate: a.created_at } as any));
         } else if (activeTab === 'drafts') {
             items = deferredFeed.drafts.map(d => ({
                 type: 'article',

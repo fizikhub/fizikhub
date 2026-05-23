@@ -231,7 +231,7 @@ export function MarkdownRenderer({
                         );
                     },
                     // Wrap KaTeX block math in overflow-x-auto container for mobile
-                    div: ({ node, children, className: divClassName, ...props }: { node?: unknown; children?: React.ReactNode; className?: string; [key: string]: unknown }) => {
+                    div: ({ node, children, className: divClassName, ...props }: any) => {
                         if (divClassName?.includes('math-display')) {
                             return (
                                 <div className="overflow-x-auto my-6 sm:my-8 py-4 px-3 sm:px-5 bg-zinc-50 dark:bg-zinc-900/60 border-2 border-black dark:border-zinc-700 rounded-xl shadow-[4px_4px_0px_0px_#000] dark:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.4)]" style={{ maxWidth: '100%' }} {...props}>
@@ -242,7 +242,7 @@ export function MarkdownRenderer({
                         return <div className={divClassName} {...props}>{children}</div>;
                     },
                     // Image with Dialog zoom
-                    img: ({ node, ...props }: { node?: unknown; src?: string; alt?: string; [key: string]: unknown }) => {
+                    img: ({ node, ...props }: any) => {
                         const src = props.src as string;
                         if (src?.endsWith(".mp4") || src?.endsWith(".webm")) {
                             return (
@@ -293,7 +293,7 @@ export function MarkdownRenderer({
                         );
                     },
                     // Iframe responsive embed
-                    iframe: ({ node, ...props }: { node?: unknown; [key: string]: unknown }) => (
+                    iframe: ({ node, ...props }: any) => (
                         <div className="aspect-video w-full my-8 sm:my-12 rounded-xl overflow-hidden border-4 border-black dark:border-zinc-800 shadow-[6px_6px_0px_0px_#000] dark:shadow-[6px_6px_0px_0px_rgba(0,0,0,0.5)] bg-black/50">
                             <iframe
                                 className="w-full h-full"
