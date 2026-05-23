@@ -266,6 +266,8 @@ export function ProjectileSim({ simData }: { simData: any }) {
             controlsArea={Controls}
             theoryArea={Theory}
             missionsArea={Missions}
+            simId="projectile"
+            parameters={{ velocity, angle, gravity, height, time, timeOfFlight, maxRange, maxHeight, speed }}
         >
             <div className="w-full h-full p-8 relative">
                 <svg

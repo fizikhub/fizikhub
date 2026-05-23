@@ -15,10 +15,119 @@ type ReputationParams = {
     p_reference_id: number;
 };
 
+export async function checkAndAwardBadges(userId: string) {
+    try {
+        const adminSupabase = createAdminClient();
+
+        // 1. Get user's current reputation
+        const profileResult = await adminSupabase
+            .from('profiles')
+            .select('reputation')
+            .eq('id', userId)
+            .single();
+
+        const profile = profileResult?.data;
+        if (!profile) return;
+
+        const rep = profile.reputation || 0;
+
+        // 2. Get all badges from database
+        const badgesQuery = adminSupabase
+            .from('badges')
+            .select('id, name, requirement_type, requirement_value');
+
+        // Safe chain for order if it exists, otherwise just await the base query
+        const badgesResult = await (typeof badgesQuery.order === 'function'
+            ? badgesQuery.order('requirement_value', { ascending: true })
+            : badgesQuery);
+
+        const badges = badgesResult?.data;
+        if (!badges || !Array.isArray(badges)) return;
+
+        // 3. Get badges the user already has
+        const userBadgesResult = await adminSupabase
+            .from('user_badges')
+            .select('badge_id')
+            .eq('user_id', userId);
+
+        const userBadges = userBadgesResult?.data;
+        const existingBadgeIds = new Set((userBadges || []).map((ub: any) => ub?.badge_id));
+
+        // 4. Check each badge's requirement
+        for (const badge of badges) {
+            if (!badge || !badge.id || existingBadgeIds.has(badge.id)) continue; // Already has it
+
+            let qualifies = false;
+            if (badge.requirement_type === 'reputation') {
+                qualifies = rep >= (badge.requirement_value || 0);
+            } else if (badge.requirement_type === 'question_count') {
+                const result = await adminSupabase
+                    .from('questions')
+                    .select('id', { count: 'exact', head: true })
+                    .eq('author_id', userId);
+                qualifies = (result?.count || 0) >= (badge.requirement_value || 0);
+            } else if (badge.requirement_type === 'article_count') {
+                const result = await adminSupabase
+                    .from('articles')
+                    .select('id', { count: 'exact', head: true })
+                    .eq('author_id', userId)
+                    .neq('status', 'draft');
+                qualifies = (result?.count || 0) >= (badge.requirement_value || 0);
+            } else if (badge.requirement_type === 'accepted_answer_count') {
+                const result = await adminSupabase
+                    .from('answers')
+                    .select('id', { count: 'exact', head: true })
+                    .eq('author_id', userId)
+                    .eq('is_accepted', true);
+                qualifies = (result?.count || 0) >= (badge.requirement_value || 0);
+            } else if (badge.requirement_type === 'following_count') {
+                const result = await adminSupabase
+                    .from('follows')
+                    .select('id', { count: 'exact', head: true })
+                    .eq('follower_id', userId);
+                qualifies = (result?.count || 0) >= (badge.requirement_value || 0);
+            } else if (badge.requirement_type === 'follower_count') {
+                const result = await adminSupabase
+                    .from('follows')
+                    .select('id', { count: 'exact', head: true })
+                    .eq('following_id', userId);
+                qualifies = (result?.count || 0) >= (badge.requirement_value || 0);
+            }
+
+            if (qualifies) {
+                // Award the badge!
+                const insertResult = await adminSupabase
+                    .from('user_badges')
+                    .insert({
+                        user_id: userId,
+                        badge_id: badge.id
+                    });
+
+                if (!insertResult?.error) {
+                    // Create a notification for the badge!
+                    await adminSupabase.from('notifications').insert({
+                        recipient_id: userId,
+                        actor_id: userId,
+                        type: 'welcome',
+                        resource_type: 'profile',
+                        resource_id: userId,
+                        content: `Yeni Rozet Kazanıldı: ${badge.name}! 🏆`
+                    });
+                }
+            }
+        }
+    } catch (err) {
+        console.error("[checkAndAwardBadges Error]:", err);
+    }
+}
+
 async function addReputation(params: ReputationParams) {
     const { error } = await createAdminClient().rpc('add_reputation', params);
     if (error) {
         console.error("Add Reputation Error:", error);
+    } else {
+        // Automatically check and award badges!
+        await checkAndAwardBadges(params.p_user_id);
     }
 }
 
@@ -139,7 +248,7 @@ export async function createQuestion(formData: { title: string; content: string;
     }
 
     // Moderation check
-    const modResult = checkContent(`${formData.title} ${formData.content}`);
+    const modResult = await checkContent(`${formData.title} ${formData.content}`);
     const { ip, ua } = await getClientMetadata();
 
     const { data, error } = await supabase.from('questions').insert({
@@ -190,7 +299,7 @@ export async function updateQuestion(questionId: number, content: string) {
     }
 
     // Moderation check on update
-    const modResult = checkContent(content);
+    const modResult = await checkContent(content);
     if (modResult.isFlagged) {
         return { success: false, error: "İçerik politikasına aykırı içerik tespit edildi." };
     }
@@ -248,7 +357,7 @@ export async function createAnswer(formData: { content: string; questionId: numb
     }
 
     const { ip, ua } = await getClientMetadata();
-    const modResult = checkContent(formData.content);
+    const modResult = await checkContent(formData.content);
 
     const { data, error } = await supabase.from('answers').insert({
         content: formData.content,
@@ -646,7 +755,7 @@ export async function createAnswerComment(formData: {
     }
 
     const { ip, ua } = await getClientMetadata();
-    const modResult = checkContent(formData.content);
+    const modResult = await checkContent(formData.content);
 
     const { data, error } = await supabase
         .from('answer_comments')

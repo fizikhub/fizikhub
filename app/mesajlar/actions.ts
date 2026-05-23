@@ -80,7 +80,7 @@ export async function sendMessage(
     }
 
     const { ip, ua } = await getClientMetadata();
-    const modResult = checkContent(content.trim());
+    const modResult = await checkContent(content.trim());
 
     const insertData: any = {
         conversation_id: conversationId,
@@ -456,7 +456,7 @@ export async function editMessage(messageId: number, newContent: string) {
     }
 
     // Moderation check on edit
-    const modResult = checkContent(newContent.trim());
+    const modResult = await checkContent(newContent.trim());
     if (modResult.isFlagged) {
         return { success: false, error: "İçerik politikasına aykırı içerik tespit edildi." };
     }

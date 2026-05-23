@@ -1,3 +1,22 @@
+import { GoogleGenerativeAI } from "@google/generative-ai";
+
+let geminiClient: GoogleGenerativeAI | null = null;
+
+function getGeminiApiKey() {
+    return process.env.GEMINI_API_KEY || process.env.GOOGLE_GENERATIVE_AI_API_KEY || process.env.GOOGLE_AI_API_KEY || "";
+}
+
+function getGeminiClient() {
+    const apiKey = getGeminiApiKey();
+    if (!apiKey) return null;
+
+    if (!geminiClient) {
+        geminiClient = new GoogleGenerativeAI(apiKey);
+    }
+
+    return geminiClient;
+}
+
 /**
  * Moderation utility for Fizikhub
  * Purpose: Filter illegal content, spam, and harmful keywords to comply with legal requirements.
@@ -60,12 +79,12 @@ function normalizeText(text: string): string {
  * Checks content for forbidden keywords and patterns.
  * @param content The text to check
  */
-export function checkContent(content: string): ModerationResult {
+export async function checkContent(content: string): Promise<ModerationResult> {
     if (!content) return { isClean: true, isFlagged: false };
 
     const normalizedContent = normalizeText(content);
 
-    // Check keywords against normalized content
+    // 1. Check keywords against normalized content
     for (const keyword of FORBIDDEN_KEYWORDS) {
         if (normalizedContent.includes(normalizeText(keyword))) {
             return {
@@ -76,7 +95,7 @@ export function checkContent(content: string): ModerationResult {
         }
     }
 
-    // Check regex patterns against original content (for URL patterns etc.)
+    // 2. Check regex patterns against original content (for URL patterns etc.)
     for (const pattern of FORBIDDEN_PATTERNS) {
         if (pattern.test(content)) {
             return {
@@ -84,6 +103,50 @@ export function checkContent(content: string): ModerationResult {
                 isFlagged: true,
                 reason: `Şüpheli içerik kalıbı tespit edildi.`
             };
+        }
+    }
+
+    // 3. Dynamic Gemini 2.5 Flash Semantic Check
+    const genAI = getGeminiClient();
+    if (genAI) {
+        try {
+            const geminiModel = genAI.getGenerativeModel({
+                model: "gemini-2.5-flash",
+                generationConfig: {
+                    temperature: 0.1,
+                    responseMimeType: "application/json"
+                }
+            });
+
+            const prompt = `Sen FizikHub eğitim ve bilim platformunun akıllı güvenlik ve moderasyon asistanısın. Görevin, aşağıdaki içeriği spam, reklam, dolandırıcılık, nefret söylemi, şiddet teşviki, aşırı küfür/hakaret ve özellikle bilim dışı provokatif/saldırgan iddialar açısından değerlendirmektir.
+            
+İçerik:
+"""
+${content}
+"""
+
+Lütfen içeriği analiz et ve SADECE bu formatta JSON döndür:
+{
+  "isClean": true veya false,
+  "isFlagged": true veya false,
+  "reason": "Eğer uygunsuzsa gerekçesi (Türkçe)"
+}
+`;
+            const result = await geminiModel.generateContent(prompt);
+            let cleanedJson = result.response.text().trim();
+            if (cleanedJson.startsWith("```")) {
+                cleanedJson = cleanedJson.replace(/^```(?:json)?\n?/, "").replace(/\n?```$/, "");
+            }
+            const parsed = JSON.parse(cleanedJson);
+            return {
+                isClean: parsed.isClean,
+                isFlagged: parsed.isFlagged,
+                reason: parsed.reason || undefined
+            };
+        } catch (error) {
+            console.error("[AI Moderation Error]:", error);
+            // Fallback to true if AI fails, to avoid blocking users
+            return { isClean: true, isFlagged: false };
         }
     }
 

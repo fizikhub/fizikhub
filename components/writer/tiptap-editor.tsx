@@ -29,6 +29,7 @@ import { MathExtension } from './extensions/math-extension'
 import { IframeExtension } from './extensions/iframe-extension'
 import { MermaidExtension } from './extensions/mermaid-extension'
 import { ImageCropDialog } from "@/components/shared/image-crop-dialog"
+import NextImage from "next/image";
 
 // Lazy load KaTeX preview (only when math dialog is opened)
 const LazyInlineMath = lazy(() => import('react-katex').then(mod => ({ default: mod.InlineMath })));
@@ -44,13 +45,14 @@ const ImageNodeView = (props: NodeViewProps) => {
 
     return (
         <NodeViewWrapper className="my-6 relative group flex flex-col items-center">
-            <div className={`relative overflow-hidden rounded-lg transition-all ${selected ? 'ring-2 ring-primary ring-offset-2' : ''}`}>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
+            <div className={`relative overflow-hidden rounded-lg transition-all ${selected ? 'ring-2 ring-primary ring-offset-2' : ''}`} style={{ width: '100%', maxWidth: '600px', height: '350px' }}>
+                <NextImage
                     src={node.attrs.src}
-                    alt={node.attrs.alt}
-                    className="max-w-full h-auto rounded-lg shadow-sm"
-                    style={{ maxHeight: '500px' }}
+                    alt={node.attrs.alt || 'Görsel'}
+                    fill
+                    unoptimized={!node.attrs.src.includes('supabase.co') && !node.attrs.src.includes('unsplash.com')}
+                    className="object-contain rounded-lg shadow-sm"
+                    sizes="(max-width: 600px) 100vw, 600px"
                 />
             </div>
             <div className="mt-2 w-full max-w-md">

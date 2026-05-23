@@ -2,9 +2,10 @@
 
 import React, { useState } from "react";
 import { m as motion, AnimatePresence } from "framer-motion";
-import { Settings2, BookOpen, Target, ArrowLeft, Maximize2, Minimize2 } from "lucide-react";
+import { Settings2, BookOpen, Target, ArrowLeft, Maximize2, Minimize2, Sparkles } from "lucide-react";
 import { ViewTransitionLink } from "@/components/ui/view-transition-link";
 import { cn } from "@/lib/utils";
+import { AiAssistant } from "./ai-assistant";
 
 interface SimulationLayoutProps {
     title: string;
@@ -13,9 +14,11 @@ interface SimulationLayoutProps {
     controlsArea?: React.ReactNode;
     theoryArea?: React.ReactNode;
     missionsArea?: React.ReactNode;
+    simId?: string;
+    parameters?: Record<string, any>;
 }
 
-type TabType = "controls" | "theory" | "missions";
+type TabType = "controls" | "theory" | "missions" | "asistan";
 
 export function SimulationLayout({
     title,
@@ -24,6 +27,8 @@ export function SimulationLayout({
     controlsArea,
     theoryArea,
     missionsArea,
+    simId,
+    parameters
 }: SimulationLayoutProps) {
     const [activeTab, setActiveTab] = useState<TabType>("controls");
     const [isFullscreen, setIsFullscreen] = useState(false);
@@ -106,6 +111,13 @@ export function SimulationLayout({
                                 label="GÖREVLER"
                                 color={color}
                             />
+                            <TabButton
+                                isActive={activeTab === "asistan"}
+                                onClick={() => setActiveTab("asistan")}
+                                icon={<Sparkles className="w-4 h-4" />}
+                                label="ASİSTAN"
+                                color={color}
+                            />
                         </div>
 
                         {/* Tab Content (scrollable) */}
@@ -145,6 +157,22 @@ export function SimulationLayout({
                                         className="relative z-10"
                                     >
                                         {missionsArea || <Placeholder text="Pedagojik görevler aktif değil." />}
+                                    </motion.div>
+                                )}
+                                {activeTab === "asistan" && (
+                                    <motion.div
+                                        key="asistan"
+                                        initial={{ opacity: 0, y: 8 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: -8 }}
+                                        transition={{ duration: 0.15 }}
+                                        className="relative z-10"
+                                    >
+                                        <AiAssistant 
+                                            simId={simId || "physics"} 
+                                            parameters={parameters || {}} 
+                                            color={color} 
+                                        />
                                     </motion.div>
                                 )}
                             </AnimatePresence>

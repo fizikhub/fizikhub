@@ -161,7 +161,15 @@ export function SpringMassSim({ simData }: { simData: any }) {
     );
 
     return (
-        <SimulationLayout title={simData.title || "Yay-Kütle Sistemi"} color={accentColor} controlsArea={Controls} theoryArea={Theory} missionsArea={Missions}>
+        <SimulationLayout 
+            title={simData.title || "Yay-Kütle Sistemi"} 
+            color={accentColor} 
+            controlsArea={Controls} 
+            theoryArea={Theory} 
+            missionsArea={Missions}
+            simId="springmass"
+            parameters={{ springConstant, mass, damping, gravity, y, velocity, equilibriumY, period, kineticEnergy, springPotentialEnergy }}
+        >
             <div className="w-full h-full p-0 relative flex items-center justify-center">
                 <svg width="100%" height="100%" viewBox={`0 0 ${canvasWidth} ${canvasHeight}`} preserveAspectRatio="xMidYMid meet" className="origin-center">
                     <rect x="0" y="0" width={canvasWidth} height={visualPivotY} fill="#222" />

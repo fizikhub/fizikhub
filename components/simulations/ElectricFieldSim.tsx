@@ -146,7 +146,15 @@ export function ElectricFieldSim({ simData }: { simData: any }) {
     );
 
     return (
-        <SimulationLayout title={simData?.title || "Elektrik Alan ve Yükler"} color={accentColor} controlsArea={Controls} theoryArea={Theory} missionsArea={Missions}>
+        <SimulationLayout 
+            title={simData?.title || "Elektrik Alan ve Yükler"} 
+            color={accentColor} 
+            controlsArea={Controls} 
+            theoryArea={Theory} 
+            missionsArea={Missions}
+            simId="electricfield"
+            parameters={{ charges: charges.map(c => ({ q: c.q, x: c.x, y: c.y })), showGrid, chargeCount: charges.length }}
+        >
             <div className="w-full h-full p-0 relative flex items-center justify-center">
                 <svg ref={svgRef} width="100%" height="100%" viewBox={`0 0 ${canvasWidth} ${canvasHeight}`} preserveAspectRatio="xMidYMid slice" className="origin-center touch-none cursor-crosshair" onPointerMove={handlePointerMove} onPointerUp={handlePointerUp} onPointerLeave={handlePointerUp}>
                     {showGrid && vectorField.map((v, i) => (

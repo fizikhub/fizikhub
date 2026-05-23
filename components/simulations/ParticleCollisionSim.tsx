@@ -159,7 +159,15 @@ export function ParticleCollisionSim({ simData }: { simData: any }) {
     );
 
     return (
-        <SimulationLayout title={simData?.title || "1D Çarpışmalar"} color={accentColor} controlsArea={Controls} theoryArea={Theory} missionsArea={Missions}>
+        <SimulationLayout 
+            title={simData?.title || "1D Çarpışmalar"} 
+            color={accentColor} 
+            controlsArea={Controls} 
+            theoryArea={Theory} 
+            missionsArea={Missions}
+            simId="collision"
+            parameters={{ mass1, mass2, initV1, initV2, restitution, x1, x2, v1, v2, hasCollided }}
+        >
             <div className="w-full h-full p-0 relative flex items-center justify-center">
                 <svg width="100%" height="100%" viewBox={`0 0 ${canvasWidth} ${canvasHeight}`} preserveAspectRatio="xMidYMid meet" className="origin-center">
                     <line x1="0" y1={canvasHeight / 2 + 50} x2={canvasWidth} y2={canvasHeight / 2 + 50} stroke="#444" strokeWidth="4" />

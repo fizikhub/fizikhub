@@ -140,7 +140,15 @@ export function WaveSim({ simData }: { simData: any }) {
     );
 
     return (
-        <SimulationLayout title={simData?.title || "Dalga Girişimi"} color={accentColor} controlsArea={Controls} theoryArea={Theory} missionsArea={Missions}>
+        <SimulationLayout 
+            title={simData?.title || "Dalga Girişimi"} 
+            color={accentColor} 
+            controlsArea={Controls} 
+            theoryArea={Theory} 
+            missionsArea={Missions}
+            simId="wave"
+            parameters={{ amplitude1, frequency1, amplitude2, frequency2, showSuperposition, showIndividual, time }}
+        >
             <div className="w-full h-full p-0 relative flex items-center justify-center">
                 <svg role="img" aria-label="Dalga Girişimi Simülasyonu Görsel Alanı" width="100%" height="100%" viewBox={`0 0 ${canvasWidth} ${canvasHeight}`} preserveAspectRatio="xMidYMid meet" className="origin-center">
                     <line x1="0" y1={canvasHeight/2} x2={canvasWidth} y2={canvasHeight/2} stroke="#555" strokeWidth="1" strokeDasharray="5 5" />

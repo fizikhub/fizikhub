@@ -143,7 +143,15 @@ export function OpticsSim({ simData }: { simData: any }) {
     );
 
     return (
-        <SimulationLayout title={simData?.title || "Geometrik Optik"} color={accentColor} controlsArea={Controls} theoryArea={Theory} missionsArea={Missions}>
+        <SimulationLayout 
+            title={simData?.title || "Geometrik Optik"} 
+            color={accentColor} 
+            controlsArea={Controls} 
+            theoryArea={Theory} 
+            missionsArea={Missions}
+            simId="optics"
+            parameters={{ f, do: do_val, ho, di, hi, isReal, isInfinity }}
+        >
             <div className="w-full h-full p-0 relative flex items-center justify-center">
                 <svg role="img" aria-label="Geometrik Optik Simülasyonu Görsel Alanı" width="100%" height="100%" viewBox={`0 0 ${canvasWidth} ${canvasHeight}`} preserveAspectRatio="xMidYMid meet" className="origin-center">
                     <rect x="0" y="0" width={canvasWidth} height={canvasHeight} fill="#1a1a1a" />
