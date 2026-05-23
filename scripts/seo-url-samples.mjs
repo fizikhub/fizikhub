@@ -22,6 +22,7 @@ function typeFor(url) {
     if (path.startsWith("/makale/") || path.startsWith("/deney/")) return "article";
     if (path.startsWith("/forum/")) return "forum";
     if (path.startsWith("/sozluk/")) return "dictionary";
+    if (path.startsWith("/konular/")) return "topic";
     if (path.startsWith("/testler/")) return "quiz";
     if (path.startsWith("/simulasyonlar/")) return "simulation";
     return "core";
@@ -47,6 +48,7 @@ const samples = [];
 [
     `${baseUrl}/`,
     `${baseUrl}/makale`,
+    `${baseUrl}/konular`,
     `${baseUrl}/sozluk`,
     `${baseUrl}/testler`,
     `${baseUrl}/simulasyonlar`,
@@ -57,6 +59,10 @@ const samples = [];
 locs(articleSitemap).slice(0, 10).forEach((url) => pushUnique(samples, url, "published-indexable-article"));
 locs(dictionarySitemap).slice(0, 5).forEach((url) => pushUnique(samples, url, "dictionary-entity"));
 locs(forumSitemap).slice(0, 5).forEach((url) => pushUnique(samples, url, "quality-forum-question"));
+locs(rootSitemap)
+    .filter((url) => new URL(url).pathname.startsWith("/konular/"))
+    .slice(0, 6)
+    .forEach((url) => pushUnique(samples, url, "topic-cluster"));
 locs(rootSitemap)
     .filter((url) => ["/testler/", "/simulasyonlar/"].some((prefix) => new URL(url).pathname.startsWith(prefix)))
     .slice(0, 8)

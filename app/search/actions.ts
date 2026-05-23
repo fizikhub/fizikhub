@@ -5,6 +5,7 @@ import { generateEmbedding } from "@/lib/gemini";
 import { sanitizeSearchQuery } from "@/lib/security";
 import { slugify } from "@/lib/slug";
 import { simulations } from "@/components/simulations/data";
+import { getVectorUrl, type VectorSearchRow } from "@/lib/search-results";
 
 export type SearchResultType = "article" | "question" | "user" | "dictionary" | "quiz" | "simulation";
 
@@ -16,19 +17,6 @@ export type SearchResult = {
     url: string;
     image?: string;
     category?: string;
-    similarity?: number;
-};
-
-type VectorSearchRow = {
-    id?: string | number;
-    source_id?: string | number;
-    source_type?: string;
-    title?: string;
-    content?: string | null;
-    slug?: string | null;
-    username?: string | null;
-    cover_image?: string | null;
-    image_url?: string | null;
     similarity?: number;
 };
 
@@ -94,17 +82,32 @@ function buildSearchTerm(query: string): string {
     return `%${safeQuery}%`;
 }
 
-function getVectorUrl(item: VectorSearchRow): string | null {
-    const type = item.source_type;
-    const id = item.source_id ?? item.id;
+async function fetchVectorRows(
+    supabase: Awaited<ReturnType<typeof createClient>>,
+    query: string,
+    embedding: number[],
+): Promise<VectorSearchRow[]> {
+    const rpcClient = supabase as unknown as {
+        rpc: (fn: string, args: Record<string, unknown>) => Promise<{ data: unknown; error: unknown }>;
+    };
+    const { data: hybridData, error: hybridError } = await rpcClient.rpc("hybrid_search_documents", {
+        query_embedding: embedding,
+        query_text: query,
+        match_count: 8,
+        match_threshold: 0.45,
+    });
 
-    if (type === "question" && id) return `/forum/${id}`;
-    if (type === "article") return `/makale/${item.slug || id}`;
-    if (type === "user" && item.username) return `/kullanici/${item.username}`;
-    if (type === "dictionary" && item.slug) return `/sozluk/${item.slug}`;
-    if (type === "quiz" && item.slug) return `/testler/${item.slug}`;
+    if (!hybridError && Array.isArray(hybridData)) {
+        return hybridData as VectorSearchRow[];
+    }
 
-    return null;
+    const { data: vectorData } = await rpcClient.rpc("match_documents", {
+        query_embedding: embedding,
+        match_threshold: 0.52,
+        match_count: 8,
+    });
+
+    return Array.isArray(vectorData) ? (vectorData as VectorSearchRow[]) : [];
 }
 
 function addResult(results: SearchResult[], result: SearchResult) {
@@ -121,13 +124,7 @@ export async function searchGlobal(rawQuery: string): Promise<SearchResult[]> {
 
     const embedding = await generateEmbedding(query);
     if (embedding) {
-        const { data: vectorData } = await supabase.rpc("match_documents", {
-            query_embedding: embedding,
-            match_threshold: 0.52,
-            match_count: 8,
-        });
-
-        const vectorRows = Array.isArray(vectorData) ? (vectorData as VectorSearchRow[]) : [];
+        const vectorRows = await fetchVectorRows(supabase, query, embedding);
         for (const item of vectorRows) {
             const type = item.source_type as SearchResultType | undefined;
             const id = item.source_id ?? item.id;
@@ -142,7 +139,7 @@ export async function searchGlobal(rawQuery: string): Promise<SearchResult[]> {
                 description: toSnippet(item.content),
                 url,
                 image: item.cover_image || item.image_url || undefined,
-                similarity: item.similarity,
+                similarity: item.hybrid_score || item.similarity,
             });
         }
     }

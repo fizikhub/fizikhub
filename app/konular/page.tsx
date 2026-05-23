@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ArrowRight, Atom, Orbit, Sigma } from "lucide-react";
 import { BreadcrumbJsonLd } from "@/lib/breadcrumbs";
 import { SEO_PRIORITY_ARTICLES, type SeoIntentArticle } from "@/lib/seo-priority";
+import { getTopicClusterHref, SEO_TOPIC_CLUSTERS } from "@/lib/seo-topic-clusters";
 
 export const revalidate = 3600;
 
@@ -88,10 +89,6 @@ function toSectionId(title: string) {
 }
 
 export default function TopicsPage() {
-    const allTopicArticles = topicGroups.flatMap((group) =>
-        group.slugs.map(getArticle).filter(isSeoArticle),
-    );
-
     const jsonLd = {
         "@context": "https://schema.org",
         "@graph": [
@@ -109,12 +106,12 @@ export default function TopicsPage() {
                 "@type": "ItemList",
                 "@id": `${SITE_URL}/konular#item-list`,
                 name: "Fizik konu rehberleri",
-                itemListElement: allTopicArticles.map((article, index) => ({
+                itemListElement: SEO_TOPIC_CLUSTERS.map((cluster, index) => ({
                     "@type": "ListItem",
                     position: index + 1,
-                    url: `${SITE_URL}/makale/${article.slug}`,
-                    name: article.title,
-                    description: article.description,
+                    url: `${SITE_URL}${getTopicClusterHref(cluster)}`,
+                    name: cluster.title,
+                    description: cluster.intentQuestions[0] || `${cluster.title} konu rehberi`,
                 })),
             },
         ],
@@ -139,6 +136,39 @@ export default function TopicsPage() {
                             En çok aranan fizik sorularını kısa cevap, formül, örnek ve ilgili kavram bağlantılarıyla tek bir okuma rotasında bul.
                         </p>
                     </header>
+
+                    <section className="mt-8 border-t border-foreground/15 py-6" aria-labelledby="topic-network-title">
+                        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+                            <div>
+                                <p className="text-xs font-black uppercase tracking-widest text-muted-foreground">Konu ağı</p>
+                                <h2 id="topic-network-title" className="mt-2 text-2xl font-black tracking-normal">
+                                    Semantic fizik merkezleri
+                                </h2>
+                            </div>
+                            <p className="max-w-2xl text-sm font-semibold leading-7 text-muted-foreground">
+                                Her hub; makale, sözlük, test ve simülasyonları aynı arama niyeti etrafında toplar.
+                            </p>
+                        </div>
+                        <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                            {SEO_TOPIC_CLUSTERS.map((cluster) => (
+                                <Link
+                                    key={cluster.slug}
+                                    href={getTopicClusterHref(cluster)}
+                                    className="group rounded-[8px] border border-foreground/15 bg-card p-4 transition-colors hover:border-[#FFC800]"
+                                >
+                                    <h3 className="font-black tracking-normal group-hover:text-yellow-500">
+                                        {cluster.title}
+                                    </h3>
+                                    <p className="mt-2 text-sm font-semibold leading-6 text-muted-foreground">
+                                        {cluster.intentQuestions[0] || cluster.aliases[0]}
+                                    </p>
+                                    <span className="mt-3 inline-flex items-center gap-1 text-xs font-black uppercase tracking-widest">
+                                        Hub sayfasına git <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
+                                    </span>
+                                </Link>
+                            ))}
+                        </div>
+                    </section>
 
                     <div className="mt-8 grid gap-5">
                         {topicGroups.map((group) => {

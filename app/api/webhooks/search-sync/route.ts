@@ -31,11 +31,31 @@ function buildSearchableText(table: string, record: any): string {
     return "";
 }
 
+function getCanonicalPath(table: string, record: Record<string, unknown>): string | null {
+    const tableSingular = getTableSingular(table);
+    const recordId = record.id?.toString();
+    const slug = typeof record.slug === "string" ? record.slug : "";
+    const category = typeof record.category === "string" ? record.category : "";
+    const term = typeof record.term === "string" ? record.term : "";
+
+    if (tableSingular === "article") {
+        const slugOrId = slug || recordId;
+        if (!slugOrId) return null;
+        return `/${category === "Deney" ? "deney" : "makale"}/${slugOrId}`;
+    }
+
+    if (tableSingular === "question" && recordId) return `/forum/${recordId}`;
+    if (tableSingular === "dictionary" && term) return `/sozluk/${slugify(term)}`;
+    if (tableSingular === "quiz" && slug) return `/testler/${slug}`;
+
+    return null;
+}
+
 // Helper to check if a record is active/published and should be indexed
 function isRecordIndexable(table: string, record: any): boolean {
     if (!record) return false;
     if (table === "articles") {
-        return record.published === true;
+        return record.status === "published" || record.published === true;
     }
     if (table === "questions") {
         return record.status !== "deleted";
@@ -132,6 +152,7 @@ export async function POST(req: Request) {
                 source_type: tableSingular,
                 title: record.title || record.term || "FizikHub İçeriği",
                 slug: record.slug || (record.term ? slugify(record.term) : ""),
+                canonical_path: getCanonicalPath(table, record as Record<string, unknown>),
                 cover_image: record.cover_url || record.image_url || null,
             };
 

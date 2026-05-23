@@ -4,6 +4,7 @@ import { simulations } from '@/components/simulations/data';
 import { slugify } from '@/lib/slug';
 import { getDictionaryTerms } from '@/lib/api';
 import { SEO_PRIORITY_SLUG_SET } from '@/lib/seo-priority';
+import { getTopicClusterHref, SEO_TOPIC_CLUSTERS } from '@/lib/seo-topic-clusters';
 import { getArticleCanonicalPath, getSiteUrl, hasUsefulIndexableText, isIndexableForumQuestion, isLikelyIndexableArticle, isLikelyIndexableTitle, toAbsoluteUrl } from '@/lib/seo-utils';
 
 export const revalidate = 3600; // Revalidate sitemap every hour
@@ -189,8 +190,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         priority: 0.6,
     }));
 
+    const topicPages: MetadataRoute.Sitemap = SEO_TOPIC_CLUSTERS.map((cluster) => ({
+        url: `${baseUrl}${getTopicClusterHref(cluster)}`,
+        lastModified: STATIC_LAST_MODIFIED,
+        changeFrequency: 'weekly' as const,
+        priority: 0.78,
+    }));
+
     return [
         ...staticPages,
+        ...topicPages,
         ...questionPages,
         ...articlePages,
         ...termPages,

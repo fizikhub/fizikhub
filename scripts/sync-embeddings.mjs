@@ -76,8 +76,8 @@ async function main() {
     console.log("\n📖 [1/4] Makaleler taranıyor...");
     const { data: articles, error: artErr } = await supabase
         .from("articles")
-        .select("id, title, slug, excerpt, content, category, cover_url, image_url")
-        .eq("published", true);
+        .select("id, title, slug, excerpt, content, category, cover_url, image_url, published, status")
+        .or("status.eq.published,published.eq.true");
 
     if (artErr) {
         console.error("❌ Makaleler çekilemedi:", artErr.message);
@@ -94,6 +94,7 @@ async function main() {
                     source_type: "article",
                     title: item.title,
                     slug: item.slug,
+                    canonical_path: `/${item.category === "Deney" ? "deney" : "makale"}/${item.slug || item.id}`,
                     cover_image: item.cover_url || item.image_url || null
                 };
 
@@ -140,6 +141,7 @@ async function main() {
                     source_type: "question",
                     title: item.title,
                     slug: "",
+                    canonical_path: `/forum/${item.id}`,
                     cover_image: null
                 };
 
@@ -183,6 +185,7 @@ async function main() {
                     source_type: "dictionary",
                     title: item.term,
                     slug: slugify(item.term),
+                    canonical_path: `/sozluk/${slugify(item.term)}`,
                     cover_image: null
                 };
 
@@ -226,6 +229,7 @@ async function main() {
                     source_type: "quiz",
                     title: item.title,
                     slug: item.slug,
+                    canonical_path: `/testler/${item.slug}`,
                     cover_image: null
                 };
 

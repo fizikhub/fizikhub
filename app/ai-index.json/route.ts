@@ -2,20 +2,25 @@ import { simulations } from "@/components/simulations/data";
 import { getDictionaryTerms } from "@/lib/api";
 import { createStaticClient } from "@/lib/supabase-server";
 import { slugify } from "@/lib/slug";
-import { getRelatedUrlsForCluster, SEO_TOPIC_CLUSTERS } from "@/lib/seo-topic-clusters";
+import { getRelatedUrlsForCluster, getTopicClusterHref, SEO_TOPIC_CLUSTERS } from "@/lib/seo-topic-clusters";
 import { getArticleCanonicalPath, getSiteUrl, hasUsefulIndexableText, isIndexableForumQuestion, isLikelyIndexableArticle, isLikelyIndexableTitle, truncateForMeta } from "@/lib/seo-utils";
 
 export const revalidate = 3600;
 
 type AiIndexItem = {
-    type: "article" | "forum" | "dictionary" | "quiz" | "simulation";
+    type: "article" | "forum" | "dictionary" | "quiz" | "simulation" | "topic";
     url: string;
+    canonicalPath: string;
     title: string;
     description: string;
     topics: string[];
+    intentQuestions: string[];
+    entityType: string;
+    contentFreshness: "fresh" | "recent" | "evergreen";
     updatedAt: string;
     language: "tr-TR";
     schemaTypes: string[];
+    clusterSlugs: string[];
     relatedUrls: string[];
 };
 
@@ -32,10 +37,30 @@ function clusterTopicsForResource(kind: "article" | "term" | "quiz" | "simulatio
     });
 }
 
+function clusterSlugsForResource(kind: "article" | "term" | "quiz" | "simulation", slug: string) {
+    return clusterTopicsForResource(kind, slug).map((cluster) => cluster.slug);
+}
+
+function intentQuestionsForResource(kind: "article" | "term" | "quiz" | "simulation", slug: string) {
+    return unique(clusterTopicsForResource(kind, slug).flatMap((cluster) => cluster.intentQuestions)).slice(0, 8);
+}
+
+function contentFreshnessFor(updatedAt: string | null | undefined): AiIndexItem["contentFreshness"] {
+    if (!updatedAt) return "evergreen";
+
+    const ageDays = (Date.now() - new Date(updatedAt).getTime()) / (1000 * 60 * 60 * 24);
+    if (ageDays <= 14) return "fresh";
+    if (ageDays <= 120) return "recent";
+    return "evergreen";
+}
+
 function relatedUrlsFor(kind: "article" | "term" | "quiz" | "simulation", slug: string, baseUrl: string) {
-    return unique(clusterTopicsForResource(kind, slug)
-        .flatMap(getRelatedUrlsForCluster)
-        .map((link) => `${baseUrl}${link.href}`))
+    const clusters = clusterTopicsForResource(kind, slug);
+
+    return unique([
+        ...clusters.map((cluster) => `${baseUrl}${getTopicClusterHref(cluster)}`),
+        ...clusters.flatMap(getRelatedUrlsForCluster).map((link) => `${baseUrl}${link.href}`),
+    ])
         .filter((url) => {
             if (kind === "article") return url !== `${baseUrl}/makale/${slug}`;
             if (kind === "term") return url !== `${baseUrl}/sozluk/${slug}`;
@@ -107,12 +132,17 @@ export async function GET() {
             return [{
                 type: "article",
                 url: `${baseUrl}${canonicalPath}`,
+                canonicalPath,
                 title: article.title || article.slug,
                 description: truncateForMeta(article.excerpt || article.content || `${article.title} hakkında Fizikhub makalesi.`, 220),
                 topics: topicsFor("article", article.slug, [article.category || "Fizik"]),
+                intentQuestions: intentQuestionsForResource("article", article.slug),
+                entityType: isExperiment ? "experiment-article" : "article",
+                contentFreshness: contentFreshnessFor(article.updated_at || article.created_at),
                 updatedAt: new Date(article.updated_at || article.created_at || Date.now()).toISOString(),
                 language: "tr-TR",
                 schemaTypes: isExperiment ? ["BlogPosting", "WebPage"] : ["BlogPosting", "WebPage", "BreadcrumbList"],
+                clusterSlugs: clusterSlugsForResource("article", article.slug),
                 relatedUrls: relatedUrlsFor("article", article.slug, baseUrl),
             }];
         });
@@ -125,12 +155,17 @@ export async function GET() {
             return [{
                 type: "forum",
                 url: `${baseUrl}/forum/${question.id}`,
+                canonicalPath: `/forum/${question.id}`,
                 title: question.title || `Fizikhub forum sorusu ${question.id}`,
                 description: truncateForMeta(question.content || `${question.title} hakkında Fizikhub forum tartışması.`, 220),
                 topics: unique([question.category, ...(Array.isArray(question.tags) ? question.tags : [])]).slice(0, 10),
+                intentQuestions: [],
+                entityType: answerCount > 0 ? "answered-question" : "forum-question",
+                contentFreshness: contentFreshnessFor(question.updated_at || question.created_at),
                 updatedAt: new Date(question.updated_at || question.created_at || Date.now()).toISOString(),
                 language: "tr-TR",
                 schemaTypes: answerCount > 0 ? ["QAPage", "Question", "Answer"] : ["WebPage"],
+                clusterSlugs: [],
                 relatedUrls: [`${baseUrl}/forum`, `${baseUrl}/makale`, `${baseUrl}/sozluk`],
             }];
         });
@@ -142,12 +177,17 @@ export async function GET() {
             return {
                 type: "dictionary",
                 url: `${baseUrl}/sozluk/${termSlug}`,
+                canonicalPath: `/sozluk/${termSlug}`,
                 title: term.term,
                 description: truncateForMeta(term.definition, 220),
                 topics: topicsFor("term", termSlug, [term.category || "Bilim sözlüğü"]),
+                intentQuestions: intentQuestionsForResource("term", termSlug),
+                entityType: "defined-term",
+                contentFreshness: "evergreen" as const,
                 updatedAt: new Date(term.created_at || Date.now()).toISOString(),
                 language: "tr-TR",
                 schemaTypes: ["DefinedTerm", "DefinedTermSet", "WebPage"],
+                clusterSlugs: clusterSlugsForResource("term", termSlug),
                 relatedUrls: relatedUrlsFor("term", termSlug, baseUrl),
             };
         });
@@ -160,12 +200,17 @@ export async function GET() {
             return [{
                 type: "quiz",
                 url: `${baseUrl}/testler/${quiz.slug}`,
+                canonicalPath: `/testler/${quiz.slug}`,
                 title: quiz.title,
                 description: truncateForMeta(quiz.description || `${quiz.title} testiyle fizik bilgini ölç.`, 220),
                 topics: topicsFor("quiz", quiz.slug, ["Fizik testi", "TYT AYT YKS fizik"]),
+                intentQuestions: intentQuestionsForResource("quiz", quiz.slug),
+                entityType: "quiz",
+                contentFreshness: contentFreshnessFor(quiz.created_at),
                 updatedAt: new Date(quiz.created_at || Date.now()).toISOString(),
                 language: "tr-TR",
                 schemaTypes: ["Quiz", "LearningResource", "BreadcrumbList"],
+                clusterSlugs: clusterSlugsForResource("quiz", quiz.slug),
                 relatedUrls: relatedUrlsFor("quiz", quiz.slug, baseUrl),
             }];
         });
@@ -173,13 +218,35 @@ export async function GET() {
     const simulationItems: AiIndexItem[] = simulations.map((sim) => ({
         type: "simulation",
         url: `${baseUrl}/simulasyonlar/${sim.slug}`,
+        canonicalPath: `/simulasyonlar/${sim.slug}`,
         title: sim.title,
         description: truncateForMeta(`${sim.description} Temel formül: ${sim.formula}.`, 220),
         topics: topicsFor("simulation", sim.slug, sim.tags),
+        intentQuestions: intentQuestionsForResource("simulation", sim.slug),
+        entityType: "interactive-simulation",
+        contentFreshness: "evergreen" as const,
         updatedAt: "2026-05-13T00:00:00.000+03:00",
         language: "tr-TR",
         schemaTypes: ["LearningResource", "SoftwareApplication", "BreadcrumbList"],
+        clusterSlugs: clusterSlugsForResource("simulation", sim.slug),
         relatedUrls: relatedUrlsFor("simulation", sim.slug, baseUrl),
+    }));
+
+    const topicItems: AiIndexItem[] = SEO_TOPIC_CLUSTERS.map((cluster) => ({
+        type: "topic",
+        url: `${baseUrl}${getTopicClusterHref(cluster)}`,
+        canonicalPath: getTopicClusterHref(cluster),
+        title: cluster.title,
+        description: truncateForMeta(`${cluster.title}: ${cluster.intentQuestions.join(" ")} ${cluster.aliases.join(", ")} kaynakları.`, 220),
+        topics: unique([cluster.title, ...cluster.aliases]).slice(0, 10),
+        intentQuestions: cluster.intentQuestions,
+        entityType: "topic-cluster",
+        contentFreshness: "evergreen",
+        updatedAt: "2026-05-13T00:00:00.000+03:00",
+        language: "tr-TR",
+        schemaTypes: ["CollectionPage", "ItemList", "LearningResource", "BreadcrumbList"],
+        clusterSlugs: [cluster.slug],
+        relatedUrls: unique(getRelatedUrlsForCluster(cluster).map((link) => `${baseUrl}${link.href}`)).slice(0, 12),
     }));
 
     return Response.json({
@@ -197,6 +264,7 @@ export async function GET() {
             rss: `${baseUrl}/feed.xml`,
         },
         items: [
+            ...topicItems,
             ...articleItems,
             ...forumItems,
             ...dictionaryItems,

@@ -9,6 +9,15 @@ export type SeoTopicCluster = {
     simulationSlugs: string[];
 };
 
+export type SeoClusterResourceType = "article" | "term" | "quiz" | "simulation" | "topic";
+
+export type SeoClusterResourceLink = {
+    href: string;
+    label: string;
+    type: SeoClusterResourceType;
+    slug: string;
+};
+
 export const SEO_TOPIC_CLUSTERS: SeoTopicCluster[] = [
     {
         slug: "newton-yasalari",
@@ -319,6 +328,16 @@ export const SEO_TOPIC_CLUSTERS: SeoTopicCluster[] = [
     },
 ];
 
+export function getTopicClusterBySlug(slug?: string | null) {
+    if (!slug) return null;
+    return SEO_TOPIC_CLUSTERS.find((cluster) => cluster.slug === slug) || null;
+}
+
+export function getTopicClusterHref(clusterOrSlug: SeoTopicCluster | string) {
+    const slug = typeof clusterOrSlug === "string" ? clusterOrSlug : clusterOrSlug.slug;
+    return `/konular/${slug}`;
+}
+
 export function getClustersForArticleSlug(slug?: string | null) {
     if (!slug) return [];
     return SEO_TOPIC_CLUSTERS.filter((cluster) => cluster.articleSlugs.includes(slug));
@@ -334,21 +353,19 @@ export function getClustersForSimulationSlug(slug?: string | null) {
     return SEO_TOPIC_CLUSTERS.filter((cluster) => cluster.simulationSlugs.includes(slug));
 }
 
-export function getRelatedUrlsForCluster(cluster: SeoTopicCluster) {
+export function getClusterResourceLinks(cluster: SeoTopicCluster): SeoClusterResourceLink[] {
     return [
-        ...cluster.articleSlugs.map((slug) => ({ href: `/makale/${slug}`, label: "Makale" })),
-        ...cluster.termSlugs.map((slug) => ({ href: `/sozluk/${slug}`, label: "Sözlük" })),
-        ...cluster.quizSlugs.map((slug) => ({ href: `/testler/${slug}`, label: "Test" })),
-        ...cluster.simulationSlugs.map((slug) => ({ href: `/simulasyonlar/${slug}`, label: "Simülasyon" })),
+        ...cluster.articleSlugs.map((slug) => ({ href: `/makale/${slug}`, label: "Makale", type: "article" as const, slug })),
+        ...cluster.termSlugs.map((slug) => ({ href: `/sozluk/${slug}`, label: "Sözlük", type: "term" as const, slug })),
+        ...cluster.quizSlugs.map((slug) => ({ href: `/testler/${slug}`, label: "Test", type: "quiz" as const, slug })),
+        ...cluster.simulationSlugs.map((slug) => ({ href: `/simulasyonlar/${slug}`, label: "Simülasyon", type: "simulation" as const, slug })),
     ];
 }
 
+export function getRelatedUrlsForCluster(cluster: SeoTopicCluster) {
+    return getClusterResourceLinks(cluster).map(({ href, label }) => ({ href, label }));
+}
+
 export function getPrimaryClusterHref(cluster: SeoTopicCluster) {
-    return cluster.articleSlugs[0]
-        ? `/makale/${cluster.articleSlugs[0]}`
-        : cluster.simulationSlugs[0]
-            ? `/simulasyonlar/${cluster.simulationSlugs[0]}`
-            : cluster.termSlugs[0]
-                ? `/sozluk/${cluster.termSlugs[0]}`
-                : "/konular";
+    return getTopicClusterHref(cluster);
 }
