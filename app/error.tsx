@@ -1,8 +1,23 @@
 // million-ignore
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
+
+/**
+ * Reports an error to the configured error tracking service.
+ * Currently logs to console; replace the body with Sentry.captureException()
+ * or a custom /api/error-report POST when a service is wired up.
+ */
+function reportError(error: Error & { digest?: string }) {
+    // Future: Sentry.captureException(error, { tags: { digest: error.digest } });
+    console.error("[FizikHub Error Report]", {
+        message: error.message,
+        digest: error.digest,
+        stack: error.stack?.slice(0, 500),
+        timestamp: new Date().toISOString(),
+    });
+}
 
 export default function Error({
     error,
@@ -14,12 +29,13 @@ export default function Error({
     const audioRef = useRef<HTMLAudioElement>(null);
 
     useEffect(() => {
-        // Console log the error for debugging
-        console.error("Yüksek ihtimalle sıçtık:", error);
-
-        // Auto-play audio if possible
-
+        reportError(error);
     }, [error]);
+
+    const copyDigest = useCallback(() => {
+        const digestText = error.digest || "N/A";
+        navigator.clipboard.writeText(digestText).catch(() => {});
+    }, [error.digest]);
 
     return (
         <div className="fixed inset-0 z-[9999] min-h-screen w-full bg-[#050505] flex flex-col items-center justify-center relative overflow-hidden text-center p-6">
@@ -65,7 +81,15 @@ export default function Error({
                         <div className="mt-8 p-4 bg-red-950/30 border border-red-500/20 rounded-lg text-xs font-mono text-red-200 overflow-auto max-h-40 text-left">
                             <p className="font-bold border-b border-red-500/20 pb-1 mb-2">HATA DETAYI (Bunu geliştiriciye ilet):</p>
                             <p>{process.env.NODE_ENV === 'development' ? (error.message || "Bilinmeyen Hata") : "Beklenmeyen bir hata oluştu."}</p>
-                            {error.digest && <p className="mt-1 text-red-400">Digest: {error.digest}</p>}
+                            {error.digest && (
+                                <button
+                                    onClick={copyDigest}
+                                    className="mt-1 text-red-400 hover:text-red-300 transition-colors cursor-pointer underline decoration-dotted"
+                                    title="Tıklayarak hata kodunu kopyala"
+                                >
+                                    Digest: {error.digest} 📋
+                                </button>
+                            )}
                         </div>
                     </div>
                 </div>
@@ -76,7 +100,7 @@ export default function Error({
                     <source src="/audio/error_theme.wav" type="audio/wav" />
                 </audio>
 
-                {/* Reset Button (Optional, maybe hidden or subtle?) */}
+                {/* Reset Button */}
                 <button
                     onClick={() => reset()}
                     className="mt-8 px-6 py-2 text-sm text-white/20 hover:text-white/80 transition-colors uppercase tracking-[0.3em] hover:bg-white/5 rounded-full"
@@ -92,3 +116,4 @@ export default function Error({
         </div>
     );
 }
+

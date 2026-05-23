@@ -4,6 +4,7 @@ import { unstable_cache } from 'next/cache';
 import { createStaticClient } from './supabase-server';
 import { CURATED_DICTIONARY_TERMS } from './dictionary-defaults';
 import { slugify } from './slug';
+import { redisCache } from './upstash';
 
 
 export type Article = Database['public']['Tables']['articles']['Row'] & {
@@ -60,6 +61,13 @@ function mergeDictionaryTerms(remoteTerms: DictionaryTerm[]) {
 export const getArticles = cache(async function (
     options: { status?: string | null; authorRole?: 'admin' | 'all'; fields?: string; limit?: number } = { status: 'published', authorRole: 'all' }
 ) {
+    const redisCacheKey = `fh:articles:${JSON.stringify(options)}`;
+
+    // L1: Check Redis first (edge-compatible, survives redeployments)
+    const cached = await redisCache.get<Article[]>(redisCacheKey);
+    if (cached) return cached;
+
+    // L2: Next.js unstable_cache (per-instance, request-deduped)
     const fetchCached = unstable_cache(
         async () => {
             const staticClient = createStaticClient();
@@ -85,7 +93,14 @@ export const getArticles = cache(async function (
         { revalidate: 600, tags: ['articles'] } // 10 minutes cache
     );
 
-    return await fetchCached();
+    const result = await fetchCached();
+
+    // Populate Redis L1 for subsequent requests (5 min TTL)
+    if (result.length > 0) {
+        redisCache.set(redisCacheKey, result, 300).catch(() => {});
+    }
+
+    return result;
 });
 
 
@@ -154,6 +169,13 @@ export const getQuestions = cache(async function (options?: { limit?: number }) 
 
 
 export const getDictionaryTerms = cache(async function () {
+    const redisCacheKey = 'fh:dictionary:all';
+
+    // L1: Check Redis first
+    const cached = await redisCache.get<DictionaryTerm[]>(redisCacheKey);
+    if (cached) return cached;
+
+    // L2: Next.js unstable_cache
     const fetchCached = unstable_cache(
         async () => {
             const staticClient = createStaticClient();
@@ -172,5 +194,12 @@ export const getDictionaryTerms = cache(async function () {
         { revalidate: 3600, tags: ['dictionary'] } // 1 hour cache since terms rarely change
     );
 
-    return await fetchCached();
+    const result = await fetchCached();
+
+    // Populate Redis L1 for subsequent requests (30 min TTL — terms rarely change)
+    if (result.length > 0) {
+        redisCache.set(redisCacheKey, result, 1800).catch(() => {});
+    }
+
+    return result;
 });

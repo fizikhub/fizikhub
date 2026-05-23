@@ -1,23 +1,7 @@
 "use server";
 
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { getGeminiClient } from "./gemini";
 
-let geminiClient: GoogleGenerativeAI | null = null;
-
-function getGeminiApiKey() {
-    return process.env.GOOGLE_GENERATIVE_AI_API_KEY || process.env.NEXT_PUBLIC_GEMINI_API_KEY || process.env.GOOGLE_AI_API_KEY || "";
-}
-
-function getGeminiClient() {
-    const apiKey = getGeminiApiKey();
-    if (!apiKey) return null;
-
-    if (!geminiClient) {
-        geminiClient = new GoogleGenerativeAI(apiKey);
-    }
-
-    return geminiClient;
-}
 
 export interface AIReviewResult {
     overall_score: number;

@@ -2,8 +2,26 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 
 let geminiClient: GoogleGenerativeAI | null = null;
 
-function getGeminiClient() {
-    const apiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_GENERATIVE_AI_API_KEY || process.env.GOOGLE_AI_API_KEY || "";
+/**
+ * Centralized Gemini API key resolver.
+ * Checks multiple environment variable names for maximum deployment flexibility.
+ */
+export function getGeminiApiKey(): string {
+    return (
+        process.env.GEMINI_API_KEY ||
+        process.env.GOOGLE_GENERATIVE_AI_API_KEY ||
+        process.env.NEXT_PUBLIC_GEMINI_API_KEY ||
+        process.env.GOOGLE_AI_API_KEY ||
+        ""
+    );
+}
+
+/**
+ * Singleton Gemini client shared across all modules (ai-review, moderation, embeddings).
+ * Returns null when no API key is configured — callers must handle this gracefully.
+ */
+export function getGeminiClient(): GoogleGenerativeAI | null {
+    const apiKey = getGeminiApiKey();
     if (!apiKey) return null;
 
     if (!geminiClient) {
