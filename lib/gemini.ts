@@ -22,7 +22,7 @@ export async function generateEmbedding(text: string): Promise<number[] | null> 
     }
 
     try {
-        const model = genAI.getGenerativeModel({ model: "embedding-001" }, { apiVersion: "v1" });
+        const model = genAI.getGenerativeModel({ model: "gemini-embedding-001" });
         const result = await model.embedContent(text);
         const embedding = result.embedding;
         return embedding.values;
