@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState, useCallback, ReactNode } from "react";
+import { createContext, useContext, useEffect, useState, ReactNode } from "react";
 import { getTimeLimitStatus, updateTimeUsed, TimeLimitStatus } from "@/app/time-limit/actions";
 import { TimeExpired } from "./time-expired";
 
@@ -91,7 +91,7 @@ export function TimeLimitProvider({ children }: { children: ReactNode }) {
             }
         };
 
-        const handlePageHide = (event: PageTransitionEvent) => {
+        const handlePageHide = () => {
             if (secondsSinceLastUpdate > 0) {
                 navigator.sendBeacon('/api/time-limit/update', JSON.stringify({
                     seconds: secondsSinceLastUpdate

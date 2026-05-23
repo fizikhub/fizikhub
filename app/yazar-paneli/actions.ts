@@ -350,7 +350,7 @@ export async function checkLinkHealth(url: string) {
                 },
                 cache: 'no-store'
             });
-        } catch (headError) {
+        } catch {
             // Some servers block HEAD requests, fallback to GET (with a small limit)
             const getController = new AbortController();
             const getTimeoutId = setTimeout(() => getController.abort(), 10000);

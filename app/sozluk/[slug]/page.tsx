@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
-import { createStaticClient } from "@/lib/supabase-server";
 import { getDictionaryTerms } from "@/lib/api";
 import { BreadcrumbJsonLd } from "@/lib/breadcrumbs";
 import { SEO_PRIORITY_ARTICLES } from "@/lib/seo-priority";
@@ -60,13 +59,11 @@ function truncateAtWordBoundary(text: string, limit: number) {
 }
 
 async function getTermBySlug(slug: string) {
-    const supabase = createStaticClient();
     const terms = await getDictionaryTerms();
     return terms.find((term) => slugify(term.term) === slug) || null;
 }
 
 export async function generateStaticParams() {
-    const supabase = createStaticClient();
     const terms = await getDictionaryTerms();
 
     return terms.map((term) => ({
@@ -133,7 +130,6 @@ export default async function DictionaryTermPage({ params }: PageProps) {
     if (!term) notFound();
 
     const canonical = `${SITE_URL}/sozluk/${slug}`;
-    const supabase = createStaticClient();
     const terms = await getDictionaryTerms();
     const relatedTerms = terms
         .filter((item) => item.category === term.category && item.term !== term.term)

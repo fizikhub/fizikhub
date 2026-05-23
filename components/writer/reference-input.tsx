@@ -83,7 +83,7 @@ export function ReferenceInput({ references, onChange }: ReferenceInputProps) {
                     toast.error(`Kaynak [${index + 1}] erişilemiyor: 404 Not Found`);
                 }
             }
-        } catch (error) {
+        } catch {
             setHealthChecks(prev => ({
                 ...prev,
                 [index]: { loading: false, status: 'warning', message: "Kontrol edilemedi" }

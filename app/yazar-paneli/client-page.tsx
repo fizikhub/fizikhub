@@ -7,7 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { approveArticle, revokeApproval } from "./actions";
-import { CheckCircle2, Clock, UserIcon, FileText, XCircle, Bot, Search, Filter } from "lucide-react";
+import { CheckCircle2, Clock, UserIcon, XCircle, Bot, Search, Filter } from "lucide-react";
 import Link from "next/link";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Badge } from "@/components/ui/badge";
@@ -36,7 +36,7 @@ const ArticleCard = memo(({
     const formattedDate = useMemo(() => {
         try {
             return format(new Date(article.created_at), "d MMM", { locale: tr });
-        } catch (e) {
+        } catch {
             return "---";
         }
     }, [article.created_at]);

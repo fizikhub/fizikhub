@@ -23,7 +23,7 @@ const ArticleCard = memo(({ article }: { article: any }) => {
     const formattedDate = useMemo(() => {
         try {
             return format(new Date(article.created_at), "d MMM", { locale: tr });
-        } catch (e) {
+        } catch {
             return "---";
         }
     }, [article.created_at]);

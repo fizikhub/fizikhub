@@ -24,7 +24,7 @@ export default async function ConversationPage({
 
     try {
         // Fetch everything in parallel
-        const [messagesResult, reactionsResult, _] = await Promise.all([
+        const [messagesResult, reactionsResult] = await Promise.all([
             getMessages(conversationId),
             getReactions(conversationId),
             markAsRead(conversationId),

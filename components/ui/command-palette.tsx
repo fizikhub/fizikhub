@@ -13,57 +13,73 @@ export function CommandPalette({
     isOpen?: boolean;
     onClose?: () => void;
 }) {
-    const [isOpen, setIsOpen] = React.useState(false);
+    const [internalIsOpen, setInternalIsOpen] = React.useState(false);
     const [query, setQuery] = React.useState("");
     const [results, setResults] = React.useState<SearchResult[]>([]);
     const [loading, setLoading] = React.useState(false);
     const router = useRouter();
+    const isOpen = Boolean(externalIsOpen || internalIsOpen);
+
+    const setOpen = React.useCallback((open: boolean) => {
+        setInternalIsOpen(open);
+
+        if (!open) {
+            externalOnClose?.();
+        }
+    }, [externalOnClose]);
 
     // Toggle with Cmd+K
     React.useEffect(() => {
         const down = (e: KeyboardEvent) => {
             if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
                 e.preventDefault();
-                setIsOpen((open) => !open);
+                setOpen(!isOpen);
             }
         };
 
         document.addEventListener("keydown", down);
         return () => document.removeEventListener("keydown", down);
-    }, []);
-
-    // Handle external control
-    React.useEffect(() => {
-        if (externalIsOpen !== undefined) {
-            setIsOpen(externalIsOpen);
-        }
-    }, [externalIsOpen]);
+    }, [isOpen, setOpen]);
 
     const handleClose = () => {
-        setIsOpen(false);
-        externalOnClose?.();
+        setOpen(false);
+    };
+
+    const handleQueryChange = (value: string) => {
+        setQuery(value);
+        if (value.length < 2) {
+            setResults([]);
+            setLoading(false);
+        }
     };
 
     // Search logic
     React.useEffect(() => {
         if (query.length < 2) {
-            setResults([]);
             return;
         }
 
+        let cancelled = false;
         const timer = setTimeout(async () => {
             setLoading(true);
             try {
                 const data = await searchGlobal(query);
-                setResults(data);
+                if (!cancelled) {
+                    setResults(data);
+                }
             } catch (error) {
                 console.error("Search error:", error);
             } finally {
-                setLoading(false);
+                if (!cancelled) {
+                    setLoading(false);
+                }
             }
         }, 300);
 
-        return () => clearTimeout(timer);
+        return () => {
+            cancelled = true;
+            clearTimeout(timer);
+        };
     }, [query]);
 
     const handleSelect = (url: string) => {
@@ -81,7 +97,7 @@ export function CommandPalette({
     };
 
     return (
-        <Dialog open={isOpen} onOpenChange={setIsOpen}>
+        <Dialog open={isOpen} onOpenChange={setOpen}>
             <DialogContent className="p-0 overflow-hidden shadow-2xl max-w-2xl bg-white dark:bg-[#050505] border-2 border-black/10 dark:border-white/10">
                 <Command className="[&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-muted-foreground [&_[cmdk-item]]:px-2 [&_[cmdk-item]]:py-3 aria-selected:bg-blue-500">
                     <div className="flex items-center border-b px-3" cmdk-input-wrapper="">
@@ -90,7 +106,7 @@ export function CommandPalette({
                             placeholder="Evrende ne arıyorsun? (örn: Karadelik, Newton...)"
                             className="flex h-11 w-full rounded-md bg-transparent py-3 text-sm outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50"
                             value={query}
-                            onValueChange={setQuery}
+                            onValueChange={handleQueryChange}
                         />
                     </div>
                     <Command.List className="max-h-[300px] overflow-y-auto overflow-x-hidden min-h-[100px]">

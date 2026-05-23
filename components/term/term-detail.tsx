@@ -1,7 +1,6 @@
 "use client";
 
-import { Article } from "@/lib/api";
-import { BookType, Hash, Calendar, Eye, Heart, Share2, Quote, ArrowLeft } from "lucide-react";
+import { Hash, Calendar, Heart, Share2, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { format } from "date-fns";
@@ -20,7 +19,7 @@ interface TermDetailProps {
     initialBookmarked: boolean;
 }
 
-export function TermDetail({ article, readingTime, likeCount, initialLiked, initialBookmarked }: TermDetailProps) {
+export function TermDetail({ article, readingTime, likeCount }: TermDetailProps) {
     // Extract metadata
     const metadataMatch = article.content.match(/<!--meta (.*?) -->/);
     const metadata = metadataMatch ? JSON.parse(metadataMatch[1]) : {};
@@ -86,6 +85,17 @@ export function TermDetail({ article, readingTime, likeCount, initialLiked, init
                                     <Calendar className="w-3.5 h-3.5" />
                                     {format(new Date(article.created_at), 'd MMMM yyyy', { locale: tr })}
                                 </span>
+                                <span className="w-1 h-1 rounded-full bg-border" />
+                                <span>{readingTime}</span>
+                                {likeCount > 0 && (
+                                    <>
+                                        <span className="w-1 h-1 rounded-full bg-border" />
+                                        <span className="flex items-center gap-1">
+                                            <Heart className="w-3.5 h-3.5" />
+                                            {likeCount}
+                                        </span>
+                                    </>
+                                )}
                             </div>
                         </div>
 

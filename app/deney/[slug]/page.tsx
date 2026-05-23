@@ -14,7 +14,6 @@ interface PageProps {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
     const { slug } = await params;
-    const supabase = await createClient();
     const article = await getArticleBySlug(slug);
 
     if (!article) {

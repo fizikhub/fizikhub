@@ -97,7 +97,6 @@ function ArticleTopicClusterLinks({ slug }: { slug: string }) {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
     const { slug } = await params;
-    const supabase = createStaticClient();
     const article = await getArticleBySlug(slug);
 
     if (!article) {

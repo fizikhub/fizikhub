@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Hash } from "lucide-react";
-import { createClient } from "@/lib/supabase-server";
 import { getDictionaryTerms } from "@/lib/api";
 import { DictionaryList } from "@/components/dictionary/dictionary-list";
 import { Badge } from "@/components/ui/badge";
@@ -53,7 +52,6 @@ export const revalidate = 3600;
 const MAX_STRUCTURED_DATA_TERMS = 250;
 
 export default async function DictionaryPage() {
-    const supabase = await createClient();
     const terms = await getDictionaryTerms();
     const categories = Array.from(new Set(terms.map((term) => term.category).filter(Boolean)));
 

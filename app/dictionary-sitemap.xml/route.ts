@@ -1,4 +1,3 @@
-import { createStaticClient } from "@/lib/supabase-server";
 import { getDictionaryTerms } from "@/lib/api";
 import { slugify } from "@/lib/slug";
 import { escapeXml } from "@/lib/xml";
@@ -7,7 +6,6 @@ import { getSiteUrl, hasUsefulIndexableText, isLikelyIndexableTitle } from "@/li
 export const revalidate = 3600;
 
 export async function GET() {
-    const supabase = createStaticClient();
     const baseUrl = getSiteUrl();
     const terms = await getDictionaryTerms();
 
@@ -33,4 +31,3 @@ ${urls}
         },
     });
 }
-

@@ -12,6 +12,11 @@ export default function GuideRedirectPage() {
 
     useEffect(() => {
         const checkUser = async () => {
+            if (window.localStorage.getItem("fizikhub.blogEditor101.dismissed") === "true") {
+                router.push("/yazar/yeni");
+                return;
+            }
+
             const supabase = createClient();
             const { data: { user } } = await supabase.auth.getUser();
             if (user) {
@@ -23,7 +28,7 @@ export default function GuideRedirectPage() {
             }
         };
         checkUser();
-    }, []);
+    }, [router]);
 
 
     const handleOpenChange = (open: boolean) => {
@@ -33,9 +38,8 @@ export default function GuideRedirectPage() {
         }
     };
 
-    const handleDontShow = async (uid: string) => {
-        // Here you would implement logic to save this preference
-
+    const handleDontShow = () => {
+        window.localStorage.setItem("fizikhub.blogEditor101.dismissed", "true");
     };
 
     // If we want to show it even without user ID (demo mode), passed "guest"

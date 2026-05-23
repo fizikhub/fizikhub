@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Search, Dices } from "lucide-react";
 import { m as motion, AnimatePresence } from "framer-motion";
@@ -16,10 +16,16 @@ interface DictionaryListProps {
 export function DictionaryList({ initialTerms }: DictionaryListProps) {
     const [searchTerm, setSearchTerm] = useState("");
 
-    const filteredTerms = initialTerms.filter((item) =>
-        item.term.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.definition.toLowerCase().includes(searchTerm.toLowerCase())
-    ).sort((a, b) => a.term.localeCompare(b.term));
+    const filteredTerms = useMemo(() => {
+        const normalizedSearchTerm = searchTerm.toLocaleLowerCase("tr");
+
+        return initialTerms
+            .filter((item) =>
+                item.term.toLocaleLowerCase("tr").includes(normalizedSearchTerm) ||
+                item.definition.toLocaleLowerCase("tr").includes(normalizedSearchTerm)
+            )
+            .sort((a, b) => a.term.localeCompare(b.term, "tr"));
+    }, [initialTerms, searchTerm]);
 
     return (
         <>

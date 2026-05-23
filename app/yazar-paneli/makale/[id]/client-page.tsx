@@ -83,12 +83,12 @@ const noteTypeConfig: Record<string, { label: string; icon: React.ReactNode; col
 };
 
 export function ReviewDetailClient({ data, articleId }: ReviewDetailClientProps) {
-    const { article, references, aiReview, notes: initialNotes, approvals, hasApproved: initialHasApproved, currentUserId } = data;
+    const { article, references, aiReview, notes: initialNotes, hasApproved: initialHasApproved } = data;
     const [notes, setNotes] = useState(initialNotes);
     const [hasApproved, setHasApproved] = useState(initialHasApproved);
     const [isLoading, setIsLoading] = useState(false);
     const [isReviewing, setIsReviewing] = useState(false);
-    const [localAiReview, setLocalAiReview] = useState(aiReview);
+    const [localAiReview] = useState(aiReview);
 
     // Note form state
     const [noteContent, setNoteContent] = useState("");
