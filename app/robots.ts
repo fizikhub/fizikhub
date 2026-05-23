@@ -10,6 +10,20 @@ export default function robots(): MetadataRoute.Robots {
         '/storage/',
         '/cdn-cgi/',
         '/*?q=*',
+        '/login',
+        '/forgot-password',
+        '/reset-password',
+        '/profil/',
+        '/admin/',
+        '/yazar/',
+        '/yazar-paneli/',
+        '/mesajlar/',
+        '/notifications/',
+        '/kurulum',
+        '/time-limit/',
+        '/yonetim/',
+        '/basvuru/',
+        '/paylas',
     ];
 
     const commonDisallow = cleanupDisallow;
