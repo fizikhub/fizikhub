@@ -185,21 +185,25 @@ export function ArticleEditor({ article }: ArticleEditorProps) {
     // Restore draft on mount
     useEffect(() => {
         if (article) return; // Don't restore when editing
-        try {
-            const saved = localStorage.getItem(draftKey);
-            if (saved) {
-                const draft = JSON.parse(saved);
-                if (draft.title) setTitle(draft.title);
-                if (draft.category) setCategory(draft.category);
-                if (draft.customCategory) setCustomCategory(draft.customCategory);
-                if (draft.excerpt) setExcerpt(draft.excerpt);
-                if (draft.imageUrl) setImageUrl(draft.imageUrl);
-                if (draft.content) setContent(draft.content);
-                if (draft.references) setReferences(draft.references);
-                toast.info('Önceki taslağınız geri yüklendi.', { duration: 3000 });
-            }
-        } catch { }
-        setIsDraftLoaded(true);
+        
+        // Defer entire state restoration to next tick to completely avoid cascading render warnings
+        setTimeout(() => {
+            try {
+                const saved = localStorage.getItem(draftKey);
+                if (saved) {
+                    const draft = JSON.parse(saved);
+                    if (draft.title) setTitle(draft.title);
+                    if (draft.category) setCategory(draft.category);
+                    if (draft.customCategory) setCustomCategory(draft.customCategory);
+                    if (draft.excerpt) setExcerpt(draft.excerpt);
+                    if (draft.imageUrl) setImageUrl(draft.imageUrl);
+                    if (draft.content) setContent(draft.content);
+                    if (draft.references) setReferences(draft.references);
+                    toast.info('Önceki taslağınız geri yüklendi.', { duration: 3000 });
+                }
+            } catch { }
+            setIsDraftLoaded(true);
+        }, 0);
     }, [article]);
 
     // Auto-save to localStorage every 5 seconds
@@ -219,7 +223,7 @@ export function ArticleEditor({ article }: ArticleEditorProps) {
         }, 5000);
 
         return () => { if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current); };
-    }, [title, category, excerpt, imageUrl, content, references, isDraftLoaded]);
+    }, [title, category, customCategory, excerpt, imageUrl, content, references, isDraftLoaded]);
 
     // Warn before leaving
     useEffect(() => {

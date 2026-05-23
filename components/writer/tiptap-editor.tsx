@@ -20,7 +20,7 @@ import {
     ImagePlus, Loader2, Link as LinkIcon, Youtube as YoutubeIcon,
     Underline as UnderlineIcon, Calculator, MonitorPlay, GitBranch, Sparkles, Wand2
 } from "lucide-react"
-import { useCallback, useRef, useState, useEffect, useMemo, lazy, Suspense } from "react"
+import { useCallback, useRef, useState, useEffect, lazy, Suspense } from "react"
 import { uploadArticleImage } from "@/app/yazar/actions"
 import { toast } from "sonner"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from "@/components/ui/dialog"
@@ -145,8 +145,8 @@ export function TiptapEditor({ content, onChange }: TiptapEditorProps) {
     // Debounce timer for onUpdate — getMarkdown() is expensive, don't call every keystroke
     const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-    // Calculate initial content synchronously so useEditor gets it on mount
-    const initialEditorContent = useMemo(() => {
+    // Calculate initial content synchronously once on mount using useState initializer
+    const [initialEditorContent] = useState(() => {
         if (!content) return '';
         let c = content;
         // 1. Convert indented single-dollar math lines to un-indented spans
@@ -156,7 +156,7 @@ export function TiptapEditor({ content, onChange }: TiptapEditorProps) {
         // 3. Convert inline $...$ to spans
         c = c.replace(/(^|[^\$])\$([^$\n]+?)\$([^\$]|$)/g, '$1<span data-type="math" data-latex="$2"></span>$3');
         return c;
-    }, []); // Only run once on mount using the initial content prop
+    });
 
     const editor = useEditor({
         extensions: [

@@ -43,18 +43,20 @@ export function DictionaryList({ initialTerms }: DictionaryListProps) {
                         />
                     </div>
                 </div>
-                <button
+                <motion.button
+                    whileHover={{ scale: 1.03, y: -2 }}
+                    whileTap={{ scale: 0.97 }}
                     onClick={() => {
                         if (initialTerms.length > 0) {
                             const randomIndex = Math.floor(Math.random() * initialTerms.length);
                             setSearchTerm(initialTerms[randomIndex].term);
                         }
                     }}
-                    className="flex h-14 shrink-0 items-center justify-center gap-2 rounded-xl border-[3px] border-black bg-[#33EAA1] px-6 font-black text-black shadow-[4px_4px_0px_0px_#000] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:bg-[#20CA86] hover:shadow-[2px_2px_0px_0px_#000] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none sm:h-16"
+                    className="flex h-14 shrink-0 items-center justify-center gap-2 rounded-xl border-[3px] border-black bg-[#33EAA1] px-6 font-black text-black shadow-[4px_4px_0px_0px_#000] transition-all hover:bg-[#20CA86] sm:h-16 cursor-pointer"
                 >
                     <Dices className="h-5 w-5 stroke-[2.5px]" />
                     Rastgele
-                </button>
+                </motion.button>
             </div>
 
             {/* Terms Grid */}
@@ -68,11 +70,13 @@ export function DictionaryList({ initialTerms }: DictionaryListProps) {
                             animate={{ opacity: 1, scale: 1, y: 0 }}
                             exit={{ opacity: 0, scale: 0.9 }}
                             transition={{ duration: 0.3, delay: index * 0.05 }}
+                            whileHover={{ scale: 1.02, y: -4 }}
+                            whileTap={{ scale: 0.98 }}
                             className="group flex flex-col h-full"
                         >
                             <Link
                                 href={`/sozluk/${slugify(item.term)}`}
-                                className="relative flex h-full min-h-[230px] flex-col overflow-hidden rounded-xl border-[3px] border-black bg-white p-5 shadow-[4px_4px_0px_0px_#000] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_#000] dark:bg-zinc-900 sm:p-6"
+                                className="relative flex h-full min-h-[230px] flex-col overflow-hidden rounded-xl border-[3px] border-black bg-white p-5 shadow-[4px_4px_0px_0px_#000] dark:bg-zinc-900 sm:p-6 transition-colors hover:bg-neutral-50 dark:hover:bg-zinc-800"
                             >
 
                                 {/* Header */}

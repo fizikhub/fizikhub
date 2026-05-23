@@ -142,7 +142,7 @@ export function WaveSim({ simData }: { simData: any }) {
     return (
         <SimulationLayout title={simData?.title || "Dalga Girişimi"} color={accentColor} controlsArea={Controls} theoryArea={Theory} missionsArea={Missions}>
             <div className="w-full h-full p-0 relative flex items-center justify-center">
-                <svg width="100%" height="100%" viewBox={`0 0 ${canvasWidth} ${canvasHeight}`} preserveAspectRatio="xMidYMid meet" className="origin-center">
+                <svg role="img" aria-label="Dalga Girişimi Simülasyonu Görsel Alanı" width="100%" height="100%" viewBox={`0 0 ${canvasWidth} ${canvasHeight}`} preserveAspectRatio="xMidYMid meet" className="origin-center">
                     <line x1="0" y1={canvasHeight/2} x2={canvasWidth} y2={canvasHeight/2} stroke="#555" strokeWidth="1" strokeDasharray="5 5" />
                     {showIndividual && (<><polyline points={generateWavePath(amplitude1, frequency1, canvasHeight / 2)} fill="none" stroke="#2563EB" strokeWidth="3" opacity="0.6" /><polyline points={generateWavePath(amplitude2, frequency2, canvasHeight / 2)} fill="none" stroke="#DC2626" strokeWidth="3" opacity="0.6" /></>)}
                     {showSuperposition && (<polyline points={generateSuperpositionPath()} fill="none" stroke={accentColor} strokeWidth="4" />)}

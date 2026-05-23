@@ -189,7 +189,7 @@ export function PendulumSim({ simData }: { simData: any }) {
 
     return (
         <SimulationLayout title={simData.title || "Basit Sarkaç"} color={accentColor} controlsArea={Controls} theoryArea={Theory} missionsArea={Missions}>
-            <svg width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">
+            <svg role="img" aria-label="Basit Sarkaç Simülasyonu Görsel Alanı" width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">
                 <rect x="40" y="5" width="20" height="2" fill="#444" rx="1" />
                 <circle cx={pivot.x} cy={pivot.y} r="1" fill="#666" />
                 <line x1={pivot.x} y1={pivot.y} x2={pivot.x} y2="90" stroke="#ffffff10" strokeWidth="0.2" strokeDasharray="2 2" />

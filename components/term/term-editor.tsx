@@ -1,23 +1,21 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import { ArticleEditor } from "@/components/article/article-editor";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Loader2, Trash2, Send, WholeWord, BookType, Hash } from "lucide-react";
+import { Loader2, Send, WholeWord, Hash } from "lucide-react";
 import { toast } from "sonner";
-import { createClient } from "@/lib/supabase";
 import { createArticle } from "@/app/profil/article-actions";
 import { cn } from "@/lib/utils";
 import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
 import { TermGuide } from "@/components/term/term-guide";
 
 interface TermEditorProps {
     userId: string;
 }
 
-export function TermEditor({ userId }: TermEditorProps) {
+export function TermEditor({}: TermEditorProps) {
     // Term Meta
     const [termName, setTermName] = useState("");
     const [relatedField, setRelatedField] = useState(""); // e.g., Fizik, Biyoloji

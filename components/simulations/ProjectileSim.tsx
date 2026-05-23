@@ -269,6 +269,8 @@ export function ProjectileSim({ simData }: { simData: any }) {
         >
             <div className="w-full h-full p-8 relative">
                 <svg
+                    role="img"
+                    aria-label="Eğik Atış Simülasyonu Görsel Alanı"
                     width="100%"
                     height="100%"
                     viewBox={`-5 -5 ${viewWidth + 10} ${viewHeight + 10}`}
