@@ -1,5 +1,4 @@
 import { Database } from '@/types/database';
-import { SupabaseClient } from '@supabase/supabase-js';
 import { cache } from 'react';
 import { unstable_cache } from 'next/cache';
 import { createStaticClient } from './supabase-server';
@@ -59,7 +58,6 @@ function mergeDictionaryTerms(remoteTerms: DictionaryTerm[]) {
 }
 
 export const getArticles = cache(async function (
-    _supabase: SupabaseClient<Database>, // Kept for backwards compatibility but ignored
     options: { status?: string | null; authorRole?: 'admin' | 'all'; fields?: string; limit?: number } = { status: 'published', authorRole: 'all' }
 ) {
     const fetchCached = unstable_cache(
@@ -91,7 +89,7 @@ export const getArticles = cache(async function (
 });
 
 
-export const getArticleBySlug = cache(async function (_supabase: SupabaseClient<Database>, slug: string) {
+export const getArticleBySlug = cache(async function (slug: string) {
     
     const fetchCached = unstable_cache(
         async (querySlug: string) => {
@@ -130,7 +128,7 @@ export const getArticleBySlug = cache(async function (_supabase: SupabaseClient<
 });
 
 
-export const getQuestions = cache(async function (_supabase: SupabaseClient<Database>, options?: { limit?: number }) {
+export const getQuestions = cache(async function (options?: { limit?: number }) {
     const fetchCached = unstable_cache(
         async () => {
             const staticClient = createStaticClient();
@@ -155,7 +153,7 @@ export const getQuestions = cache(async function (_supabase: SupabaseClient<Data
 });
 
 
-export const getDictionaryTerms = cache(async function (_supabase: SupabaseClient<Database>) {
+export const getDictionaryTerms = cache(async function () {
     const fetchCached = unstable_cache(
         async () => {
             const staticClient = createStaticClient();

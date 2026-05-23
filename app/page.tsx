@@ -9,6 +9,52 @@ import { SEO_PRIORITY_SLUGS } from "@/lib/seo-priority";
 import { LazyDesktopSidebar } from "@/components/home/lazy-desktop-sidebar";
 import { getSiteUrl, isLikelyIndexableArticle, toAbsoluteUrl } from "@/lib/seo-utils";
 
+// ─── Supabase Query Result Types ─────────────────────────────────
+interface FeedAuthorRow {
+  full_name?: string | null;
+  username?: string | null;
+  avatar_url?: string | null;
+  is_writer?: boolean | null;
+  is_verified?: boolean | null;
+}
+
+interface FeedArticleRow {
+  id: string;
+  title: string;
+  slug: string;
+  excerpt?: string | null;
+  summary?: string | null;
+  content?: string | null;
+  category: string;
+  cover_url?: string | null;
+  image_url?: string | null;
+  image?: string | null;
+  created_at: string;
+  reading_time?: number | null;
+  status?: string | null;
+  author?: FeedAuthorRow | null;
+}
+
+interface FeedStoryRow {
+  id: string;
+  title?: string | null;
+  media_url?: string | null;
+  content?: string | null;
+  author_id: string;
+  group_id?: string | null;
+  category?: string | null;
+  created_at: string;
+  expires_at: string;
+  author?: { username?: string | null; full_name?: string | null; avatar_url?: string | null } | null;
+}
+
+interface FeedGroupRow {
+  id: string;
+  title: string;
+  cover_url?: string | null;
+  created_at: string;
+}
+
 // Dynamic Imports (Client boundaries lazy loaded automatically)
 const ScrollProgress = dynamic(() => import("@/components/ui/scroll-progress").then(mod => mod.ScrollProgress));
 const BackToTop = dynamic(() => import("@/components/ui/back-to-top").then(mod => mod.BackToTop));
@@ -112,22 +158,22 @@ const getCachedFeedData = unstable_cache(
         .limit(12)
     ]);
 
-    const latestArticles = (articlesResult.data || []).filter((article: any) => isLikelyIndexableArticle(article));
-    const priorityArticles = (priorityArticlesResult.data || []).filter((article: any) => isLikelyIndexableArticle(article));
-    const seenSlugs = new Set(priorityArticles.map((article: any) => article.slug));
+    const latestArticles = ((articlesResult.data || []) as FeedArticleRow[]).filter((article) => isLikelyIndexableArticle(article));
+    const priorityArticles = ((priorityArticlesResult.data || []) as FeedArticleRow[]).filter((article) => isLikelyIndexableArticle(article));
+    const seenSlugs = new Set(priorityArticles.map((article) => article.slug));
 
     return {
       articles: [
-        ...priorityArticles.sort((a: any, b: any) => SEO_PRIORITY_SLUGS.indexOf(a.slug) - SEO_PRIORITY_SLUGS.indexOf(b.slug)),
-        ...latestArticles.filter((article: any) => !seenSlugs.has(article.slug)),
+        ...priorityArticles.sort((a, b) => SEO_PRIORITY_SLUGS.indexOf(a.slug as typeof SEO_PRIORITY_SLUGS[number]) - SEO_PRIORITY_SLUGS.indexOf(b.slug as typeof SEO_PRIORITY_SLUGS[number])),
+        ...latestArticles.filter((article) => !seenSlugs.has(article.slug)),
       ],
       questions: questionsResult.data || [],
       suggestedUsers: profilesResult.data || [],
       // Map stories to match NexusStories expected format temporarily or update component to handle both
-      stories: (storiesResult?.data || []).map((s: any) => ({
+      stories: ((storiesResult?.data || []) as FeedStoryRow[]).map((s) => ({
         id: s.id,
         name: s.title || "Hikaye",
-        image: s.media_url,
+        image: s.media_url || "",
         href: "#",
         color: "from-purple-500 to-pink-500", // Default gradient for now
         content: s.content || "", // Empty if no content
@@ -137,7 +183,7 @@ const getCachedFeedData = unstable_cache(
         group_id: s.group_id,
         category: s.category
       })),
-      groups: (groupsResult?.data || []).map((g: any) => ({
+      groups: ((groupsResult?.data || []) as FeedGroupRow[]).map((g) => ({
         id: g.id,
         name: g.title,
         image: g.cover_url || "/placeholder.png",
@@ -159,7 +205,7 @@ export default async function Home() {
   // Process and Merge Data
   const feedItems = processFeedData(articles, questions);
   const latestArticleDate = articles
-    .map((article: any) => article.created_at)
+    .map((article) => article.created_at)
     .filter(Boolean)
     .sort()
     .at(-1);
@@ -184,7 +230,7 @@ export default async function Home() {
         '@type': 'ItemList',
         '@id': `${baseUrl}/#latest-articles`,
         name: 'Öne çıkan Fizikhub makaleleri',
-        itemListElement: articles.slice(0, 12).map((article: any, index: number) => ({
+        itemListElement: articles.slice(0, 12).map((article, index) => ({
           '@type': 'ListItem',
           position: index + 1,
           item: {

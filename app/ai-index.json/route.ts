@@ -79,7 +79,7 @@ export async function GET() {
             .select("id, title, slug, description, created_at")
             .order("created_at", { ascending: false })
             .limit(200),
-        getDictionaryTerms(supabase),
+        getDictionaryTerms(),
     ]);
 
     const quizIds = (quizzesResult.data || []).map((quiz) => quiz.id).filter(Boolean);

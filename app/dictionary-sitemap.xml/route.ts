@@ -9,7 +9,7 @@ export const revalidate = 3600;
 export async function GET() {
     const supabase = createStaticClient();
     const baseUrl = getSiteUrl();
-    const terms = await getDictionaryTerms(supabase);
+    const terms = await getDictionaryTerms();
 
     const urls = terms
         .filter((term) => isLikelyIndexableTitle(term.term) && hasUsefulIndexableText(term.definition, 40))

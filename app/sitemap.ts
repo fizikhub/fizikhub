@@ -135,7 +135,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
             .order('created_at', { ascending: false })
             .limit(200),
 
-        getDictionaryTerms(supabase),
+        getDictionaryTerms(),
     ]);
 
     const questionPages: MetadataRoute.Sitemap = (questionsResult.data || [])

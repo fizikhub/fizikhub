@@ -305,19 +305,6 @@
         }
     }
 
-    /* ============================================
-       Premium Reading Enhancements (Arşa Çıkan UX)
-       ============================================ */
-    
-    /* High-contrast brand selection for that premium neo-brutalist feel */
-    ::selection {
-        background-color: #FFC800; /* Fizikhub Yellow */
-        color: #000;
-    }
-    .dark ::selection {
-        background-color: #23A9FA; /* Fizikhub Blue */
-        color: #000;
-    }
 
     /* Elegant Magazine-style Drop Cap */
     .article-content > p:first-of-type::first-letter {
@@ -751,7 +738,7 @@ select {
 .overflow-x-auto,
 .overflow-auto,
 [class*="scroll"] {
-    -webkit-overflow-scrolling: touch;
+    /* -webkit-overflow-scrolling: touch — REMOVED (deprecated, no longer needed in modern iOS Safari) */
 }
 
 /* Content stability — SCOPED. 

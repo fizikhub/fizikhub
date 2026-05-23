@@ -52,3 +52,15 @@ lh*.json
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# build analysis artifacts
+bundle_*.json
+smp.json
+*.log
+!README.md
+
+# one-off dev/debug scripts (keep scripts/ for sanctioned tools)
+check_*.js
+test-*.js
+list_*.js
+sync_*.js

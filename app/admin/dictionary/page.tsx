@@ -4,7 +4,7 @@ import { AdminDictionaryList } from "@/components/admin/admin-dictionary-list";
 
 export default async function AdminDictionaryPage() {
     const supabase = await createClient();
-    const terms = await getDictionaryTerms(supabase);
+    const terms = await getDictionaryTerms();
 
     return (
         <div className="space-y-6">

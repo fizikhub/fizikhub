@@ -15,7 +15,7 @@ interface PageProps {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
     const { slug } = await params;
     const supabase = await createClient();
-    const article = await getArticleBySlug(supabase, slug);
+    const article = await getArticleBySlug(slug);
 
     if (!article) {
         return {
@@ -66,7 +66,7 @@ export const revalidate = 600;
 export default async function ExperimentPage({ params }: PageProps) {
     const { slug } = await params;
     const supabase = await createClient();
-    const article = await getArticleBySlug(supabase, slug);
+    const article = await getArticleBySlug(slug);
 
     if (!article) {
         notFound();

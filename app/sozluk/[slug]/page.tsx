@@ -61,13 +61,13 @@ function truncateAtWordBoundary(text: string, limit: number) {
 
 async function getTermBySlug(slug: string) {
     const supabase = createStaticClient();
-    const terms = await getDictionaryTerms(supabase);
+    const terms = await getDictionaryTerms();
     return terms.find((term) => slugify(term.term) === slug) || null;
 }
 
 export async function generateStaticParams() {
     const supabase = createStaticClient();
-    const terms = await getDictionaryTerms(supabase);
+    const terms = await getDictionaryTerms();
 
     return terms.map((term) => ({
         slug: slugify(term.term),
@@ -134,7 +134,7 @@ export default async function DictionaryTermPage({ params }: PageProps) {
 
     const canonical = `${SITE_URL}/sozluk/${slug}`;
     const supabase = createStaticClient();
-    const terms = await getDictionaryTerms(supabase);
+    const terms = await getDictionaryTerms();
     const relatedTerms = terms
         .filter((item) => item.category === term.category && item.term !== term.term)
         .slice(0, 6);

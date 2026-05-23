@@ -54,7 +54,7 @@ const MAX_STRUCTURED_DATA_TERMS = 250;
 
 export default async function DictionaryPage() {
     const supabase = await createClient();
-    const terms = await getDictionaryTerms(supabase);
+    const terms = await getDictionaryTerms();
     const categories = Array.from(new Set(terms.map((term) => term.category).filter(Boolean)));
 
     const combinedJsonLd = {

@@ -35,7 +35,9 @@ export default function GlobalError({
             </p>
 
             <div className="bg-zinc-100 dark:bg-zinc-900 border-2 border-black rounded p-4 text-left overflow-x-auto text-sm font-mono text-rose-600 dark:text-rose-400">
-              {error.message || "Bilinmeyen kritik hata"}
+              <p className="font-bold border-b border-rose-500/20 pb-1 mb-2">Hata Detayı:</p>
+              <p>{process.env.NODE_ENV === 'development' ? (error.message || "Bilinmeyen kritik hata") : "Beklenmeyen bir sistem hatası oluştu."}</p>
+              {error.digest && <p className="mt-1 text-rose-400/70 text-xs">Digest: {error.digest}</p>}
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">

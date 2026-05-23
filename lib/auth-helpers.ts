@@ -16,7 +16,6 @@ export const getAuthorizedProfile = cache(async (userId: string) => {
     if (!profile) return null;
 
     const isAuthorized = 
-        profile.username === "baranbozkurt" || 
         profile.role === "admin" || 
         profile.role === "editor" || 
         profile.is_writer === true;

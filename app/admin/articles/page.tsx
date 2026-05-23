@@ -11,7 +11,7 @@ export default async function AdminArticlesPage() {
     const supabase = await createClient();
 
     // Fetch all articles
-    const articles = await getArticles(supabase, { status: null, authorRole: 'all' });
+    const articles = await getArticles({ status: null, authorRole: 'all' });
 
     // Fetch pending articles - RLS should allow admin to see all
     // Use explicit relationship name to avoid ambiguity (author_id vs reviewed_by)
