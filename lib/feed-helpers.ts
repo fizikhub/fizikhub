@@ -1,36 +1,7 @@
 
-import { FeedItem } from "@/components/home/unified-feed";
+import { FeedItem, FeedArticleData, FeedQuestionData, FeedAuthor } from "@/components/home/unified-feed";
 
-type FeedAuthor = {
-    full_name?: string | null;
-    is_writer?: boolean | null;
-};
-
-type FeedArticle = {
-    id: string;
-    title: string;
-    excerpt?: string | null;
-    summary?: string | null;
-    content?: string | null;
-    category: string;
-    cover_url?: string | null;
-    image_url?: string | null;
-    image?: string | null;
-    slug: string;
-    created_at: string;
-    reading_time?: number | null;
-    author?: FeedAuthor | null;
-};
-
-type FeedQuestion = {
-    id: string | number;
-    content?: string | null;
-    answers?: { count?: number | null }[] | null;
-    created_at: string;
-    [key: string]: unknown;
-};
-
-function buildArticlePreview(article: FeedArticle) {
+function buildArticlePreview(article: FeedArticleData): string {
     const explicitPreview = article.excerpt || article.summary;
     if (explicitPreview) return explicitPreview;
 
@@ -52,13 +23,13 @@ function buildArticlePreview(article: FeedArticle) {
         .slice(0, 360);
 }
 
-export function processFeedData(articles: FeedArticle[], questions: FeedQuestion[]): FeedItem[] {
+export function processFeedData(articles: FeedArticleData[], questions: FeedQuestionData[]): FeedItem[] {
     const feedItems: FeedItem[] = [];
 
     // Add Articles
     articles.forEach((originalA) => {
         const a = { ...originalA };
-        let type: FeedItem['type'] = a.author?.is_writer ? 'article' : 'blog';
+        let type: 'article' | 'blog' | 'experiment' | 'book-review' | 'term' = (a.author as FeedAuthor)?.is_writer ? 'article' : 'blog';
         if (a.category === 'Deney') {
             type = 'experiment';
         } else if (a.category === 'Kitap İncelemesi') {
@@ -70,14 +41,14 @@ export function processFeedData(articles: FeedArticle[], questions: FeedQuestion
         // Homepage feed must never ship full article bodies to the browser.
         // Build a short fallback preview server-side for cards without an explicit excerpt.
         a.summary = buildArticlePreview(a);
-        delete a.content;
+        a.content = null;
 
         feedItems.push({
             type: type,
             data: {
                 ...a,
-                likes_count: 0,
-                comments_count: 0
+                likes_count: a.likes_count ?? 0,
+                comments_count: a.comments_count ?? 0
             },
             sortDate: a.created_at
         });
@@ -94,7 +65,14 @@ export function processFeedData(articles: FeedArticle[], questions: FeedQuestion
             q.content = plainContent.length > 400 ? plainContent.substring(0, 400) + '...' : plainContent;
         }
 
-        const answerCount = q.answers?.[0]?.count || 0;
+        // Handle answer count safely (could be standard relation count or flat count)
+        let answerCount = 0;
+        if (typeof q.answer_count === 'number') {
+            answerCount = q.answer_count;
+        } else if (Array.isArray(q.answers) && q.answers.length > 0) {
+            const answersArray = q.answers as Array<{ count?: number | null }>;
+            answerCount = answersArray[0]?.count || 0;
+        }
         delete q.answers;
 
         feedItems.push({
@@ -111,19 +89,20 @@ export function processFeedData(articles: FeedArticle[], questions: FeedQuestion
     return feedItems.sort((a, b) => new Date(b.sortDate).getTime() - new Date(a.sortDate).getTime());
 }
 
-export function formatSliderArticles(articles: FeedArticle[]) {
+export function formatSliderArticles(articles: FeedArticleData[]) {
     return articles
-        .filter((a) => a.category === 'Makale' || a.author?.is_writer)
+        .filter((a) => a.category === 'Makale' || (a.author as FeedAuthor)?.is_writer)
         .map((a) => {
             return {
-                id: a.id,
+                id: String(a.id),
                 title: a.title,
-                image: a.cover_url || a.image_url || a.image || null,
+                image: (a.cover_url || a.image_url || (a.image as string) || null) as string | null,
                 slug: a.slug,
-                category: a.category,
+                category: a.category || "Genel",
                 author_name: a.author?.full_name || 'FizikHub',
                 created_at: a.created_at,
-                reading_time: a.reading_time || 5
+                reading_time: (a.reading_time as number) || 5
             };
         });
 }
+

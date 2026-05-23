@@ -5,6 +5,7 @@ import dynamic from "next/dynamic";
 
 import { FeedSkeleton } from "@/components/home/performance-skeletons";
 import { processFeedData, formatSliderArticles } from "@/lib/feed-helpers";
+import { FeedArticleData, FeedQuestionData } from "@/components/home/unified-feed";
 import { SEO_PRIORITY_SLUGS } from "@/lib/seo-priority";
 import { LazyDesktopSidebar } from "@/components/home/lazy-desktop-sidebar";
 import { getSiteUrl, isLikelyIndexableArticle, toAbsoluteUrl } from "@/lib/seo-utils";
@@ -19,7 +20,7 @@ interface FeedAuthorRow {
 }
 
 interface FeedArticleRow {
-  id: string;
+  id: number;
   title: string;
   slug: string;
   excerpt?: string | null;
@@ -118,7 +119,7 @@ const getCachedFeedData = unstable_cache(
         .select(articleSelect)
         .eq('status', 'published')
         .order('created_at', { ascending: false })
-        .limit(24), // keep enough cards available for the homepage load-more flow
+        .limit(12), // Optimized for mobile and performance
 
       // Keep proven Google Search Console opportunities linked from the homepage.
       supabase
@@ -132,7 +133,7 @@ const getCachedFeedData = unstable_cache(
         .from('questions')
         .select('id, title, content, created_at, category, votes, tags, author:profiles(username, full_name, avatar_url, is_verified), answers(count)')
         .order('created_at', { ascending: false })
-        .limit(24),
+        .limit(12),
 
       // Fetch Suggested Users (Top writers by reputation)
       supabase
@@ -194,7 +195,7 @@ const getCachedFeedData = unstable_cache(
       }))
     };
   },
-  ['feed-data-v7-homepage-content-previews'], // Bump version to invalidate cache
+  ['feed-data-v8-homepage-content-previews'], // Bump version to invalidate cache
   { revalidate: 60, tags: ['feed'] }
 );
 
@@ -203,7 +204,7 @@ export default async function Home() {
   const baseUrl = getSiteUrl();
 
   // Process and Merge Data
-  const feedItems = processFeedData(articles, questions);
+  const feedItems = processFeedData(articles as unknown as FeedArticleData[], questions as unknown as FeedQuestionData[]);
   const latestArticleDate = articles
     .map((article) => article.created_at)
     .filter(Boolean)
@@ -278,7 +279,7 @@ export default async function Home() {
           {/* Main Feed Column */}
           <div className="lg:col-span-12 xl:col-span-7 space-y-0 sm:space-y-6 xl:min-h-screen border-r border-foreground/5 md:border-r-0 md:pr-0 w-full md:max-w-[650px] md:mx-auto xl:mx-0">
             <LatestArticlesSlider
-              articles={formatSliderArticles(articles)}
+              articles={formatSliderArticles(articles as unknown as FeedArticleData[])}
             />
             <div data-nosnippet>
               <UnifiedFeed items={feedItems} suggestedUsers={suggestedUsers} />
