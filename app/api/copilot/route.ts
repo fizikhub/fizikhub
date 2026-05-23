@@ -1,81 +1,115 @@
-import { NextResponse } from 'next/server';
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { NextRequest, NextResponse } from "next/server";
+import { GoogleGenerativeAI } from "@google/generative-ai";
+import { rateLimiter } from "@/lib/upstash";
 
-import { rateLimiter } from '@/lib/upstash';
+// System instructions for the elite AI Physics Copilot
+const SYSTEM_PROMPT = `Sen FizikHub platformunun kıdemli ve elite bir "Yapay Zeka Fizik Öğretmeni ve Bilim Asistanı" (Fizik Copilotu) karakterisin.
+Görevin, kullanıcılara fizik kavramlarını, formüllerini, deneylerini ve uzay bilimlerini en anlaşılır, sürükleyici ve eğlenceli şekilde Türkçe olarak öğretmektir.
 
-let geminiClient: GoogleGenerativeAI | null = null;
+Yazılımcı ve akademik bir titizlikle çalışmalı, aşağıdaki kurallara harfiyen uymalısın:
+1. Türkçe konuşmalı ve son derece profesyonel, yardımsever, akıcı bir üslup kullanmalısın.
+2. Matematiksel ve fiziksel formülleri mutlaka LaTeX biçiminde yazmalısın:
+   - Satır içi (inline) formülleri tek dolar işareti içine al: Örn. $E = mc^2$ veya $\\Delta x \\cdot \\Delta p \\ge \\frac{\\hbar}{2}$.
+   - Blok (display) formülleri çift dolar işareti içine al:
+     Örn.
+     $$i\\hbar\\frac{\\partial}{\\partial t}\\Psi(\\mathbf{r}, t) = \\hat{H}\\Psi(\\mathbf{r}, t)$$
+3. Konuları anlatırken kuru teorik ezberlerden kaçınmalı; gerçek dünya örnekleri, analojiler ve interaktif deney tasarımları sunmalısın.
+4. Kod tabanlı simülasyon örnekleri (örn. Python, JavaScript/Canvas) sorulduğunda, temiz ve profesyonel kod blokları paylaşmalısın.
+5. Kullanıcının sorduğu soruları adım adım, mantıksal bir silsileyle çözmeli ve anlamadıkları yerleri sormalısın.`;
 
-function getGeminiClient() {
-    const apiKey = process.env.GEMINI_API_KEY || '';
-    if (!apiKey) return null;
-
-    if (!geminiClient) {
-        geminiClient = new GoogleGenerativeAI(apiKey);
-    }
-
-    return geminiClient;
-}
-
-export async function POST(req: Request) {
-    // 1. Rate Limiting via Upstash Redis (10 requests per minute)
-    const ip = req.headers.get('x-forwarded-for') || '127.0.0.1';
-    const limitResult = await rateLimiter.limit(`copilot:${ip}`, 10, 60);
-
+export async function POST(req: NextRequest) {
+    // 1. Get Client IP for Rate Limiting
+    const ip = req.headers.get("x-forwarded-for") || (req as any).ip || "anonymous";
+    
+    // Rate limit: 12 requests per minute (1 request per 5 seconds on average)
+    const limitResult = await rateLimiter.limit(`copilot:${ip}`, 12, 60);
     if (!limitResult.success) {
         return NextResponse.json(
-            { error: 'Çok fazla istek gönderdiniz. Lütfen bir dakika sonra tekrar deneyin.' },
-            {
+            { error: "Çok hızlı gidiyorsun fizikçi! Lütfen biraz bekle ve tekrar dene." },
+            { 
                 status: 429,
                 headers: {
-                    'X-RateLimit-Limit': limitResult.limit.toString(),
-                    'X-RateLimit-Remaining': limitResult.remaining.toString(),
-                    'X-RateLimit-Reset': limitResult.reset.toString(),
+                    "X-RateLimit-Limit": String(limitResult.limit),
+                    "X-RateLimit-Remaining": String(limitResult.remaining),
+                    "X-RateLimit-Reset": String(limitResult.reset),
                 }
             }
         );
     }
 
-    const genAI = getGeminiClient();
-
-    if (!genAI) {
-        return NextResponse.json({ error: 'AI servisi şu an kullanılamıyor (API Key eksik).' }, { status: 500 });
-    }
-
     try {
-        const { text, command } = await req.json();
+        const body = await req.json();
+        const { messages } = body;
 
-        if (!text) {
-            return NextResponse.json({ error: 'Lütfen işlem yapılacak metni seçin.' }, { status: 400 });
+        if (!Array.isArray(messages) || messages.length === 0) {
+            return NextResponse.json(
+                { error: "Geçersiz konuşma geçmişi." },
+                { status: 400 }
+            );
         }
 
-        const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+        // 2. Load API Key and Initialize Google Generative AI
+        const apiKey = process.env.GEMINI_API_KEY || 
+                       process.env.GOOGLE_GENERATIVE_AI_API_KEY || 
+                       process.env.GOOGLE_AI_API_KEY || 
+                       "";
 
-        let prompt = '';
-
-        switch (command) {
-            case 'improve':
-                prompt = `Aşağıdaki metni fizik, bilim veya genel teknoloji bağlamını koruyarak, daha akıcı, okunabilir ve profesyonel bir dille yeniden yaz. Metnin orijinal anlamını değiştirme. Sadece düzeltilmiş metni ver.\n\nMetin: "${text}"`;
-                break;
-            case 'summarize':
-                prompt = `Aşağıdaki metnin ana fikrini ve en önemli noktalarını 1-2 cümle ile kısaca özetle. Sadece özeti ver.\n\nMetin: "${text}"`;
-                break;
-            case 'continue':
-                prompt = `Aşağıdaki metnin gidişatını, tonunu ve bağlamını (fizik, bilim vs.) analiz et ve mantıklı bir şekilde devam ettir. Sadece ekleyeceğin yeni devam metnini (en fazla 2-3 cümle) ver. Orijinal metni tekrarlama.\n\nMetin: "${text}"`;
-                break;
-            case 'fix_spelling':
-                prompt = `Aşağıdaki metnin sadece yazım (imla) ve noktalama hatalarını düzelt. Kelimeleri veya cümle yapısını mecbur kalmadıkça değiştirme. Sadece düzeltilmiş halini ver.\n\nMetin: "${text}"`;
-                break;
-            default:
-                return NextResponse.json({ error: 'Geçersiz komut.' }, { status: 400 });
+        if (!apiKey) {
+            return NextResponse.json(
+                { error: "Fizik Copilotu şu anda devre dışı (API Key yapılandırılmamış)." },
+                { status: 503 }
+            );
         }
 
-        const result = await model.generateContent(prompt);
-        const response = result.response;
-        const generatedText = response.text().trim();
+        const genAI = new GoogleGenerativeAI(apiKey);
+        const model = genAI.getGenerativeModel({
+            model: "gemini-2.5-flash",
+            systemInstruction: SYSTEM_PROMPT,
+        });
 
-        return NextResponse.json({ result: generatedText });
-    } catch (error) {
-        console.error('[Copilot API] Error:', error);
-        return NextResponse.json({ error: 'Yapay zeka yanıt verirken bir hata oluştu.' }, { status: 500 });
+        // 3. Format messages for Gemini Chat History
+        // Gemini expects role: "user" or "model"
+        // Let's grab last 15 messages to prevent token bloat
+        const recentMessages = messages.slice(-15);
+        const lastMessage = recentMessages[recentMessages.length - 1];
+        
+        if (lastMessage.role !== "user") {
+            return NextResponse.json(
+                { error: "Son mesaj kullanıcıya ait olmalıdır." },
+                { status: 400 }
+            );
+        }
+
+        const history = recentMessages.slice(0, -1)
+            .filter((m: any) => m.role === "user" || m.role === "model")
+            .map((m: any) => ({
+                role: m.role,
+                parts: [{ text: m.content || m.text }],
+            }));
+
+        // 4. Start Gemini Chat Session
+        const chat = model.startChat({
+            history,
+            generationConfig: {
+                temperature: 0.7,
+                maxOutputTokens: 2048,
+            },
+        });
+
+        const result = await chat.sendMessage(lastMessage.content || lastMessage.text);
+        const responseText = result.response.text();
+
+        return NextResponse.json({
+            content: responseText,
+            remaining: limitResult.remaining,
+            reset: limitResult.reset,
+        });
+
+    } catch (error: any) {
+        console.error("Fizik Copilot API error:", error);
+        return NextResponse.json(
+            { error: "Yapay zeka yanıt oluştururken kuantum tünelleme hatası yaşadı: " + (error?.message || "Bilinmeyen Hata") },
+            { status: 500 }
+        );
     }
 }
