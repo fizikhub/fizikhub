@@ -51,7 +51,10 @@ function slugify(text) {
 // Helper to generate embedding via Gemini with exponential backoff for 429 rate limits
 async function getEmbedding(text, retries = 5, backoffMs = 3000) {
     try {
-        const result = await embeddingModel.embedContent(text);
+        const result = await embeddingModel.embedContent({
+            content: { parts: [{ text: text }] },
+            outputDimensionality: 768
+        });
         return result.embedding.values;
     } catch (err) {
         if ((err.message.includes("429") || err.message.includes("quota")) && retries > 0) {
