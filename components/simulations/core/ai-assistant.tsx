@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
-import { Sparkles, Send, Loader2, Target, CheckCircle2, AlertCircle, Play } from "lucide-react";
+import { Sparkles, Send, Loader2, Target, AlertCircle } from "lucide-react";
 import { askAiAssistant, type AssistantResponse } from "@/app/simulasyonlar/actions";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -28,7 +28,6 @@ export function AiAssistant({ simId, parameters, color = "#FFBD2E" }: AiAssistan
     // Mission States
     const [activeMission, setActiveMission] = useState<string | null>(null);
     const [userAnswer, setUserAnswer] = useState("");
-    const [evaluation, setEvaluation] = useState<AssistantResponse["evaluation"] | null>(null);
 
     const chatEndRef = useRef<HTMLDivElement>(null);
 
@@ -64,7 +63,6 @@ export function AiAssistant({ simId, parameters, color = "#FFBD2E" }: AiAssistan
     const handleGenerateMission = async () => {
         setIsLoading(true);
         setActiveMission(null);
-        setEvaluation(null);
         setUserAnswer("");
 
         try {
@@ -104,7 +102,6 @@ export function AiAssistant({ simId, parameters, color = "#FFBD2E" }: AiAssistan
             });
 
             if (response.evaluation) {
-                setEvaluation(response.evaluation);
                 setMessages(prev => [
                     ...prev,
                     { sender: "user", text: `Cevabım: ${userAnswer}` },

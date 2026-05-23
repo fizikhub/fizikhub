@@ -15,7 +15,7 @@ const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const geminiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_GENERATIVE_AI_API_KEY || process.env.GOOGLE_AI_API_KEY;
 
 if (!supabaseUrl || !serviceKey || !geminiKey) {
-    console.error("❌ Eror: Missing required environment variables in .env.local!");
+    console.error("❌ Error: Missing required environment variables in .env.local!");
     console.error("Please ensure NEXT_PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, and GEMINI_API_KEY are configured.");
     process.exit(1);
 }
