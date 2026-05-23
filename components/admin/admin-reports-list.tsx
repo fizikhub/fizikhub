@@ -16,7 +16,7 @@ import { tr } from "date-fns/locale";
 import { updateReportStatus } from "@/app/actions/report";
 import { toast } from "sonner";
 import Link from "next/link";
-import { ExternalLink, CheckCircle, XCircle, Clock } from "lucide-react";
+import { ExternalLink, CheckCircle, XCircle } from "lucide-react";
 
 interface Report {
     id: number;
@@ -49,7 +49,7 @@ export function AdminReportsList({ initialReports }: AdminReportsListProps) {
             } else {
                 toast.error("Hata oluştu.");
             }
-        } catch (error) {
+        } catch {
             toast.error("Hata oluştu.");
         }
     };

@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import type { Mock } from 'vitest';
 import { deleteArticle, approveArticle } from '../app/admin/actions';
 import * as supabaseServer from '../lib/supabase-server';
 import { createAdminClient } from '../lib/supabase-admin';
@@ -18,15 +19,19 @@ vi.mock('../lib/supabase-admin', () => ({
 }));
 
 describe('Admin Server Actions', () => {
-  let mockSupabase: any;
-  let mockAuthGetUser: any;
-  let mockFrom: any;
-  let mockDelete: any;
-  let mockUpdate: any;
-  let mockRpc: any;
-  let mockEq: any;
-  let mockSingle: any;
-  let mockSelect: any;
+  let mockSupabase: {
+    auth: { getUser: Mock };
+    from: Mock;
+    rpc: Mock;
+  };
+  let mockAuthGetUser: Mock;
+  let mockFrom: Mock;
+  let mockDelete: Mock;
+  let mockUpdate: Mock;
+  let mockRpc: Mock;
+  let mockEq: Mock;
+  let mockSingle: Mock;
+  let mockSelect: Mock;
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -38,7 +43,7 @@ describe('Admin Server Actions', () => {
     mockSelect = vi.fn().mockReturnValue({ eq: mockEq });
     mockRpc = vi.fn().mockResolvedValue({ error: null });
 
-    mockFrom = vi.fn().mockImplementation((table) => {
+    mockFrom = vi.fn().mockImplementation(() => {
       return { delete: mockDelete, update: mockUpdate, select: mockSelect, eq: mockEq };
     });
 
@@ -53,8 +58,8 @@ describe('Admin Server Actions', () => {
       rpc: mockRpc
     };
 
-    vi.spyOn(supabaseServer, 'createClient').mockResolvedValue(mockSupabase);
-    vi.mocked(createAdminClient).mockReturnValue(mockSupabase);
+    vi.spyOn(supabaseServer, 'createClient').mockResolvedValue(mockSupabase as unknown as Awaited<ReturnType<typeof supabaseServer.createClient>>);
+    vi.mocked(createAdminClient).mockReturnValue(mockSupabase as unknown as ReturnType<typeof createAdminClient>);
   });
 
   describe('deleteArticle', () => {

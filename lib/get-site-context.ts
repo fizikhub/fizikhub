@@ -1,6 +1,16 @@
 
 import { SupabaseClient } from "@supabase/supabase-js";
 
+type SiteContextArticle = {
+    title?: string | null;
+    content_text?: string | null;
+    slug?: string | null;
+    author?: {
+        full_name?: string | null;
+        username?: string | null;
+    } | null;
+};
+
 export async function getSiteContext(supabase: SupabaseClient) {
     try {
         // 1. Fetch published articles with authors
@@ -23,7 +33,7 @@ export async function getSiteContext(supabase: SupabaseClient) {
         if (!articles) return "";
 
         // 2. Format articles for AI
-        const articlesContext = articles.map((art: any) => {
+        const articlesContext = (articles as SiteContextArticle[]).map((art) => {
             const authorName = art.author?.full_name || art.author?.username || "Anonim";
             const summary = art.content_text ? art.content_text.substring(0, 300) + "..." : "İçerik özeti yok.";
             return `- MAKALE: "${art.title}" (Yazar: ${authorName})

@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import type { Mock } from 'vitest';
 
 // Mock Supabase
 const mockFrom = vi.fn();
@@ -26,8 +27,10 @@ vi.mock('@/lib/admin', () => ({
 }));
 
 // Helper to set up chain mocks for Supabase queries
-function setupChainMock(returnValue: any) {
-    const chain: any = {};
+type QueryChain = Record<string, Mock>;
+
+function setupChainMock(returnValue: unknown) {
+    const chain: QueryChain = {};
     chain.select = vi.fn().mockReturnValue(chain);
     chain.insert = vi.fn().mockReturnValue(chain);
     chain.update = vi.fn().mockReturnValue(chain);

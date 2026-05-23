@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Home, MoveLeft, EyeOff } from "lucide-react";
+import { MoveLeft, EyeOff } from "lucide-react";
 import Image from "next/image";
 import { m as motion } from "framer-motion";
 

@@ -48,7 +48,7 @@ export function AdminUsersList({ initialUsers }: AdminUsersListProps) {
             } else {
                 toast.error(result.error || "İşlem başarısız.");
             }
-        } catch (error) {
+        } catch {
             toast.error("Bir hata oluştu.");
         } finally {
             setIsLoading(null);

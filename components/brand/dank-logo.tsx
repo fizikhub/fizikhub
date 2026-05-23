@@ -1,7 +1,5 @@
 "use client";
 
-import { cn } from "@/lib/utils";
-
 export function DankLogo() {
     return (
         <div className="relative group cursor-pointer select-none flex items-center justify-center">

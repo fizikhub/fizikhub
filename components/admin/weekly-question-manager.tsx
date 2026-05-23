@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { createClient } from "@/lib/supabase";
 import { setWeeklyQuestion } from "@/app/actions/weekly-pick";
 import { toast } from "sonner";
-import { Search, Trophy, CheckCircle } from "lucide-react";
+import { Search, Trophy } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { tr } from "date-fns/locale";
 
@@ -21,8 +21,18 @@ interface Question {
     } | null;
 }
 
+interface WeeklyQuestionPick {
+    created_at: string;
+    questions: {
+        title: string;
+        profiles?: {
+            username: string | null;
+        } | null;
+    };
+}
+
 interface WeeklyQuestionManagerProps {
-    currentPick: any;
+    currentPick: WeeklyQuestionPick | null;
 }
 
 export function WeeklyQuestionManager({ currentPick }: WeeklyQuestionManagerProps) {
@@ -51,7 +61,9 @@ export function WeeklyQuestionManager({ currentPick }: WeeklyQuestionManagerProp
             .ilike("title", `%${searchQuery}%`)
             .limit(5);
 
-        if (data) {
+        if (error) {
+            toast.error("Sorular aranırken bir hata oluştu.");
+        } else if (data) {
             setSearchResults((data as unknown as Question[]) || []);
         }
         setLoading(false);

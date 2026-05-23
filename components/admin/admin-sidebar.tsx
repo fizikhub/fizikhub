@@ -13,7 +13,6 @@ import {
     GraduationCap,
     Trophy,
     Megaphone,
-    Settings,
     Download
 } from "lucide-react";
 

@@ -11,8 +11,22 @@ import { toast } from "sonner";
 import { approveArticle, rejectArticle } from "@/app/admin/actions";
 import Link from "next/link";
 
+interface PendingArticle {
+    id: number;
+    title: string;
+    slug: string;
+    excerpt?: string | null;
+    content: string;
+    category?: string | null;
+    created_at: string;
+    author?: {
+        full_name?: string | null;
+        username?: string | null;
+    } | null;
+}
+
 interface AdminArticleApprovalProps {
-    pendingArticles: any[];
+    pendingArticles: PendingArticle[];
 }
 
 export function AdminArticleApproval({ pendingArticles }: AdminArticleApprovalProps) {
@@ -29,7 +43,7 @@ export function AdminArticleApproval({ pendingArticles }: AdminArticleApprovalPr
             } else {
                 toast.error(result.error || "İşlem başarısız.");
             }
-        } catch (error) {
+        } catch {
             toast.error("Bir hata oluştu.");
         } finally {
             setIsLoading(null);
@@ -46,7 +60,7 @@ export function AdminArticleApproval({ pendingArticles }: AdminArticleApprovalPr
             } else {
                 toast.error(result.error || "İşlem başarısız.");
             }
-        } catch (error) {
+        } catch {
             toast.error("Bir hata oluştu.");
         } finally {
             setIsLoading(null);

@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import type { Mock } from 'vitest';
 import { updateUsername } from '../app/profil/actions';
 import * as supabaseServer from '../lib/supabase-server';
 
@@ -8,14 +9,17 @@ vi.mock('next/cache', () => ({
 }));
 
 describe('Profile Server Actions', () => {
-    let mockSupabase: any;
-    let mockAuthGetUser: any;
-    let mockFrom: any;
-    let mockSelect: any;
-    let mockEq: any;
-    let mockNeq: any;
-    let mockSingle: any;
-    let mockUpdate: any;
+    let mockSupabase: {
+        auth: { getUser: Mock };
+        from: Mock;
+    };
+    let mockAuthGetUser: Mock;
+    let mockFrom: Mock;
+    let mockSelect: Mock;
+    let mockEq: Mock;
+    let mockNeq: Mock;
+    let mockSingle: Mock;
+    let mockUpdate: Mock;
 
     beforeEach(() => {
         vi.clearAllMocks();
@@ -43,7 +47,7 @@ describe('Profile Server Actions', () => {
             from: mockFrom,
         };
 
-        vi.spyOn(supabaseServer, 'createClient').mockResolvedValue(mockSupabase);
+        vi.spyOn(supabaseServer, 'createClient').mockResolvedValue(mockSupabase as unknown as Awaited<ReturnType<typeof supabaseServer.createClient>>);
     });
 
     describe('updateUsername', () => {

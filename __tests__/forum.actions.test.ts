@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import type { Mock } from 'vitest';
 import { createQuestion, voteQuestion, toggleAnswerAcceptance } from '../app/forum/actions';
 import * as supabaseServer from '../lib/supabase-server';
 import { createAdminClient } from '../lib/supabase-admin';
-import * as moderation from '../lib/moderation';
 
 // Mock the moderation dependency
 vi.mock('../lib/moderation', () => ({
@@ -20,16 +20,20 @@ vi.mock('../lib/supabase-admin', () => ({
 }));
 
 describe('Forum Server Actions', () => {
-    let mockSupabase: any;
-    let mockAuthGetUser: any;
-    let mockFrom: any;
-    let mockRpc: any;
-    let mockInsert: any;
-    let mockSelect: any;
-    let mockEq: any;
-    let mockUpdate: any;
-    let mockSingle: any;
-    let mockDelete: any;
+    let mockSupabase: {
+        auth: { getUser: Mock };
+        from: Mock;
+        rpc: Mock;
+    };
+    let mockAuthGetUser: Mock;
+    let mockFrom: Mock;
+    let mockRpc: Mock;
+    let mockInsert: Mock;
+    let mockSelect: Mock;
+    let mockEq: Mock;
+    let mockUpdate: Mock;
+    let mockSingle: Mock;
+    let mockDelete: Mock;
 
     beforeEach(() => {
         vi.clearAllMocks();
@@ -62,8 +66,8 @@ describe('Forum Server Actions', () => {
             rpc: mockRpc
         };
 
-        vi.spyOn(supabaseServer, 'createClient').mockResolvedValue(mockSupabase);
-        vi.mocked(createAdminClient).mockReturnValue(mockSupabase);
+        vi.spyOn(supabaseServer, 'createClient').mockResolvedValue(mockSupabase as unknown as Awaited<ReturnType<typeof supabaseServer.createClient>>);
+        vi.mocked(createAdminClient).mockReturnValue(mockSupabase as unknown as ReturnType<typeof createAdminClient>);
     });
 
     describe('createQuestion', () => {

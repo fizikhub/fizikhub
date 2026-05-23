@@ -1,7 +1,36 @@
 
 import { FeedItem } from "@/components/home/unified-feed";
 
-function buildArticlePreview(article: any) {
+type FeedAuthor = {
+    full_name?: string | null;
+    is_writer?: boolean | null;
+};
+
+type FeedArticle = {
+    id: string;
+    title: string;
+    excerpt?: string | null;
+    summary?: string | null;
+    content?: string | null;
+    category: string;
+    cover_url?: string | null;
+    image_url?: string | null;
+    image?: string | null;
+    slug: string;
+    created_at: string;
+    reading_time?: number | null;
+    author?: FeedAuthor | null;
+};
+
+type FeedQuestion = {
+    id: string | number;
+    content?: string | null;
+    answers?: { count?: number | null }[] | null;
+    created_at: string;
+    [key: string]: unknown;
+};
+
+function buildArticlePreview(article: FeedArticle) {
     const explicitPreview = article.excerpt || article.summary;
     if (explicitPreview) return explicitPreview;
 
@@ -23,7 +52,7 @@ function buildArticlePreview(article: any) {
         .slice(0, 360);
 }
 
-export function processFeedData(articles: any[], questions: any[]): FeedItem[] {
+export function processFeedData(articles: FeedArticle[], questions: FeedQuestion[]): FeedItem[] {
     const feedItems: FeedItem[] = [];
 
     // Add Articles
@@ -82,14 +111,14 @@ export function processFeedData(articles: any[], questions: any[]): FeedItem[] {
     return feedItems.sort((a, b) => new Date(b.sortDate).getTime() - new Date(a.sortDate).getTime());
 }
 
-export function formatSliderArticles(articles: any[]) {
+export function formatSliderArticles(articles: FeedArticle[]) {
     return articles
-        .filter((a: any) => a.category === 'Makale' || a.author?.is_writer)
-        .map((a: any) => {
+        .filter((a) => a.category === 'Makale' || a.author?.is_writer)
+        .map((a) => {
             return {
                 id: a.id,
                 title: a.title,
-                image: a.cover_url || a.image_url || a.image,
+                image: a.cover_url || a.image_url || a.image || null,
                 slug: a.slug,
                 category: a.category,
                 author_name: a.author?.full_name || 'FizikHub',

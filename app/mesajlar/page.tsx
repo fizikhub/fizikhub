@@ -1,7 +1,6 @@
 import { createClient } from "@/lib/supabase-server";
 import { redirect } from "next/navigation";
 import { getConversations } from "./actions";
-import { ConversationList } from "@/components/messaging/conversation-list";
 import Link from "next/link";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { MessageSquare, ChevronRight, Plus, Sparkles } from "lucide-react";
@@ -60,7 +59,7 @@ export default async function MessagesPage() {
                 ) : (
                     /* Conversation List */
                     <div className="space-y-1.5">
-                        {conversations.map((conv, i) => {
+                        {conversations.map((conv) => {
                             const hasUnread = conv.unreadCount > 0;
                             const displayName = conv.otherUser?.full_name || conv.otherUser?.username || "Kullanıcı";
                             const initials = displayName.substring(0, 2).toUpperCase();
