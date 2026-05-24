@@ -3,7 +3,7 @@ import robots from "@/app/robots";
 import { GET as sitemapIndex } from "@/app/sitemap-index.xml/route";
 import { GET as topicSitemap } from "@/app/topic-sitemap.xml/route";
 import { getVectorUrl } from "@/lib/search-results";
-import { getClusterResourceLinks, getPrimaryClusterHref, getTopicClusterBySlug, getTopicClusterHref, SEO_TOPIC_CLUSTERS } from "@/lib/seo-topic-clusters";
+import { getClusterResourceLinks, getPrimaryClusterHref, getTopicClusterBySlug, getTopicClusterHref, getTopicClustersForText, normalizeTopicSearchText, SEO_TOPIC_CLUSTERS } from "@/lib/seo-topic-clusters";
 import { isPrivateSeoPath } from "@/lib/seo-utils";
 
 function xmlLocs(xml: string) {
@@ -28,6 +28,18 @@ describe("SEO/GEO topic cluster helpers", () => {
             expect.objectContaining({ type: "term", href: "/sozluk/basit-harmonik-hareket" }),
             expect.objectContaining({ type: "simulation", href: "/simulasyonlar/basit-sarkac" }),
         ]));
+    });
+
+    it("matches Turkish quiz and search text to topic clusters", () => {
+        expect(normalizeTopicSearchText("Işık, kuvvet ve çarpışma")).toBe("isik kuvvet ve carpisma");
+
+        const harmonicClusters = getTopicClustersForText("Basit harmonik hareket periyot ve sarkaç testi");
+        const tytClusters = getTopicClustersForText("TYT fizik konu tarama denemesi");
+        const collisionClusters = getTopicClustersForText("Momentum çarpışma korunumu soruları");
+
+        expect(harmonicClusters[0]?.slug).toBe("basit-harmonik-hareket");
+        expect(tytClusters.some((cluster) => cluster.slug === "tyt-ayt-yks-fizik")).toBe(true);
+        expect(collisionClusters.some((cluster) => cluster.slug === "momentum-carpisma")).toBe(true);
     });
 });
 

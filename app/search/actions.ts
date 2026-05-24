@@ -6,7 +6,7 @@ import { sanitizeSearchQuery } from "@/lib/security";
 import { slugify } from "@/lib/slug";
 import { simulations } from "@/components/simulations/data";
 import { getVectorUrl, type VectorSearchRow } from "@/lib/search-results";
-import { getTopicClusterHref, SEO_TOPIC_CLUSTERS, type SeoTopicCluster } from "@/lib/seo-topic-clusters";
+import { getTopicClusterHref, getTopicClustersForText, normalizeTopicSearchText } from "@/lib/seo-topic-clusters";
 
 export type SearchResultType = "article" | "question" | "user" | "dictionary" | "quiz" | "simulation" | "topic";
 
@@ -81,27 +81,6 @@ function toSnippet(value: string | null | undefined, maxLength = 140): string | 
 function buildSearchTerm(query: string): string {
     const safeQuery = sanitizeSearchQuery(query).replace(/[(),]/g, " ");
     return `%${safeQuery}%`;
-}
-
-function normalizeSearchText(value: string): string {
-    return value.toLocaleLowerCase("tr-TR");
-}
-
-function topicMatchesQuery(cluster: SeoTopicCluster, lowerQuery: string): boolean {
-    const haystack = normalizeSearchText([
-        cluster.title,
-        ...cluster.aliases,
-        ...cluster.intentQuestions,
-        ...cluster.articleSlugs,
-        ...cluster.termSlugs,
-        ...cluster.quizSlugs,
-        ...cluster.simulationSlugs,
-    ].join(" "));
-
-    if (haystack.includes(lowerQuery)) return true;
-
-    const queryParts = lowerQuery.split(/\s+/).filter((part) => part.length >= 2);
-    return queryParts.length > 1 && queryParts.every((part) => haystack.includes(part));
 }
 
 async function fetchVectorRows(
@@ -259,10 +238,8 @@ export async function searchGlobal(rawQuery: string): Promise<SearchResult[]> {
         });
     }
 
-    const lowerQuery = normalizeSearchText(query);
-    for (const cluster of SEO_TOPIC_CLUSTERS) {
-        if (!topicMatchesQuery(cluster, lowerQuery)) continue;
-
+    const lowerQuery = normalizeTopicSearchText(query);
+    for (const cluster of getTopicClustersForText(query, { limit: 8, minScore: 3 })) {
         addResult(results, {
             type: "topic",
             id: cluster.slug,
@@ -278,14 +255,14 @@ export async function searchGlobal(rawQuery: string): Promise<SearchResult[]> {
     }
 
     for (const simulation of simulations) {
-        const haystack = [
+        const haystack = normalizeTopicSearchText([
             simulation.title,
             simulation.description,
             simulation.formula,
             simulation.difficulty,
             ...simulation.tags,
             ...(simulation.seo?.keywords || []),
-        ].join(" ").toLocaleLowerCase("tr-TR");
+        ].join(" "));
 
         if (!haystack.includes(lowerQuery)) continue;
 

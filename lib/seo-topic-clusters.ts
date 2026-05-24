@@ -353,6 +353,102 @@ export function getClustersForSimulationSlug(slug?: string | null) {
     return SEO_TOPIC_CLUSTERS.filter((cluster) => cluster.simulationSlugs.includes(slug));
 }
 
+export function normalizeTopicSearchText(value: string) {
+    return value
+        .toLocaleLowerCase("tr-TR")
+        .replace(/ç/g, "c")
+        .replace(/ğ/g, "g")
+        .replace(/ı/g, "i")
+        .replace(/ö/g, "o")
+        .replace(/ş/g, "s")
+        .replace(/ü/g, "u")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/[^a-z0-9\s-]/g, " ")
+        .replace(/[-_]+/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+}
+
+const TOPIC_MATCH_STOP_WORDS = new Set([
+    "nedir",
+    "nasil",
+    "neden",
+    "hangi",
+    "nelerdir",
+    "fark",
+    "yasa",
+    "yasasi",
+    "yasalari",
+    "olur",
+    "olusur",
+]);
+
+function topicClusterNeedles(cluster: SeoTopicCluster) {
+    return [
+        cluster.title,
+        ...cluster.aliases,
+        ...cluster.intentQuestions,
+        ...cluster.termSlugs,
+        ...cluster.quizSlugs,
+        ...cluster.simulationSlugs,
+        ...cluster.articleSlugs,
+    ]
+        .map(normalizeTopicSearchText)
+        .filter((value) => value.length >= 3);
+}
+
+export function getTopicClusterTextScore(cluster: SeoTopicCluster, text: string) {
+    const haystack = normalizeTopicSearchText(text);
+    if (!haystack) return 0;
+
+    let score = 0;
+    const title = normalizeTopicSearchText(cluster.title);
+    const aliases = cluster.aliases.map(normalizeTopicSearchText);
+    const termSlugs = cluster.termSlugs.map(normalizeTopicSearchText);
+    const allNeedles = topicClusterNeedles(cluster);
+
+    if (title && haystack.includes(title)) score += 12;
+
+    const titleParts = title.split(" ").filter((part) => part.length >= 3);
+    if (titleParts.length > 1 && titleParts.every((part) => haystack.includes(part))) {
+        score += 6;
+    }
+
+    for (const alias of aliases) {
+        if (alias && haystack.includes(alias)) score += alias.includes(" ") ? 6 : 4;
+    }
+
+    for (const termSlug of termSlugs) {
+        if (termSlug && haystack.includes(termSlug)) score += termSlug.includes(" ") ? 5 : 3;
+    }
+
+    const matchedNeedleParts = allNeedles
+        .flatMap((needle) => needle.split(" "))
+        .filter((part) => part.length >= 4 && !TOPIC_MATCH_STOP_WORDS.has(part) && haystack.includes(part));
+    score += Math.min(new Set(matchedNeedleParts).size, 4);
+
+    return score;
+}
+
+export function getTopicClustersForText(
+    text: string,
+    options: { limit?: number; minScore?: number } = {},
+) {
+    const limit = options.limit ?? 6;
+    const minScore = options.minScore ?? 3;
+
+    return SEO_TOPIC_CLUSTERS
+        .map((cluster) => ({
+            cluster,
+            score: getTopicClusterTextScore(cluster, text),
+        }))
+        .filter((result) => result.score >= minScore)
+        .sort((a, b) => b.score - a.score || a.cluster.title.localeCompare(b.cluster.title, "tr-TR"))
+        .slice(0, limit)
+        .map((result) => result.cluster);
+}
+
 export function getClusterResourceLinks(cluster: SeoTopicCluster): SeoClusterResourceLink[] {
     return [
         ...cluster.articleSlugs.map((slug) => ({ href: `/makale/${slug}`, label: "Makale", type: "article" as const, slug })),
