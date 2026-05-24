@@ -15,7 +15,7 @@ const eslintConfig = defineConfig([
       // gate again. Promote these back to errors as each category is paid down.
       "@typescript-eslint/ban-ts-comment": "warn",
       "@typescript-eslint/no-explicit-any": "warn",
-      "react/no-unescaped-entities": "warn",
+      "react/no-unescaped-entities": "off", // Disabled as Turkish language heavily uses apostrophes
       "react-compiler/react-compiler": "warn",
       "react-hooks/immutability": "warn",
       "react-hooks/purity": "warn",

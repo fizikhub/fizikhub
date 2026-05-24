@@ -213,9 +213,9 @@ export function ArticleEditor({ content, onChange, onUploadImage, className, pla
                 editor?.chain().focus().setImage({ src: url }).run();
                 toast.success("Görsel eklendi");
             }
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error("Compression/Upload error:", error);
-            toast.error(error.message || "Görsel yüklenirken hata oluştu");
+            toast.error(error instanceof Error ? error.message : "Görsel yüklenirken hata oluştu");
         } finally {
             setIsUploading(false);
         }
@@ -252,7 +252,7 @@ export function ArticleEditor({ content, onChange, onUploadImage, className, pla
         return null;
     }
 
-    const ToolbarButton = ({ onClick, isActive, children, title, disabled }: any) => (
+    const ToolbarButton = ({ onClick, isActive, children, title, disabled }: { onClick: () => void; isActive?: boolean; children: React.ReactNode; title: string; disabled?: boolean }) => (
         <Button
             type="button"
             variant="ghost"

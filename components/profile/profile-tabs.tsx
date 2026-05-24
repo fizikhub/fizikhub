@@ -14,14 +14,14 @@ import { ConversationList } from "@/components/messaging/conversation-list";
 import { ProfileArticleCard } from "@/components/profile/profile-article-card";
 
 interface ProfileTabsProps {
-    articles: any[];
-    questions: any[];
-    answers: any[];
-    conversations: any[];
-    bookmarkedArticles: any[];
-    bookmarkedQuestions: any[];
+    articles: Record<string, any>[];
+    questions: Record<string, any>[];
+    answers: Record<string, any>[];
+    conversations: Record<string, any>[];
+    bookmarkedArticles: Record<string, any>[];
+    bookmarkedQuestions: Record<string, any>[];
     userId: string;
-    profile: any;
+    profile: Record<string, any>;
 }
 
 export function ProfileTabs({
@@ -236,7 +236,7 @@ export function ProfileTabs({
                                     </Link>
                                 </div>
                             ) : (
-                                bookmarkedArticles.map((item: any) => (
+                                bookmarkedArticles.map((item: Record<string, any>) => (
                                     <Link prefetch={false} key={item.articles.id} href={`/makale/${item.articles.slug}`}>
                                         <div className="bg-black/40 border border-white/10 p-6 rounded-xl hover:border-amber-500/50 transition-all hover:bg-amber-950/20 group">
                                             <h3 className="font-black uppercase mb-2 text-lg text-white group-hover:text-amber-400 transition-colors">{item.articles.title}</h3>
@@ -262,7 +262,7 @@ export function ProfileTabs({
                                     </Link>
                                 </div>
                             ) : (
-                                bookmarkedQuestions.map((item: any) => (
+                                bookmarkedQuestions.map((item: Record<string, any>) => (
                                     <Link prefetch={false} key={item.questions.id} href={`/forum/${item.questions.id}`}>
                                         <div className="bg-black/40 border border-white/10 p-6 rounded-xl hover:border-amber-500/50 transition-all hover:bg-amber-950/20 group">
                                             <div className="flex items-center justify-between mb-3">
