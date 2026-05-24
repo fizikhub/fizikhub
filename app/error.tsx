@@ -3,19 +3,14 @@
 
 import { useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
+import { logger } from "@/lib/logger";
 
 /**
  * Reports an error to the configured error tracking service.
- * Currently logs to console; replace the body with Sentry.captureException()
- * or a custom /api/error-report POST when a service is wired up.
  */
 function reportError(error: Error & { digest?: string }) {
-    // Future: Sentry.captureException(error, { tags: { digest: error.digest } });
-    console.error("[FizikHub Error Report]", {
-        message: error.message,
+    logger.error("Unhandled Application Error (Fizikhub Error Boundary)", error, {
         digest: error.digest,
-        stack: error.stack?.slice(0, 500),
-        timestamp: new Date().toISOString(),
     });
 }
 
