@@ -11,6 +11,7 @@ import {
     FileText,
     Loader2,
     MessageCircle,
+    Network,
     Search,
     SearchX,
     User,
@@ -28,6 +29,7 @@ const suggestedSearches = [
     "Atış hareketi",
     "Optik",
     "AYT fizik",
+    "Newton yasaları",
 ];
 
 const typeLabels: Record<SearchResultType, string> = {
@@ -37,6 +39,7 @@ const typeLabels: Record<SearchResultType, string> = {
     dictionary: "Sözlük",
     quiz: "Test",
     simulation: "Simülasyon",
+    topic: "Konu",
 };
 
 const typeStyles: Record<SearchResultType, string> = {
@@ -46,6 +49,7 @@ const typeStyles: Record<SearchResultType, string> = {
     dictionary: "bg-[#B18CFF] text-black",
     quiz: "bg-[#FF6B6B] text-black",
     simulation: "bg-[#00F5D4] text-black",
+    topic: "bg-[#FFD100] text-black",
 };
 
 function ResultIcon({ type }: { type: SearchResultType }) {
@@ -56,6 +60,7 @@ function ResultIcon({ type }: { type: SearchResultType }) {
     if (type === "user") return <User className={className} />;
     if (type === "dictionary") return <BookOpen className={className} />;
     if (type === "quiz") return <BrainCircuit className={className} />;
+    if (type === "topic") return <Network className={className} />;
     return <Atom className={className} />;
 }
 
@@ -141,7 +146,7 @@ export default function SearchPage() {
                         Evreni Araştır
                     </h1>
                     <p className="text-sm md:text-lg text-muted-foreground font-bold">
-                        Makaleler, forum soruları, kullanıcılar, sözlük, testler ve simülasyonlar tek yerde.
+                        Makaleler, konu rehberleri, forum soruları, kullanıcılar, sözlük, testler ve simülasyonlar tek yerde.
                     </p>
                 </motion.div>
 

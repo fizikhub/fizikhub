@@ -281,6 +281,11 @@ export default async function ArticlePage({ params }: PageProps) {
     const articleImageUrl = toAbsoluteUrl(article.cover_url || (article as any).image_url, baseUrl) || `${baseUrl}/api/og?title=${encodeURIComponent(article.title)}`;
     const authorUrl = article.author?.username ? `${baseUrl}/kullanici/${article.author.username}` : baseUrl;
     const semanticTopics = intentOverride?.expandedKeywords || (articleTags && articleTags.length > 0 ? articleTags : [article.category || 'Fizik']);
+    const topicClusters = getClustersForArticleSlug(article.slug || slug);
+    const learningTopics = Array.from(new Set([
+        ...topicClusters.map((cluster) => cluster.title),
+        ...semanticTopics,
+    ].filter(Boolean)));
     const displayTitle = intentOverride?.h1 || article.title;
     const citations = references
         .map((reference: any) => reference.url || reference.title)
@@ -352,6 +357,26 @@ export default async function ArticlePage({ params }: PageProps) {
                 '@type': 'WebSite',
                 '@id': `${baseUrl}/#website`,
                 name: 'Fizikhub',
+            },
+        },
+        {
+            '@context': 'https://schema.org',
+            '@type': 'LearningResource',
+            '@id': `${articleUrl}#learning-resource`,
+            name: `${displayTitle} öğrenme rehberi`,
+            url: articleUrl,
+            description: articleDescription,
+            inLanguage: 'tr-TR',
+            isAccessibleForFree: true,
+            learningResourceType: 'Açıklayıcı makale',
+            educationalLevel: 'Lise ve lisans başlangıç',
+            teaches: learningTopics,
+            keywords: learningTopics.join(', '),
+            mainEntity: {
+                '@id': `${articleUrl}#article`,
+            },
+            provider: {
+                '@id': `${baseUrl}/#organization`,
             },
         },
         {

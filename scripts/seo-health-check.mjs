@@ -6,6 +6,7 @@ const canonicalBaseUrl = "https://www.fizikhub.com";
 const baseUrl = (process.env.SITE_URL || process.env.NEXT_PUBLIC_APP_URL || canonicalBaseUrl).replace(/\/+$/, "");
 const expectedRedirectBaseUrl = baseUrl === canonicalBaseUrl ? canonicalBaseUrl : baseUrl;
 const gscExportDir = process.env.GSC_EXPORT_DIR || path.join(os.homedir(), "Downloads");
+const gscExampleLimit = Number(process.env.GSC_EXAMPLE_LIMIT || 5);
 
 const privateDisallowPatterns = [
   "Disallow: /profil/",
@@ -112,6 +113,54 @@ function readGscExportUrls() {
   return urls;
 }
 
+function gscActionForReason(reason) {
+  if (reason === "clean-or-needs-live-check") {
+    return "Live URL Inspection ile canonical, indexability ve visible content kontrolü yap.";
+  }
+  if (reason === "non-canonical-origin" || reason.includes("fizikhub")) {
+    return "Non-www/http varyantlarının tek hopta https://www.fizikhub.com hedefine 301 döndüğünü doğrula.";
+  }
+  if (reason.includes("\\/blog")) {
+    return "Legacy /blog URL'lerinin /makale karşılıklarına 301 yönlendiğini ve sitemap/AI index içinde görünmediğini doğrula.";
+  }
+  if (reason.includes("\\/index")) {
+    return "/index varyantını ana sayfaya 301 ile temizle ve GSC doğrulamasını yeniden başlat.";
+  }
+  if (reason.includes("login|forgot-password|reset-password|profil|admin")) {
+    return "Private/noindex sayfalarda X-Robots-Tag noindex header'ının canlı yanıtta geldiğini doğrula.";
+  }
+  if (reason.includes("test|tesr|deneme")) {
+    return "Test/taslak benzeri public içerikleri 410/noindex veya yayın dışı bırakma akışıyla temizle.";
+  }
+  if (reason.includes("_next")) {
+    return "Static asset URL'lerinin sitemap dışında kaldığını ve noindex/cache header'ı aldığını doğrula.";
+  }
+  return "URL ailesini canlı yanıt, canonical ve sitemap kaynağı açısından incele.";
+}
+
+function summarizeGscUrls(gscUrls) {
+  const summary = {};
+  const examples = {};
+  const actions = {};
+
+  for (const entry of gscUrls) {
+    const reason = forbiddenReason(entry.url) || "clean-or-needs-live-check";
+    summary[reason] = (summary[reason] || 0) + 1;
+
+    if (!examples[reason]) examples[reason] = [];
+    if (examples[reason].length < gscExampleLimit) {
+      examples[reason].push({
+        url: entry.url,
+        file: path.basename(entry.file),
+      });
+    }
+
+    actions[reason] = gscActionForReason(reason);
+  }
+
+  return { summary, examples, actions };
+}
+
 const resourcePaths = [
   "/sitemap-index.xml",
   "/sitemap.xml",
@@ -199,11 +248,11 @@ for (const samplePath of samplePaths) {
 }
 
 const gscUrls = readGscExportUrls();
-const gscSummary = gscUrls.reduce((acc, entry) => {
-  const reason = forbiddenReason(entry.url) || "clean-or-needs-live-check";
-  acc[reason] = (acc[reason] || 0) + 1;
-  return acc;
-}, {});
+const {
+  summary: gscSummary,
+  examples: gscExamples,
+  actions: gscActions,
+} = summarizeGscUrls(gscUrls);
 
 console.log(JSON.stringify({
   baseUrl,
@@ -213,4 +262,6 @@ console.log(JSON.stringify({
   samplePaths,
   gscExportUrlCount: gscUrls.length,
   gscSummary,
+  gscExamples,
+  gscActions,
 }, null, 2));

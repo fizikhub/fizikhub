@@ -1,22 +1,11 @@
 "use server";
 
-import { createClient } from "@/lib/supabase-server";
+import { verifyAdmin } from "@/lib/admin";
 import { revalidatePath } from "next/cache";
 
 export async function setWeeklyQuestion(questionId: number) {
-    const supabase = await createClient();
-
-    // Check admin
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return { error: "Unauthorized" };
-
-    const { data: profile } = await supabase
-        .from("profiles")
-        .select("role")
-        .eq("id", user.id)
-        .single();
-
-    if (profile?.role !== "admin") return { error: "Unauthorized" };
+    const { isAdmin, supabase, error: authError } = await verifyAdmin();
+    if (!isAdmin) return { error: authError || "Unauthorized" };
 
     // Deactivate previous picks
     await supabase
@@ -40,7 +29,7 @@ export async function setWeeklyQuestion(questionId: number) {
 }
 
 export async function getWeeklyQuestion() {
-    const supabase = await createClient();
+    const { supabase } = await verifyAdmin();
 
     const { data, error } = await supabase
         .from("weekly_picks")

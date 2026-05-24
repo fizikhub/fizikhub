@@ -1,6 +1,6 @@
 "use server";
 
-import { createClient } from "@/lib/supabase-server";
+import { verifyAdmin } from "@/lib/admin";
 import { revalidatePath } from "next/cache";
 
 export async function createQuiz(data: {
@@ -15,19 +15,8 @@ export async function createQuiz(data: {
         order: number;
     }[];
 }) {
-    const supabase = await createClient();
-
-    // Check admin
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return { error: "Unauthorized" };
-
-    const { data: profile } = await supabase
-        .from("profiles")
-        .select("role")
-        .eq("id", user.id)
-        .single();
-
-    if (profile?.role !== "admin") return { error: "Unauthorized" };
+    const { isAdmin, supabase, error: authError } = await verifyAdmin();
+    if (!isAdmin) return { error: authError || "Unauthorized" };
 
     // Create Quiz
     const { data: quiz, error: quizError } = await supabase
@@ -68,19 +57,8 @@ export async function createQuiz(data: {
 }
 
 export async function deleteQuiz(id: string) {
-    const supabase = await createClient();
-
-    // Check admin
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return { error: "Unauthorized" };
-
-    const { data: profile } = await supabase
-        .from("profiles")
-        .select("role")
-        .eq("id", user.id)
-        .single();
-
-    if (profile?.role !== "admin") return { error: "Unauthorized" };
+    const { isAdmin, supabase, error: authError } = await verifyAdmin();
+    if (!isAdmin) return { error: authError || "Unauthorized" };
 
     const { error } = await supabase
         .from("quizzes")

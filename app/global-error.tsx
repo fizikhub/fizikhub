@@ -5,6 +5,20 @@ import { Button } from "@/components/ui/button";
 import { AlertTriangle, RefreshCcw, Home } from "lucide-react";
 import Link from "next/link";
 
+/**
+ * Reports a global error to the configured error tracking service.
+ * Mirrors the reportError() in app/error.tsx for consistency.
+ */
+function reportGlobalError(error: Error & { digest?: string }) {
+    console.error("[FizikHub Global Error Report]", {
+        message: error.message,
+        digest: error.digest,
+        stack: error.stack?.slice(0, 500),
+        timestamp: new Date().toISOString(),
+        level: "critical",
+    });
+}
+
 export default function GlobalError({
   error,
   reset,
@@ -13,9 +27,13 @@ export default function GlobalError({
   reset: () => void;
 }) {
   React.useEffect(() => {
-    // Log the error to an error reporting service
-    console.error("Global Error Caught:", error);
+    reportGlobalError(error);
   }, [error]);
+
+  const copyDigest = React.useCallback(() => {
+      const digestText = error.digest || "N/A";
+      navigator.clipboard.writeText(digestText).catch(() => {});
+  }, [error.digest]);
 
   return (
     <html lang="tr">
@@ -37,7 +55,15 @@ export default function GlobalError({
             <div className="bg-zinc-100 dark:bg-zinc-900 border-2 border-black rounded p-4 text-left overflow-x-auto text-sm font-mono text-rose-600 dark:text-rose-400">
               <p className="font-bold border-b border-rose-500/20 pb-1 mb-2">Hata Detayı:</p>
               <p>{process.env.NODE_ENV === 'development' ? (error.message || "Bilinmeyen kritik hata") : "Beklenmeyen bir sistem hatası oluştu."}</p>
-              {error.digest && <p className="mt-1 text-rose-400/70 text-xs">Digest: {error.digest}</p>}
+              {error.digest && (
+                  <button
+                      onClick={copyDigest}
+                      className="mt-1 text-rose-400/70 hover:text-rose-300 transition-colors cursor-pointer underline decoration-dotted text-xs"
+                      title="Tıklayarak hata kodunu kopyala"
+                  >
+                      Digest: {error.digest} 📋
+                  </button>
+              )}
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">

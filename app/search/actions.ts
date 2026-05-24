@@ -6,8 +6,9 @@ import { sanitizeSearchQuery } from "@/lib/security";
 import { slugify } from "@/lib/slug";
 import { simulations } from "@/components/simulations/data";
 import { getVectorUrl, type VectorSearchRow } from "@/lib/search-results";
+import { getTopicClusterHref, SEO_TOPIC_CLUSTERS, type SeoTopicCluster } from "@/lib/seo-topic-clusters";
 
-export type SearchResultType = "article" | "question" | "user" | "dictionary" | "quiz" | "simulation";
+export type SearchResultType = "article" | "question" | "user" | "dictionary" | "quiz" | "simulation" | "topic";
 
 export type SearchResult = {
     type: SearchResultType;
@@ -80,6 +81,27 @@ function toSnippet(value: string | null | undefined, maxLength = 140): string | 
 function buildSearchTerm(query: string): string {
     const safeQuery = sanitizeSearchQuery(query).replace(/[(),]/g, " ");
     return `%${safeQuery}%`;
+}
+
+function normalizeSearchText(value: string): string {
+    return value.toLocaleLowerCase("tr-TR");
+}
+
+function topicMatchesQuery(cluster: SeoTopicCluster, lowerQuery: string): boolean {
+    const haystack = normalizeSearchText([
+        cluster.title,
+        ...cluster.aliases,
+        ...cluster.intentQuestions,
+        ...cluster.articleSlugs,
+        ...cluster.termSlugs,
+        ...cluster.quizSlugs,
+        ...cluster.simulationSlugs,
+    ].join(" "));
+
+    if (haystack.includes(lowerQuery)) return true;
+
+    const queryParts = lowerQuery.split(/\s+/).filter((part) => part.length >= 2);
+    return queryParts.length > 1 && queryParts.every((part) => haystack.includes(part));
 }
 
 async function fetchVectorRows(
@@ -237,7 +259,24 @@ export async function searchGlobal(rawQuery: string): Promise<SearchResult[]> {
         });
     }
 
-    const lowerQuery = query.toLocaleLowerCase("tr-TR");
+    const lowerQuery = normalizeSearchText(query);
+    for (const cluster of SEO_TOPIC_CLUSTERS) {
+        if (!topicMatchesQuery(cluster, lowerQuery)) continue;
+
+        addResult(results, {
+            type: "topic",
+            id: cluster.slug,
+            title: cluster.title,
+            description: toSnippet(
+                [cluster.intentQuestions[0], cluster.aliases.length > 0 ? `Alt konular: ${cluster.aliases.join(", ")}` : null]
+                    .filter(Boolean)
+                    .join(" "),
+            ),
+            url: getTopicClusterHref(cluster),
+            category: "Konu Rehberi",
+        });
+    }
+
     for (const simulation of simulations) {
         const haystack = [
             simulation.title,

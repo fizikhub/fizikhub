@@ -2,15 +2,25 @@
 
 import { createClient } from "@/lib/supabase-server";
 import { isAdminEmail } from "@/lib/admin";
+import { z } from "zod";
 
-interface CreateReportParams {
-    resourceId: string;
-    resourceType: 'question' | 'answer' | 'comment' | 'user';
-    reason: string;
-    description?: string;
-}
+const CreateReportSchema = z.object({
+    resourceId: z.string().min(1).max(100),
+    resourceType: z.enum(['question', 'answer', 'comment', 'user']),
+    reason: z.string().min(3, "Sebep en az 3 karakter olmalıdır.").max(200, "Sebep en fazla 200 karakter olabilir."),
+    description: z.string().max(2000, "Açıklama en fazla 2000 karakter olabilir.").optional(),
+});
+
+type CreateReportParams = z.infer<typeof CreateReportSchema>;
 
 export async function createReport(params: CreateReportParams) {
+    // Validate input before any database operation
+    const validation = CreateReportSchema.safeParse(params);
+    if (!validation.success) {
+        return { success: false, error: validation.error.issues[0]?.message || "Geçersiz veri." };
+    }
+    const validData = validation.data;
+
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
@@ -20,10 +30,10 @@ export async function createReport(params: CreateReportParams) {
 
     const { error } = await supabase.from('reports').insert({
         reporter_id: user.id,
-        resource_id: params.resourceId,
-        resource_type: params.resourceType,
-        reason: params.reason,
-        description: params.description
+        resource_id: validData.resourceId,
+        resource_type: validData.resourceType,
+        reason: validData.reason,
+        description: validData.description
     });
 
     if (error) {
@@ -45,9 +55,9 @@ export async function createReport(params: CreateReportParams) {
                 recipientId: admin.id,
                 actorId: user.id,
                 type: 'report',
-                resourceId: params.resourceId,
+                resourceId: validData.resourceId,
                 resourceType: 'profile',
-                content: `Yeni bir şikayet oluşturdu: ${params.reason}`
+                content: `Yeni bir şikayet oluşturdu: ${validData.reason}`
             });
         }
     }

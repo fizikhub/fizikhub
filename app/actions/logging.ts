@@ -27,7 +27,7 @@ function shouldUpdateLastSeen(userId: string): boolean {
 export async function logActivity(
     actionType: string,
     path: string,
-    details: any = {}
+    details: Record<string, unknown> = {}
 ) {
     try {
         const supabase = await createClient();
@@ -40,7 +40,7 @@ export async function logActivity(
         const userAgent = headersList.get("user-agent") || "unknown";
 
         // Build promises array
-        const promises: PromiseLike<any>[] = [
+        const promises: PromiseLike<unknown>[] = [
             // 1. Insert Log
             supabase.from("user_activity_logs").insert({
                 user_id: user.id,

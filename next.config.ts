@@ -178,6 +178,10 @@ const nextConfig: NextConfig = {
             key: 'X-XSS-Protection',
             value: '1; mode=block',
           },
+          {
+            key: 'Referrer-Policy',
+            value: 'strict-origin-when-cross-origin',
+          },
           // HSTS - Force HTTPS for 1 year
           {
             key: 'Strict-Transport-Security',
@@ -193,7 +197,7 @@ const nextConfig: NextConfig = {
               "img-src 'self' data: blob: https:",
               "font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net",
               "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://challenges.cloudflare.com https://*.vercel-analytics.com https://*.vercel-insights.com https://www.google-analytics.com https://generativelanguage.googleapis.com https://lh3.googleusercontent.com https://cdn-icons-png.flaticon.com https://www.transparenttextures.com",
-              "frame-src 'self' https://challenges.cloudflare.com https://www.youtube.com https://youtube.com",
+              "frame-src 'self' https://challenges.cloudflare.com https://www.youtube.com https://youtube.com https://phet.colorado.edu",
               "media-src 'self' blob:",
               "worker-src 'self' blob:",
               "object-src 'none'",
@@ -214,7 +218,7 @@ const nextConfig: NextConfig = {
               "img-src 'self' data: blob: https:",
               "font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net",
               "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://challenges.cloudflare.com https://*.vercel-analytics.com https://*.vercel-insights.com https://www.google-analytics.com https://generativelanguage.googleapis.com",
-              "frame-src 'self' https://challenges.cloudflare.com https://www.youtube.com https://youtube.com",
+              "frame-src 'self' https://challenges.cloudflare.com https://www.youtube.com https://youtube.com https://phet.colorado.edu",
               "media-src 'self' blob:",
               "worker-src 'self' blob:",
               "object-src 'none'",
