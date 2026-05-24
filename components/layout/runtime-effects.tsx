@@ -27,6 +27,24 @@ export function RuntimeEffects() {
   const [loadIdleEffects, setLoadIdleEffects] = useState(false);
 
   useEffect(() => {
+    if (typeof window !== "undefined" && !(window as any)._fizikhubHello) {
+      (window as any)._fizikhubHello = true;
+      console.log(
+        `%c
+   ███████╗██╗███████╗██╗██╗  ██╗██╗  ██╗██╗   ██╗██████╗ 
+   ██╔════╝██║╚══███╔╝██║██║ ██╔╝██║  ██║██║   ██║██╔══██╗
+   █████╗  ██║  ███╔╝ ██║█████╔╝ ███████║██║   ██║██████╔╝
+   ██╔══╝  ██║ ███╔╝  ██║██╔═██╗ ██╔══██║██║   ██║██╔══██╗
+   ██║     ██║███████╗██║██║  ██╗██║  ██║╚██████╔╝██████╔╝
+   ╚═╝     ╚═╝╚══════╝╚═╝╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝ ╚═════╝ 
+        
+      🪐 Bilimi Ti'ye Alıyoruz Ama Ciddili Şekilde!
+      👨‍💻 Kodları incelemeyi seviyor musun? Aramıza katıl!
+        `,
+        "color: #FFBD2E; font-weight: bold; font-family: monospace; font-size: 12px;"
+      );
+    }
+
     const enable = () => setLoadIdleEffects(true);
 
     if ("requestIdleCallback" in window) {
