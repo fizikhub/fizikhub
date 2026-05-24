@@ -105,7 +105,12 @@ export const getArticles = cache(async function (
 
 
 export const getArticleBySlug = cache(async function (slug: string) {
-    
+    const redisCacheKey = `fh:article:${slug}`;
+
+    // L1: Check Redis first
+    const cached = await redisCache.get<Article>(redisCacheKey);
+    if (cached) return cached;
+
     const fetchCached = unstable_cache(
         async (querySlug: string) => {
             const staticClient = createStaticClient();
@@ -139,11 +144,24 @@ export const getArticleBySlug = cache(async function (slug: string) {
         { revalidate: 600, tags: ['articles', `article-${slug}`] } // 10 minutes cache
     );
 
-    return await fetchCached(slug);
+    const result = await fetchCached(slug);
+
+    // Populate Redis L1 for subsequent requests (5 min TTL)
+    if (result) {
+        redisCache.set(redisCacheKey, result, 300).catch(() => {});
+    }
+
+    return result;
 });
 
 
 export const getQuestions = cache(async function (options?: { limit?: number }) {
+    const redisCacheKey = `fh:questions:${JSON.stringify(options)}`;
+
+    // L1: Check Redis first
+    const cached = await redisCache.get<Question[]>(redisCacheKey);
+    if (cached) return cached;
+
     const fetchCached = unstable_cache(
         async () => {
             const staticClient = createStaticClient();
@@ -164,7 +182,14 @@ export const getQuestions = cache(async function (options?: { limit?: number }) 
         { revalidate: 60, tags: ['questions'] } // 1 minute cache for fresh forum data
     );
 
-    return await fetchCached();
+    const result = await fetchCached();
+
+    // Populate Redis L1 for subsequent requests (30 sec TTL for forum freshness)
+    if (result.length > 0) {
+        redisCache.set(redisCacheKey, result, 30).catch(() => {});
+    }
+
+    return result;
 });
 
 
