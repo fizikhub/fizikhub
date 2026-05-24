@@ -18,6 +18,11 @@ const WebVitalsReporter = dynamic(
   { ssr: false }
 );
 
+const EasterEggs = dynamic(
+  () => import("@/components/effects/easter-eggs").then((mod) => mod.EasterEggs),
+  { ssr: false }
+);
+
 export function RuntimeEffects() {
   const [loadIdleEffects, setLoadIdleEffects] = useState(false);
 
@@ -59,6 +64,7 @@ export function RuntimeEffects() {
         <>
           <UserActivityTracker />
           <OnboardingCheck />
+          <EasterEggs />
         </>
       )}
     </>
