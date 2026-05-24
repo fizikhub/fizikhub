@@ -2,18 +2,18 @@
 
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import Cropper from "react-easy-crop";
+import type { Area } from "react-easy-crop";
 import { createBrowserClient } from "@supabase/ssr";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
-import { Loader2, Upload, Type, Move, Image as ImageIcon, CheckCircle, XCircle, ZoomIn, ZoomOut, Plus, Sticker, HelpCircle, X, Settings, Trash2, Edit3, Save, LayoutGrid, PlusCircle, FolderOpen, ArrowLeft } from "lucide-react";
-import Draggable from "react-draggable";
+import { Loader2, Upload, Type, Image as ImageIcon, ZoomIn, ZoomOut, X, Trash2, Edit3, LayoutGrid, PlusCircle, FolderOpen, ArrowLeft } from "lucide-react";
+import Draggable, { type DraggableData } from "react-draggable";
 import html2canvas from "html2canvas";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
-import { m as motion, AnimatePresence } from "framer-motion";
-import { createStoryGroup, deleteStoryGroup, getStoryGroups, updateStoryGroup, getStoriesByGroup, deleteStory, updateStory } from "@/app/stories/actions";
+import { AnimatePresence } from "framer-motion";
+import { createStoryGroup, deleteStoryGroup, getStoryGroups, getStoriesByGroup, deleteStory, updateStory } from "@/app/stories/actions";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 
@@ -28,26 +28,26 @@ interface TextLayer {
     rotation: number;
 }
 
-interface StickerLayer {
-    id: string;
-    src: string;
-    x: number;
-    y: number;
-    scale: number;
-    rotation: number;
+function getErrorMessage(error: unknown, fallback = "İşlem başarısız oldu.") {
+    if (error instanceof Error) return error.message;
+    if (error && typeof error === "object" && "message" in error) {
+        const message = (error as { message?: unknown }).message;
+        if (typeof message === "string" && message.trim()) return message;
+    }
+    return fallback;
 }
 
 // Sub-components to fix react-draggable StrictMode ref tearing
-function DraggableTextItem({ layer, isSelected, onSelect, onStop }: { layer: TextLayer, isSelected: boolean, onSelect: () => void, onStop: (data: { x: number, y: number }) => void }) {
+function DraggableTextItem({ layer, isSelected, onSelect, onStop }: { layer: TextLayer, isSelected: boolean, onSelect: () => void, onStop: (data: DraggableData) => void }) {
     const nodeRef = useRef<HTMLDivElement>(null);
     return (
         <Draggable
             nodeRef={nodeRef}
             position={{ x: layer.x, y: layer.y }}
             onStop={(e, data) => onStop(data)}
-            onStart={(e: any) => {
+            onStart={(e) => {
                 // Prevent bubbling which causes canvas deselection immediately
-                if (e.stopPropagation) e.stopPropagation();
+                e.stopPropagation();
                 onSelect();
             }}
             bounds="parent"
@@ -91,10 +91,13 @@ interface Story {
 export function StoryEditor() {
     const [activeTab, setActiveTab] = useState<"create" | "manage">("manage");
     const [groups, setGroups] = useState<StoryGroup[]>([]);
-    const [isLoadingGroups, setIsLoadingGroups] = useState(true);
+    const [supabase] = useState(() => createBrowserClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    ));
 
     // Fetch groups on mount and when tab changes to create/manage
-    const fetchGroups = async () => {
+    const fetchGroups = useCallback(async () => {
         try {
             // We pass null for userId to get all, but action might need update to filter by current user
             // Actually getStoryGroups in action needs to handle auth. 
@@ -103,25 +106,21 @@ export function StoryEditor() {
             // Since we are client side, we can expect the action to handle "my groups".
             // Checking action implementation: it takes userId. 
             // We need to get user ID first.
-            const supabase = createBrowserClient(
-                process.env.NEXT_PUBLIC_SUPABASE_URL!,
-                process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-            );
             const { data: { user } } = await supabase.auth.getUser();
             if (user) {
                 const data = await getStoryGroups(user.id);
-                setGroups((data as unknown as never[]) || []);
+                setGroups((data as StoryGroup[]) || []);
             }
         } catch (error) {
             console.error(error);
-        } finally {
-            setIsLoadingGroups(false);
         }
-    };
+    }, [supabase]);
 
     useEffect(() => {
+        // Fetching groups is an async synchronization with Supabase; state updates happen after the request settles.
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         fetchGroups();
-    }, [activeTab]);
+    }, [activeTab, fetchGroups]);
 
     return (
         <div className="h-[100dvh] bg-[#121212] text-white flex flex-col font-outfit overflow-hidden">
@@ -169,13 +168,13 @@ export function StoryEditor() {
 }
 
 // --- STORY CREATOR (CANVAS) ---
-const getCroppedImg = async (imageSrc: string, pixelCrop: any): Promise<string> => {
+const getCroppedImg = async (imageSrc: string, pixelCrop: Area): Promise<string> => {
     const image = await new Promise<HTMLImageElement>((resolve, reject) => {
         const img = new window.Image();
         img.src = imageSrc;
         img.crossOrigin = "anonymous";
         img.onload = () => resolve(img);
-        img.onerror = (e: any) => reject(e);
+        img.onerror = () => reject(new Error("Görsel yüklenemedi."));
     });
     const canvas = document.createElement('canvas');
     canvas.width = pixelCrop.width;
@@ -201,12 +200,10 @@ function StoryCreator({ groups, onPublish }: { groups: StoryGroup[], onPublish: 
     const [isCroppingMode, setIsCroppingMode] = useState(false);
     const [crop, setCrop] = useState({ x: 0, y: 0 });
     const [zoom, setZoom] = useState(1);
-    const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
+    const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
 
     const [scale, setScale] = useState(1);
-    const [position, setPosition] = useState({ x: 0, y: 0 });
     const [textLayers, setTextLayers] = useState<TextLayer[]>([]);
-    const [stickerLayers, setStickerLayers] = useState<StickerLayer[]>([]);
     const [selectedId, setSelectedId] = useState<string | null>(null);
     const [isUploading, setIsUploading] = useState(false);
 
@@ -214,23 +211,15 @@ function StoryCreator({ groups, onPublish }: { groups: StoryGroup[], onPublish: 
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
     const [selectedGroupId, setSelectedGroupId] = useState<string>("");
+    const selectedGroup = groups.find((group) => group.id === selectedGroupId) || groups[0] || null;
+    const effectiveSelectedGroupId = selectedGroup?.id || "";
 
     const canvasRef = useRef<HTMLDivElement>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
-    const stickerInputRef = useRef<HTMLInputElement>(null);
-
-    const router = useRouter();
-    const supabase = createBrowserClient(
+    const [supabase] = useState(() => createBrowserClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-    );
-
-    // Set default group if available
-    useEffect(() => {
-        if (groups.length > 0 && !selectedGroupId) {
-            setSelectedGroupId(groups[0].id);
-        }
-    }, [groups]);
+    ));
 
     // ... (Keep existing Canvas Logic helpers: handleImageUpload, etc.)
     const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -245,7 +234,7 @@ function StoryCreator({ groups, onPublish }: { groups: StoryGroup[], onPublish: 
         }
     };
 
-    const handleCropComplete = useCallback((croppedArea: any, croppedPixels: any) => {
+    const handleCropComplete = useCallback((_croppedArea: Area, croppedPixels: Area) => {
         setCroppedAreaPixels(croppedPixels);
     }, []);
 
@@ -255,30 +244,9 @@ function StoryCreator({ groups, onPublish }: { groups: StoryGroup[], onPublish: 
             const croppedImageBlobUrl = await getCroppedImg(rawImage, croppedAreaPixels);
             setImage(croppedImageBlobUrl);
             setScale(1);
-            setPosition({ x: 0, y: 0 });
             setIsCroppingMode(false);
-        } catch (error) {
+        } catch {
             toast.error("Kırpma işlemi başarısız oldu.");
-        }
-    };
-
-    const handleStickerUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                const newSticker: StickerLayer = {
-                    id: `sticker-${Date.now()}`,
-                    src: e.target?.result as string,
-                    x: 100,
-                    y: 300,
-                    scale: 1,
-                    rotation: 0
-                };
-                setStickerLayers([...stickerLayers, newSticker]);
-                setSelectedId(newSticker.id);
-            };
-            reader.readAsDataURL(file);
         }
     };
 
@@ -302,15 +270,9 @@ function StoryCreator({ groups, onPublish }: { groups: StoryGroup[], onPublish: 
         setTextLayers(layers => layers.map(l => l.id === id ? { ...l, ...updates } : l));
     };
 
-    const updateStickerLayer = (id: string, updates: Partial<StickerLayer>) => {
-        setStickerLayers(layers => layers.map(l => l.id === id ? { ...l, ...updates } : l));
-    };
-
     const deleteLayer = (id: string) => {
         if (id.startsWith('text-')) {
             setTextLayers(layers => layers.filter(l => l.id !== id));
-        } else {
-            setStickerLayers(layers => layers.filter(l => l.id !== id));
         }
         if (selectedId === id) setSelectedId(null);
     };
@@ -355,8 +317,8 @@ function StoryCreator({ groups, onPublish }: { groups: StoryGroup[], onPublish: 
                     type: 'image',
                     title: title.trim() || ".", // Use a dot as placeholder if title is empty
                     content: content.trim() || undefined,
-                    group_id: selectedGroupId || null,
-                    category: groups.find(g => g.id === selectedGroupId)?.title || "Genel"
+                    group_id: effectiveSelectedGroupId || null,
+                    category: selectedGroup?.title || "Genel"
                 });
 
             if (dbError) throw dbError;
@@ -367,8 +329,8 @@ function StoryCreator({ groups, onPublish }: { groups: StoryGroup[], onPublish: 
             setTitle("");
             setContent("");
 
-        } catch (error: any) {
-            toast.error(error.message);
+        } catch (error) {
+            toast.error(getErrorMessage(error));
         } finally {
             setIsUploading(false);
         }
@@ -515,8 +477,9 @@ function StoryCreator({ groups, onPublish }: { groups: StoryGroup[], onPublish: 
                             <div className="space-y-2">
                                 <Label className="text-xs font-bold text-zinc-400">HİKAYE GRUBU / KART</Label>
                                 <select
-                                    value={selectedGroupId}
+                                    value={effectiveSelectedGroupId}
                                     onChange={(e) => setSelectedGroupId(e.target.value)}
+                                    disabled={groups.length === 0}
                                     className="w-full bg-black border border-zinc-800 rounded-md p-2 text-sm focus:border-[#FFC800] outline-none"
                                 >
                                     <option value="" disabled>Kart Seçin</option>
@@ -525,7 +488,7 @@ function StoryCreator({ groups, onPublish }: { groups: StoryGroup[], onPublish: 
                                     ))}
                                 </select>
                                 {groups.length === 0 && (
-                                    <p className="text-[10px] text-red-400">Önce "Yönet" sekmesinden bir kart oluşturmalısınız bebeğim.</p>
+                                    <p className="text-[10px] text-red-400">Önce &quot;Yönet&quot; sekmesinden bir kart oluşturmalısınız bebeğim.</p>
                                 )}
                             </div>
 
@@ -554,7 +517,7 @@ function StoryCreator({ groups, onPublish }: { groups: StoryGroup[], onPublish: 
 
                         <Button
                             onClick={handlePublish}
-                            disabled={isUploading || !image}
+                            disabled={isUploading || !image || groups.length === 0}
                             className="w-full h-12 bg-white text-black font-black hover:bg-zinc-200"
                         >
                             {isUploading ? "YAYINLANIYOR..." : "PAYLAŞ"}
@@ -588,10 +551,10 @@ function StoryManager({ groups, onUpdate }: { groups: StoryGroup[], onUpdate: ()
     const [editStoryContent, setEditStoryContent] = useState("");
     const [editStoryGroupId, setEditStoryGroupId] = useState("");
 
-    const supabase = createBrowserClient(
+    const [supabase] = useState(() => createBrowserClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-    );
+    ));
 
     const handleOpenGroup = async (group: StoryGroup) => {
         setSelectedGroup(group);
@@ -599,7 +562,7 @@ function StoryManager({ groups, onUpdate }: { groups: StoryGroup[], onUpdate: ()
         setIsLoadingStories(true);
         try {
             const data = await getStoriesByGroup(group.id);
-            setStories((data as unknown as never[]) || []);
+            setStories((data as Story[]) || []);
         } finally {
             setIsLoadingStories(false);
         }
@@ -645,8 +608,8 @@ function StoryManager({ groups, onUpdate }: { groups: StoryGroup[], onUpdate: ()
             setPreviewCover("");
             setGroupRingColor("");
             onUpdate();
-        } catch (error: any) {
-            toast.error(error.message);
+        } catch (error) {
+            toast.error(getErrorMessage(error));
         }
     };
 
@@ -677,8 +640,8 @@ function StoryManager({ groups, onUpdate }: { groups: StoryGroup[], onUpdate: ()
             if (!res.success) throw new Error(res.error);
             toast.success("Grup silindi.");
             onUpdate();
-        } catch (error: any) {
-            toast.error(error.message);
+        } catch (error) {
+            toast.error(getErrorMessage(error));
         }
     };
 
@@ -690,8 +653,8 @@ function StoryManager({ groups, onUpdate }: { groups: StoryGroup[], onUpdate: ()
             toast.success("Hikaye silindi.");
             // Refresh list
             if (selectedGroup) handleOpenGroup(selectedGroup);
-        } catch (error: any) {
-            toast.error(error.message);
+        } catch (error) {
+            toast.error(getErrorMessage(error));
         }
     };
 
@@ -717,8 +680,8 @@ function StoryManager({ groups, onUpdate }: { groups: StoryGroup[], onUpdate: ()
             toast.success("Hikaye güncellendi.");
             setEditingStory(null);
             if (selectedGroup) handleOpenGroup(selectedGroup);
-        } catch (error: any) {
-            toast.error(error.message);
+        } catch (error) {
+            toast.error(getErrorMessage(error));
         }
     };
 

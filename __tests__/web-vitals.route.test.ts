@@ -27,6 +27,17 @@ function makeRequest(body: unknown) {
     }) as NextRequest;
 }
 
+function makeRawRequest(body: string) {
+    return new Request("http://localhost/api/metrics/web-vitals", {
+        method: "POST",
+        headers: {
+            "content-type": "application/json",
+            "user-agent": "vitest",
+        },
+        body,
+    }) as NextRequest;
+}
+
 describe("web vitals route", () => {
     beforeEach(() => {
         vi.clearAllMocks();
@@ -72,8 +83,46 @@ describe("web vitals route", () => {
             value: 1234.5,
             rating: "good",
             pathname: "/konular/newton-yasalari",
+            href: "http://localhost:3000/konular/newton-yasalari",
+            connection: { effectiveType: "4g" },
+            attribution: { element: "h1" },
             user_agent: "vitest",
         }));
+    });
+
+    it("strips query strings from observed URLs and drops oversized JSON fields", async () => {
+        const { POST } = await import("@/app/api/metrics/web-vitals/route");
+
+        const response = await POST(makeRequest({
+            name: "INP",
+            value: 42,
+            pathname: "/reset-password?token=secret#section",
+            href: "https://www.fizikhub.com/reset-password?token=secret#section",
+            connection: { effectiveType: "4g" },
+            attribution: { element: "x".repeat(5000) },
+        }));
+
+        expect(response.status).toBe(204);
+        expect(supabaseMocks.insert).toHaveBeenCalledWith(expect.objectContaining({
+            pathname: "/reset-password",
+            href: "https://www.fizikhub.com/reset-password",
+            connection: { effectiveType: "4g" },
+            attribution: null,
+        }));
+    });
+
+    it("rejects oversized metric payloads before touching Supabase", async () => {
+        const { POST } = await import("@/app/api/metrics/web-vitals/route");
+        const body = JSON.stringify({
+            name: "LCP",
+            value: 1,
+            attribution: { element: "x".repeat(70 * 1024) },
+        });
+
+        const response = await POST(makeRawRequest(body));
+
+        expect(response.status).toBe(413);
+        expect(supabaseMocks.createAdminClient).not.toHaveBeenCalled();
     });
 
     it("warns once when the optional web vitals table is not available", async () => {

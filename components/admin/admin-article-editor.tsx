@@ -11,8 +11,7 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { updateArticle } from "@/app/admin/actions";
 import Image from "next/image";
-import { ArrowLeft, Save, Upload, Loader2, ImagePlus, X } from "lucide-react";
-import NextImage from "next/image";
+import { Upload, Loader2, X } from "lucide-react";
 import { ImageCropDialog } from "@/components/shared/image-crop-dialog";
 import { WriterManifesto } from "@/components/article/writer-manifesto";
 // imageCompression imported dynamically inside handleCoverUploadp editor to avoid SSR issues
@@ -44,10 +43,18 @@ interface AdminArticleEditorProps {
     article: Article;
 }
 
+function getErrorMessage(error: unknown, fallback = "Bilinmeyen bir hata oluştu") {
+    if (error instanceof Error) return error.message;
+    if (error && typeof error === "object" && "message" in error) {
+        const message = (error as { message?: unknown }).message;
+        if (typeof message === "string" && message.trim()) return message;
+    }
+    return fallback;
+}
+
 export function AdminArticleEditor({ article }: AdminArticleEditorProps) {
     const [loading, setLoading] = useState(false);
     const [isUploading, setIsUploading] = useState(false); // Added for upload state
-    const [tempCoverUrl, setTempCoverUrl] = useState<string | null>(null);
     const coverInputRef = useRef<HTMLInputElement>(null);
 
     // Crop Dialog States
@@ -144,12 +151,11 @@ export function AdminArticleEditor({ article }: AdminArticleEditorProps) {
                 .from('article-images') // Corrected bucket name
                 .getPublicUrl(filePath);
 
-            setTempCoverUrl(publicUrl);
             setFormData({ ...formData, image_url: publicUrl });
             toast.success("Kapak görseli yüklendi");
-        } catch (error: any) {
+        } catch (error) {
             console.error("Upload error:", error);
-            toast.error("Görsel yüklenirken bir hata oluştu: " + error.message);
+            toast.error("Görsel yüklenirken bir hata oluştu: " + getErrorMessage(error));
         } finally {
             setIsUploading(false);
             setIsCropDialogOpen(false); // Close dialog after upload attempt
@@ -175,8 +181,8 @@ export function AdminArticleEditor({ article }: AdminArticleEditorProps) {
                 router.push("/admin/articles");
                 router.refresh();
             }
-        } catch (error: any) {
-            toast.error("Hata: " + (error.message || "Bilinmeyen bir hata oluştu"));
+        } catch (error) {
+            toast.error("Hata: " + getErrorMessage(error));
         } finally {
             setLoading(false);
         }

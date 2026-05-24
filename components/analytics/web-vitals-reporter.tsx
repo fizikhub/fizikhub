@@ -59,6 +59,10 @@ function getConnectionInfo(): ConnectionInfo | undefined {
     };
 }
 
+function getSanitizedHref() {
+    return `${window.location.origin}${window.location.pathname}`;
+}
+
 export function WebVitalsReporter() {
     useReportWebVitals((metric) => {
         if (!TRACKED_METRICS.has(metric.name)) return;
@@ -72,7 +76,7 @@ export function WebVitalsReporter() {
             rating: "rating" in metric ? metric.rating : undefined,
             navigationType: "navigationType" in metric ? metric.navigationType : undefined,
             pathname: window.location.pathname,
-            href: window.location.href,
+            href: getSanitizedHref(),
             connection: getConnectionInfo(),
             attribution: "attribution" in metric ? metric.attribution : undefined,
         };

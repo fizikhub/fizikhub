@@ -7,16 +7,19 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { FramerMotionProvider } from "@/components/providers/framer-motion-provider";
 import Image from "next/image";
 
+const googleSiteVerification = process.env.NEXT_PUBLIC_GSC_TOKEN?.trim();
+const supabasePublicUrl = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
+
 // Single font only — eliminates 2 render-blocking CSS files
 const inter = Inter({
-  subsets: ["latin"],
+  subsets: ["latin", "latin-ext"],
   variable: "--font-sans",
   display: "swap",
   fallback: ['system-ui', 'arial'],
 });
 
 const lora = Lora({
-  subsets: ["latin"],
+  subsets: ["latin", "latin-ext"],
   variable: "--font-serif",
   display: "swap",
   preload: false,
@@ -45,16 +48,16 @@ export const metadata: Metadata = {
     template: "%s | Fizikhub"
   },
   alternates: {
+    canonical: 'https://www.fizikhub.com',
     languages: {
       'tr-TR': 'https://www.fizikhub.com',
+      'x-default': 'https://www.fizikhub.com',
     },
     types: {
       'application/rss+xml': '/feed.xml',
     },
   },
-  verification: { 
-    google: process.env.NEXT_PUBLIC_GSC_TOKEN || '', 
-  },
+  ...(googleSiteVerification ? { verification: { google: googleSiteVerification } } : {}),
   description: "Fizikhub: Türkiye'nin en aktif bilim, fizik, uzay, kuantum ve evren platformu. Türkçe akademik makaleler, bilimsel forum, sözlük, fizik eğitim materyalleri, TYT/AYT/YKS fizik soru çözümü ve daha fazlası.",
   keywords: [
     "fizik", "bilim", "uzay", "evren", "fizikhub", "forum", "soru cevap", "türkçe fizik",
@@ -236,8 +239,12 @@ export default async function RootLayout({
         <head>
 
           <link rel="canonical" href="https://www.fizikhub.com" />
-          <link rel="preconnect" href={process.env.NEXT_PUBLIC_SUPABASE_URL!} />
-          <link rel="dns-prefetch" href={process.env.NEXT_PUBLIC_SUPABASE_URL!} />
+          {supabasePublicUrl ? (
+            <>
+              <link rel="preconnect" href={supabasePublicUrl} />
+              <link rel="dns-prefetch" href={supabasePublicUrl} />
+            </>
+          ) : null}
         </head>
         <body className="bg-[#050505] min-h-screen">
           <div className="fixed inset-0 z-[9999] min-h-screen w-full bg-[#050505] flex flex-col items-center justify-center overflow-hidden text-center p-6">

@@ -79,6 +79,14 @@ describe("SEO robots and canonical boundaries", () => {
             .filter(Boolean);
 
         expect(disallowValues).not.toContain("/kullanici/");
+        expect(disallowValues).not.toEqual(expect.arrayContaining([
+            "/login",
+            "/forgot-password",
+            "/reset-password",
+            "/basvuru/",
+            "/paylas",
+            "/*?q=*",
+        ]));
     });
 });
 

@@ -53,18 +53,19 @@ export function MemeCorner() {
                 {/* TEXT OVERLAY (Targeting this to be the fast LCP item) */}
                 <div className="absolute inset-0 z-20 flex flex-col items-center justify-center select-none pointer-events-none p-4 pb-8 sm:pb-12 text-center">
 
-                    <p className="font-head text-sm sm:text-lg font-bold tracking-[0.6em] text-blue-200/80 uppercase mb-0.5 sm:mb-1 drop-shadow-md">
+                    <p className="font-head text-sm sm:text-lg font-bold tracking-normal text-blue-200/80 uppercase mb-0.5 sm:mb-1 drop-shadow-md">
                         BİLİMİ
                     </p>
 
-                    <p
-                        className="font-head text-4xl sm:text-7xl font-black tracking-tighter leading-none bg-gradient-to-r from-white via-blue-200 to-purple-300 bg-clip-text text-transparent"
+                    <h1
+                        className="font-head text-4xl sm:text-7xl font-black tracking-normal leading-none bg-gradient-to-r from-white via-blue-200 to-purple-300 bg-clip-text text-transparent"
                         style={{
                             filter: 'drop-shadow(0px 4px 12px rgba(0,0,0,0.9))'
                         }}
                     >
+                        <span className="sr-only">Fizikhub: Türkçe fizik, uzay ve bilim platformu - </span>
                         Tİ'YE ALIYORUZ
-                    </p>
+                    </h1>
 
                     <div className="mt-2 sm:mt-3 transform origin-center animate-[badge-wiggle_3s_ease-in-out_infinite]">
                         <span className="inline-block bg-[#FFC800] border-[2px] border-black text-black px-3 py-1 sm:px-4 sm:py-1.5 font-black text-[10px] sm:text-xs uppercase shadow-[2px_2px_0px_0px_#000]">

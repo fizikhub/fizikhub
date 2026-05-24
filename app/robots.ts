@@ -9,12 +9,6 @@ export default function robots(): MetadataRoute.Robots {
         '/abs/',
         '/storage/',
         '/cdn-cgi/',
-        '/*?q=*',
-        '/login',
-        '/forgot-password',
-        '/reset-password',
-        '/basvuru/',
-        '/paylas',
     ];
 
     const commonDisallow = cleanupDisallow;

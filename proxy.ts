@@ -14,6 +14,20 @@ const RATE_LIMIT_TTL_SECONDS = RATE_LIMIT_WINDOW / 1000;
 let lastCleanup = Date.now();
 const CANONICAL_HOST = 'www.fizikhub.com';
 const CANONICAL_ORIGIN = `https://${CANONICAL_HOST}`;
+const SEO_METADATA_PATHS = new Set([
+    '/robots.txt',
+    '/sitemap.xml',
+    '/sitemap-index.xml',
+    '/topic-sitemap.xml',
+    '/article-sitemap.xml',
+    '/forum-sitemap.xml',
+    '/dictionary-sitemap.xml',
+    '/news-sitemap.xml',
+    '/feed.xml',
+    '/llms.txt',
+    '/ai-index.json',
+    '/opengraph-image',
+]);
 
 type UpstashPipelineResult = Array<{ result?: unknown; error?: string }>;
 
@@ -105,6 +119,15 @@ function rateLimitResponse(): NextResponse {
     );
 }
 
+function goneNoindexResponse(): NextResponse {
+    return new NextResponse(null, {
+        status: 410,
+        headers: {
+            'X-Robots-Tag': 'noindex, nofollow',
+        },
+    });
+}
+
 function canonicalRedirectUrl(request: NextRequest, pathname?: string) {
     const url = new URL(request.nextUrl.toString());
     url.protocol = 'https';
@@ -155,6 +178,13 @@ function normalizeSeoUrl(request: NextRequest) {
     }
 
     return changed ? url : null;
+}
+
+function shouldBypassSession(pathname: string, userAgent: string) {
+    if (SEO_METADATA_PATHS.has(pathname)) return true;
+    if (pathname.startsWith('/api/og')) return true;
+
+    return /facebookexternalhit|Facebot|Twitterbot|LinkedInBot|WhatsApp|Slackbot|TelegramBot|Instagram|Pinterest|Discordbot/i.test(userAgent);
 }
 
 export async function proxy(request: NextRequest) {
@@ -231,10 +261,16 @@ export async function proxy(request: NextRequest) {
     }
 
     if (pathname.startsWith('/storage/v1/object/public/')) {
-        const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://cd8341b2-228f-4981-ac3a-5a84c9adca5e.supabase.co';
+        const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
+        if (!supabaseUrl) return goneNoindexResponse();
+
         const cleanPathname = pathname.split(')')[0];
-        const url = new URL(`${supabaseUrl}${cleanPathname}`);
-        return NextResponse.redirect(url, 301);
+        try {
+            const url = new URL(`${supabaseUrl.replace(/\/+$/, '')}${cleanPathname}`);
+            return NextResponse.redirect(url, 301);
+        } catch {
+            return goneNoindexResponse();
+        }
     }
 
     if (pathname === '/solar-system/our-solar-system/in-depth') {
@@ -248,12 +284,7 @@ export async function proxy(request: NextRequest) {
     }
 
     if (/^\/(?:makale|deney)\/(?:test|tesr|deneme)(?:[-_]|$)/i.test(pathname)) {
-        return new NextResponse(null, {
-            status: 410,
-            headers: {
-                'X-Robots-Tag': 'noindex, nofollow',
-            },
-        });
+        return goneNoindexResponse();
     }
 
     // Clean up URLs broken by markdown parsing bugs (trailing characters after closed parenthesis)
@@ -300,7 +331,7 @@ export async function proxy(request: NextRequest) {
 
     // Deprecated arXiv automation paths without a parseable arXiv id are gone.
     if (pathname.startsWith('/abs/')) {
-        return new NextResponse(null, { status: 410 });
+        return goneNoindexResponse();
     }
 
     // Redirect junk single-character paths that bots hit
@@ -331,13 +362,12 @@ export async function proxy(request: NextRequest) {
         }
     }
 
-    // Bypass session management for social media bots/crawlers
-    // These bots don't have cookies and only need the HTML for OG meta tags
+    // Bypass session management for crawler-facing metadata and social bots.
+    // These requests do not need Supabase cookie refresh work.
     const userAgent = request.headers.get('user-agent') || '';
-    const isSocialBot = /facebookexternalhit|Facebot|Twitterbot|LinkedInBot|WhatsApp|Slackbot|TelegramBot|Instagram|Pinterest|Discordbot/i.test(userAgent);
 
     let response;
-    if (isSocialBot) {
+    if (shouldBypassSession(pathname, userAgent)) {
         response = NextResponse.next();
     } else {
         response = await updateSession(request);

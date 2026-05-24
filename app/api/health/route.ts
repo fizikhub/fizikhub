@@ -3,16 +3,21 @@ import { createClient } from "@/lib/supabase-server";
 export const runtime = "edge";
 export const revalidate = 0; // Cacheleme yapılmasın, canlı kontrol
 
+function getErrorMessage(error: unknown, fallback: string) {
+    return error instanceof Error ? error.message : fallback;
+}
+
 export async function GET() {
     const startTime = performance.now();
+    const includeDiagnostics = process.env.NODE_ENV !== "production";
 
     // Health Checks
     let isDbHealthy = false;
     let isRedisHealthy = false;
     let dbLatency = -1;
     let redisLatency = -1;
-    let dbError = null;
-    let redisError = null;
+    let dbError: string | null = null;
+    let redisError: string | null = null;
 
     // 1. Supabase (Postgres) Check
     try {
@@ -24,8 +29,8 @@ export async function GET() {
 
         isDbHealthy = true;
         dbLatency = Math.round(performance.now() - dbStart);
-    } catch (e: any) {
-        dbError = e.message || "Database connection failed";
+    } catch (error: unknown) {
+        dbError = getErrorMessage(error, "Database connection failed");
     }
 
     // 2. Redis (Upstash) Check - REST API üzerinden ping
@@ -45,8 +50,8 @@ export async function GET() {
         } else {
             redisError = "Redis credentials missing";
         }
-    } catch (e: any) {
-        redisError = e.message || "Redis ping failed";
+    } catch (error: unknown) {
+        redisError = getErrorMessage(error, "Redis ping failed");
     }
 
     const totalLatency = Math.round(performance.now() - startTime);
@@ -57,17 +62,17 @@ export async function GET() {
         status: isSystemHealthy ? "healthy" : "degraded",
         timestamp: new Date().toISOString(),
         total_latency_ms: totalLatency,
-        environment: process.env.NODE_ENV,
+        ...(includeDiagnostics ? { environment: process.env.NODE_ENV } : {}),
         services: {
             database: {
                 status: isDbHealthy ? "up" : "down",
                 latency_ms: dbLatency,
-                error: dbError,
+                ...(includeDiagnostics ? { error: dbError } : {}),
             },
             redis: {
                 status: isRedisHealthy ? "up" : "down",
                 latency_ms: redisLatency,
-                error: redisError,
+                ...(includeDiagnostics ? { error: redisError } : {}),
             }
         }
     };

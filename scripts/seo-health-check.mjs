@@ -17,8 +17,14 @@ const privateDisallowPatterns = [
   "Disallow: /mesajlar/",
   "Disallow: /notifications/",
   "Disallow: /kurulum/",
+  "Disallow: /login",
+  "Disallow: /forgot-password",
+  "Disallow: /reset-password",
+  "Disallow: /basvuru/",
+  "Disallow: /paylas",
   "Disallow: /time-limit/",
   "Disallow: /yonetim/",
+  "Disallow: /*?q=*",
 ];
 
 const forbiddenUrlPatterns = [
@@ -27,7 +33,9 @@ const forbiddenUrlPatterns = [
   /\/index(?:\?|$)/i,
   /[?&]kategori=/i,
   /[?&]sort=latest/i,
-  /\/(?:login|forgot-password|reset-password|profil|admin|yazar-paneli|mesajlar|notifications|kurulum|time-limit|yonetim|paylas)(?:\/|\?|$)/i,
+  /\/(?:login|forgot-password|reset-password|profil|admin|yazar|yazar-paneli|mesajlar|notifications|kurulum|time-limit|yonetim|paylas|basvuru)(?:\/|\?|$)/i,
+  /\/(?:makale\/yeni|makale\/duzenle|kitap-inceleme\/yeni)(?:\/|\?|$)/i,
+  /[?&]q=/i,
   /\/(?:makale|deney)\/(?:test|tesr|deneme)(?:[-_]|$)/i,
   /\/_next\/static\//i,
   /\.(?:woff2?|ttf|otf|map)(?:\?|$)/i,
@@ -126,8 +134,14 @@ function gscActionForReason(reason) {
   if (reason.includes("\\/index")) {
     return "/index varyantını ana sayfaya 301 ile temizle ve GSC doğrulamasını yeniden başlat.";
   }
-  if (reason.includes("login|forgot-password|reset-password|profil|admin")) {
+  if (reason.includes("login|forgot-password|reset-password|profil|admin") || reason.includes("basvuru") || reason.includes("paylas")) {
     return "Private/noindex sayfalarda X-Robots-Tag noindex header'ının canlı yanıtta geldiğini doğrula.";
+  }
+  if (reason.includes("makale\\/yeni") || reason.includes("makale\\/duzenle") || reason.includes("kitap-inceleme")) {
+    return "İçerik oluşturma/düzenleme sayfalarının sitemap dışında kaldığını ve noindex header/meta ile temizlendiğini doğrula.";
+  }
+  if (reason.includes("[?&]q=")) {
+    return "Arama sorgulu URL'lerin canonical ana listeye döndüğünü ve noindex/follow sinyali verdiğini doğrula.";
   }
   if (reason.includes("test|tesr|deneme")) {
     return "Test/taslak benzeri public içerikleri 410/noindex veya yayın dışı bırakma akışıyla temizle.";

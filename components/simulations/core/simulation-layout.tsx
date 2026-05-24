@@ -15,7 +15,7 @@ interface SimulationLayoutProps {
     theoryArea?: React.ReactNode;
     missionsArea?: React.ReactNode;
     simId?: string;
-    parameters?: Record<string, any>;
+    parameters?: Record<string, unknown>;
 }
 
 type TabType = "controls" | "theory" | "missions" | "asistan";

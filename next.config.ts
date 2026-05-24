@@ -1,5 +1,7 @@
 import type { NextConfig } from "next";
 
+const isProduction = process.env.NODE_ENV === "production";
+
 const noindexHeader = [
   {
     key: 'X-Robots-Tag',
@@ -27,9 +29,20 @@ const privateNoindexRoutes = [
   '/paylas',
 ];
 
+const scriptSrc = [
+  "'self'",
+  "'unsafe-inline'",
+  ...(isProduction ? [] : ["'unsafe-eval'"]),
+  "https://challenges.cloudflare.com",
+  "https://cdn.jsdelivr.net",
+  "https://www.googletagmanager.com",
+  "https://www.google-analytics.com",
+  "https://va.vercel-scripts.com",
+];
+
 const contentSecurityPolicy = [
   "default-src 'self'",
-  "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://challenges.cloudflare.com https://cdn.jsdelivr.net https://www.googletagmanager.com https://www.google-analytics.com https://va.vercel-scripts.com",
+  `script-src ${scriptSrc.join(' ')}`,
   "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com",
   "img-src 'self' data: blob: https:",
   "font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net",
@@ -46,6 +59,7 @@ const contentSecurityPolicy = [
 
 const reportOnlyContentSecurityPolicy = [
   ...contentSecurityPolicy.filter((directive) => directive !== "upgrade-insecure-requests"),
+  "report-to csp-endpoint",
   "report-uri /api/security/csp-report",
 ];
 
@@ -195,10 +209,10 @@ const nextConfig: NextConfig = {
           },
           // Clickjacking protection — handled by CSP frame-ancestors below
           // X-Frame-Options removed to allow Instagram WebView to load pages
-          // XSS protection
+          // Legacy browser XSS filters are deprecated; CSP is the active defense.
           {
             key: 'X-XSS-Protection',
-            value: '1; mode=block',
+            value: '0',
           },
           {
             key: 'Referrer-Policy',
@@ -220,6 +234,10 @@ const nextConfig: NextConfig = {
             key: 'Content-Security-Policy-Report-Only',
             value: reportOnlyContentSecurityPolicy.join('; '),
           },
+          {
+            key: 'Reporting-Endpoints',
+            value: 'csp-endpoint="/api/security/csp-report"',
+          },
           // Permissions Policy
           {
             key: 'Permissions-Policy',
@@ -236,6 +254,10 @@ const nextConfig: NextConfig = {
           {
             key: 'Origin-Agent-Cluster',
             value: '?1',
+          },
+          {
+            key: 'X-Permitted-Cross-Domain-Policies',
+            value: 'none',
           },
           // X-DNS-Prefetch-Control
           {

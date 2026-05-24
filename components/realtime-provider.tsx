@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 
 export function RealtimeProvider() {
   const [userId, setUserId] = useState<string | null>(null);
-  const supabase = createClient();
+  const [supabase] = useState(() => createClient());
   const router = useRouter();
 
   useEffect(() => {
@@ -24,7 +24,7 @@ export function RealtimeProvider() {
     return () => {
       subscription.unsubscribe();
     };
-  }, [supabase.auth]);
+  }, [supabase]);
 
   useEffect(() => {
     if (!userId) return;

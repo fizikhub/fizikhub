@@ -25,7 +25,7 @@ const SYSTEM_PROMPTS = {
 
 export async function askAiAssistant(data: {
     simId: string;
-    parameters: Record<string, any>;
+    parameters: Record<string, unknown>;
     message?: string;
     mode: "chat" | "generate_mission" | "evaluate_answer";
     userAnswer?: string;
@@ -91,17 +91,24 @@ SADECE bu yapıda JSON döndür:
             if (cleanedJson.startsWith("```")) {
                 cleanedJson = cleanedJson.replace(/^```(?:json)?\n?/, "").replace(/\n?```$/, "");
             }
-            const parsed = JSON.parse(cleanedJson);
+            const parsed = JSON.parse(cleanedJson) as Partial<NonNullable<AssistantResponse["evaluation"]>>;
+            const isCorrect = parsed.isCorrect === true;
+            const feedback = typeof parsed.feedback === "string"
+                ? parsed.feedback
+                : "Cevap değerlendirildi, ancak modelden açıklama alınamadı.";
+            const pointsEarned = typeof parsed.pointsEarned === "number" && Number.isFinite(parsed.pointsEarned)
+                ? parsed.pointsEarned
+                : 0;
 
             // If correct, award reputation points dynamically!
-            if (parsed.isCorrect && parsed.pointsEarned > 0) {
+            if (isCorrect && pointsEarned > 0) {
                 const supabase = await createClient();
                 const { data: { user } } = await supabase.auth.getUser();
                 if (user) {
                     // Call add_reputation function securely
                     await supabase.rpc('add_reputation', {
                         p_user_id: user.id,
-                        p_points: parsed.pointsEarned,
+                        p_points: pointsEarned,
                         p_reason: `sim_mission_${simId}_completed`,
                         p_reference_type: 'simulation',
                         p_reference_id: Math.floor(Math.random() * 100000) // Dummy reference ID
@@ -110,17 +117,17 @@ SADECE bu yapıda JSON döndür:
             }
 
             return {
-                text: parsed.feedback,
+                text: feedback,
                 evaluation: {
-                    isCorrect: parsed.isCorrect,
-                    feedback: parsed.feedback,
-                    pointsEarned: parsed.pointsEarned
+                    isCorrect,
+                    feedback,
+                    pointsEarned
                 }
             };
         }
 
         return { text: "Bilinmeyen mod." };
-    } catch (error: any) {
+    } catch (error) {
         console.error("[AI Assistant Error]:", error);
         return { text: "Cevap üretilirken bir yapay zeka hatası oluştu." };
     }

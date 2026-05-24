@@ -18,11 +18,15 @@ export function OptimizedImage({
     className,
     lowQualityPlaceholder = false,
     alt,
+    priority,
+    loading,
     ...props
 }: OptimizedImageProps) {
     return (
         <NextImage
             {...props}
+            priority={priority}
+            loading={loading ?? (priority ? "eager" : undefined)}
             alt={alt}
             className={cn(
                 "object-cover",
@@ -30,8 +34,8 @@ export function OptimizedImage({
             )}
             placeholder={lowQualityPlaceholder ? "blur" : "empty"}
             blurDataURL={lowQualityPlaceholder ? generateBlurPlaceholder() : undefined}
-            quality={props.priority ? 60 : 45}
-            fetchPriority={props.priority ? "high" : "auto"}
+            quality={priority ? 60 : 45}
+            fetchPriority={priority ? "high" : "auto"}
         />
     );
 }

@@ -2,13 +2,13 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import { Sparkles, Send, Loader2, Target, AlertCircle } from "lucide-react";
-import { askAiAssistant, type AssistantResponse } from "@/app/simulasyonlar/actions";
+import { askAiAssistant } from "@/app/simulasyonlar/actions";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
 interface AiAssistantProps {
     simId: string;
-    parameters: Record<string, any>;
+    parameters: Record<string, unknown>;
     color?: string;
 }
 

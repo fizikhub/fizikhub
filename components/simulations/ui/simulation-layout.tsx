@@ -1,10 +1,5 @@
 "use client";
 
-import { cn } from "@/lib/utils";
-import { Settings2, X } from "lucide-react";
-import { useState } from "react";
-import { m as motion, AnimatePresence } from "framer-motion";
-
 interface SimulationLayoutProps {
     children: React.ReactNode; // The Canvas / Simulation Area
     controls: React.ReactNode; // The Controls Sidebar Content

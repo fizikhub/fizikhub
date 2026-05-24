@@ -21,6 +21,8 @@ type SupabaseMutationError = {
 
 const ALLOWED_NAMES = new Set(["CLS", "FCP", "INP", "LCP", "TTFB"]);
 const ALLOWED_RATINGS = new Set(["good", "needs-improvement", "poor"]);
+const MAX_PAYLOAD_CHARS = 64 * 1024;
+const MAX_JSON_FIELD_CHARS = 4096;
 let didWarnMissingWebVitalsTable = false;
 
 function asOptionalString(value: unknown, maxLength: number): string | null {
@@ -30,6 +32,39 @@ function asOptionalString(value: unknown, maxLength: number): string | null {
 
 function asOptionalNumber(value: unknown): number | null {
     return typeof value === "number" && Number.isFinite(value) ? value : null;
+}
+
+function asSanitizedPathname(value: unknown): string | null {
+    const pathname = asOptionalString(value, 512);
+    if (!pathname) return null;
+
+    return pathname.split(/[?#]/, 1)[0] || null;
+}
+
+function asSanitizedUrl(value: unknown): string | null {
+    const rawUrl = asOptionalString(value, 2048);
+    if (!rawUrl) return null;
+
+    try {
+        const url = new URL(rawUrl);
+        url.search = "";
+        url.hash = "";
+        return url.toString().slice(0, 1024);
+    } catch {
+        return rawUrl.split(/[?#]/, 1)[0].slice(0, 1024) || null;
+    }
+}
+
+function asBoundedJsonObject(value: unknown): Record<string, unknown> | null {
+    if (!value || typeof value !== "object" || Array.isArray(value)) return null;
+
+    try {
+        const serialized = JSON.stringify(value);
+        if (!serialized || serialized.length > MAX_JSON_FIELD_CHARS) return null;
+        return JSON.parse(serialized) as Record<string, unknown>;
+    } catch {
+        return null;
+    }
 }
 
 function isMissingWebVitalsTable(error: SupabaseMutationError) {
@@ -45,9 +80,20 @@ function warnMissingWebVitalsTableOnce() {
 
 export async function POST(request: NextRequest) {
     let payload: RawWebVitalPayload;
+    let rawPayload: string;
 
     try {
-        payload = await request.json() as RawWebVitalPayload;
+        rawPayload = await request.text();
+    } catch {
+        return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
+    }
+
+    if (rawPayload.length > MAX_PAYLOAD_CHARS) {
+        return NextResponse.json({ error: "Payload too large" }, { status: 413 });
+    }
+
+    try {
+        payload = JSON.parse(rawPayload) as RawWebVitalPayload;
     } catch {
         return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
     }
@@ -77,11 +123,11 @@ export async function POST(request: NextRequest) {
             delta: asOptionalNumber(payload.delta),
             rating: rating && ALLOWED_RATINGS.has(rating) ? rating : null,
             navigation_type: asOptionalString(payload.navigationType, 64),
-            pathname: asOptionalString(payload.pathname, 512),
-            href: asOptionalString(payload.href, 1024),
-            connection: payload.connection ?? null,
-            attribution: payload.attribution ?? null,
-            user_agent: request.headers.get("user-agent"),
+            pathname: asSanitizedPathname(payload.pathname),
+            href: asSanitizedUrl(payload.href),
+            connection: asBoundedJsonObject(payload.connection),
+            attribution: asBoundedJsonObject(payload.attribution),
+            user_agent: asOptionalString(request.headers.get("user-agent"), 512),
         });
 
         if (error) {

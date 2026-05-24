@@ -85,7 +85,7 @@ export function UnifiedFeed({ items: initialItems, suggestedUsers = [], showExtr
         initialItems.length > 0 ? initialItems[initialItems.length - 1].sortDate : new Date().toISOString()
     );
 
-    const supabase = createClient();
+    const [supabase] = useState(() => createClient());
     const observerRef = useRef<HTMLDivElement>(null);
 
     // Dynamic Cursor Pagination Fetcher
@@ -431,4 +431,3 @@ function LazyMount({
         </div>
     );
 }
-

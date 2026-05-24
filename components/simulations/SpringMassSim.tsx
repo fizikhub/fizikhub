@@ -90,8 +90,12 @@ export function SpringMassSim({ simData }: { simData: any }) {
             successText: "Harika! Sönümleme kuvveti hız ile ters yönlü çalışarak sistemin mekanik enerjisini ısıya dönüştürür ve hareketi durdurur." }
     ]);
 
-    useEffect(() => { setMissions(prev => prev.map(m => { if (!m.isCompleted && m.condition()) return { ...m, isCompleted: true }; return m; })); }, [springConstant, mass, damping, isPlaying]);
-
+    useEffect(() => { 
+        const timeoutId = setTimeout(() => {
+            setMissions(prev => prev.map(m => { if (!m.isCompleted && m.condition()) return { ...m, isCompleted: true }; return m; })); 
+        }, 50);
+        return () => clearTimeout(timeoutId);
+    }, [springConstant, mass, damping, isPlaying]);
     const forceGravity = mass * gravity;
     const forceSpring = -springConstant * y;
 

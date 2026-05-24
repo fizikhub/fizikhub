@@ -73,8 +73,12 @@ export function WaveSim({ simData }: { simData: any }) {
             successText: "Mükemmel! Farklı genlikli ama aynı frekanslı dalgalar süperpozisyonda daha karmaşık bir dalga oluşturur." }
     ]);
 
-    useEffect(() => { setMissions(prev => prev.map(m => { if (!m.isCompleted && m.condition()) return { ...m, isCompleted: true }; return m; })); }, [amplitude1, amplitude2, frequency1, frequency2, isPlaying]);
-
+    useEffect(() => { 
+        const timeoutId = setTimeout(() => {
+            setMissions(prev => prev.map(m => { if (!m.isCompleted && m.condition()) return { ...m, isCompleted: true }; return m; })); 
+        }, 50);
+        return () => clearTimeout(timeoutId);
+    }, [amplitude1, amplitude2, frequency1, frequency2, isPlaying]);
     const Controls = (
         <div className="flex flex-col gap-5">
             <div className="flex items-center gap-2">
