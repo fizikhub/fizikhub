@@ -24,15 +24,22 @@ export async function GET() {
     const baseUrl = getSiteUrl();
     const twoDaysAgo = new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString();
 
-    const { data: articles } = await supabase
+    const query = supabase
         .from('articles')
         .select('title, slug, excerpt, category, created_at, cover_url, image_url')
         .eq('status', 'published')
         .not('slug', 'is', null)
         .neq('category', 'Terim')
-        .gte('created_at', twoDaysAgo)
-        .order('created_at', { ascending: false })
-        .limit(1000);
+        .order('created_at', { ascending: false });
+
+    const { data: recentArticles } = await query.gte('created_at', twoDaysAgo).limit(100);
+    
+    let articles = recentArticles || [];
+
+    if (articles.length === 0) {
+        const { data: fallbackArticles } = await query.limit(5);
+        articles = fallbackArticles || [];
+    }
 
     const urls = (articles || [])
         .flatMap((article) => {

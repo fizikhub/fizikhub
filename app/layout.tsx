@@ -220,6 +220,7 @@ import { RealtimeProvider } from "@/components/realtime-provider";
 import { Analytics } from "@vercel/analytics/react";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { RuntimeEffects } from "@/components/layout/runtime-effects";
+import { SpeculationRules } from "@/components/seo/speculation-rules";
 
 export default async function RootLayout({
   children,
@@ -345,6 +346,7 @@ export default async function RootLayout({
             }}
           />
           <Analytics />
+          <SpeculationRules />
         </ThemeProvider>
       </body>
     </html>
