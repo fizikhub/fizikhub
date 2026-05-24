@@ -14,8 +14,14 @@ type RawWebVitalPayload = {
     attribution?: unknown;
 };
 
+type SupabaseMutationError = {
+    message?: string;
+    code?: string;
+};
+
 const ALLOWED_NAMES = new Set(["CLS", "FCP", "INP", "LCP", "TTFB"]);
 const ALLOWED_RATINGS = new Set(["good", "needs-improvement", "poor"]);
+let didWarnMissingWebVitalsTable = false;
 
 function asOptionalString(value: unknown, maxLength: number): string | null {
     if (typeof value !== "string") return null;
@@ -24,6 +30,17 @@ function asOptionalString(value: unknown, maxLength: number): string | null {
 
 function asOptionalNumber(value: unknown): number | null {
     return typeof value === "number" && Number.isFinite(value) ? value : null;
+}
+
+function isMissingWebVitalsTable(error: SupabaseMutationError) {
+    const message = error.message || "";
+    return error.code === "PGRST205" || message.includes("web_vitals_events");
+}
+
+function warnMissingWebVitalsTableOnce() {
+    if (didWarnMissingWebVitalsTable || process.env.NODE_ENV === "production") return;
+    didWarnMissingWebVitalsTable = true;
+    console.warn("[web-vitals] collection skipped: web_vitals_events table is not available");
 }
 
 export async function POST(request: NextRequest) {
@@ -68,7 +85,11 @@ export async function POST(request: NextRequest) {
         });
 
         if (error) {
-            console.warn("[web-vitals] insert failed", error.message);
+            if (isMissingWebVitalsTable(error)) {
+                warnMissingWebVitalsTableOnce();
+            } else {
+                console.warn("[web-vitals] insert failed", error.message);
+            }
         }
     } catch (error) {
         if (process.env.NODE_ENV !== "production") {

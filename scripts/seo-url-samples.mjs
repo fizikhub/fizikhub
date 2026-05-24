@@ -37,8 +37,9 @@ function pushUnique(samples, url, priorityReason) {
     });
 }
 
-const [rootSitemap, articleSitemap, forumSitemap, dictionarySitemap] = await Promise.all([
+const [rootSitemap, topicSitemap, articleSitemap, forumSitemap, dictionarySitemap] = await Promise.all([
     getText("/sitemap.xml"),
+    getText("/topic-sitemap.xml"),
     getText("/article-sitemap.xml"),
     getText("/forum-sitemap.xml"),
     getText("/dictionary-sitemap.xml"),
@@ -59,8 +60,7 @@ const samples = [];
 locs(articleSitemap).slice(0, 10).forEach((url) => pushUnique(samples, url, "published-indexable-article"));
 locs(dictionarySitemap).slice(0, 5).forEach((url) => pushUnique(samples, url, "dictionary-entity"));
 locs(forumSitemap).slice(0, 5).forEach((url) => pushUnique(samples, url, "quality-forum-question"));
-locs(rootSitemap)
-    .filter((url) => new URL(url).pathname.startsWith("/konular/"))
+locs(topicSitemap)
     .slice(0, 6)
     .forEach((url) => pushUnique(samples, url, "topic-cluster"));
 locs(rootSitemap)

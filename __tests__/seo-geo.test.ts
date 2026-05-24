@@ -1,8 +1,14 @@
 import { describe, expect, it } from "vitest";
 import robots from "@/app/robots";
+import { GET as sitemapIndex } from "@/app/sitemap-index.xml/route";
+import { GET as topicSitemap } from "@/app/topic-sitemap.xml/route";
 import { getVectorUrl } from "@/lib/search-results";
-import { getClusterResourceLinks, getPrimaryClusterHref, getTopicClusterBySlug, getTopicClusterHref } from "@/lib/seo-topic-clusters";
+import { getClusterResourceLinks, getPrimaryClusterHref, getTopicClusterBySlug, getTopicClusterHref, SEO_TOPIC_CLUSTERS } from "@/lib/seo-topic-clusters";
 import { isPrivateSeoPath } from "@/lib/seo-utils";
+
+function xmlLocs(xml: string) {
+    return Array.from(xml.matchAll(/<loc>([^<]+)<\/loc>/g)).map((match) => match[1]);
+}
 
 describe("SEO/GEO topic cluster helpers", () => {
     it("uses canonical topic hub URLs as primary cluster targets", () => {
@@ -22,6 +28,29 @@ describe("SEO/GEO topic cluster helpers", () => {
             expect.objectContaining({ type: "term", href: "/sozluk/basit-harmonik-hareket" }),
             expect.objectContaining({ type: "simulation", href: "/simulasyonlar/basit-sarkac" }),
         ]));
+    });
+});
+
+describe("SEO topic sitemap", () => {
+    it("lists every canonical topic hub URL", async () => {
+        const response = await topicSitemap();
+        const xml = await response.text();
+        const urls = xmlLocs(xml);
+
+        expect(response.headers.get("content-type")).toContain("application/xml");
+        expect(urls).toHaveLength(SEO_TOPIC_CLUSTERS.length);
+        expect(urls).toContain("https://www.fizikhub.com/konular/newton-yasalari");
+        expect(urls).toContain("https://www.fizikhub.com/konular/tyt-ayt-yks-fizik");
+    });
+
+    it("is discoverable from the sitemap index and robots.txt metadata", async () => {
+        const response = await sitemapIndex();
+        const xml = await response.text();
+        const generated = robots();
+        const sitemaps = Array.isArray(generated.sitemap) ? generated.sitemap : [generated.sitemap];
+
+        expect(xmlLocs(xml)).toContain("https://www.fizikhub.com/topic-sitemap.xml");
+        expect(sitemaps).toContain("https://www.fizikhub.com/topic-sitemap.xml");
     });
 });
 

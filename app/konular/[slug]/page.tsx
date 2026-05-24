@@ -6,7 +6,7 @@ import { simulations } from "@/components/simulations/data";
 import { getDictionaryTerms } from "@/lib/api";
 import { BreadcrumbJsonLd } from "@/lib/breadcrumbs";
 import { SEO_PRIORITY_ARTICLES } from "@/lib/seo-priority";
-import { getClusterResourceLinks, getTopicClusterBySlug, getTopicClusterHref, SEO_TOPIC_CLUSTERS, type SeoClusterResourceType } from "@/lib/seo-topic-clusters";
+import { getClusterResourceLinks, getTopicClusterBySlug, getTopicClusterHref, SEO_TOPIC_CLUSTERS, type SeoClusterResourceType, type SeoTopicCluster } from "@/lib/seo-topic-clusters";
 import { getSiteUrl, truncateForMeta } from "@/lib/seo-utils";
 import { slugify } from "@/lib/slug";
 import { createStaticClient } from "@/lib/supabase-server";
@@ -22,6 +22,11 @@ type TopicResource = {
     title: string;
     description: string;
     label: string;
+};
+
+type TopicFaqItem = {
+    question: string;
+    answer: string;
 };
 
 export const revalidate = 3600;
@@ -40,6 +45,26 @@ function humanizeSlug(slug: string) {
         .filter(Boolean)
         .map((part) => part.charAt(0).toLocaleUpperCase("tr-TR") + part.slice(1))
         .join(" ");
+}
+
+function getTopicFaqItems(cluster: SeoTopicCluster): TopicFaqItem[] {
+    const resourceTypes = [
+        cluster.articleSlugs.length > 0 ? "makale" : null,
+        cluster.termSlugs.length > 0 ? "sözlük" : null,
+        cluster.quizSlugs.length > 0 ? "test" : null,
+        cluster.simulationSlugs.length > 0 ? "simülasyon" : null,
+    ].filter(Boolean);
+    const resourceSummary = resourceTypes.length > 0
+        ? resourceTypes.join(", ")
+        : "konu bağlantıları";
+    const aliases = cluster.aliases.slice(0, 3).join(", ");
+
+    return cluster.intentQuestions.slice(0, 4).map((question, index) => ({
+        question,
+        answer: index === 0
+            ? `${cluster.title} konusu; ${aliases || cluster.title} gibi alt kavramları birlikte okuyarak anlaşılır. Fizikhub bu başlık için ${resourceSummary} kaynaklarını tek öğrenme rotasında toplar.`
+            : `${question.replace(/\?$/, "")} sorusunu çalışırken önce temel tanımı, sonra ilgili örnekleri ve varsa interaktif simülasyonu incelemek gerekir. Bu hub, ${cluster.title} bağlantılarını bu sıraya yakın biçimde listeler.`,
+    }));
 }
 
 async function getTopicResources(slug: string): Promise<TopicResource[]> {
@@ -183,6 +208,7 @@ export default async function TopicClusterPage({ params }: PageProps) {
             candidate.simulationSlugs.some((simulationSlug) => cluster.simulationSlugs.includes(simulationSlug)),
         )
         .slice(0, 6);
+    const faqItems = getTopicFaqItems(cluster);
 
     const jsonLd = {
         "@context": "https://schema.org",
@@ -206,6 +232,19 @@ export default async function TopicClusterPage({ params }: PageProps) {
                 educationalLevel: "Lise ve lisans başlangıç",
                 learningResourceType: "Konu rehberi",
                 teaches: [cluster.title, ...cluster.aliases],
+            },
+            {
+                "@type": "FAQPage",
+                "@id": `${canonical}#faq`,
+                inLanguage: "tr-TR",
+                mainEntity: faqItems.map((item) => ({
+                    "@type": "Question",
+                    name: item.question,
+                    acceptedAnswer: {
+                        "@type": "Answer",
+                        text: item.answer,
+                    },
+                })),
             },
             {
                 "@type": "ItemList",
@@ -314,6 +353,31 @@ export default async function TopicClusterPage({ params }: PageProps) {
                         </div>
                     </div>
                 </section>
+
+                {faqItems.length > 0 && (
+                    <section className="border-t border-foreground/10 px-4 py-8 sm:px-6 sm:py-12" aria-labelledby="topic-faq-title">
+                        <div className="mx-auto max-w-6xl">
+                            <div className="max-w-3xl">
+                                <p className="text-xs font-black uppercase tracking-widest text-muted-foreground">Sık sorulanlar</p>
+                                <h2 id="topic-faq-title" className="mt-2 text-2xl font-black tracking-normal sm:text-3xl">
+                                    {cluster.title} için kısa cevaplar
+                                </h2>
+                            </div>
+                            <div className="mt-6 divide-y divide-foreground/10 border-y border-foreground/10">
+                                {faqItems.map((item) => (
+                                    <article key={item.question} className="grid gap-2 py-5 md:grid-cols-[280px_1fr] md:gap-6">
+                                        <h3 className="text-base font-black leading-7 tracking-normal">
+                                            {item.question}
+                                        </h3>
+                                        <p className="text-sm font-semibold leading-7 text-muted-foreground">
+                                            {item.answer}
+                                        </p>
+                                    </article>
+                                ))}
+                            </div>
+                        </div>
+                    </section>
+                )}
 
                 {relatedClusters.length > 0 && (
                     <section className="border-t border-foreground/10 px-4 py-8 sm:px-6 sm:py-12" aria-labelledby="related-topics-title">

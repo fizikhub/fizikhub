@@ -244,7 +244,7 @@ export async function GET() {
         contentFreshness: "evergreen",
         updatedAt: "2026-05-13T00:00:00.000+03:00",
         language: "tr-TR",
-        schemaTypes: ["CollectionPage", "ItemList", "LearningResource", "BreadcrumbList"],
+        schemaTypes: ["CollectionPage", "ItemList", "LearningResource", "FAQPage", "BreadcrumbList"],
         clusterSlugs: [cluster.slug],
         relatedUrls: unique(getRelatedUrlsForCluster(cluster).map((link) => `${baseUrl}${link.href}`)).slice(0, 12),
     }));
@@ -260,6 +260,7 @@ export async function GET() {
         },
         sources: {
             sitemapIndex: `${baseUrl}/sitemap-index.xml`,
+            topicSitemap: `${baseUrl}/topic-sitemap.xml`,
             llmsTxt: `${baseUrl}/llms.txt`,
             rss: `${baseUrl}/feed.xml`,
         },

@@ -43,6 +43,7 @@ export async function GET() {
     text += `- **Ücretsiz Çevrimiçi Fizik Testleri**: ${baseUrl}/testler\n`;
     text += `- **Sıralamalar & Liderlik Tablosu**: ${baseUrl}/siralamalar\n`;
     text += `- **Sitemap Index**: ${baseUrl}/sitemap-index.xml\n`;
+    text += `- **Konu Sitemap**: ${baseUrl}/topic-sitemap.xml\n`;
     text += `- **AI Index JSON**: ${baseUrl}/ai-index.json\n\n`;
 
     text += `## Öncelikli Konu Kümeleri (GEO Topic Hubs)\n`;

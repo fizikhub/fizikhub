@@ -27,6 +27,28 @@ const privateNoindexRoutes = [
   '/paylas',
 ];
 
+const contentSecurityPolicy = [
+  "default-src 'self'",
+  "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://challenges.cloudflare.com https://cdn.jsdelivr.net https://www.googletagmanager.com https://www.google-analytics.com https://va.vercel-scripts.com",
+  "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com",
+  "img-src 'self' data: blob: https:",
+  "font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net",
+  "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://challenges.cloudflare.com https://*.vercel-analytics.com https://*.vercel-insights.com https://www.google-analytics.com https://generativelanguage.googleapis.com https://lh3.googleusercontent.com https://cdn-icons-png.flaticon.com https://www.transparenttextures.com",
+  "frame-src 'self' https://challenges.cloudflare.com https://www.youtube.com https://youtube.com https://phet.colorado.edu",
+  "media-src 'self' blob:",
+  "worker-src 'self' blob:",
+  "object-src 'none'",
+  "base-uri 'self'",
+  "form-action 'self'",
+  "frame-ancestors 'self' https://*.instagram.com https://*.facebook.com",
+  "upgrade-insecure-requests",
+];
+
+const reportOnlyContentSecurityPolicy = [
+  ...contentSecurityPolicy.filter((directive) => directive !== "upgrade-insecure-requests"),
+  "report-uri /api/security/csp-report",
+];
+
 const nextConfig: NextConfig = {
   images: {
     formats: ['image/avif', 'image/webp'],
@@ -190,48 +212,13 @@ const nextConfig: NextConfig = {
           // CSP - Content Security Policy (Google bots, analytics, and Supabase allowed)
           {
             key: 'Content-Security-Policy',
-            value: [
-              "default-src 'self'",
-              `script-src 'self' 'unsafe-inline' 'unsafe-eval' https://challenges.cloudflare.com https://cdn.jsdelivr.net https://www.googletagmanager.com https://www.google-analytics.com`.trim(),
-              "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com",
-              "img-src 'self' data: blob: https:",
-              "font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net",
-              "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://challenges.cloudflare.com https://*.vercel-analytics.com https://*.vercel-insights.com https://www.google-analytics.com https://generativelanguage.googleapis.com https://lh3.googleusercontent.com https://cdn-icons-png.flaticon.com https://www.transparenttextures.com",
-              "frame-src 'self' https://challenges.cloudflare.com https://www.youtube.com https://youtube.com https://phet.colorado.edu",
-              "media-src 'self' blob:",
-              "worker-src 'self' blob:",
-              "object-src 'none'",
-              "base-uri 'self'",
-              "form-action 'self'",
-              "frame-ancestors 'self' https://*.instagram.com https://*.facebook.com",
-              "upgrade-insecure-requests",
-            ].join('; '),
+            value: contentSecurityPolicy.join('; '),
           },
-          // CSP hardening dry run. Keep enforced CSP compatible while collecting
-          // inline/eval violations before moving to nonces or hashes.
+          // Mirror enforced CSP for report collection without flooding logs with
+          // known Next.js inline script/style allowances.
           {
             key: 'Content-Security-Policy-Report-Only',
-            value: [
-              "default-src 'self'",
-              "script-src 'self' https://challenges.cloudflare.com https://cdn.jsdelivr.net https://www.googletagmanager.com https://www.google-analytics.com 'report-sample'",
-              "style-src 'self' https://cdn.jsdelivr.net https://fonts.googleapis.com 'report-sample'",
-              "img-src 'self' data: blob: https:",
-              "font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net",
-              "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://challenges.cloudflare.com https://*.vercel-analytics.com https://*.vercel-insights.com https://www.google-analytics.com https://generativelanguage.googleapis.com",
-              "frame-src 'self' https://challenges.cloudflare.com https://www.youtube.com https://youtube.com https://phet.colorado.edu",
-              "media-src 'self' blob:",
-              "worker-src 'self' blob:",
-              "object-src 'none'",
-              "base-uri 'self'",
-              "form-action 'self'",
-              "frame-ancestors 'self' https://*.instagram.com https://*.facebook.com",
-              "report-uri /api/security/csp-report",
-            ].join('; '),
-          },
-          // Referrer Policy
-          {
-            key: 'Referrer-Policy',
-            value: 'strict-origin-when-cross-origin',
+            value: reportOnlyContentSecurityPolicy.join('; '),
           },
           // Permissions Policy
           {

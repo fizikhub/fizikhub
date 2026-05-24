@@ -164,6 +164,7 @@ function summarizeGscUrls(gscUrls) {
 const resourcePaths = [
   "/sitemap-index.xml",
   "/sitemap.xml",
+  "/topic-sitemap.xml",
   "/article-sitemap.xml",
   "/forum-sitemap.xml",
   "/dictionary-sitemap.xml",
@@ -185,7 +186,7 @@ for (const disallow of privateDisallowPatterns) {
   assert(!robotsText.includes(disallow), `robots.txt still contains private disallow: ${disallow}`);
 }
 
-for (const sitemap of ["/sitemap.xml", "/article-sitemap.xml", "/forum-sitemap.xml", "/dictionary-sitemap.xml", "/news-sitemap.xml"]) {
+for (const sitemap of ["/sitemap.xml", "/topic-sitemap.xml", "/article-sitemap.xml", "/forum-sitemap.xml", "/dictionary-sitemap.xml", "/news-sitemap.xml"]) {
   const badUrls = locs(byPath.get(sitemap).text)
     .map((url) => ({ url, reason: forbiddenReason(url) }))
     .filter((entry) => entry.reason);
@@ -233,6 +234,7 @@ const publicSample = await fetchText("/makale");
 assert(!publicSample.xRobotsTag?.includes("noindex"), "/makale should not have X-Robots-Tag noindex");
 
 const samplePaths = [
+  locs(byPath.get("/topic-sitemap.xml").text)[0],
   locs(byPath.get("/article-sitemap.xml").text)[0],
   locs(byPath.get("/forum-sitemap.xml").text)[0],
   locs(byPath.get("/dictionary-sitemap.xml").text)[0],
@@ -256,7 +258,7 @@ const {
 
 console.log(JSON.stringify({
   baseUrl,
-  sitemapCounts: Object.fromEntries(["/sitemap.xml", "/article-sitemap.xml", "/forum-sitemap.xml", "/dictionary-sitemap.xml", "/news-sitemap.xml"]
+  sitemapCounts: Object.fromEntries(["/sitemap.xml", "/topic-sitemap.xml", "/article-sitemap.xml", "/forum-sitemap.xml", "/dictionary-sitemap.xml", "/news-sitemap.xml"]
     .map((sitemap) => [sitemap, locs(byPath.get(sitemap).text).length])),
   aiIndexItemCount: aiIndex.items.length,
   samplePaths,

@@ -21,6 +21,7 @@ export default function robots(): MetadataRoute.Robots {
     const publicAllow = [
         '/',
         '/konular',
+        '/konular/',
         '/api/og',
         '/opengraph-image',
         '/og-image.jpg',
@@ -90,6 +91,7 @@ export default function robots(): MetadataRoute.Robots {
         sitemap: [
             `${baseUrl}/sitemap-index.xml`,
             `${baseUrl}/sitemap.xml`,
+            `${baseUrl}/topic-sitemap.xml`,
             `${baseUrl}/article-sitemap.xml`,
             `${baseUrl}/forum-sitemap.xml`,
             `${baseUrl}/dictionary-sitemap.xml`,

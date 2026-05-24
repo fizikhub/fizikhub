@@ -5,6 +5,7 @@ export const revalidate = 3600;
 
 const SITEMAPS = [
     "/sitemap.xml",
+    "/topic-sitemap.xml",
     "/article-sitemap.xml",
     "/forum-sitemap.xml",
     "/dictionary-sitemap.xml",
