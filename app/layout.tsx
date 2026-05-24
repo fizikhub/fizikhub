@@ -221,6 +221,7 @@ import { Analytics } from "@vercel/analytics/react";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { RuntimeEffects } from "@/components/layout/runtime-effects";
 import { SpeculationRules } from "@/components/seo/speculation-rules";
+import NextTopLoader from "nextjs-toploader";
 
 export default async function RootLayout({
   children,
@@ -293,6 +294,19 @@ export default async function RootLayout({
       <head>
       </head>
       <body suppressHydrationWarning className={`${inter.variable} ${lora.variable} font-sans min-h-[100dvh] flex flex-col pb-16 md:pb-0 bg-background text-foreground`}>
+        {/* GLOBAL PROGRESS BAR (Neo-Brutalist) */}
+        <NextTopLoader 
+          color="#00F5D4"
+          initialPosition={0.08}
+          crawlSpeed={200}
+          height={4}
+          crawl={true}
+          showSpinner={false}
+          easing="ease"
+          speed={200}
+          shadow="0 0 10px #00F5D4,0 0 5px #00F5D4"
+          zIndex={99999}
+        />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdOrg) }}
