@@ -6,6 +6,7 @@ import { CURATED_DICTIONARY_TERMS } from './dictionary-defaults';
 import { slugify } from './slug';
 import { redisCache } from './upstash';
 
+// ─── Base Types ─────────────────────────────────────────────────────────────
 
 export type Article = Database['public']['Tables']['articles']['Row'] & {
     author?: Database['public']['Tables']['profiles']['Row'] | null;
@@ -58,17 +59,62 @@ function mergeDictionaryTerms(remoteTerms: DictionaryTerm[]) {
     );
 }
 
-export const getArticles = cache(async function (
-    options: { status?: string | null; authorRole?: 'admin' | 'all'; fields?: string; limit?: number } = { status: 'published', authorRole: 'all' }
-) {
-    const redisCacheKey = `fh:articles:${JSON.stringify(options)}`;
+// ─── Core Caching Logic (DRY Implementation) ───────────────────────────────
+
+/**
+ * Generic Double-Layer Cache Wrapper
+ * Combines L1 (Upstash Redis) and L2 (Next.js unstable_cache) seamlessly.
+ */
+async function withHybridCache<T>(
+    key: string,
+    fetcher: () => Promise<T>,
+    options: {
+        redisTtl: number;
+        nextRevalidate: number;
+        tags: string[];
+    }
+): Promise<T> {
+    const redisCacheKey = `fh:${key}`;
 
     // L1: Check Redis first (edge-compatible, survives redeployments)
-    const cached = await redisCache.get<Article[]>(redisCacheKey);
+    const cached = await redisCache.get<T>(redisCacheKey);
     if (cached) return cached;
 
     // L2: Next.js unstable_cache (per-instance, request-deduped)
     const fetchCached = unstable_cache(
+        async () => {
+            try {
+                return await fetcher();
+            } catch (error) {
+                console.error(`[Cache Error] Failed to fetch data for key ${key}:`, error);
+                throw error;
+            }
+        },
+        [key],
+        { revalidate: options.nextRevalidate, tags: options.tags }
+    );
+
+    const result = await fetchCached();
+
+    // Populate Redis L1 for subsequent requests
+    if (result && (Array.isArray(result) ? result.length > 0 : true)) {
+        redisCache.set(redisCacheKey, result, options.redisTtl).catch(() => {
+            // Silently fail Redis sets to not block the request
+        });
+    }
+
+    return result;
+}
+
+// ─── API Methods ────────────────────────────────────────────────────────────
+
+export const getArticles = cache(async function (
+    options: { status?: string | null; authorRole?: 'admin' | 'all'; fields?: string; limit?: number } = { status: 'published', authorRole: 'all' }
+): Promise<Article[]> {
+    const key = `articles:${JSON.stringify(options)}`;
+    
+    return withHybridCache<Article[]>(
+        key,
         async () => {
             const staticClient = createStaticClient();
             const selectFields = options.fields || PUBLIC_ARTICLE_SELECT;
@@ -83,86 +129,59 @@ export const getArticles = cache(async function (
             if (options.limit) query = query.limit(options.limit);
 
             const { data, error } = await query;
-            if (error) {
-                console.error('Error fetching articles:', JSON.stringify(error, null, 2));
-                return [];
-            }
-            return data as unknown as Article[];
+            if (error) throw error;
+            
+            // Still using type assertion due to Supabase nested relational types complexity,
+            // but wrapped safely in the try-catch of HybridCache.
+            return (data || []) as unknown as Article[];
         },
-        [`articles-${JSON.stringify(options)}`],
-        { revalidate: 600, tags: ['articles'] } // 10 minutes cache
-    );
-
-    const result = await fetchCached();
-
-    // Populate Redis L1 for subsequent requests (5 min TTL)
-    if (result.length > 0) {
-        redisCache.set(redisCacheKey, result, 300).catch(() => {});
-    }
-
-    return result;
+        { redisTtl: 300, nextRevalidate: 600, tags: ['articles'] }
+    ).catch(() => []);
 });
 
-
-export const getArticleBySlug = cache(async function (slug: string) {
-    const redisCacheKey = `fh:article:${slug}`;
-
-    // L1: Check Redis first
-    const cached = await redisCache.get<Article>(redisCacheKey);
-    if (cached) return cached;
-
-    const fetchCached = unstable_cache(
-        async (querySlug: string) => {
+export const getArticleBySlug = cache(async function (slug: string): Promise<Article | null> {
+    const key = `article:${slug}`;
+    
+    return withHybridCache<Article | null>(
+        key,
+        async () => {
             const staticClient = createStaticClient();
             
             // First try to find by slug
             const { data, error } = await staticClient
                 .from('articles')
                 .select(PUBLIC_ARTICLE_SELECT)
-                .eq('slug', querySlug)
+                .eq('slug', slug)
                 .eq('status', 'published')
                 .maybeSingle();
 
             if (data) return data as unknown as Article;
 
             // If not found and slug looks like a numeric ID, try to find by ID
-            if (/^\d+$/.test(querySlug)) {
-                const { data: byId } = await staticClient
+            if (/^\d+$/.test(slug)) {
+                const { data: byId, error: byIdError } = await staticClient
                     .from('articles')
                     .select(PUBLIC_ARTICLE_SELECT)
-                    .eq('id', parseInt(querySlug))
+                    .eq('id', parseInt(slug))
                     .eq('status', 'published')
                     .maybeSingle();
 
                 if (byId) return byId as unknown as Article;
+                if (byIdError) throw byIdError;
             }
 
-            if (error) console.error('Error fetching article:', JSON.stringify(error, null, 2));
+            if (error) throw error;
             return null;
         },
-        [`article-${slug}`],
-        { revalidate: 600, tags: ['articles', `article-${slug}`] } // 10 minutes cache
-    );
-
-    const result = await fetchCached(slug);
-
-    // Populate Redis L1 for subsequent requests (5 min TTL)
-    if (result) {
-        redisCache.set(redisCacheKey, result, 300).catch(() => {});
-    }
-
-    return result;
+        { redisTtl: 300, nextRevalidate: 600, tags: ['articles', `article-${slug}`] }
+    ).catch(() => null);
 });
 
-
-export const getQuestions = cache(async function (options?: { limit?: number }) {
-    const redisCacheKey = `fh:questions:${JSON.stringify(options)}`;
-
-    // L1: Check Redis first
-    const cached = await redisCache.get<Question[]>(redisCacheKey);
-    if (cached) return cached;
-
-    const fetchCached = unstable_cache(
+export const getQuestions = cache(async function (options?: { limit?: number }): Promise<Question[]> {
+    const key = `questions:${JSON.stringify(options)}`;
+    
+    return withHybridCache<Question[]>(
+        key,
         async () => {
             const staticClient = createStaticClient();
             const { data, error } = await staticClient
@@ -172,36 +191,18 @@ export const getQuestions = cache(async function (options?: { limit?: number }) 
                 .order('created_at', { ascending: false })
                 .limit(options?.limit || 50);
 
-            if (error) {
-                console.error('Error fetching questions:', error);
-                return [];
-            }
-            return data as unknown as Question[];
+            if (error) throw error;
+            return (data || []) as unknown as Question[];
         },
-        [`questions-${options?.limit || 50}`],
-        { revalidate: 60, tags: ['questions'] } // 1 minute cache for fresh forum data
-    );
-
-    const result = await fetchCached();
-
-    // Populate Redis L1 for subsequent requests (30 sec TTL for forum freshness)
-    if (result.length > 0) {
-        redisCache.set(redisCacheKey, result, 30).catch(() => {});
-    }
-
-    return result;
+        { redisTtl: 30, nextRevalidate: 60, tags: ['questions'] } // Aggressive cache for fresh forum data
+    ).catch(() => []);
 });
 
-
-export const getDictionaryTerms = cache(async function () {
-    const redisCacheKey = 'fh:dictionary:all';
-
-    // L1: Check Redis first
-    const cached = await redisCache.get<DictionaryTerm[]>(redisCacheKey);
-    if (cached) return cached;
-
-    // L2: Next.js unstable_cache
-    const fetchCached = unstable_cache(
+export const getDictionaryTerms = cache(async function (): Promise<DictionaryTerm[]> {
+    const key = 'dictionary:all';
+    
+    return withHybridCache<DictionaryTerm[]>(
+        key,
         async () => {
             const staticClient = createStaticClient();
             const { data, error } = await staticClient
@@ -209,22 +210,12 @@ export const getDictionaryTerms = cache(async function () {
                 .select('*')
                 .order('term', { ascending: true });
 
-            if (error) {
-                console.error('Error fetching dictionary terms:', JSON.stringify(error, null, 2));
-                return CURATED_DICTIONARY_TERMS;
-            }
+            if (error) throw error;
             return mergeDictionaryTerms(data as DictionaryTerm[]);
         },
-        ['dictionary_terms'],
-        { revalidate: 3600, tags: ['dictionary'] } // 1 hour cache since terms rarely change
-    );
-
-    const result = await fetchCached();
-
-    // Populate Redis L1 for subsequent requests (30 min TTL — terms rarely change)
-    if (result.length > 0) {
-        redisCache.set(redisCacheKey, result, 1800).catch(() => {});
-    }
-
-    return result;
+        { redisTtl: 1800, nextRevalidate: 3600, tags: ['dictionary'] } // Less aggressive caching since terms rarely change
+    ).catch((err) => {
+        console.error('Failed to fetch dictionary terms, returning curated:', err);
+        return CURATED_DICTIONARY_TERMS;
+    });
 });
