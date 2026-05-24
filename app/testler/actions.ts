@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase-server";
+import { rateLimiter } from "@/lib/upstash";
 import { revalidatePath } from "next/cache";
 
 export async function getQuizzes() {
@@ -68,6 +69,16 @@ export async function submitQuizResult(quizId: string, score: number, totalQuest
 
     if (!user) {
         return { success: false, error: "Giriş yapmalısınız." };
+    }
+
+    // Rate Limiting (DDoS & Point Farming Protection)
+    // Sınır: Kullanıcı başına dakikada maksimum 5 quiz gönderimi (5 req/min)
+    const rateLimit = await rateLimiter.limit(`quiz_submit:${user.id}`, 5, 60);
+    if (!rateLimit.success) {
+        return { 
+            success: false, 
+            error: "Çok hızlı test çözüyorsunuz. Lütfen biraz dinlenin ve tekrar deneyin." 
+        };
     }
 
     // 0. Check if user ALREADY got points for this quiz (score > 0)

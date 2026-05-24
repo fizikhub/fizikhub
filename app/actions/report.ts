@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase-server";
 import { isAdminEmail } from "@/lib/admin";
+import { rateLimiter } from "@/lib/upstash";
 import { z } from "zod";
 
 const CreateReportSchema = z.object({
@@ -26,6 +27,16 @@ export async function createReport(params: CreateReportParams) {
 
     if (!user) {
         return { success: false, error: "Bildirimde bulunmak için giriş yapmalısınız." };
+    }
+
+    // Edge-based Rate Limiting (DDoS & Spam Protection)
+    // Sınır: Kullanıcı başına dakikada maksimum 5 işlem (5 req/min)
+    const rateLimit = await rateLimiter.limit(`report:${user.id}`, 5, 60);
+    if (!rateLimit.success) {
+        return { 
+            success: false, 
+            error: "Çok fazla şikayet gönderdiniz. Lütfen bir süre bekleyip tekrar deneyin." 
+        };
     }
 
     const { error } = await supabase.from('reports').insert({
