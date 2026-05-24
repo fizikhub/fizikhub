@@ -35,10 +35,17 @@ export function QuestionList({ initialQuestions, userVotes, latestArticle }: Que
         <div className="space-y-4">
             {initialQuestions.map((question, index) => (
                 <Fragment key={question.id}>
-                    <QuestionCard
-                        question={question}
-                        userVote={voteMap.get(question.id)}
-                    />
+                    <div
+                        style={{
+                            contentVisibility: index > 3 ? "auto" : undefined,
+                            containIntrinsicSize: index > 3 ? "auto 200px" : undefined,
+                        }}
+                    >
+                        <QuestionCard
+                            question={question}
+                            userVote={voteMap.get(question.id)}
+                        />
+                    </div>
                     {index === 2 && latestArticle && (
                         <Link prefetch={false} href={`/makale/${latestArticle.slug}`} className="block group my-2">
                             <div className="relative overflow-hidden border-[3px] border-black bg-neutral-50 dark:bg-[#18181b] shadow-[4px_4px_0px_0px_#06b6d4] hover:shadow-[2px_2px_0px_0px_#06b6d4] hover:translate-x-[2px] hover:translate-y-[2px] transition-all duration-200 rounded-[8px] flex flex-col sm:flex-row">

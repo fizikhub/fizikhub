@@ -38,5 +38,28 @@
       "type": "image/png",
       "purpose": "maskable"
     }
+  ],
+  "shortcuts": [
+    {
+      "name": "Keşfet",
+      "short_name": "Keşfet",
+      "description": "Fizik ve uzay makalelerini keşfet",
+      "url": "/makale",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Simülasyonlar",
+      "short_name": "Simülasyonlar",
+      "description": "Etkileşimli fizik simülasyonları",
+      "url": "/simulasyonlar",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Forum",
+      "short_name": "Forum",
+      "description": "Fizik ve bilim tartışmaları",
+      "url": "/forum",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    }
   ]
 }
