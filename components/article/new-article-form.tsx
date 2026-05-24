@@ -139,8 +139,8 @@ export function NewArticleForm({ userId, isFirstArticle, hasSeenGuide, initialDa
             const url = await uploadToSupabase(file);
             setCoverUrl(url);
             toast.success("Kapak resmi yüklendi!");
-        } catch (error: any) {
-            toast.error(error.message || "Görsel yüklenirken hata oluştu.");
+        } catch (error: unknown) {
+            toast.error(error instanceof Error ? error.message : "Görsel yüklenirken hata oluştu.");
         } finally {
             setUploadingImage(false);
             if (coverInputRef.current) coverInputRef.current.value = "";
@@ -192,8 +192,8 @@ export function NewArticleForm({ userId, isFirstArticle, hasSeenGuide, initialDa
             try { localStorage.removeItem(draftKey); } catch { }
             window.location.href = "/profil";
 
-        } catch (error: any) {
-            toast.error(error?.message || "Bir hata oluştu.");
+        } catch (error: unknown) {
+            toast.error(error instanceof Error ? error.message : "Bir hata oluştu.");
             setIsSubmitting(false);
         }
     };
@@ -344,6 +344,6 @@ export function NewArticleForm({ userId, isFirstArticle, hasSeenGuide, initialDa
 }
 
 // Helper component for icon
-function ImageImageIcon(props: any) {
+function ImageImageIcon(props: React.ComponentProps<typeof ImageIcon>) {
     return <ImageIcon {...props} />
 }

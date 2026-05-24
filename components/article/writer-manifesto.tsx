@@ -48,13 +48,13 @@ export function WriterManifesto() {
                             <section className="space-y-3">
                                 <div className="flex items-center gap-2 mb-2">
                                     <Quote className="w-5 h-5 text-yellow-500 fill-yellow-500" />
-                                    <h3 className="font-black text-lg uppercase tracking-tight">Bilim İletişiminin "Bizden Biri" Hali</h3>
+                                    <h3 className="font-black text-lg uppercase tracking-tight">Bilim İletişiminin &quot;Bizden Biri&quot; Hali</h3>
                                 </div>
                                 <p className="leading-relaxed">
-                                    İnsanlık tarihi tek bir sorunun etrafında örülen devasa bir halıdır: <b>"Bu dünya nasıl çalışıyor?"</b> Gökyüzündeki yıldızların hareketinden, hücrenin derinliklerindeki katlanmalara kadar her şey merakımızın bir parçası... Fakat zamanla bilim; içine kapalı, steril, yüksek duvarları olan bir laboratuvara dönüştü.
+                                    İnsanlık tarihi tek bir sorunun etrafında örülen devasa bir halıdır: <b>&quot;Bu dünya nasıl çalışıyor?&quot;</b> Gökyüzündeki yıldızların hareketinden, hücrenin derinliklerindeki katlanmalara kadar her şey merakımızın bir parçası... Fakat zamanla bilim; içine kapalı, steril, yüksek duvarları olan bir laboratuvara dönüştü.
                                 </p>
                                 <p className="leading-relaxed">
-                                    FizikHub tam da bu kopukluğu gidermek, o fildişi kulelerin kapılarını ardına kadar açmak ve bilimi ait olduğu yere, yani sokağın sıcaklığına geri döndürmek için doğdu. Bizim için "Bilim İletişimi" sadece bilgi aktarmak değil; o bilgiyi bir hikayeye, tutkuya ve toplumsal bilince dönüştürme sanatıdır.
+                                    FizikHub tam da bu kopukluğu gidermek, o fildişi kulelerin kapılarını ardına kadar açmak ve bilimi ait olduğu yere, yani sokağın sıcaklığına geri döndürmek için doğdu. Bizim için &quot;Bilim İletişimi&quot; sadece bilgi aktarmak değil; o bilgiyi bir hikayeye, tutkuya ve toplumsal bilince dönüştürme sanatıdır.
                                 </p>
                             </section>
 
@@ -62,7 +62,7 @@ export function WriterManifesto() {
                             <section className="bg-zinc-50 dark:bg-zinc-900 border-l-[4px] border-yellow-500 p-4 rounded-r-lg">
                                 <h4 className="font-black text-md uppercase tracking-wide mb-3 flex items-center gap-2">
                                     <Target className="w-4 h-4 text-yellow-500" />
-                                    "Bizden biri" gibi anlatmak ne demek?
+                                    &quot;Bizden biri&quot; gibi anlatmak ne demek?
                                 </h4>
                                 <ul className="space-y-4">
                                     <li className="flex gap-3">
@@ -76,14 +76,14 @@ export function WriterManifesto() {
                                         <span className="font-black text-yellow-500">2.</span>
                                         <div>
                                             <strong className="text-black dark:text-white uppercase text-sm tracking-wider">Berraklık:</strong>
-                                            <span className="block text-sm mt-1 opacity-90">Karmaşıklığın ardındaki sadeliği bulup çıkarmaktır. "Anlaşılmayan" bir konu, sadece "yeterince iyi anlatılmamış" bir konudur.</span>
+                                            <span className="block text-sm mt-1 opacity-90">Karmaşıklığın ardındaki sadeliği bulup çıkarmaktır. &quot;Anlaşılmayan&quot; bir konu, sadece &quot;yeterince iyi anlatılmamış&quot; bir konudur.</span>
                                         </div>
                                     </li>
                                     <li className="flex gap-3">
                                         <span className="font-black text-yellow-500">3.</span>
                                         <div>
                                             <strong className="text-black dark:text-white uppercase text-sm tracking-wider">Tutku:</strong>
-                                            <span className="block text-sm mt-1 opacity-90">Bilginin sadece "ne" olduğuyla değil, "neden" önemli olduğuyla ilgilenmektir.</span>
+                                            <span className="block text-sm mt-1 opacity-90">Bilginin sadece &quot;ne&quot; olduğuyla değil, &quot;neden&quot; önemli olduğuyla ilgilenmektir.</span>
                                         </div>
                                     </li>
                                 </ul>
@@ -136,7 +136,7 @@ export function WriterManifesto() {
                                 <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <li className="flex gap-3">
                                         <AlertTriangle className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
-                                        <span className="text-sm">"Ben öyle duydum" dediğiniz hiçbir yer olamaz. Her iddianızın arkasında bir <b>DOI linki</b> veya sağlam bir kaynakça kalesi yükselmelidir.</span>
+                                        <span className="text-sm">&quot;Ben öyle duydum&quot; dediğiniz hiçbir yer olamaz. Her iddianızın arkasında bir <b>DOI linki</b> veya sağlam bir kaynakça kalesi yükselmelidir.</span>
                                     </li>
                                     <li className="flex gap-3">
                                         <AlertTriangle className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
@@ -159,7 +159,7 @@ export function WriterManifesto() {
                                 <h4 className="font-black text-xl uppercase tracking-widest text-yellow-500 mb-2">Sıra Sende!</h4>
                                 <p className="text-sm opacity-90 max-w-xl mx-auto">
                                     FizikHub'da biz bilgiyi sadece taşımıyor, merakı ateşliyoruz. Bilim soğuk olabilir, ama onu anlatan yürekler sıcak olduğu sürece o bilgi her kalbe ulaşacaktır. Kendi sesini bul, mizahını bilimin içine gizle ve en önemlisi; yazdığın her satırdan önce kendine o soruyu sor: <br /><br />
-                                    <b>"Bunu arkadaşıma anlatsam heyecanlanır mıydı?"</b>
+                                    <b>&quot;Bunu arkadaşıma anlatsam heyecanlanır mıydı?&quot;</b>
                                 </p>
                             </div>
 
