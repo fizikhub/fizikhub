@@ -83,13 +83,7 @@ export default function robots(): MetadataRoute.Robots {
             },
         ],
         sitemap: [
-            `${baseUrl}/sitemap-index.xml`,
             `${baseUrl}/sitemap.xml`,
-            `${baseUrl}/topic-sitemap.xml`,
-            `${baseUrl}/article-sitemap.xml`,
-            `${baseUrl}/forum-sitemap.xml`,
-            `${baseUrl}/dictionary-sitemap.xml`,
-            `${baseUrl}/news-sitemap.xml`,
         ],
     };
 }
