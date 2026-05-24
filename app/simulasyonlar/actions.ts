@@ -1,24 +1,8 @@
 "use server";
 
-import { GoogleGenerativeAI } from "@google/generative-ai";
 import { createClient } from "@/lib/supabase-server";
+import { getGeminiClient } from "@/lib/gemini";
 
-let geminiClient: GoogleGenerativeAI | null = null;
-
-function getGeminiApiKey() {
-    return process.env.GEMINI_API_KEY || process.env.GOOGLE_GENERATIVE_AI_API_KEY || process.env.GOOGLE_AI_API_KEY || "";
-}
-
-function getGeminiClient() {
-    const apiKey = getGeminiApiKey();
-    if (!apiKey) return null;
-
-    if (!geminiClient) {
-        geminiClient = new GoogleGenerativeAI(apiKey);
-    }
-
-    return geminiClient;
-}
 
 export type AssistantResponse = {
     text: string;

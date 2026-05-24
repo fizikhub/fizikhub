@@ -1,5 +1,5 @@
 import Parser from 'rss-parser';
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { getGeminiClient } from "@/lib/gemini";
 
 export interface ScienceNewsItem {
     title: string;
@@ -15,11 +15,11 @@ const SCIENCE_FEEDS = [
 
 // Translate English titles to Turkish using Gemini
 async function translateTitles(titles: string[]): Promise<string[]> {
-    const apiKey = process.env.GEMINI_API_KEY || "";
-    if (!apiKey || titles.length === 0) return titles;
+    if (titles.length === 0) return titles;
+    const genAI = getGeminiClient();
+    if (!genAI) return titles;
 
     try {
-        const genAI = new GoogleGenerativeAI(apiKey);
         const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
         const prompt = `Translate these science news headlines from English to Turkish. Return ONLY the translations, one per line, in the same order. Keep scientific terms accurate. Do not add numbering or explanation.\n\n${titles.join('\n')}`;
