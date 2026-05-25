@@ -6,7 +6,12 @@ import { PhysicsSlider } from "./core/ui";
 import { CheckCircle2 } from "lucide-react";
 import { m as motion, AnimatePresence } from "framer-motion";
 
-export function OpticsSim({ simData }: { simData: any }) {
+type SimulationMeta = {
+    color?: string | null;
+    title?: string | null;
+};
+
+export function OpticsSim({ simData }: { simData?: SimulationMeta }) {
     const accentColor = simData?.color || "#0C8CE9";
     const canvasWidth = 800;
     const canvasHeight = 600;
@@ -51,7 +56,6 @@ export function OpticsSim({ simData }: { simData: any }) {
     const r3StartX = objX; const r3StartY = centerY - ho; let r3LensY = centerY;
     if (f > 0) { const slopeF = (centerY - r3StartY) / (centerX - f - r3StartX); r3LensY = r3StartY + slopeF * (centerX - r3StartX); }
     else { const slopeF = (centerY - r3StartY) / (centerX - f - r3StartX); r3LensY = r3StartY + slopeF * (centerX - r3StartX); }
-    const r3EndX = canvasWidth; const r3EndY = r3LensY;
     const r3BackX = 0; const r3BackY = r3LensY;
 
     // MISSIONS
@@ -68,7 +72,13 @@ export function OpticsSim({ simData }: { simData: any }) {
     ]);
 
     useEffect(() => {
-        setMissions(prev => prev.map(m => { if (!m.isCompleted && m.condition()) return { ...m, isCompleted: true }; return m; }));
+        const timeoutId = setTimeout(() => {
+            setMissions(prev => prev.map(m => {
+                if (!m.isCompleted && m.condition()) return { ...m, isCompleted: true };
+                return m;
+            }));
+        }, 50);
+        return () => clearTimeout(timeoutId);
     }, [f, do_val, isReal, isInfinity]);
 
     const Controls = (

@@ -160,7 +160,7 @@ function Meteors({ count = 15, isDark }: { count?: number, isDark: boolean }) {
     useEffect(() => {
         // High visibility colors
         uniforms.uColor.value.set(isDark ? "#ffffff" : "#000000");
-    }, [isDark]);
+    }, [isDark, uniforms]);
 
     // Instance Data
     const { delays, speeds, starts, ends } = useMemo(() => {
@@ -307,20 +307,37 @@ export function RealisticStars() {
     const [isMobile, setIsMobile] = useState(false);
 
     useEffect(() => {
-        setMounted(true);
-        const mobile = window.innerWidth <= 768;
-        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        setIsMobile(mobile);
+        let cancelled = false;
+        let idleId: number | null = null;
+        let canvasTimeout: ReturnType<typeof setTimeout> | null = null;
 
-        if (prefersReducedMotion) return;
+        const initTimeout = setTimeout(() => {
+            if (cancelled) return;
 
-        if ('requestIdleCallback' in window) {
-            const idleId = window.requestIdleCallback(() => setIsCanvasReady(true), { timeout: 1400 });
-            return () => window.cancelIdleCallback(idleId);
-        }
+            setMounted(true);
+            setIsMobile(window.innerWidth <= 768);
 
-        const timeout = setTimeout(() => setIsCanvasReady(true), 300);
-        return () => clearTimeout(timeout);
+            const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            if (prefersReducedMotion) return;
+
+            if ('requestIdleCallback' in window) {
+                idleId = window.requestIdleCallback(() => {
+                    if (!cancelled) setIsCanvasReady(true);
+                }, { timeout: 1400 });
+                return;
+            }
+
+            canvasTimeout = setTimeout(() => {
+                if (!cancelled) setIsCanvasReady(true);
+            }, 300);
+        }, 0);
+
+        return () => {
+            cancelled = true;
+            clearTimeout(initTimeout);
+            if (canvasTimeout) clearTimeout(canvasTimeout);
+            if (idleId !== null) window.cancelIdleCallback(idleId);
+        };
     }, []);
 
     const isDark = mounted ? resolvedTheme === "dark" : true;

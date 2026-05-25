@@ -1,24 +1,9 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-
 export function SpeculationRules() {
-    const [mounted, setMounted] = useState(false);
-
-    useEffect(() => {
-        setMounted(true);
-    }, []);
-
-    // Only render on client-side production browsers that support speculation rules
-    if (!mounted || process.env.NODE_ENV !== 'production') return null;
-
-    // Check if the browser supports speculation rules
-    const supportsSpeculationRules = 
-        typeof HTMLScriptElement !== 'undefined' && 
-        HTMLScriptElement.supports && 
-        HTMLScriptElement.supports('speculationrules');
-
-    if (!supportsSpeculationRules) return null;
+    // Unsupported browsers ignore unknown script types, so this can be emitted
+    // without a client-only mounted state.
+    if (process.env.NODE_ENV !== 'production') return null;
 
     const rules = {
         prerender: [

@@ -6,8 +6,12 @@ import { PlusCircle, MinusCircle, Trash2, CheckCircle2 } from "lucide-react";
 import { m as motion, AnimatePresence } from "framer-motion";
 
 type ChargeType = { id: string; q: number; x: number; y: number; };
+type SimulationMeta = {
+    color?: string | null;
+    title?: string | null;
+};
 
-export function ElectricFieldSim({ simData }: { simData: any }) {
+export function ElectricFieldSim({ simData }: { simData?: SimulationMeta }) {
     const accentColor = simData?.color || "#0891B2";
     const canvasWidth = 800;
     const canvasHeight = 600;
@@ -80,7 +84,15 @@ export function ElectricFieldSim({ simData }: { simData: any }) {
             successText: "Tek bir noktasal yükün elektrik alanı, yük (+) ise sonsuza doğru, (-) ise sonsuzdan yüke doğru radyal halindedir." }
     ]);
 
-    useEffect(() => { setMissions(prev => prev.map(m => { if (!m.isCompleted && m.condition()) return { ...m, isCompleted: true }; return m; })); }, [charges]);
+    useEffect(() => {
+        const timeoutId = setTimeout(() => {
+            setMissions(prev => prev.map(m => {
+                if (!m.isCompleted && m.condition()) return { ...m, isCompleted: true };
+                return m;
+            }));
+        }, 50);
+        return () => clearTimeout(timeoutId);
+    }, [charges]);
 
     const Controls = (
         <div className="flex flex-col gap-5">

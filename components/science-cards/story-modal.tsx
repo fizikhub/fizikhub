@@ -1,15 +1,23 @@
 "use client";
 
 import { m as motion, AnimatePresence } from "framer-motion";
-import { X, Clock, User } from "lucide-react";
-import NextImage from "next/image";
+import { X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface StoryModalProps {
     isOpen: boolean;
     onClose: () => void;
-    story: any;
+    story: {
+        title?: string;
+        summary?: string;
+        image_url?: string;
+        color?: string;
+        author?: {
+            avatar_url?: string;
+            username?: string;
+        } | null;
+    } | null;
 }
 
 export function StoryModal({ isOpen, onClose, story }: StoryModalProps) {
@@ -17,11 +25,11 @@ export function StoryModal({ isOpen, onClose, story }: StoryModalProps) {
 
     useEffect(() => {
         if (isOpen) {
-            setProgress(0);
-            const timer = setInterval(() => {
+            const resetTimer = setTimeout(() => setProgress(0), 0);
+            const progressTimer = setInterval(() => {
                 setProgress((prev) => {
                     if (prev >= 100) {
-                        clearInterval(timer);
+                        clearInterval(progressTimer);
                         // Optional: Auto close or go to next
                         // onClose(); 
                         return 100;
@@ -30,7 +38,10 @@ export function StoryModal({ isOpen, onClose, story }: StoryModalProps) {
                 });
             }, 50);
 
-            return () => clearInterval(timer);
+            return () => {
+                clearTimeout(resetTimer);
+                clearInterval(progressTimer);
+            };
         }
     }, [isOpen, story]);
 
