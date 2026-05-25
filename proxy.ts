@@ -23,6 +23,8 @@ const SEO_METADATA_PATHS = new Set([
     '/forum-sitemap.xml',
     '/dictionary-sitemap.xml',
     '/news-sitemap.xml',
+    '/ai-sitemap.xml',
+    '/author-sitemap.xml',
     '/feed.xml',
     '/llms.txt',
     '/ai-index.json',

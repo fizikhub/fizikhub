@@ -46,6 +46,7 @@ export async function GET() {
     text += `- **Sitemap Index**: ${baseUrl}/sitemap-index.xml\n`;
     text += `- **Konu Sitemap**: ${baseUrl}/topic-sitemap.xml\n`;
     text += `- **AI Sitemap**: ${baseUrl}/ai-sitemap.xml\n`;
+    text += `- **Yazar/Profil Sitemap**: ${baseUrl}/author-sitemap.xml\n`;
     text += `- **AI Index JSON**: ${baseUrl}/ai-index.json\n\n`;
 
     text += `## Makine Okunabilir Keşif Yüzeyleri\n`;

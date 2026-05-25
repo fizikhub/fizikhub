@@ -11,6 +11,7 @@ const SITEMAPS = [
     "/dictionary-sitemap.xml",
     "/news-sitemap.xml",
     "/ai-sitemap.xml",
+    "/author-sitemap.xml",
 ];
 
 export async function GET() {

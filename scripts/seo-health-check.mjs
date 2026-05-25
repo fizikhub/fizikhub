@@ -184,6 +184,7 @@ const resourcePaths = [
   "/dictionary-sitemap.xml",
   "/news-sitemap.xml",
   "/ai-sitemap.xml",
+  "/author-sitemap.xml",
   "/feed.xml",
   "/robots.txt",
   "/ai-index.json",
@@ -201,7 +202,7 @@ for (const disallow of privateDisallowPatterns) {
   assert(!robotsText.includes(disallow), `robots.txt still contains private disallow: ${disallow}`);
 }
 
-for (const sitemap of ["/sitemap.xml", "/topic-sitemap.xml", "/article-sitemap.xml", "/forum-sitemap.xml", "/dictionary-sitemap.xml", "/news-sitemap.xml", "/ai-sitemap.xml"]) {
+for (const sitemap of ["/sitemap.xml", "/topic-sitemap.xml", "/article-sitemap.xml", "/forum-sitemap.xml", "/dictionary-sitemap.xml", "/news-sitemap.xml", "/ai-sitemap.xml", "/author-sitemap.xml"]) {
   const badUrls = locs(byPath.get(sitemap).text)
     .map((url) => ({ url, reason: forbiddenReason(url) }))
     .filter((entry) => entry.reason);
@@ -273,7 +274,7 @@ const {
 
 console.log(JSON.stringify({
   baseUrl,
-  sitemapCounts: Object.fromEntries(["/sitemap.xml", "/topic-sitemap.xml", "/article-sitemap.xml", "/forum-sitemap.xml", "/dictionary-sitemap.xml", "/news-sitemap.xml", "/ai-sitemap.xml"]
+  sitemapCounts: Object.fromEntries(["/sitemap.xml", "/topic-sitemap.xml", "/article-sitemap.xml", "/forum-sitemap.xml", "/dictionary-sitemap.xml", "/news-sitemap.xml", "/ai-sitemap.xml", "/author-sitemap.xml"]
     .map((sitemap) => [sitemap, locs(byPath.get(sitemap).text).length])),
   aiIndexItemCount: aiIndex.items.length,
   samplePaths,

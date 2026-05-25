@@ -64,6 +64,12 @@ export const AI_DISCOVERY_ROUTES: AiDiscoveryRoute[] = [
         description: "AI arama ve cevap motorlari icin yuksek sinyal tasiyan public sayfalar.",
     },
     {
+        path: "/author-sitemap.xml",
+        label: "Author sitemap",
+        mediaType: "application/xml",
+        description: "Indexlenebilir Fizikhub yazar ve topluluk profilleri.",
+    },
+    {
         path: "/sitemap-index.xml",
         label: "Sitemap index",
         mediaType: "application/xml",

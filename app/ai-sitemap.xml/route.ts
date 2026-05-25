@@ -5,7 +5,7 @@ import { escapeXml } from "@/lib/xml";
 import { slugify } from "@/lib/slug";
 import { createStaticClient, hasSupabasePublicConfig } from "@/lib/supabase-server";
 import { getTopicClusterHref, SEO_TOPIC_CLUSTERS } from "@/lib/seo-topic-clusters";
-import { getArticleCanonicalPath, getSiteUrl, hasUsefulIndexableText, isIndexableForumQuestion, isLikelyIndexableArticle, isLikelyIndexableTitle } from "@/lib/seo-utils";
+import { getArticleCanonicalPath, getSiteUrl, hasUsefulIndexableText, isIndexableForumQuestion, isIndexableProfile, isLikelyIndexableArticle, isLikelyIndexableTitle } from "@/lib/seo-utils";
 
 export const revalidate = 3600;
 
@@ -41,7 +41,7 @@ async function getDynamicEntries(baseUrl: string): Promise<SitemapEntry[]> {
 
     try {
         const supabase = createStaticClient();
-        const [articlesResult, questionsResult, quizzesResult, terms] = await Promise.all([
+        const [articlesResult, questionsResult, quizzesResult, profilesResult, terms] = await Promise.all([
             supabase
                 .from("articles")
                 .select("title, slug, category, excerpt, summary, content, created_at, updated_at")
@@ -59,6 +59,12 @@ async function getDynamicEntries(baseUrl: string): Promise<SitemapEntry[]> {
                 .from("quizzes")
                 .select("title, slug, description, created_at")
                 .order("created_at", { ascending: false })
+                .limit(120),
+            supabase
+                .from("profiles")
+                .select("username, full_name, bio, is_writer, is_verified, created_at, updated_at")
+                .not("username", "is", null)
+                .order("updated_at", { ascending: false, nullsFirst: false })
                 .limit(120),
             getDictionaryTerms(),
         ]);
@@ -100,7 +106,15 @@ async function getDynamicEntries(baseUrl: string): Promise<SitemapEntry[]> {
                 priority: "0.58",
             }));
 
-        return [...articleEntries, ...questionEntries, ...dictionaryEntries, ...quizEntries];
+        const profileEntries = (profilesResult.data || [])
+            .filter((profile) => isIndexableProfile(profile))
+            .map((profile) => entry(baseUrl, `/kullanici/${profile.username}`, {
+                lastmod: toIsoDate(profile.updated_at || profile.created_at),
+                changefreq: "weekly",
+                priority: profile.is_writer || profile.is_verified ? "0.62" : "0.45",
+            }));
+
+        return [...articleEntries, ...questionEntries, ...dictionaryEntries, ...quizEntries, ...profileEntries];
     } catch (error) {
         console.error("ai-sitemap dynamic entries error:", error);
         return [];

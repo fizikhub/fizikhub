@@ -4,12 +4,12 @@ import { getDictionaryTerms } from "@/lib/api";
 import { createStaticClient } from "@/lib/supabase-server";
 import { slugify } from "@/lib/slug";
 import { getRelatedUrlsForCluster, getTopicClusterHref, SEO_TOPIC_CLUSTERS } from "@/lib/seo-topic-clusters";
-import { getArticleCanonicalPath, getSiteUrl, hasUsefulIndexableText, isIndexableForumQuestion, isLikelyIndexableArticle, isLikelyIndexableTitle, truncateForMeta } from "@/lib/seo-utils";
+import { getArticleCanonicalPath, getSiteUrl, hasUsefulIndexableText, isIndexableForumQuestion, isIndexableProfile, isLikelyIndexableArticle, isLikelyIndexableTitle, truncateForMeta } from "@/lib/seo-utils";
 
 export const revalidate = 3600;
 
 type AiIndexItem = {
-    type: "article" | "forum" | "dictionary" | "quiz" | "simulation" | "topic";
+    type: "article" | "forum" | "dictionary" | "quiz" | "simulation" | "topic" | "profile";
     url: string;
     canonicalPath: string;
     title: string;
@@ -86,7 +86,7 @@ export async function GET() {
     const supabase = createStaticClient();
     const baseUrl = getSiteUrl();
 
-    const [articlesResult, questionsResult, quizzesResult, terms] = await Promise.all([
+    const [articlesResult, questionsResult, quizzesResult, profilesResult, terms] = await Promise.all([
         supabase
             .from("articles")
             .select("*")
@@ -104,6 +104,12 @@ export async function GET() {
             .from("quizzes")
             .select("id, title, slug, description, created_at")
             .order("created_at", { ascending: false })
+            .limit(200),
+        supabase
+            .from("profiles")
+            .select("id, username, full_name, bio, is_writer, is_verified, created_at, updated_at, reputation")
+            .not("username", "is", null)
+            .order("updated_at", { ascending: false, nullsFirst: false })
             .limit(200),
         getDictionaryTerms(),
     ]);
@@ -250,6 +256,39 @@ export async function GET() {
         relatedUrls: unique(getRelatedUrlsForCluster(cluster).map((link) => `${baseUrl}${link.href}`)).slice(0, 12),
     }));
 
+    const profileItems: AiIndexItem[] = (profilesResult.data || [])
+        .filter((profile) => isIndexableProfile(profile))
+        .map((profile) => {
+            const username = profile.username || profile.id;
+            const displayName = profile.full_name || `@${username}`;
+            const profileTopics = unique([
+                profile.is_writer ? "Fizikhub yazarı" : null,
+                profile.is_verified ? "Doğrulanmış profil" : null,
+                "Bilim topluluğu",
+                "FizikHub profili",
+            ]);
+
+            return {
+                type: "profile",
+                url: `${baseUrl}/kullanici/${username}`,
+                canonicalPath: `/kullanici/${username}`,
+                title: displayName,
+                description: truncateForMeta(profile.bio || `${displayName} Fizikhub topluluk profili.`, 220),
+                topics: profileTopics,
+                intentQuestions: [
+                    `${displayName} Fizikhub'da hangi konularda katkı veriyor?`,
+                    `${displayName} hangi makale ve forum cevaplarıyla öne çıkıyor?`,
+                ],
+                entityType: profile.is_writer || profile.is_verified ? "trusted-author-profile" : "community-profile",
+                contentFreshness: contentFreshnessFor(profile.updated_at || profile.created_at),
+                updatedAt: new Date(profile.updated_at || profile.created_at || Date.now()).toISOString(),
+                language: "tr-TR" as const,
+                schemaTypes: ["ProfilePage", "Person", "BreadcrumbList"],
+                clusterSlugs: [],
+                relatedUrls: [`${baseUrl}/makale`, `${baseUrl}/forum`, `${baseUrl}/siralamalar`],
+            };
+        });
+
     return Response.json({
         name: "Fizikhub AI Index",
         generatedAt: new Date().toISOString(),
@@ -276,6 +315,7 @@ export async function GET() {
             sitemapIndex: `${baseUrl}/sitemap-index.xml`,
             topicSitemap: `${baseUrl}/topic-sitemap.xml`,
             aiSitemap: `${baseUrl}/ai-sitemap.xml`,
+            authorSitemap: `${baseUrl}/author-sitemap.xml`,
             llmsTxt: `${baseUrl}/llms.txt`,
             rss: `${baseUrl}/feed.xml`,
         },
@@ -286,6 +326,7 @@ export async function GET() {
             ...dictionaryItems,
             ...quizItems,
             ...simulationItems,
+            ...profileItems,
         ],
     }, {
         headers: {

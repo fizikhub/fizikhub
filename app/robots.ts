@@ -71,6 +71,7 @@ export default function robots(): MetadataRoute.Robots {
             `${baseUrl}/sitemap.xml`,
             `${baseUrl}/topic-sitemap.xml`,
             `${baseUrl}/ai-sitemap.xml`,
+            `${baseUrl}/author-sitemap.xml`,
         ],
     };
 }

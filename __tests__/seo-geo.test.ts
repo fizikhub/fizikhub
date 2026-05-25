@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import robots from "@/app/robots";
 import { GET as aiSitemap } from "@/app/ai-sitemap.xml/route";
+import { GET as authorSitemap } from "@/app/author-sitemap.xml/route";
 import { GET as sitemapIndex } from "@/app/sitemap-index.xml/route";
 import { GET as topicSitemap } from "@/app/topic-sitemap.xml/route";
 import { AI_CRAWLER_USER_AGENTS } from "@/lib/ai-discovery";
@@ -65,8 +66,10 @@ describe("SEO topic sitemap", () => {
 
         expect(xmlLocs(xml)).toContain("https://www.fizikhub.com/topic-sitemap.xml");
         expect(xmlLocs(xml)).toContain("https://www.fizikhub.com/ai-sitemap.xml");
+        expect(xmlLocs(xml)).toContain("https://www.fizikhub.com/author-sitemap.xml");
         expect(sitemaps).toContain("https://www.fizikhub.com/topic-sitemap.xml");
         expect(sitemaps).toContain("https://www.fizikhub.com/ai-sitemap.xml");
+        expect(sitemaps).toContain("https://www.fizikhub.com/author-sitemap.xml");
     });
 
     it("publishes a curated AI sitemap for answer-engine discovery", async () => {
@@ -78,6 +81,17 @@ describe("SEO topic sitemap", () => {
         expect(urls).toContain("https://www.fizikhub.com/konular/tyt-ayt-yks-fizik");
         expect(urls).toContain("https://www.fizikhub.com/simulasyonlar/atis-hareketi");
         expect(urls).toContain("https://www.fizikhub.com/forum");
+    });
+
+    it("publishes an author sitemap without private profile settings URLs", async () => {
+        const response = await authorSitemap();
+        const xml = await response.text();
+        const urls = xmlLocs(xml);
+
+        expect(response.headers.get("content-type")).toContain("application/xml");
+        expect(xml).toContain("<urlset");
+        expect(urls.every((url) => url.startsWith("https://www.fizikhub.com/kullanici/"))).toBe(true);
+        expect(urls.some((url) => url.includes("/profil"))).toBe(false);
     });
 });
 
