@@ -5,9 +5,11 @@ import { GET as authorSitemap } from "@/app/author-sitemap.xml/route";
 import { GET as sitemapIndex } from "@/app/sitemap-index.xml/route";
 import { GET as topicSitemap } from "@/app/topic-sitemap.xml/route";
 import { AI_CRAWLER_USER_AGENTS } from "@/lib/ai-discovery";
+import { isKnownAiCrawlerUserAgent } from "@/lib/ai-discovery";
 import { getVectorUrl } from "@/lib/search-results";
 import { getClusterResourceLinks, getPrimaryClusterHref, getTopicClusterBySlug, getTopicClusterHref, getTopicClustersForText, normalizeTopicSearchText, SEO_TOPIC_CLUSTERS } from "@/lib/seo-topic-clusters";
 import { isPrivateSeoPath } from "@/lib/seo-utils";
+import { shouldBypassSession } from "@/proxy";
 
 function xmlLocs(xml: string) {
     return Array.from(xml.matchAll(/<loc>([^<]+)<\/loc>/g)).map((match) => match[1]);
@@ -125,6 +127,17 @@ describe("SEO robots and canonical boundaries", () => {
             "/paylas",
             "/*?q=*",
         ]));
+    });
+
+    it("recognizes AI crawler user agents and bypasses auth work only for public SEO paths", () => {
+        expect(isKnownAiCrawlerUserAgent("Mozilla/5.0 compatible; OAI-SearchBot/1.3; +https://openai.com/searchbot")).toBe(true);
+        expect(isKnownAiCrawlerUserAgent("Mozilla/5.0 compatible; Claude-SearchBot/1.0")).toBe(true);
+        expect(isKnownAiCrawlerUserAgent("Mozilla/5.0 Safari/537.36")).toBe(false);
+
+        expect(shouldBypassSession("/makale/kuantum", "Mozilla/5.0 compatible; OAI-SearchBot/1.3")).toBe(true);
+        expect(shouldBypassSession("/konular/kuantum-fizigi", "Claude-SearchBot")).toBe(true);
+        expect(shouldBypassSession("/admin", "OAI-SearchBot")).toBe(false);
+        expect(shouldBypassSession("/profil/duzenle", "Googlebot")).toBe(false);
     });
 });
 

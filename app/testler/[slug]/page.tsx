@@ -84,7 +84,17 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
             description,
             images: [`${baseUrl}/og-image.jpg`],
         },
-        robots: shouldIndex ? { index: true, follow: true } : { index: false, follow: true },
+        robots: {
+            index: shouldIndex,
+            follow: true,
+            googleBot: {
+                index: shouldIndex,
+                follow: true,
+                "max-image-preview": "large",
+                "max-snippet": -1,
+                "max-video-preview": -1,
+            },
+        },
         alternates: { canonical },
     };
 }

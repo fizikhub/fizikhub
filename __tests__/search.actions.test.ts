@@ -56,4 +56,15 @@ describe("global search topic results", () => {
             }),
         ]));
     });
+
+    it("filters fallback forum search to published questions", async () => {
+        const questionsQuery = createEmptyQuery();
+        mockFrom.mockImplementation((table: string) => table === "questions" ? questionsQuery : createEmptyQuery());
+
+        const { searchGlobal } = await import("@/app/search/actions");
+
+        await searchGlobal("momentum korunumu");
+
+        expect(questionsQuery.eq).toHaveBeenCalledWith("status", "published");
+    });
 });

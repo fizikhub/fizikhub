@@ -113,7 +113,17 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
         title: seoTitle,
         description,
         keywords: dynamicKeywords,
-        robots: shouldIndex ? { index: true, follow: true } : { index: false, follow: true },
+        robots: {
+            index: shouldIndex,
+            follow: true,
+            googleBot: {
+                index: shouldIndex,
+                follow: true,
+                "max-image-preview": "large",
+                "max-snippet": -1,
+                "max-video-preview": -1,
+            },
+        },
         openGraph: {
             title: seoTitle,
             description,

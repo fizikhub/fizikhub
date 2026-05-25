@@ -151,6 +151,7 @@ export async function searchGlobal(rawQuery: string): Promise<SearchResult[]> {
         supabase
             .from("questions")
             .select("id, title, content, category")
+            .eq("status", "published")
             .or(`title.ilike.${searchTerm},content.ilike.${searchTerm},category.ilike.${searchTerm}`)
             .order("created_at", { ascending: false })
             .limit(5),

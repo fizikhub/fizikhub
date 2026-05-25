@@ -4,6 +4,7 @@ import type { ComponentType } from "react";
 import Link from "next/link";
 import { simulations } from "@/components/simulations/data";
 import { BreadcrumbJsonLd } from "@/lib/breadcrumbs";
+import { getSiteUrl } from "@/lib/seo-utils";
 
 // Import simulation components
 import { ProjectileSim } from "@/components/simulations/ProjectileSim";
@@ -99,10 +100,14 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
     const { slug } = await params;
     const sim = simulations.find((s) => s.slug === slug);
+    const baseUrl = getSiteUrl();
+    const canonical = `${baseUrl}/simulasyonlar/${slug}`;
+    const image = `${baseUrl}/og-image.jpg`;
 
     if (!sim) {
         return {
             title: "Simülasyon Bulunamadı | FizikHub",
+            robots: { index: false, follow: true },
         };
     }
 
@@ -115,22 +120,60 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
                 title: sim.seo.title,
                 description: sim.seo.description,
                 type: 'website',
-                url: `https://www.fizikhub.com/simulasyonlar/${slug}`,
+                url: canonical,
+                images: [{ url: image, width: 1200, height: 630, alt: `${sim.title} fizik simülasyonu` }],
             },
-            alternates: { canonical: `https://www.fizikhub.com/simulasyonlar/${slug}` },
+            twitter: {
+                card: "summary_large_image",
+                title: sim.seo.title,
+                description: sim.seo.description,
+                images: [image],
+            },
+            alternates: { canonical },
+            robots: {
+                index: true,
+                follow: true,
+                googleBot: {
+                    index: true,
+                    follow: true,
+                    "max-image-preview": "large",
+                    "max-snippet": -1,
+                    "max-video-preview": -1,
+                },
+            },
         };
     }
 
+    const description = `${sim.title} ile fizik kurallarını interaktif olarak keşfedin.`;
+
     return {
         title: `${sim.title} Simülasyonu | FizikHub`,
-        description: `${sim.title} ile fizik kurallarını interaktif olarak keşfedin.`,
+        description,
         openGraph: {
             title: `${sim.title} Simülasyonu — Fizikhub`,
-            description: `${sim.title} ile fizik kurallarını interaktif olarak keşfedin.`,
+            description,
             type: 'website',
-            url: `https://www.fizikhub.com/simulasyonlar/${slug}`,
+            url: canonical,
+            images: [{ url: image, width: 1200, height: 630, alt: `${sim.title} fizik simülasyonu` }],
         },
-        alternates: { canonical: `https://www.fizikhub.com/simulasyonlar/${slug}` },
+        twitter: {
+            card: "summary_large_image",
+            title: `${sim.title} Simülasyonu — Fizikhub`,
+            description,
+            images: [image],
+        },
+        alternates: { canonical },
+        robots: {
+            index: true,
+            follow: true,
+            googleBot: {
+                index: true,
+                follow: true,
+                "max-image-preview": "large",
+                "max-snippet": -1,
+                "max-video-preview": -1,
+            },
+        },
     };
 }
 
@@ -175,7 +218,8 @@ export default async function SimulationPage({ params }: { params: Promise<{ slu
 
     const SimComponent = Component;
     const serializableSim = serializeSimulation(sim);
-    const canonical = `https://www.fizikhub.com/simulasyonlar/${sim.slug}`;
+    const baseUrl = getSiteUrl();
+    const canonical = `${baseUrl}/simulasyonlar/${sim.slug}`;
     const jsonLd = [
         {
             "@context": "https://schema.org",
@@ -192,7 +236,7 @@ export default async function SimulationPage({ params }: { params: Promise<{ slu
             provider: {
                 "@type": "Organization",
                 name: "Fizikhub",
-                url: "https://www.fizikhub.com",
+                url: baseUrl,
             },
         },
         {

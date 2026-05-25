@@ -123,7 +123,7 @@ async function main() {
     const { data: questions, error: qErr } = await supabase
         .from("questions")
         .select("id, title, content, category, tags")
-        .neq("status", "deleted");
+        .eq("status", "published");
 
     if (qErr) {
         console.error("❌ Sorular çekilemedi:", qErr.message);

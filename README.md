@@ -62,6 +62,7 @@ Gizli değerleri `.env.local` içinde tutun; `.env*` dosyaları git dışında b
 - `supabase/`: Migration ve performans/güvenlik SQL dosyaları
 - `scripts/`: Operasyonel bakım, SEO ve Supabase yardımcı scriptleri
 - `__tests__/`: Vitest testleri
+- `docs/seo-geo-research-2026-05.md`: Güncel SEO/GEO araştırması ve Fizikhub yol haritası
 
 ## Notlar
 

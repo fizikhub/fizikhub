@@ -1,5 +1,13 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
+export const GEMINI_EMBEDDING_MODEL = "gemini-embedding-001";
+export const GEMINI_EMBEDDING_DIMENSIONS = 768;
+
+type EmbedContentRequestWithDimensions = {
+    content: { role: "user"; parts: Array<{ text: string }> };
+    outputDimensionality: number;
+};
+
 let geminiClient: GoogleGenerativeAI | null = null;
 
 /**
@@ -40,8 +48,12 @@ export async function generateEmbedding(text: string): Promise<number[] | null> 
     }
 
     try {
-        const model = genAI.getGenerativeModel({ model: "gemini-embedding-001" });
-        const result = await model.embedContent(text);
+        const model = genAI.getGenerativeModel({ model: GEMINI_EMBEDDING_MODEL });
+        const embeddingRequest: EmbedContentRequestWithDimensions = {
+            content: { role: "user", parts: [{ text }] },
+            outputDimensionality: GEMINI_EMBEDDING_DIMENSIONS,
+        };
+        const result = await model.embedContent(embeddingRequest as unknown as Parameters<typeof model.embedContent>[0]);
         const embedding = result.embedding;
         return embedding.values;
     } catch (error) {

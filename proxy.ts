@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from 'next/server'
 import { updateSession } from '@/lib/middleware'
+import { isKnownAiCrawlerUserAgent } from '@/lib/ai-discovery'
 
 // Sliding window rate limiting with automatic cleanup
 const rateLimitMap = new Map<string, { count: number; timestamp: number }>();
@@ -30,6 +31,33 @@ const SEO_METADATA_PATHS = new Set([
     '/ai-index.json',
     '/opengraph-image',
 ]);
+const PUBLIC_SEO_PATHS = new Set([
+    '/',
+    '/hakkimizda',
+    '/gizlilik-politikasi',
+    '/kullanim-sartlari',
+    '/iletisim',
+    '/puanlar-nedir',
+    '/rozetler',
+    '/siralamalar',
+    '/konular',
+    '/makale',
+    '/forum',
+    '/sozluk',
+    '/testler',
+    '/simulasyonlar',
+]);
+const PUBLIC_SEO_PREFIXES = [
+    '/makale/',
+    '/deney/',
+    '/forum/',
+    '/sozluk/',
+    '/testler/',
+    '/simulasyonlar/',
+    '/konular/',
+    '/kullanici/',
+];
+const SEARCH_CRAWLER_PATTERN = /Googlebot|Googlebot-Image|Googlebot-News|Bingbot|DuckDuckBot|YandexBot|Applebot|LinkedInBot|Twitterbot|facebookexternalhit|Facebot|WhatsApp|Slackbot|TelegramBot|Instagram|Pinterest|Discordbot/i;
 
 type UpstashPipelineResult = Array<{ result?: unknown; error?: string }>;
 
@@ -182,11 +210,16 @@ function normalizeSeoUrl(request: NextRequest) {
     return changed ? url : null;
 }
 
-function shouldBypassSession(pathname: string, userAgent: string) {
+function isPublicSeoPath(pathname: string) {
+    return PUBLIC_SEO_PATHS.has(pathname) || PUBLIC_SEO_PREFIXES.some((prefix) => pathname.startsWith(prefix));
+}
+
+export function shouldBypassSession(pathname: string, userAgent: string) {
     if (SEO_METADATA_PATHS.has(pathname)) return true;
     if (pathname.startsWith('/api/og')) return true;
 
-    return /facebookexternalhit|Facebot|Twitterbot|LinkedInBot|WhatsApp|Slackbot|TelegramBot|Instagram|Pinterest|Discordbot/i.test(userAgent);
+    const isKnownCrawler = SEARCH_CRAWLER_PATTERN.test(userAgent) || isKnownAiCrawlerUserAgent(userAgent);
+    return isKnownCrawler && isPublicSeoPath(pathname);
 }
 
 export async function proxy(request: NextRequest) {

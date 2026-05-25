@@ -44,6 +44,13 @@ export const AI_PUBLIC_CONTENT_PREFIXES = [
     "/kullanici/",
 ] as const;
 
+export function isKnownAiCrawlerUserAgent(userAgent: string | null | undefined) {
+    if (!userAgent) return false;
+
+    const normalized = userAgent.toLocaleLowerCase("en-US");
+    return AI_CRAWLER_USER_AGENTS.some((bot) => normalized.includes(bot.toLocaleLowerCase("en-US")));
+}
+
 export const AI_DISCOVERY_ROUTES: AiDiscoveryRoute[] = [
     {
         path: "/llms.txt",

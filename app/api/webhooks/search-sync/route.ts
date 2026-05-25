@@ -4,6 +4,30 @@ import { generateEmbedding } from "@/lib/gemini";
 import { slugify } from "@/lib/slug";
 import { rateLimiter } from "@/lib/upstash";
 
+type SearchSyncRecord = {
+    id?: string | number | null;
+    title?: string | null;
+    term?: string | null;
+    slug?: string | null;
+    category?: string | null;
+    excerpt?: string | null;
+    content?: string | null;
+    definition?: string | null;
+    description?: string | null;
+    status?: string | null;
+    published?: boolean | null;
+    tags?: unknown;
+    cover_url?: string | null;
+    image_url?: string | null;
+};
+
+type SearchSyncPayload = {
+    type?: string;
+    table?: string;
+    record?: SearchSyncRecord | null;
+    old_record?: SearchSyncRecord | null;
+};
+
 // Helper to determine singular resource name
 function getTableSingular(table: string): string {
     if (table === "articles") return "article";
@@ -14,7 +38,7 @@ function getTableSingular(table: string): string {
 }
 
 // Clean and prepare searchable text representation for embedding
-function buildSearchableText(table: string, record: any): string {
+function buildSearchableText(table: string, record: SearchSyncRecord): string {
     if (table === "articles") {
         return `Title: ${record.title || ""}\nCategory: ${record.category || ""}\nExcerpt: ${record.excerpt || ""}\nContent: ${record.content || ""}`;
     }
@@ -31,12 +55,12 @@ function buildSearchableText(table: string, record: any): string {
     return "";
 }
 
-function getCanonicalPath(table: string, record: Record<string, unknown>): string | null {
+function getCanonicalPath(table: string, record: SearchSyncRecord): string | null {
     const tableSingular = getTableSingular(table);
     const recordId = record.id?.toString();
-    const slug = typeof record.slug === "string" ? record.slug : "";
-    const category = typeof record.category === "string" ? record.category : "";
-    const term = typeof record.term === "string" ? record.term : "";
+    const slug = record.slug || "";
+    const category = record.category || "";
+    const term = record.term || "";
 
     if (tableSingular === "article") {
         const slugOrId = slug || recordId;
@@ -52,13 +76,13 @@ function getCanonicalPath(table: string, record: Record<string, unknown>): strin
 }
 
 // Helper to check if a record is active/published and should be indexed
-function isRecordIndexable(table: string, record: any): boolean {
+function isRecordIndexable(table: string, record: SearchSyncRecord | null | undefined): boolean {
     if (!record) return false;
     if (table === "articles") {
         return record.status === "published" || record.published === true;
     }
     if (table === "questions") {
-        return record.status !== "deleted";
+        return record.status === "published";
     }
     return true; // Dictionary terms and quizzes are indexable by default
 }
@@ -81,7 +105,7 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: "Unauthorized", detail: "Secret mismatch" }, { status: 401 });
         }
 
-        const payload = await req.json();
+        const payload = await req.json() as SearchSyncPayload;
         const { type, table, record, old_record } = payload;
 
         if (!table) {
@@ -152,7 +176,7 @@ export async function POST(req: Request) {
                 source_type: tableSingular,
                 title: record.title || record.term || "FizikHub İçeriği",
                 slug: record.slug || (record.term ? slugify(record.term) : ""),
-                canonical_path: getCanonicalPath(table, record as Record<string, unknown>),
+                canonical_path: getCanonicalPath(table, record),
                 cover_image: record.cover_url || record.image_url || null,
             };
 
@@ -208,8 +232,9 @@ export async function POST(req: Request) {
 
         return NextResponse.json({ error: "Unsupported operation type" }, { status: 400 });
 
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error("[Search-Sync API] Webhook Error:", error);
-        return NextResponse.json({ error: "Internal server error", detail: error?.message }, { status: 500 });
+        const detail = error instanceof Error ? error.message : "Unknown error";
+        return NextResponse.json({ error: "Internal server error", detail }, { status: 500 });
     }
 }
