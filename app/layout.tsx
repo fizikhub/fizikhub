@@ -299,6 +299,12 @@ export default async function RootLayout({
   return (
     <html lang="tr" suppressHydrationWarning>
       <head>
+        <link
+          rel="search"
+          type="application/opensearchdescription+xml"
+          title="Fizikhub"
+          href="/opensearch.xml"
+        />
       </head>
       <body suppressHydrationWarning className={`${inter.variable} ${lora.variable} font-sans min-h-[100dvh] flex flex-col pb-16 md:pb-0 bg-background text-foreground`}>
         {/* GLOBAL PROGRESS BAR (Neo-Brutalist) */}

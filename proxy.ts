@@ -29,6 +29,7 @@ const SEO_METADATA_PATHS = new Set([
     '/feed.xml',
     '/llms.txt',
     '/ai-index.json',
+    '/opensearch.xml',
     '/opengraph-image',
 ]);
 const PUBLIC_SEO_PATHS = new Set([
@@ -217,6 +218,7 @@ function isPublicSeoPath(pathname: string) {
 export function shouldBypassSession(pathname: string, userAgent: string) {
     if (SEO_METADATA_PATHS.has(pathname)) return true;
     if (pathname.startsWith('/api/og')) return true;
+    if (pathname.startsWith('/api/search/suggestions')) return true;
 
     const isKnownCrawler = SEARCH_CRAWLER_PATTERN.test(userAgent) || isKnownAiCrawlerUserAgent(userAgent);
     return isKnownCrawler && isPublicSeoPath(pathname);

@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import robots from "@/app/robots";
 import { GET as aiSitemap } from "@/app/ai-sitemap.xml/route";
 import { GET as authorSitemap } from "@/app/author-sitemap.xml/route";
+import { GET as openSearchDescriptor } from "@/app/opensearch.xml/route";
 import { GET as sitemapIndex } from "@/app/sitemap-index.xml/route";
 import { GET as topicSitemap } from "@/app/topic-sitemap.xml/route";
 import { AI_CRAWLER_USER_AGENTS } from "@/lib/ai-discovery";
@@ -98,6 +99,18 @@ describe("SEO topic sitemap", () => {
 });
 
 describe("SEO robots and canonical boundaries", () => {
+    it("publishes an OpenSearch descriptor for browser and answer-engine search discovery", async () => {
+        const response = await openSearchDescriptor();
+        const xml = await response.text();
+
+        expect(response.headers.get("content-type")).toContain("application/opensearchdescription+xml");
+        expect(xml).toContain("<ShortName>Fizikhub</ShortName>");
+        expect(xml).toContain("/ara?q={searchTerms}");
+        expect(xml).toContain("/api/search/suggestions?q={searchTerms}");
+        expect(shouldBypassSession("/opensearch.xml", "")).toBe(true);
+        expect(shouldBypassSession("/api/search/suggestions", "")).toBe(true);
+    });
+
     it("keeps public author pages crawlable while private profile settings remain private", () => {
         expect(isPrivateSeoPath("/profil")).toBe(true);
         expect(isPrivateSeoPath("/profil/duzenle")).toBe(true);
