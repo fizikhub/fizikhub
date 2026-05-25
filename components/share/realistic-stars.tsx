@@ -5,6 +5,15 @@ import { Canvas, useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import { useTheme } from "next-themes";
 
+// Pure deterministic PRNG for React Compiler compliance
+function createPureRandom(seed = 1) {
+    let s = seed;
+    return function() {
+        const x = Math.sin(s++) * 10000;
+        return x - Math.floor(x);
+    };
+}
+
 // --- STATIC STARS (Twinkling) ---
 const starVertexShader = `
   uniform float uTime;
@@ -159,29 +168,30 @@ function Meteors({ count = 15, isDark }: { count?: number, isDark: boolean }) {
         const s = new Float32Array(count);
         const start = new Float32Array(count * 3);
         const end = new Float32Array(count * 3);
+        const random = createPureRandom(500);
 
         for (let i = 0; i < count; i++) {
-            d[i] = Math.random() * 8.0; // Longer spread (8s)
-            s[i] = 1.2 + Math.random() * 0.5; // Slightly faster base
+            d[i] = random() * 8.0; // Longer spread (8s)
+            s[i] = 1.2 + random() * 0.5; // Slightly faster base
 
             // STRICT GEOMETRY: TOP-LEFT to BOTTOM-RIGHT
             // Start: Top Edge (-400 to 800 X, 600 Y) OR Left Edge (-600 X, -200 to 600 Y)
 
-            const fromTop = Math.random() > 0.4; // 60% from Top
+            const fromTop = random() > 0.4; // 60% from Top
             let sx, sy;
 
             if (fromTop) {
-                sx = (Math.random() - 0.5) * 1200; // Wide top spread
-                sy = 700 + Math.random() * 200; // Above screen
+                sx = (random() - 0.5) * 1200; // Wide top spread
+                sy = 700 + random() * 200; // Above screen
             } else {
-                sx = -900 - Math.random() * 300; // Far left
-                sy = (Math.random() - 0.5) * 1000;
+                sx = -900 - random() * 300; // Far left
+                sy = (random() - 0.5) * 1000;
             }
 
             // End: Steep Diagonal Down-Right
             // Vector: (+0.8, -1.2) -> Steep
-            const ex = sx + (1000 + Math.random() * 500);
-            const ey = sy - (1500 + Math.random() * 500);
+            const ex = sx + (1000 + random() * 500);
+            const ey = sy - (1500 + random() * 500);
 
             start[i * 3] = sx;
             start[i * 3 + 1] = sy;
@@ -233,26 +243,29 @@ function Stars({ count = 2000, isDark }: { count?: number, isDark: boolean }) {
         const col = new Float32Array(count * 3);
         const pha = new Float32Array(count);
 
-        const darkPalette = [new THREE.Color("#ffffff"), new THREE.Color("#A5F3FC"), new THREE.Color("#FDE68A")];
-        const lightPalette = [new THREE.Color("#333333"), new THREE.Color("#4B5563"), new THREE.Color("#000000")];
+        const darkPalette = ["#ffffff", "#A5F3FC", "#FDE68A"];
+        const lightPalette = ["#333333", "#4B5563", "#000000"];
         const palette = isDark ? darkPalette : lightPalette;
+        const tempColor = new THREE.Color();
+        const random = createPureRandom(2026);
 
         for (let i = 0; i < count; i++) {
-            const r = 400 + Math.random() * 800; // Wider field
-            const theta = 2 * Math.PI * Math.random();
-            const phi = Math.acos(2 * Math.random() - 1);
+            const r = 400 + random() * 800; // Wider field
+            const theta = 2 * Math.PI * random();
+            const phi = Math.acos(2 * random() - 1);
 
             pos[i * 3] = r * Math.sin(phi) * Math.cos(theta);
             pos[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
             pos[i * 3 + 2] = r * Math.cos(phi);
 
-            sz[i] = Math.random() * 3.0 + 1.0;
-            pha[i] = Math.random() * Math.PI * 2;
+            sz[i] = random() * 3.0 + 1.0;
+            pha[i] = random() * Math.PI * 2;
 
-            const randomColor = palette[Math.floor(Math.random() * palette.length)];
-            col[i * 3] = randomColor.r;
-            col[i * 3 + 1] = randomColor.g;
-            col[i * 3 + 2] = randomColor.b;
+            const randomColorHex = palette[Math.floor(random() * palette.length)];
+            tempColor.set(randomColorHex);
+            col[i * 3] = tempColor.r;
+            col[i * 3 + 1] = tempColor.g;
+            col[i * 3 + 2] = tempColor.b;
         }
         return { positions: pos, sizes: sz, colors: col, phases: pha };
     }, [count, isDark]);

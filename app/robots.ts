@@ -1,4 +1,5 @@
 import { MetadataRoute } from 'next';
+import { AI_CRAWLER_USER_AGENTS, AI_DISCOVERY_ROUTES, AI_PUBLIC_CONTENT_PREFIXES } from '@/lib/ai-discovery';
 import { getSiteUrl } from '@/lib/seo-utils';
 
 export default function robots(): MetadataRoute.Robots {
@@ -24,31 +25,14 @@ export default function robots(): MetadataRoute.Robots {
         '/email/fh-avatar.png',
         '/email/fh-avatar.svg',
         '/_next/image',
-        '/ai-index.json',
+        ...AI_DISCOVERY_ROUTES.map((route) => route.path),
     ];
 
-    // Modern AI and LLM Search Crawlers (ChatGPT, Perplexity, Claude, etc.)
-    const aiBots = [
-        'GPTBot',
-        'ChatGPT-User',
-        'Google-Extended',
-        'PerplexityBot',
-        'ClaudeBot',
-        'Claude-Web',
-        'anthropic-ai',
-        'OAI-SearchBot',
-        'CCBot',
-        'Amazonbot',
-        'Applebot',
-        'Meta-ExternalAgent',
-        'Meta-ExternalFetcher',
-    ];
-
-    const aiRules = aiBots.map(bot => ({
+    const aiRules = AI_CRAWLER_USER_AGENTS.map(bot => ({
         userAgent: bot,
-        allow: [...publicAllow, '/makale/', '/forum/', '/sozluk/', '/llms.txt', '/ai-index.json', '/feed.xml', '/testler/', '/simulasyonlar/'],
+        allow: [...publicAllow, ...AI_PUBLIC_CONTENT_PREFIXES],
         disallow: commonDisallow,
-        crawlDelay: 2, // Be kind to our servers, LLMs!
+        crawlDelay: 2,
     }));
 
     return {
@@ -77,14 +61,16 @@ export default function robots(): MetadataRoute.Robots {
             },
             {
                 userAgent: '*',
-                allow: [...publicAllow, '/llms.txt', '/ai-index.json', '/feed.xml'],
+                allow: publicAllow,
                 disallow: commonDisallow,
                 crawlDelay: 1,
             },
         ],
         sitemap: [
+            `${baseUrl}/sitemap-index.xml`,
             `${baseUrl}/sitemap.xml`,
             `${baseUrl}/topic-sitemap.xml`,
+            `${baseUrl}/ai-sitemap.xml`,
         ],
     };
 }

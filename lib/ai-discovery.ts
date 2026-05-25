@@ -1,0 +1,144 @@
+export type AiDiscoveryRoute = {
+    path: string;
+    label: string;
+    mediaType: string;
+    description: string;
+};
+
+export type AiCoreRoute = {
+    path: string;
+    title: string;
+    description: string;
+    changeFrequency: "hourly" | "daily" | "weekly" | "monthly" | "yearly";
+    priority: string;
+};
+
+export const AI_DISCOVERY_LAST_MODIFIED = "2026-05-25T00:00:00.000+03:00";
+
+export const AI_CRAWLER_USER_AGENTS = [
+    "GPTBot",
+    "OAI-SearchBot",
+    "ChatGPT-User",
+    "ClaudeBot",
+    "Claude-SearchBot",
+    "Claude-User",
+    "PerplexityBot",
+    "Perplexity-User",
+    "Google-Extended",
+    "CCBot",
+    "Amazonbot",
+    "Applebot",
+    "Applebot-Extended",
+    "Meta-ExternalAgent",
+    "Meta-ExternalFetcher",
+] as const;
+
+export const AI_PUBLIC_CONTENT_PREFIXES = [
+    "/makale/",
+    "/deney/",
+    "/forum/",
+    "/sozluk/",
+    "/konular/",
+    "/testler/",
+    "/simulasyonlar/",
+    "/kullanici/",
+] as const;
+
+export const AI_DISCOVERY_ROUTES: AiDiscoveryRoute[] = [
+    {
+        path: "/llms.txt",
+        label: "LLM manifest",
+        mediaType: "text/plain",
+        description: "Fizikhub icin kisa, kaynak odakli LLM giris rehberi.",
+    },
+    {
+        path: "/ai-index.json",
+        label: "AI index",
+        mediaType: "application/json",
+        description: "Kanonik URL, konu, sema tipi ve iliski verisi tasiyan makine okunabilir indeks.",
+    },
+    {
+        path: "/ai-sitemap.xml",
+        label: "AI sitemap",
+        mediaType: "application/xml",
+        description: "AI arama ve cevap motorlari icin yuksek sinyal tasiyan public sayfalar.",
+    },
+    {
+        path: "/sitemap-index.xml",
+        label: "Sitemap index",
+        mediaType: "application/xml",
+        description: "Tum klasik SEO sitemap yuzeylerini birlestiren sitemap indeksi.",
+    },
+    {
+        path: "/feed.xml",
+        label: "RSS feed",
+        mediaType: "application/rss+xml",
+        description: "Yeni makaleler icin yayin akisi.",
+    },
+];
+
+export const AI_CORE_ROUTES: AiCoreRoute[] = [
+    {
+        path: "/",
+        title: "Fizikhub ana sayfa",
+        description: "Turkce fizik, uzay, bilim ve egitim toplulugu.",
+        changeFrequency: "daily",
+        priority: "1.0",
+    },
+    {
+        path: "/makale",
+        title: "Bilim makaleleri",
+        description: "Fizik, astronomi, kuantum ve populer bilim makale arsivi.",
+        changeFrequency: "daily",
+        priority: "0.90",
+    },
+    {
+        path: "/konular",
+        title: "Fizik konu rehberleri",
+        description: "GEO topic hub yapisinda fizik konu kumeleri.",
+        changeFrequency: "weekly",
+        priority: "0.88",
+    },
+    {
+        path: "/forum",
+        title: "Bilim forumu",
+        description: "Fizik soru-cevap ve topluluk tartismalari.",
+        changeFrequency: "hourly",
+        priority: "0.86",
+    },
+    {
+        path: "/sozluk",
+        title: "Bilim sozlugu",
+        description: "Fizik ve bilim terimleri icin tanim sayfalari.",
+        changeFrequency: "weekly",
+        priority: "0.82",
+    },
+    {
+        path: "/simulasyonlar",
+        title: "Interaktif fizik simulasyonlari",
+        description: "Fizik konularini deneyerek ogrenme merkezi.",
+        changeFrequency: "monthly",
+        priority: "0.76",
+    },
+    {
+        path: "/testler",
+        title: "Fizik testleri",
+        description: "TYT, AYT ve YKS odakli fizik testleri.",
+        changeFrequency: "weekly",
+        priority: "0.72",
+    },
+    {
+        path: "/hakkimizda",
+        title: "Fizikhub hakkinda",
+        description: "Yayinci, misyon ve guven sinyalleri.",
+        changeFrequency: "monthly",
+        priority: "0.50",
+    },
+    {
+        path: "/iletisim",
+        title: "Fizikhub iletisim",
+        description: "Yayinci iletisim ve destek bilgileri.",
+        changeFrequency: "monthly",
+        priority: "0.45",
+    },
+];

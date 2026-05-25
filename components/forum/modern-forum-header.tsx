@@ -269,7 +269,7 @@ export function ModernForumHeader() {
                                                 opacity: [0, 0.8, 0],
                                                 scale: [0.5, 1.5],
                                                 y: [0, 20],
-                                                x: [0, (Math.random() - 0.5) * 20]
+                                                x: [0, ((i * 17) % 21) - 10]
                                             }}
                                             transition={{ delay: i * 0.15, duration: 1.2, ease: "easeOut" }}
                                             className="absolute bottom-1 left-1/2 w-8 h-8 bg-white/30 rounded-full blur-[8px] pointer-events-none"
@@ -304,7 +304,7 @@ export function ModernForumHeader() {
                                                     opacity: [0, 0.8, 0],
                                                     scale: [0.5, 1.5],
                                                     y: [0, 20],
-                                                    x: [0, (Math.random() - 0.5) * 20]
+                                                    x: [0, ((i * 23) % 21) - 10]
                                                 }}
                                                 transition={{ delay: 1.2 + (i * 0.15), duration: 1.2, ease: "easeOut" }}
                                                 className="absolute bottom-1 left-1/2 w-8 h-8 bg-white/30 rounded-full blur-[8px] pointer-events-none"

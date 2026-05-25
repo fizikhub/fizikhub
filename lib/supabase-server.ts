@@ -30,6 +30,10 @@ export async function createClient() {
 
 import { createClient as createStaticSupabaseClient } from '@supabase/supabase-js';
 
+export function hasSupabasePublicConfig() {
+    return Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
+}
+
 export function createStaticClient() {
     return createStaticSupabaseClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL!,

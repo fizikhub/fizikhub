@@ -2,19 +2,23 @@
 
 import React, { useEffect, useRef, useState } from "react";
 
-// CSS-only shooting star animation - lightweight alternative to motion.div
-const ShootingStar = ({ delay }: { delay: number }) => (
-    <div
-        className="absolute h-[2px] w-[100px] rotate-45 opacity-0 pointer-events-none"
-        style={{
-            top: `${Math.random() * 30}%`,
-            left: `${Math.random() * 50 + 20}%`,
-            background: 'linear-gradient(90deg, transparent 0%, white 30%, transparent 100%)',
-            animation: `headerShootingStar 1.2s ease-out ${delay}s infinite`,
-            animationDelay: `${delay}s`,
-        }}
-    />
-);
+const ShootingStar = ({ delay }: { delay: number }) => {
+    // Deterministic position based on delay to ensure functional purity
+    const top = (delay * 37) % 30;
+    const left = ((delay * 73) % 50) + 20;
+    return (
+        <div
+            className="absolute h-[2px] w-[100px] rotate-45 opacity-0 pointer-events-none"
+            style={{
+                top: `${top}%`,
+                left: `${left}%`,
+                background: 'linear-gradient(90deg, transparent 0%, white 30%, transparent 100%)',
+                animation: `headerShootingStar 1.2s ease-out ${delay}s infinite`,
+                animationDelay: `${delay}s`,
+            }}
+        />
+    );
+};
 
 export function HeaderSpaceBackground() {
     const canvasRef = useRef<HTMLCanvasElement>(null);

@@ -9,6 +9,12 @@ const noindexHeader = [
   },
 ];
 
+const aiDiscoveryLinkHeader = [
+  '<https://www.fizikhub.com/llms.txt>; rel="alternate"; type="text/plain"; title="Fizikhub LLM manifest"',
+  '<https://www.fizikhub.com/ai-index.json>; rel="alternate"; type="application/json"; title="Fizikhub AI index"',
+  '<https://www.fizikhub.com/ai-sitemap.xml>; rel="sitemap"; type="application/xml"; title="Fizikhub AI sitemap"',
+].join(', ');
+
 const privateNoindexRoutes = [
   '/login',
   '/forgot-password',
@@ -206,6 +212,10 @@ const nextConfig: NextConfig = {
           {
             key: 'X-Content-Type-Options',
             value: 'nosniff',
+          },
+          {
+            key: 'Link',
+            value: aiDiscoveryLinkHeader,
           },
           // Clickjacking protection — handled by CSP frame-ancestors below
           // X-Frame-Options removed to allow Instagram WebView to load pages

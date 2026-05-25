@@ -4,6 +4,15 @@ import { useRef, useMemo, useState, useEffect } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 
+// Pure deterministic PRNG for React Compiler compliance
+function createPureRandom(seed = 1) {
+  let s = seed;
+  return function() {
+    const x = Math.sin(s++) * 10000;
+    return x - Math.floor(x);
+  };
+}
+
 // --- CUSTOM SHADERS ---
 
 const starVertexShader = `
@@ -112,30 +121,27 @@ function Stars({ count = 10000 }) {
     const col = new Float32Array(count * 3);
     const pha = new Float32Array(count);
 
-    const palette = [
-      new THREE.Color("#ffffff"), // Pure white
-      new THREE.Color("#dbeafe"), // Soft blue
-      new THREE.Color("#fef3c7"), // Soft yellow
-      new THREE.Color("#fff7ed"), // Warm white
-      new THREE.Color("#60a5fa"), // Brighter blue
-    ];
+    const palette = ["#ffffff", "#dbeafe", "#fef3c7", "#fff7ed", "#60a5fa"];
+    const tempColor = new THREE.Color();
+    const random = createPureRandom(777);
 
     for (let i = 0; i < count; i++) {
-      const r = 200 + Math.random() * 800; // Wider range
-      const theta = 2 * Math.PI * Math.random();
-      const phi = Math.acos(2 * Math.random() - 1);
+      const r = 200 + random() * 800; // Wider range
+      const theta = 2 * Math.PI * random();
+      const phi = Math.acos(2 * random() - 1);
 
       pos[i * 3] = r * Math.sin(phi) * Math.cos(theta);
       pos[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
       pos[i * 3 + 2] = r * Math.cos(phi);
 
-      sz[i] = Math.random() * 4.0 + 1.2; // Significantly larger stars
-      pha[i] = Math.random() * Math.PI * 2;
+      sz[i] = random() * 4.0 + 1.2; // Significantly larger stars
+      pha[i] = random() * Math.PI * 2;
 
-      const randomColor = palette[Math.floor(Math.random() * palette.length)];
-      col[i * 3] = randomColor.r;
-      col[i * 3 + 1] = randomColor.g;
-      col[i * 3 + 2] = randomColor.b;
+      const randomColorHex = palette[Math.floor(random() * palette.length)];
+      tempColor.set(randomColorHex);
+      col[i * 3] = tempColor.r;
+      col[i * 3 + 1] = tempColor.g;
+      col[i * 3 + 2] = tempColor.b;
     }
     return { positions: pos, sizes: sz, colors: col, phases: pha };
   }, [count]);
@@ -224,25 +230,25 @@ function ShootingStars({ count = 20 }) {
     const spd = new Float32Array(count);
     const del = new Float32Array(count);
     const dir = new Float32Array(count * 3);
+    const random = createPureRandom(9999);
 
     for (let i = 0; i < count; i++) {
       // Start randomly in a wide box
-      pos[i * 3] = (Math.random() - 0.5) * 1000;
-      pos[i * 3 + 1] = (Math.random() - 0.5) * 1000;
+      pos[i * 3] = (random() - 0.5) * 1000;
+      pos[i * 3 + 1] = (random() - 0.5) * 1000;
       pos[i * 3 + 2] = -500;
 
-      spd[i] = 100 + Math.random() * 200;
-      del[i] = Math.random() * 5.0;
+      spd[i] = 100 + random() * 200;
+      del[i] = random() * 5.0;
 
-      // Random diagonal downward direction
-      const d = new THREE.Vector3(
-        Math.random() - 0.5,
-        -0.5 - Math.random() * 0.5,
-        0
-      ).normalize();
-      dir[i * 3] = d.x;
-      dir[i * 3 + 1] = d.y;
-      dir[i * 3 + 2] = d.z;
+      // Random diagonal downward direction (avoiding THREE.Vector3 instantiations in the loop)
+      const dx = random() - 0.5;
+      const dy = -0.5 - random() * 0.5;
+      const dz = 0;
+      const len = Math.sqrt(dx * dx + dy * dy + dz * dz);
+      dir[i * 3] = dx / len;
+      dir[i * 3 + 1] = dy / len;
+      dir[i * 3 + 2] = dz / len;
     }
     return { positions: pos, speeds: spd, delays: del, directions: dir };
   }, [count]);

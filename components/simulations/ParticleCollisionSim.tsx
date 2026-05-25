@@ -27,7 +27,15 @@ export function ParticleCollisionSim({ simData }: { simData: any }) {
 
     const resetSim = () => { setIsPlaying(false); setX1(200); setX2(600); setV1(initV1); setV2(initV2); setHasCollided(false); lastTimeRef.current = 0; if (animationRef.current) cancelAnimationFrame(animationRef.current); };
 
-    useEffect(() => { if (!isPlaying && !hasCollided) { setV1(initV1); setV2(initV2); } }, [initV1, initV2, isPlaying, hasCollided]);
+    useEffect(() => {
+        if (!isPlaying && !hasCollided) {
+            const timeoutId = setTimeout(() => {
+                setV1(initV1);
+                setV2(initV2);
+            }, 0);
+            return () => clearTimeout(timeoutId);
+        }
+    }, [initV1, initV2, isPlaying, hasCollided]);
 
     const radius1 = 20 + Math.sqrt(mass1) * 8;
     const radius2 = 20 + Math.sqrt(mass2) * 8;
@@ -84,7 +92,15 @@ export function ParticleCollisionSim({ simData }: { simData: any }) {
             successText: "Küçük cisim devasa bir hızla fırladı! Dev kütlenin momentumu kendini korurken ufaklık inanılmaz hızlanmak zorundadır." }
     ]);
 
-    useEffect(() => { setMissions(prev => prev.map(m => { if (!m.isCompleted && m.condition()) return { ...m, isCompleted: true }; return m; })); }, [mass1, mass2, restitution, initV1, initV2, hasCollided, isPlaying, v1, v2]);
+    useEffect(() => {
+        const timeoutId = setTimeout(() => {
+            setMissions(prev => prev.map(m => {
+                if (!m.isCompleted && m.condition()) return { ...m, isCompleted: true };
+                return m;
+            }));
+        }, 50);
+        return () => clearTimeout(timeoutId);
+    }, [mass1, mass2, restitution, initV1, initV2, hasCollided, isPlaying, v1, v2]);
 
     const Controls = (
         <div className="flex flex-col gap-5">

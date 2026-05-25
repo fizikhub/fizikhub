@@ -63,9 +63,12 @@ export function PendulumSim({ simData }: { simData: any }) {
 
     useEffect(() => {
         if (!isPlaying) {
-            setAngle(initialAngle * (Math.PI / 180));
-            setVelocity(0);
-            setTime(0);
+            const timeoutId = setTimeout(() => {
+                setAngle(initialAngle * (Math.PI / 180));
+                setVelocity(0);
+                setTime(0);
+            }, 0);
+            return () => clearTimeout(timeoutId);
         }
     }, [initialAngle, isPlaying]);
 
@@ -88,10 +91,13 @@ export function PendulumSim({ simData }: { simData: any }) {
     ]);
 
     useEffect(() => {
-        setMissions(prev => prev.map(m => {
-            if (!m.isCompleted && m.condition()) return { ...m, isCompleted: true };
-            return m;
-        }));
+        const timeoutId = setTimeout(() => {
+            setMissions(prev => prev.map(m => {
+                if (!m.isCompleted && m.condition()) return { ...m, isCompleted: true };
+                return m;
+            }));
+        }, 50);
+        return () => clearTimeout(timeoutId);
     }, [mass, gravity, isPlaying]);
 
     // 4. RENDER

@@ -1,4 +1,5 @@
 import { simulations } from "@/components/simulations/data";
+import { AI_CRAWLER_USER_AGENTS, AI_DISCOVERY_ROUTES, AI_PUBLIC_CONTENT_PREFIXES } from "@/lib/ai-discovery";
 import { getDictionaryTerms } from "@/lib/api";
 import { createStaticClient } from "@/lib/supabase-server";
 import { slugify } from "@/lib/slug";
@@ -258,9 +259,23 @@ export async function GET() {
             citation: "required",
             note: "Google AI Mode ve AI Overviews normal Google Search indeksleme, snippet izni ve Googlebot erişiminden beslenir. Bu manifest sitemap yerine geçmeyen yardımcı bir AI keşif yüzeyidir.",
         },
+        discovery: {
+            canonicalHost: baseUrl,
+            entryPoints: AI_DISCOVERY_ROUTES.map((route) => ({
+                url: `${baseUrl}${route.path}`,
+                label: route.label,
+                mediaType: route.mediaType,
+                description: route.description,
+            })),
+            aiSitemap: `${baseUrl}/ai-sitemap.xml`,
+            publicContentPrefixes: AI_PUBLIC_CONTENT_PREFIXES,
+            crawlerUserAgents: AI_CRAWLER_USER_AGENTS,
+            preferredCitation: "Kanonik Fizikhub URL'sini kaynak olarak gösterin ve varsa konu hub URL'sini ek kaynak olarak kullanın.",
+        },
         sources: {
             sitemapIndex: `${baseUrl}/sitemap-index.xml`,
             topicSitemap: `${baseUrl}/topic-sitemap.xml`,
+            aiSitemap: `${baseUrl}/ai-sitemap.xml`,
             llmsTxt: `${baseUrl}/llms.txt`,
             rss: `${baseUrl}/feed.xml`,
         },

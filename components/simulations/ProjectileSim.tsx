@@ -77,7 +77,10 @@ export function ProjectileSim({ simData }: { simData: any }) {
 
     useEffect(() => {
         if (!isPlaying) {
-            setTime(0);
+            const timeoutId = setTimeout(() => {
+                setTime(0);
+            }, 0);
+            return () => clearTimeout(timeoutId);
         }
     }, [velocity, angle, height, gravity, isPlaying]);
 
@@ -137,12 +140,15 @@ export function ProjectileSim({ simData }: { simData: any }) {
     ]);
 
     useEffect(() => {
-        setMissions(prev => prev.map(m => {
-            if (!m.isCompleted && m.condition()) {
-                return { ...m, isCompleted: true };
-            }
-            return m;
-        }));
+        const timeoutId = setTimeout(() => {
+            setMissions(prev => prev.map(m => {
+                if (!m.isCompleted && m.condition()) {
+                    return { ...m, isCompleted: true };
+                }
+                return m;
+            }));
+        }, 50);
+        return () => clearTimeout(timeoutId);
     }, [angle, time, timeOfFlight, maxHeight]);
 
     // -------------------------------------------------------------

@@ -10,6 +10,7 @@ const SITEMAPS = [
     "/forum-sitemap.xml",
     "/dictionary-sitemap.xml",
     "/news-sitemap.xml",
+    "/ai-sitemap.xml",
 ];
 
 export async function GET() {

@@ -61,30 +61,39 @@ export function ShyModeModal({ isOpen, onClose, user }: ShyModeModalProps) {
                     />
 
                     {/* Rain of Cats */}
-                    {cats.map((i) => (
-                        <motion.div
-                            key={i}
-                            initial={{ y: -100, x: Math.random() * 100 - 50 + "%", opacity: 0.8, rotate: Math.random() * 360 }}
-                            animate={{ y: "120vh", rotate: Math.random() * 720 }}
-                            transition={{
-                                duration: Math.random() * 2 + 3,
-                                repeat: Infinity,
-                                ease: "linear",
-                                delay: Math.random() * 2
-                            }}
-                            className="absolute top-0 pointer-events-none z-0"
-                            style={{ left: `${Math.random() * 100}%` }}
-                        >
-                            <div className="relative w-24 h-24 rounded-full overflow-hidden border-4 border-white/50 shadow-lg">
-                                <Image
-                                    src={catImages[i % catImages.length]}
-                                    alt="Falling Cat"
-                                    fill
-                                    className="object-cover"
-                                />
-                            </div>
-                        </motion.div>
-                    ))}
+                    {cats.map((i) => {
+                        const startX = ((i * 13) % 100) - 50;
+                        const startRotate = (i * 47) % 360;
+                        const animRotate = startRotate + 360 + ((i * 31) % 360);
+                        const duration = ((i * 7) % 3) + 3;
+                        const delay = ((i * 11) % 5) * 0.4;
+                        const leftPos = (i * 83) % 100;
+                        return (
+                            <motion.div
+                                key={i}
+                                initial={{ y: -120, x: `${startX}%`, opacity: 0.8, rotate: startRotate }}
+                                animate={{ y: "120vh", rotate: animRotate }}
+                                transition={{
+                                    duration: duration,
+                                    repeat: Infinity,
+                                    ease: "linear",
+                                    delay: delay
+                                }}
+                                className="absolute top-0 pointer-events-none z-0"
+                                style={{ left: `${leftPos}%` }}
+                            >
+                                <div className="relative w-24 h-24 rounded-full overflow-hidden border-4 border-white/50 shadow-lg">
+                                    <Image
+                                        src={catImages[i % catImages.length]}
+                                        alt="Falling Cat"
+                                        fill
+                                        className="object-cover"
+                                        unoptimized
+                                    />
+                                </div>
+                            </motion.div>
+                        );
+                    })}
 
                     <motion.div
                         initial={{ scale: 0.8, opacity: 0, y: 50 }}

@@ -1,7 +1,9 @@
 import { describe, expect, it } from "vitest";
 import robots from "@/app/robots";
+import { GET as aiSitemap } from "@/app/ai-sitemap.xml/route";
 import { GET as sitemapIndex } from "@/app/sitemap-index.xml/route";
 import { GET as topicSitemap } from "@/app/topic-sitemap.xml/route";
+import { AI_CRAWLER_USER_AGENTS } from "@/lib/ai-discovery";
 import { getVectorUrl } from "@/lib/search-results";
 import { getClusterResourceLinks, getPrimaryClusterHref, getTopicClusterBySlug, getTopicClusterHref, getTopicClustersForText, normalizeTopicSearchText, SEO_TOPIC_CLUSTERS } from "@/lib/seo-topic-clusters";
 import { isPrivateSeoPath } from "@/lib/seo-utils";
@@ -62,7 +64,20 @@ describe("SEO topic sitemap", () => {
         const sitemaps = Array.isArray(generated.sitemap) ? generated.sitemap : [generated.sitemap];
 
         expect(xmlLocs(xml)).toContain("https://www.fizikhub.com/topic-sitemap.xml");
+        expect(xmlLocs(xml)).toContain("https://www.fizikhub.com/ai-sitemap.xml");
         expect(sitemaps).toContain("https://www.fizikhub.com/topic-sitemap.xml");
+        expect(sitemaps).toContain("https://www.fizikhub.com/ai-sitemap.xml");
+    });
+
+    it("publishes a curated AI sitemap for answer-engine discovery", async () => {
+        const response = await aiSitemap();
+        const xml = await response.text();
+        const urls = xmlLocs(xml);
+
+        expect(response.headers.get("content-type")).toContain("application/xml");
+        expect(urls).toContain("https://www.fizikhub.com/konular/tyt-ayt-yks-fizik");
+        expect(urls).toContain("https://www.fizikhub.com/simulasyonlar/atis-hareketi");
+        expect(urls).toContain("https://www.fizikhub.com/forum");
     });
 });
 
@@ -74,10 +89,19 @@ describe("SEO robots and canonical boundaries", () => {
 
         const generated = robots();
         const rules = Array.isArray(generated.rules) ? generated.rules : [generated.rules];
+        const userAgents = rules
+            .flatMap((rule) => Array.isArray(rule.userAgent) ? rule.userAgent : [rule.userAgent])
+            .filter(Boolean);
         const disallowValues = rules
             .flatMap((rule) => Array.isArray(rule.disallow) ? rule.disallow : [rule.disallow])
             .filter(Boolean);
 
+        expect(userAgents).toEqual(expect.arrayContaining([
+            "OAI-SearchBot",
+            "Claude-SearchBot",
+            "PerplexityBot",
+        ]));
+        expect(AI_CRAWLER_USER_AGENTS).toContain("ChatGPT-User");
         expect(disallowValues).not.toContain("/kullanici/");
         expect(disallowValues).not.toEqual(expect.arrayContaining([
             "/login",

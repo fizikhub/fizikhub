@@ -17,7 +17,7 @@ export function SpringMassSim({ simData }: { simData: any }) {
     const [isPlaying, setIsPlaying] = useState(false);
     const [time, setTime] = useState(0);
     const unstretchedLength = 50;
-    const [y, setY] = useState(50);
+    const [y, setY] = useState(() => (2 * 9.81) / 20 + 30);
     const [velocity, setVelocity] = useState(0);
     const animationRef = useRef<number>(0);
     const lastTimeRef = useRef<number>(0);
@@ -56,8 +56,6 @@ export function SpringMassSim({ simData }: { simData: any }) {
         animationRef.current = requestAnimationFrame(loop);
         return () => { if (animationRef.current) cancelAnimationFrame(animationRef.current); };
     }, [isPlaying, springConstant, mass, damping, gravity]);
-
-    useEffect(() => { resetSim(); }, []);
 
     const canvasWidth = 800;
     const canvasHeight = 600;
