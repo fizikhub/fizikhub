@@ -18,10 +18,34 @@ export type AssistantResponse = {
 };
 
 const SYSTEM_PROMPTS = {
-    chat: `Sen FizikHub simülasyon alanının sanal fizik asistanısın. Görevin, kullanıcının o an kurduğu deney düzeneğine ve sorduğu sorulara göre bilimsel, heyecan verici ve sade açıklamalar yapmaktır. Akademik dili azaltıp akılda kalıcı benzetmeler kullan. Yanıtını Türkçe ver.`,
-    generate_mission: `Sen FizikHub laboratuvar şefisin. Görevin, kullanıcının o anki simülasyon parametrelerini analiz edip onlara tamamlamaları gereken deneysel bir görev vermektir. Görev, parametreleri değiştirmelerini ve sonucunu matematiksel/fiziksel olarak açıklamalarını istemelidir. Yanıtını Türkçe ver.`,
-    evaluate_answer: `Sen FizikHub laboratuvar şefisin. Kullanıcının deney görevi için verdiği cevabı ve o anki simülasyon durumunu incele. Cevap doğruysa "isCorrect": true yap, yapıcı geribildirim sağla ve 15 tecrübe puanı kazandır. Cevap eksik veya hatalıysa "isCorrect": false yap, doğrusunu açıklayan geribildirim ver ve 0 puan kazandır. Yanıtını Türkçe ve JSON formatında ver.`
+    chat: `Sen FizikHub simülasyon alanının sanal fizik asistanısın. Amacın cevabı öğrencinin yerine çözmek değil, onu gözlem, tahmin ve formül bağı kurmaya yönlendirmektir. Yanıtlarını Türkçe, kısa ve güvenilir ver. Önce mevcut parametrelerden bir fiziksel sezgi çıkar, sonra en fazla bir net formül veya kontrol sorusu öner. Öğrencinin ödevini doğrudan teslim edecek uzun çözüm yazma.`,
+    generate_mission: `Sen FizikHub laboratuvar şefisin. Kullanıcının o anki simülasyon parametrelerinden tek bir deney görevi üret. Görev; önce tahmin, sonra parametre değişimi, en sonda gözlemi fiziksel gerekçeyle savunma adımlarını içersin. Yanıtını Türkçe ver ve 120 kelimeyi geçme.`,
+    evaluate_answer: `Sen FizikHub laboratuvar şefisin. Kullanıcının deney görevi için verdiği cevabı ve o anki simülasyon durumunu incele. Cevap doğruysa "isCorrect": true yap, yapıcı geribildirim sağla ve 15 tecrübe puanı kazandır. Cevap eksik veya hatalıysa "isCorrect": false yap, ipucu ve doğru fiziksel gerekçeyi açıkla, 0 puan kazandır. Yanıtını Türkçe ve JSON formatında ver.`
 };
+
+const MAX_MESSAGE_LENGTH = 700;
+const MAX_ANSWER_LENGTH = 900;
+const MAX_PARAMETER_KEYS = 16;
+
+function compactText(value: string | undefined, maxLength: number) {
+    return (value || "").replace(/\s+/g, " ").trim().slice(0, maxLength);
+}
+
+function compactParameters(parameters: Record<string, unknown>) {
+    const compacted: Record<string, string | number | boolean> = {};
+
+    for (const [key, value] of Object.entries(parameters).slice(0, MAX_PARAMETER_KEYS)) {
+        if (typeof value === "number" && Number.isFinite(value)) {
+            compacted[key] = Number(value.toFixed(4));
+        } else if (typeof value === "boolean") {
+            compacted[key] = value;
+        } else if (typeof value === "string") {
+            compacted[key] = value.slice(0, 120);
+        }
+    }
+
+    return compacted;
+}
 
 export async function askAiAssistant(data: {
     simId: string;
@@ -36,11 +60,15 @@ export async function askAiAssistant(data: {
         return { text: "Yapay zeka sistemi şu an meşgul. Lütfen daha sonra deneyin." };
     }
 
-    const { simId, parameters, message, mode, userAnswer, missionQuestion } = data;
+    const { simId, parameters, mode } = data;
+    const message = compactText(data.message, MAX_MESSAGE_LENGTH);
+    const userAnswer = compactText(data.userAnswer, MAX_ANSWER_LENGTH);
+    const missionQuestion = compactText(data.missionQuestion, MAX_MESSAGE_LENGTH);
+    const safeParameters = compactParameters(parameters || {});
 
     const simContext = `
 SİMÜLASYON TÜRÜ: ${simId}
-ANLIK PARAMETRELER: ${JSON.stringify(parameters)}
+ANLIK PARAMETRELER: ${JSON.stringify(safeParameters)}
 `;
 
     try {
@@ -53,6 +81,10 @@ ANLIK PARAMETRELER: ${JSON.stringify(parameters)}
         });
 
         if (mode === "chat") {
+            if (!message) {
+                return { text: "Önce deneyle ilgili kısa bir soru yaz; ben de parametrelere bakıp seni doğru noktaya yönlendireyim." };
+            }
+
             const prompt = `${SYSTEM_PROMPTS.chat}\n\n${simContext}\n\nKullanıcı Sorusu: ${message}`;
             const result = await geminiModel.generateContent(prompt);
             return { text: result.response.text().trim() };
@@ -72,6 +104,17 @@ ANLIK PARAMETRELER: ${JSON.stringify(parameters)}
         }
 
         if (mode === "evaluate_answer") {
+            if (!userAnswer || !missionQuestion) {
+                return {
+                    text: "Değerlendirme için hem görev hem de cevabın gerekli.",
+                    evaluation: {
+                        isCorrect: false,
+                        feedback: "Önce görevi oluşturup gözlemini birkaç cümleyle yazmalısın.",
+                        pointsEarned: 0,
+                    },
+                };
+            }
+
             const prompt = `${SYSTEM_PROMPTS.evaluate_answer}
             
 ${simContext}

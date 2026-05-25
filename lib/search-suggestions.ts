@@ -1,5 +1,6 @@
 import { simulations } from "@/components/simulations/data";
 import { sanitizeSearchQuery } from "@/lib/security";
+import { simulationMatchesQuery } from "@/lib/simulation-learning";
 import { getTopicClusterHref, getTopicClustersForText, normalizeTopicSearchText } from "@/lib/seo-topic-clusters";
 import { getSiteUrl, truncateForMeta } from "@/lib/seo-utils";
 import { slugify } from "@/lib/slug";
@@ -126,16 +127,7 @@ function getStaticSuggestions(query: string) {
     if (lowerQuery.length < 2) return suggestions;
 
     for (const simulation of simulations) {
-        const haystack = normalizeTopicSearchText([
-            simulation.title,
-            simulation.description,
-            simulation.formula,
-            simulation.difficulty,
-            ...simulation.tags,
-            ...(simulation.seo?.keywords || []),
-        ].join(" "));
-
-        if (!haystack.includes(lowerQuery)) continue;
+        if (!simulationMatchesQuery(simulation, query)) continue;
 
         addSuggestion(suggestions, {
             type: "simulation",

@@ -1,5 +1,5 @@
 import { simulations } from "@/components/simulations/data";
-import { AI_CRAWLER_USER_AGENTS, AI_DISCOVERY_ROUTES, AI_PUBLIC_CONTENT_PREFIXES } from "@/lib/ai-discovery";
+import { AI_CRAWLER_USER_AGENTS, AI_DISCOVERY_LAST_MODIFIED, AI_DISCOVERY_ROUTES, AI_PUBLIC_CONTENT_PREFIXES } from "@/lib/ai-discovery";
 import { getDictionaryTerms } from "@/lib/api";
 import { createStaticClient } from "@/lib/supabase-server";
 import { slugify } from "@/lib/slug";
@@ -227,12 +227,12 @@ export async function GET() {
         url: `${baseUrl}/simulasyonlar/${sim.slug}`,
         canonicalPath: `/simulasyonlar/${sim.slug}`,
         title: sim.title,
-        description: truncateForMeta(`${sim.description} Temel formül: ${sim.formula}.`, 220),
-        topics: topicsFor("simulation", sim.slug, sim.tags),
-        intentQuestions: intentQuestionsForResource("simulation", sim.slug),
+        description: truncateForMeta(`${sim.description} Temel formül: ${sim.formula}. Öğrenme hedefi: ${sim.learning.outcome}`, 220),
+        topics: topicsFor("simulation", sim.slug, [...sim.tags, sim.learning.outcome]),
+        intentQuestions: unique([sim.learning.bigQuestion, sim.learning.quickCheck, ...intentQuestionsForResource("simulation", sim.slug)]).slice(0, 8),
         entityType: "interactive-simulation",
         contentFreshness: "evergreen" as const,
-        updatedAt: "2026-05-13T00:00:00.000+03:00",
+        updatedAt: AI_DISCOVERY_LAST_MODIFIED,
         language: "tr-TR",
         schemaTypes: ["LearningResource", "SoftwareApplication", "BreadcrumbList"],
         clusterSlugs: clusterSlugsForResource("simulation", sim.slug),
@@ -249,7 +249,7 @@ export async function GET() {
         intentQuestions: cluster.intentQuestions,
         entityType: "topic-cluster",
         contentFreshness: "evergreen",
-        updatedAt: "2026-05-13T00:00:00.000+03:00",
+        updatedAt: AI_DISCOVERY_LAST_MODIFIED,
         language: "tr-TR",
         schemaTypes: ["CollectionPage", "ItemList", "LearningResource", "FAQPage", "BreadcrumbList"],
         clusterSlugs: [cluster.slug],
@@ -315,6 +315,7 @@ export async function GET() {
             sitemapIndex: `${baseUrl}/sitemap-index.xml`,
             topicSitemap: `${baseUrl}/topic-sitemap.xml`,
             aiSitemap: `${baseUrl}/ai-sitemap.xml`,
+            simulationLearning: `${baseUrl}/simulation-learning.json`,
             authorSitemap: `${baseUrl}/author-sitemap.xml`,
             llmsTxt: `${baseUrl}/llms.txt`,
             rss: `${baseUrl}/feed.xml`,

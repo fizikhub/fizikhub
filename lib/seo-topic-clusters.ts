@@ -115,9 +115,9 @@ export const SEO_TOPIC_CLUSTERS: SeoTopicCluster[] = [
         aliases: ["Ohm yasası", "akım", "gerilim", "direnç"],
         intentQuestions: ["Ohm yasası nasıl kullanılır?", "Seri ve paralel devre farkı nedir?"],
         articleSlugs: [],
-        termSlugs: ["ohm-yasasi", "akim", "gerilim", "direnc"],
+        termSlugs: ["ohm-yasasi", "akim", "gerilim", "direnc", "seri-devre", "paralel-devre", "esdeger-direnc"],
         quizSlugs: [],
-        simulationSlugs: [],
+        simulationSlugs: ["ohm-devresi"],
     },
     {
         slug: "manyetizma",
@@ -180,7 +180,7 @@ export const SEO_TOPIC_CLUSTERS: SeoTopicCluster[] = [
         ],
         termSlugs: ["modern-fizik", "kuantum", "foton", "planck-sabiti"],
         quizSlugs: [],
-        simulationSlugs: ["dalga-girisimi"],
+        simulationSlugs: ["dalga-girisimi", "fotoelektrik-olay"],
     },
     {
         slug: "fotoelektrik-olay",
@@ -188,9 +188,9 @@ export const SEO_TOPIC_CLUSTERS: SeoTopicCluster[] = [
         aliases: ["foton", "eşik frekansı", "Einstein"],
         intentQuestions: ["Fotoelektrik olay nedir?", "Işık şiddeti elektron enerjisini neden artırmaz?"],
         articleSlugs: ["klasik-fizige-vurulan-ikinci-darbe-fotoelektrik-olay-1766621600619"],
-        termSlugs: ["fotoelektrik-olay", "foton", "esik-frekansi"],
+        termSlugs: ["fotoelektrik-olay", "foton", "esik-frekansi", "is-fonksiyonu", "durdurma-potansiyeli"],
         quizSlugs: [],
-        simulationSlugs: [],
+        simulationSlugs: ["fotoelektrik-olay"],
     },
     {
         slug: "kara-cisim-isimasi",
@@ -224,7 +224,7 @@ export const SEO_TOPIC_CLUSTERS: SeoTopicCluster[] = [
         ],
         termSlugs: ["kuantum", "belirsizlik-ilkesi", "superpozisyon", "dalga-fonksiyonu"],
         quizSlugs: [],
-        simulationSlugs: ["dalga-girisimi"],
+        simulationSlugs: ["dalga-girisimi", "fotoelektrik-olay"],
     },
     {
         slug: "parcacik-fizigi",

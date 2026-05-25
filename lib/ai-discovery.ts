@@ -65,6 +65,12 @@ export const AI_DISCOVERY_ROUTES: AiDiscoveryRoute[] = [
         description: "Kanonik URL, konu, sema tipi ve iliski verisi tasiyan makine okunabilir indeks.",
     },
     {
+        path: "/simulation-learning.json",
+        label: "Simulation learning graph",
+        mediaType: "application/json",
+        description: "Interaktif fizik simulasyonlari icin hedef, kontrol noktasi, kavram ve related URL grafigi.",
+    },
+    {
         path: "/ai-sitemap.xml",
         label: "AI sitemap",
         mediaType: "application/xml",

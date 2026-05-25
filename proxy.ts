@@ -29,6 +29,7 @@ const SEO_METADATA_PATHS = new Set([
     '/feed.xml',
     '/llms.txt',
     '/ai-index.json',
+    '/simulation-learning.json',
     '/opensearch.xml',
     '/opengraph-image',
 ]);

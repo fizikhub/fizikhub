@@ -6,7 +6,8 @@ import { sanitizeSearchQuery } from "@/lib/security";
 import { slugify } from "@/lib/slug";
 import { simulations } from "@/components/simulations/data";
 import { getVectorUrl, type VectorSearchRow } from "@/lib/search-results";
-import { getTopicClusterHref, getTopicClustersForText, normalizeTopicSearchText } from "@/lib/seo-topic-clusters";
+import { simulationMatchesQuery } from "@/lib/simulation-learning";
+import { getTopicClusterHref, getTopicClustersForText } from "@/lib/seo-topic-clusters";
 
 export type SearchResultType = "article" | "question" | "user" | "dictionary" | "quiz" | "simulation" | "topic";
 
@@ -239,7 +240,6 @@ export async function searchGlobal(rawQuery: string): Promise<SearchResult[]> {
         });
     }
 
-    const lowerQuery = normalizeTopicSearchText(query);
     for (const cluster of getTopicClustersForText(query, { limit: 8, minScore: 3 })) {
         addResult(results, {
             type: "topic",
@@ -256,16 +256,7 @@ export async function searchGlobal(rawQuery: string): Promise<SearchResult[]> {
     }
 
     for (const simulation of simulations) {
-        const haystack = normalizeTopicSearchText([
-            simulation.title,
-            simulation.description,
-            simulation.formula,
-            simulation.difficulty,
-            ...simulation.tags,
-            ...(simulation.seo?.keywords || []),
-        ].join(" "));
-
-        if (!haystack.includes(lowerQuery)) continue;
+        if (!simulationMatchesQuery(simulation, query)) continue;
 
         addResult(results, {
             type: "simulation",

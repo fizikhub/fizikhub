@@ -12,6 +12,7 @@ const noindexHeader = [
 const aiDiscoveryLinkHeader = [
   '<https://www.fizikhub.com/llms.txt>; rel="alternate"; type="text/plain"; title="Fizikhub LLM manifest"',
   '<https://www.fizikhub.com/ai-index.json>; rel="alternate"; type="application/json"; title="Fizikhub AI index"',
+  '<https://www.fizikhub.com/simulation-learning.json>; rel="alternate"; type="application/json"; title="Fizikhub simulation learning graph"',
   '<https://www.fizikhub.com/ai-sitemap.xml>; rel="sitemap"; type="application/xml"; title="Fizikhub AI sitemap"',
   '<https://www.fizikhub.com/author-sitemap.xml>; rel="sitemap"; type="application/xml"; title="Fizikhub author sitemap"',
 ].join(', ');

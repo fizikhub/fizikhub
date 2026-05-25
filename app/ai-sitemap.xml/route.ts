@@ -1,5 +1,5 @@
 import { simulations } from "@/components/simulations/data";
-import { AI_CORE_ROUTES, AI_DISCOVERY_LAST_MODIFIED } from "@/lib/ai-discovery";
+import { AI_CORE_ROUTES, AI_DISCOVERY_LAST_MODIFIED, AI_DISCOVERY_ROUTES } from "@/lib/ai-discovery";
 import { getDictionaryTerms } from "@/lib/api";
 import { escapeXml } from "@/lib/xml";
 import { slugify } from "@/lib/slug";
@@ -130,6 +130,12 @@ export async function GET() {
         priority: route.priority,
     }));
 
+    const discoveryEntries = AI_DISCOVERY_ROUTES.map((route) => entry(baseUrl, route.path, {
+        lastmod: AI_DISCOVERY_LAST_MODIFIED,
+        changefreq: "weekly",
+        priority: "0.80",
+    }));
+
     const topicEntries = SEO_TOPIC_CLUSTERS.map((cluster) => entry(baseUrl, getTopicClusterHref(cluster), {
         lastmod: AI_DISCOVERY_LAST_MODIFIED,
         changefreq: "weekly",
@@ -145,6 +151,7 @@ export async function GET() {
     const dynamicEntries = await getDynamicEntries(baseUrl);
     const urls = uniqueEntries([
         ...coreEntries,
+        ...discoveryEntries,
         ...topicEntries,
         ...simulationEntries,
         ...dynamicEntries,

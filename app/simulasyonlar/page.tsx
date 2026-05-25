@@ -2,22 +2,39 @@
 
 import { useState, useEffect } from "react";
 import { m as motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, Play, Search, Zap, Beaker } from "lucide-react";
+import { ArrowLeft, Play, Search, Zap, Beaker, BookOpen, Clock3, Compass, ListChecks } from "lucide-react";
 import { ViewTransitionLink } from "@/components/ui/view-transition-link";
 import { cn } from "@/lib/utils";
 import { simulations } from "@/components/simulations/data";
 import { TutorialOverlay, TutorialStep } from "@/components/ui/tutorial-overlay";
+import { getRecommendedSimulationPath, getSimulationLearningSummary, simulationMatchesQuery } from "@/lib/simulation-learning";
+import { useSimulationProgress } from "@/hooks/use-simulation-progress";
+import { getSimulationProgressState } from "@/lib/simulation-progress";
 
 export default function SimulasyonlarPage() {
     const [filter, setFilter] = useState("Tümü");
     const [search, setSearch] = useState("");
     const [showTutorial, setShowTutorial] = useState(false);
+    const { store } = useSimulationProgress();
+    const summary = getSimulationLearningSummary(simulations);
+    const recommendedPath = getRecommendedSimulationPath(simulations).slice(0, 4);
+    const completedCount = simulations.filter((sim) => getSimulationProgressState(store[sim.slug], sim.learning.checkpoints.length).completed).length;
+    const inProgressCount = simulations.filter((sim) => {
+        const progress = getSimulationProgressState(store[sim.slug], sim.learning.checkpoints.length);
+        return !progress.completed && progress.checkedCount > 0;
+    }).length;
+    const filterTabs = [
+        "Tümü",
+        "Kolay",
+        "Orta",
+        "Zor",
+        ...summary.popularTags.filter((tag) => !["Kolay", "Orta", "Zor"].includes(tag)).slice(0, 5),
+    ];
 
     // Filter simulations
     const filteredSims = simulations.filter(sim => {
         const matchesFilter = filter === "Tümü" || sim.difficulty === filter || sim.tags.includes(filter);
-        const matchesSearch = sim.title.toLowerCase().includes(search.toLowerCase()) ||
-            sim.description.toLowerCase().includes(search.toLowerCase());
+        const matchesSearch = simulationMatchesQuery(sim, search);
         return matchesFilter && matchesSearch;
     });
 
@@ -103,6 +120,77 @@ export default function SimulasyonlarPage() {
             </div>
 
             <main className="max-w-[1400px] mx-auto px-4 py-8 md:py-12 relative z-10">
+                {/* Learning Route */}
+                <section className="mb-8 grid gap-4 lg:grid-cols-[1.05fr_0.95fr]" aria-labelledby="learning-route-title">
+                    <div className="rounded-[8px] border-[3px] border-black bg-white p-5 shadow-[5px_5px_0px_0px_#000] dark:bg-[#27272a]">
+                        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                            <div>
+                                <div className="mb-3 inline-flex items-center gap-2 rounded-[6px] border-2 border-black bg-[#FFBD2E] px-3 py-1 text-[10px] font-black uppercase tracking-widest text-black shadow-[2px_2px_0px_0px_#000]">
+                                    <Compass className="h-3.5 w-3.5" />
+                                    FizikHub öğrenme rotası
+                                </div>
+                                <h2 id="learning-route-title" className="max-w-2xl text-2xl font-black uppercase leading-tight tracking-tight text-black dark:text-zinc-50 sm:text-3xl">
+                                    Önce tahmin et, sonra değişkeni oynat, en sonda cevabı savun.
+                                </h2>
+                                <p className="mt-3 max-w-3xl text-sm font-bold leading-7 text-neutral-600 dark:text-zinc-300">
+                                    Simülasyonlar artık sadece görsel deney değil; her deneyin merak sorusu, kontrol listesi, hızlı ölçme sorusu ve devam kaynağı var.
+                                </p>
+                            </div>
+
+                            <div className="grid min-w-[260px] grid-cols-4 gap-2 text-center">
+                                <div className="rounded-[7px] border-2 border-black bg-neutral-50 px-2 py-3 dark:bg-[#18181b]">
+                                    <div className="text-xl font-black text-black dark:text-white">{summary.totalSimulations}</div>
+                                    <div className="text-[9px] font-black uppercase tracking-widest text-neutral-500 dark:text-zinc-400">Deney</div>
+                                </div>
+                                <div className="rounded-[7px] border-2 border-black bg-neutral-50 px-2 py-3 dark:bg-[#18181b]">
+                                    <div className="text-xl font-black text-black dark:text-white">{summary.totalMinutes}</div>
+                                    <div className="text-[9px] font-black uppercase tracking-widest text-neutral-500 dark:text-zinc-400">Dakika</div>
+                                </div>
+                                <div className="rounded-[7px] border-2 border-black bg-neutral-50 px-2 py-3 dark:bg-[#18181b]">
+                                    <div className="text-xl font-black text-black dark:text-white">{summary.difficultyCounts.Kolay}</div>
+                                    <div className="text-[9px] font-black uppercase tracking-widest text-neutral-500 dark:text-zinc-400">Başlangıç</div>
+                                </div>
+                                <div className="rounded-[7px] border-2 border-black bg-neutral-50 px-2 py-3 dark:bg-[#18181b]">
+                                    <div className="text-xl font-black text-black dark:text-white">{completedCount || inProgressCount}</div>
+                                    <div className="text-[9px] font-black uppercase tracking-widest text-neutral-500 dark:text-zinc-400">
+                                        {completedCount > 0 ? "Biten" : "Devam"}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="rounded-[8px] border-[3px] border-black bg-[#111] p-5 text-white shadow-[5px_5px_0px_0px_#000]">
+                        <div className="mb-4 flex items-center justify-between gap-3">
+                            <div>
+                                <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Bugünkü kısa rota</p>
+                                <h2 className="mt-1 text-xl font-black uppercase tracking-tight">4 deneylik ısınma</h2>
+                            </div>
+                            <BookOpen className="h-6 w-6 text-[#FFBD2E]" />
+                        </div>
+                        <div className="grid gap-2">
+                            {recommendedPath.map((item) => (
+                                <ViewTransitionLink
+                                    key={item.simulation.id}
+                                    href={`/simulasyonlar/${item.simulation.slug}`}
+                                    className="group grid grid-cols-[2rem_1fr_auto] items-center gap-3 rounded-[7px] border-2 border-zinc-700 bg-zinc-950 px-3 py-3 transition-colors hover:border-[#FFBD2E]"
+                                >
+                                    <span className="flex h-8 w-8 items-center justify-center rounded-[6px] border-2 border-black bg-[#FFBD2E] text-xs font-black text-black">
+                                        {item.step}
+                                    </span>
+                                    <span className="min-w-0">
+                                        <span className="block truncate text-sm font-black uppercase tracking-tight">{item.simulation.title}</span>
+                                        <span className="block truncate text-[11px] font-bold text-zinc-500">{item.reason}</span>
+                                    </span>
+                                    <span className="inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-widest text-zinc-400">
+                                        <Clock3 className="h-3 w-3" />
+                                        {item.simulation.learning.estimatedMinutes} dk
+                                    </span>
+                                </ViewTransitionLink>
+                            ))}
+                        </div>
+                    </div>
+                </section>
                 
                 {/* Search & Filters */}
                 <div id="sims-filters" className="flex flex-col lg:flex-row gap-5 mb-10">
@@ -126,7 +214,7 @@ export default function SimulasyonlarPage() {
                     </div>
 
                     <div className="flex gap-2 overflow-x-auto pb-4 lg:pb-0 no-scrollbar items-center px-1">
-                        {["Tümü", "Kolay", "Orta", "Zor", "Mekanik", "Optik"].map(tab => {
+                        {filterTabs.map(tab => {
                             const isActive = filter === tab;
                             return (
                                 <button
@@ -149,7 +237,10 @@ export default function SimulasyonlarPage() {
                 {/* Grid */}
                 <div id="sims-grid" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 auto-rows-fr">
                     <AnimatePresence mode="popLayout">
-                        {filteredSims.map((sim) => (
+                        {filteredSims.map((sim) => {
+                            const progress = getSimulationProgressState(store[sim.slug], sim.learning.checkpoints.length);
+
+                            return (
                             <motion.div
                                 key={sim.id}
                                 layout
@@ -189,7 +280,7 @@ export default function SimulasyonlarPage() {
                                             sim.difficulty === "Orta" && "bg-orange-400 text-black border-black shadow-[1px_1px_0px_0px_#000]",
                                             sim.difficulty === "Kolay" && "bg-green-400 text-black border-black shadow-[1px_1px_0px_0px_#000]"
                                         )}>
-                                            {sim.difficulty === "Zor" ? "HARDCORE" : sim.difficulty}
+                                            {progress.completed ? "TAMAMLANDI" : sim.difficulty === "Zor" ? "HARDCORE" : sim.difficulty}
                                         </div>
                                     </div>
 
@@ -213,6 +304,32 @@ export default function SimulasyonlarPage() {
                                             {sim.description}
                                         </p>
 
+                                        <div className="rounded-[7px] border-2 border-black/10 bg-neutral-50 p-3 dark:border-white/10 dark:bg-black/30">
+                                            <div className="mb-1 flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-neutral-500 dark:text-zinc-500">
+                                                <BookOpen className="h-3.5 w-3.5" />
+                                                Merak sorusu
+                                            </div>
+                                            <p className="line-clamp-2 text-xs font-black leading-5 text-black dark:text-zinc-100">
+                                                {sim.learning.bigQuestion}
+                                            </p>
+                                        </div>
+
+                                        {progress.checkedCount > 0 || progress.completed ? (
+                                            <div className="rounded-[7px] border-2 border-black/10 bg-neutral-50 p-3 dark:border-white/10 dark:bg-black/30">
+                                                <div className="mb-2 flex items-center justify-between gap-2">
+                                                    <span className="text-[10px] font-black uppercase tracking-widest text-neutral-500 dark:text-zinc-500">
+                                                        İlerleme
+                                                    </span>
+                                                    <span className="text-[10px] font-black uppercase tracking-widest text-black dark:text-zinc-100">
+                                                        {progress.percent}%
+                                                    </span>
+                                                </div>
+                                                <div className="h-2 overflow-hidden rounded-full border border-black/20 bg-white dark:border-white/10 dark:bg-zinc-950">
+                                                    <div className="h-full rounded-full bg-[#FFBD2E]" style={{ width: `${progress.percent}%` }} />
+                                                </div>
+                                            </div>
+                                        ) : null}
+
                                         {/* Spacer to push footer down */}
                                         <div className="mt-auto"></div>
 
@@ -229,6 +346,11 @@ export default function SimulasyonlarPage() {
                                                 </span>
                                             </div>
 
+                                            <div className="hidden items-center gap-1 rounded-md bg-neutral-100 px-2 py-1.5 text-[10px] font-black uppercase tracking-widest text-neutral-600 dark:bg-black/50 dark:text-zinc-400 sm:flex">
+                                                <ListChecks className="h-3.5 w-3.5" />
+                                                {sim.learning.checkpoints.length}
+                                            </div>
+
                                             {/* Action Button */}
                                             <div className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-lg border-[3px] border-black bg-white dark:bg-[#18181b] text-black dark:text-white group-hover:bg-[#FFBD2E] group-hover:text-black transition-all shadow-[2px_2px_0px_0px_#000] group-hover:shadow-[1px_1px_0px_0px_#000] group-hover:translate-x-[1px] group-hover:translate-y-[1px]">
                                                 <Play className="w-4 h-4 sm:w-5 sm:h-5 stroke-[3px]" />
@@ -238,7 +360,8 @@ export default function SimulasyonlarPage() {
                                     
                                 </ViewTransitionLink>
                             </motion.div>
-                        ))}
+                            );
+                        })}
 
                         {filteredSims.length === 0 && (
                             <motion.div

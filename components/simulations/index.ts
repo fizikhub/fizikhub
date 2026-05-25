@@ -4,3 +4,5 @@ export { WaveSim } from "./WaveSim";
 export { ProjectileSim } from "./ProjectileSim";
 export { ElectricFieldSim } from "./ElectricFieldSim";
 export { ParticleCollisionSim } from "./ParticleCollisionSim";
+export { OhmCircuitSim } from "./OhmCircuitSim";
+export { PhotoelectricSim } from "./PhotoelectricSim";

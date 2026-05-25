@@ -18,9 +18,17 @@ type Message = {
     isMission?: boolean;
 };
 
+const MAX_CHAT_INPUT_LENGTH = 700;
+const MAX_MISSION_ANSWER_LENGTH = 900;
+const SUGGESTED_PROMPTS = [
+    "Bu parametrelerde önce neyi gözlemlemeliyim?",
+    "Bir değişkeni değiştirip tahmin yapmamı sağla.",
+    "Bu deneydeki formülü sezgisel açıkla.",
+];
+
 export function AiAssistant({ simId, parameters, color = "#FFBD2E" }: AiAssistantProps) {
     const [messages, setMessages] = useState<Message[]>([
-        { sender: "ai", text: `FizikHub Yapay Zeka Laboratuvarına hoş geldin! Ben senin sanal asistanınım. Şu anki deney parametrelerini okuyabiliyorum. Bana sistem hakkında soru sorabilir veya sana özel bir deney görevi üretmemi isteyebilirsin! 🚀` }
+        { sender: "ai", text: "FizikHub Yapay Zeka Laboratuvarına hoş geldin. Şu anki deney parametrelerini okuyabiliyorum; sana doğrudan cevabı ezberletmek yerine tahmin, gözlem ve formül bağı kurduracağım." }
     ]);
     const [inputValue, setInputValue] = useState("");
     const [isLoading, setIsLoading] = useState(false);
@@ -36,11 +44,11 @@ export function AiAssistant({ simId, parameters, color = "#FFBD2E" }: AiAssistan
         chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [messages, isLoading]);
 
-    const handleSendMessage = async (e?: React.FormEvent) => {
+    const handleSendMessage = async (e?: React.FormEvent, promptText?: string) => {
         if (e) e.preventDefault();
-        if (!inputValue.trim() || isLoading) return;
+        const text = (promptText || inputValue).trim().slice(0, MAX_CHAT_INPUT_LENGTH);
+        if (!text || isLoading) return;
 
-        const text = inputValue.trim();
         setInputValue("");
         setMessages(prev => [...prev, { sender: "user", text }]);
         setIsLoading(true);
@@ -78,7 +86,7 @@ export function AiAssistant({ simId, parameters, color = "#FFBD2E" }: AiAssistan
                     ...prev,
                     { sender: "ai", text: `YENİ GÖREV OLUŞTURULDU: \n\n${response.mission!.question}`, isMission: true }
                 ]);
-                toast.success("Deney görevi oluşturuldu! 🎉");
+                toast.success("Deney görevi oluşturuldu.");
             }
         } catch {
             toast.error("Görev oluşturulamadı.");
@@ -109,7 +117,7 @@ export function AiAssistant({ simId, parameters, color = "#FFBD2E" }: AiAssistan
                 ]);
 
                 if (response.evaluation.isCorrect) {
-                    toast.success(`Tebrikler! ${response.evaluation.pointsEarned} İtibar Puanı Kazandın! 🏆`);
+                    toast.success(`Tebrikler! ${response.evaluation.pointsEarned} itibar puanı kazandın.`);
                     setActiveMission(null);
                     setUserAnswer("");
                 } else {
@@ -179,8 +187,9 @@ export function AiAssistant({ simId, parameters, color = "#FFBD2E" }: AiAssistan
                             type="text"
                             placeholder="Gözlemini ve açıklamanı buraya yaz..."
                             value={userAnswer}
-                            onChange={(e) => setUserAnswer(e.target.value)}
+                            onChange={(e) => setUserAnswer(e.target.value.slice(0, MAX_MISSION_ANSWER_LENGTH))}
                             disabled={isLoading}
+                            maxLength={MAX_MISSION_ANSWER_LENGTH}
                             className="flex-1 h-11 bg-black border-2 border-black rounded-lg px-3 text-xs sm:text-sm font-bold text-white placeholder:text-zinc-600 focus:outline-none focus:border-blue-500"
                         />
                         <button
@@ -196,23 +205,39 @@ export function AiAssistant({ simId, parameters, color = "#FFBD2E" }: AiAssistan
 
             {/* Chat Input Area */}
             {!activeMission && (
-                <form onSubmit={handleSendMessage} className="p-3 bg-zinc-900 border-t-[3px] border-black flex gap-2">
-                    <input
-                        type="text"
-                        placeholder="Yerçekimini azaltırsam ne olur?..."
-                        value={inputValue}
-                        onChange={(e) => setInputValue(e.target.value)}
-                        disabled={isLoading}
-                        className="flex-1 h-11 bg-black border-2 border-black rounded-lg px-3 text-xs sm:text-sm font-bold text-white placeholder:text-zinc-600 focus:outline-none focus:border-[#FFBD2E]"
-                    />
-                    <button
-                        type="submit"
-                        disabled={isLoading || !inputValue.trim()}
-                        className="w-11 h-11 bg-[#FFBD2E] text-black font-black border-2 border-black rounded-lg flex items-center justify-center shadow-[2px_2px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_#000] disabled:opacity-50 transition-all cursor-pointer"
-                    >
-                        <Send className="w-4 h-4 stroke-[3px]" />
-                    </button>
-                </form>
+                <div className="bg-zinc-900 border-t-[3px] border-black">
+                    <div className="flex gap-2 overflow-x-auto px-3 pt-3 pb-1 no-scrollbar">
+                        {SUGGESTED_PROMPTS.map((prompt) => (
+                            <button
+                                key={prompt}
+                                type="button"
+                                onClick={() => handleSendMessage(undefined, prompt)}
+                                disabled={isLoading}
+                                className="shrink-0 rounded-md border-2 border-black bg-zinc-800 px-3 py-2 text-[10px] font-black uppercase tracking-wider text-zinc-200 shadow-[2px_2px_0px_#000] transition-all hover:bg-zinc-700 disabled:opacity-50"
+                            >
+                                {prompt}
+                            </button>
+                        ))}
+                    </div>
+                    <form onSubmit={handleSendMessage} className="p-3 flex gap-2">
+                        <input
+                            type="text"
+                            placeholder="Yerçekimini azaltırsam ne olur?..."
+                            value={inputValue}
+                            onChange={(e) => setInputValue(e.target.value.slice(0, MAX_CHAT_INPUT_LENGTH))}
+                            disabled={isLoading}
+                            maxLength={MAX_CHAT_INPUT_LENGTH}
+                            className="flex-1 h-11 bg-black border-2 border-black rounded-lg px-3 text-xs sm:text-sm font-bold text-white placeholder:text-zinc-600 focus:outline-none focus:border-[#FFBD2E]"
+                        />
+                        <button
+                            type="submit"
+                            disabled={isLoading || !inputValue.trim()}
+                            className="w-11 h-11 bg-[#FFBD2E] text-black font-black border-2 border-black rounded-lg flex items-center justify-center shadow-[2px_2px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_#000] disabled:opacity-50 transition-all cursor-pointer"
+                        >
+                            <Send className="w-4 h-4 stroke-[3px]" />
+                        </button>
+                    </form>
+                </div>
             )}
         </div>
     );

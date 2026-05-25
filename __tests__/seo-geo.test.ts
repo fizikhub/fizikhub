@@ -5,7 +5,7 @@ import { GET as authorSitemap } from "@/app/author-sitemap.xml/route";
 import { GET as openSearchDescriptor } from "@/app/opensearch.xml/route";
 import { GET as sitemapIndex } from "@/app/sitemap-index.xml/route";
 import { GET as topicSitemap } from "@/app/topic-sitemap.xml/route";
-import { AI_CRAWLER_USER_AGENTS } from "@/lib/ai-discovery";
+import { AI_CRAWLER_USER_AGENTS, AI_DISCOVERY_ROUTES } from "@/lib/ai-discovery";
 import { isKnownAiCrawlerUserAgent } from "@/lib/ai-discovery";
 import { getVectorUrl } from "@/lib/search-results";
 import { getClusterResourceLinks, getPrimaryClusterHref, getTopicClusterBySlug, getTopicClusterHref, getTopicClustersForText, normalizeTopicSearchText, SEO_TOPIC_CLUSTERS } from "@/lib/seo-topic-clusters";
@@ -83,6 +83,7 @@ describe("SEO topic sitemap", () => {
         expect(response.headers.get("content-type")).toContain("application/xml");
         expect(urls).toContain("https://www.fizikhub.com/konular/tyt-ayt-yks-fizik");
         expect(urls).toContain("https://www.fizikhub.com/simulasyonlar/atis-hareketi");
+        expect(urls).toContain("https://www.fizikhub.com/simulation-learning.json");
         expect(urls).toContain("https://www.fizikhub.com/forum");
     });
 
@@ -124,6 +125,9 @@ describe("SEO robots and canonical boundaries", () => {
         const disallowValues = rules
             .flatMap((rule) => Array.isArray(rule.disallow) ? rule.disallow : [rule.disallow])
             .filter(Boolean);
+        const allowValues = rules
+            .flatMap((rule) => Array.isArray(rule.allow) ? rule.allow : [rule.allow])
+            .filter(Boolean);
 
         expect(userAgents).toEqual(expect.arrayContaining([
             "OAI-SearchBot",
@@ -131,6 +135,8 @@ describe("SEO robots and canonical boundaries", () => {
             "PerplexityBot",
         ]));
         expect(AI_CRAWLER_USER_AGENTS).toContain("ChatGPT-User");
+        expect(AI_DISCOVERY_ROUTES.map((route) => route.path)).toContain("/simulation-learning.json");
+        expect(allowValues).toContain("/simulation-learning.json");
         expect(disallowValues).not.toContain("/kullanici/");
         expect(disallowValues).not.toEqual(expect.arrayContaining([
             "/login",
