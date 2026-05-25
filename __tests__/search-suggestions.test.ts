@@ -1,13 +1,28 @@
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { GET as suggestionsRoute } from "@/app/api/search/suggestions/route";
 import {
     buildOpenSearchSuggestions,
+    mapSearchSuggestionRpcRows,
     MAX_SEARCH_SUGGESTIONS,
     normalizeSuggestionQuery,
     type SearchSuggestion,
 } from "@/lib/search-suggestions";
 
 describe("search suggestions helpers", () => {
+    it("ships the SQL RPC migration required for low-latency database suggestions", () => {
+        const sql = readFileSync(
+            join(process.cwd(), "supabase/migrations/20260525163000_search_suggestions_rpc.sql"),
+            "utf8",
+        );
+
+        expect(sql).toContain("CREATE OR REPLACE FUNCTION public.search_suggestions");
+        expect(sql).toContain("GRANT EXECUTE ON FUNCTION public.search_suggestions(text, integer) TO anon, authenticated, service_role");
+        expect(sql).toContain("SECURITY DEFINER");
+        expect(sql).toContain("CREATE EXTENSION IF NOT EXISTS pg_trgm");
+    });
+
     it("serves a noindex OpenSearch suggestion response from the route", async () => {
         const response = await suggestionsRoute(new Request("https://www.fizikhub.com/api/search/suggestions?q=x"));
         const payload = await response.json();
@@ -37,6 +52,35 @@ describe("search suggestions helpers", () => {
             ["Kuantum fiziği"],
             ["Kuantum fiziği konu rehberi"],
             ["https://www.fizikhub.com/konular/kuantum-fizigi"],
+        ]);
+    });
+
+    it("maps only valid database RPC rows into public suggestions", () => {
+        expect(mapSearchSuggestionRpcRows([
+            {
+                source_type: "article",
+                title: "Kara cisim ışıması",
+                description: "Planck sabiti ve modern fiziğe geçiş",
+                url: "/makale/kara-cisim-isimasi",
+                rank_score: 91,
+            },
+            {
+                source_type: "private_note",
+                title: "Admin taslağı",
+                url: "/admin",
+            },
+            {
+                source_type: "quiz",
+                title: null,
+                url: "/testler/kuvvet",
+            },
+        ])).toEqual([
+            {
+                type: "article",
+                title: "Kara cisim ışıması",
+                description: "Planck sabiti ve modern fiziğe geçiş",
+                url: "/makale/kara-cisim-isimasi",
+            },
         ]);
     });
 

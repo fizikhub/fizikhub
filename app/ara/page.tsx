@@ -32,6 +32,12 @@ const suggestedSearches = [
     "Newton yasaları",
 ];
 
+type QuickSuggestion = {
+    title: string;
+    description?: string;
+    url: string;
+};
+
 const typeLabels: Record<SearchResultType, string> = {
     article: "Makale",
     question: "Forum",
@@ -69,9 +75,23 @@ function getInitialQuery() {
     return new URLSearchParams(window.location.search).get("q") || "";
 }
 
+function toInternalSuggestionUrl(value: string) {
+    try {
+        const url = new URL(value);
+        if (url.hostname === "fizikhub.com" || url.hostname === "www.fizikhub.com") {
+            return `${url.pathname}${url.search}${url.hash}`;
+        }
+    } catch {
+        return value;
+    }
+
+    return value;
+}
+
 export default function SearchPage() {
     const [query, setQuery] = useState(getInitialQuery);
     const [results, setResults] = useState<SearchResult[]>([]);
+    const [quickSuggestions, setQuickSuggestions] = useState<QuickSuggestion[]>([]);
     const [loading, setLoading] = useState(false);
     const [hasSearched, setHasSearched] = useState(false);
     const debouncedQuery = useDebounce(query, 300);
@@ -111,6 +131,59 @@ export default function SearchPage() {
 
         return () => {
             ignore = true;
+        };
+    }, [trimmedQuery]);
+
+    useEffect(() => {
+        let ignore = false;
+        const controller = new AbortController();
+
+        if (trimmedQuery.length < 2) {
+            queueMicrotask(() => {
+                if (!ignore) setQuickSuggestions([]);
+            });
+            return () => {
+                ignore = true;
+                controller.abort();
+            };
+        }
+
+        fetch(`/api/search/suggestions?q=${encodeURIComponent(trimmedQuery)}`, {
+            signal: controller.signal,
+            headers: { Accept: "application/x-suggestions+json" },
+        })
+            .then((response) => response.ok ? response.json() : null)
+            .then((payload) => {
+                if (ignore) return;
+                if (!Array.isArray(payload)) {
+                    setQuickSuggestions([]);
+                    return;
+                }
+
+                const titles = Array.isArray(payload[1]) ? payload[1] : [];
+                const descriptions = Array.isArray(payload[2]) ? payload[2] : [];
+                const urls = Array.isArray(payload[3]) ? payload[3] : [];
+
+                const nextSuggestions = titles
+                    .map((title, index) => ({
+                        title: typeof title === "string" ? title : "",
+                        description: typeof descriptions[index] === "string" ? descriptions[index] : undefined,
+                        url: typeof urls[index] === "string" ? toInternalSuggestionUrl(urls[index]) : "",
+                    }))
+                    .filter((suggestion) => suggestion.title && suggestion.url)
+                    .slice(0, 5);
+
+                setQuickSuggestions(nextSuggestions);
+            })
+            .catch((error) => {
+                if (error instanceof DOMException && error.name === "AbortError") return;
+                console.error("Search suggestions failed:", error);
+                if (!ignore) setQuickSuggestions([]);
+            });
+
+        return () => {
+            ignore = true;
+            controller.abort();
         };
     }, [trimmedQuery]);
 
@@ -184,6 +257,37 @@ export default function SearchPage() {
                             <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
                         </button>
                     </form>
+
+                    {quickSuggestions.length > 0 && (
+                        <div
+                            data-testid="quick-search-suggestions"
+                            className="relative mt-4 rounded-xl border-[3px] border-black bg-card p-2 shadow-[4px_4px_0px_#000]"
+                        >
+                            {quickSuggestions.map((suggestion) => (
+                                <Link
+                                    key={suggestion.url}
+                                    data-testid="quick-search-suggestion"
+                                    href={suggestion.url}
+                                    className="group flex items-center gap-3 rounded-lg px-3 py-2.5 transition-colors hover:bg-[#FFD100] hover:text-black"
+                                >
+                                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md border-2 border-black bg-[#00F5D4] text-black shadow-[2px_2px_0px_#000]">
+                                        <Search className="h-4 w-4 stroke-[3px]" />
+                                    </div>
+                                    <div className="min-w-0 flex-1 text-left">
+                                        <p className="truncate text-sm font-black text-foreground group-hover:text-black">
+                                            {suggestion.title}
+                                        </p>
+                                        {suggestion.description && (
+                                            <p className="truncate text-xs font-semibold text-muted-foreground group-hover:text-black/70">
+                                                {suggestion.description}
+                                            </p>
+                                        )}
+                                    </div>
+                                    <ArrowRight className="h-4 w-4 shrink-0 opacity-50 transition-transform group-hover:translate-x-1 group-hover:opacity-100" />
+                                </Link>
+                            ))}
+                        </div>
+                    )}
                 </motion.div>
 
                 <motion.div

@@ -45,6 +45,28 @@ type QuizSuggestionRow = {
     description: string | null;
 };
 
+type SearchSuggestionRpcRow = {
+    source_type: unknown;
+    title: unknown;
+    description: unknown;
+    url: unknown;
+};
+
+type PublicSupabaseClient = ReturnType<typeof createStaticClient>;
+
+const SEARCH_SUGGESTION_TYPES = new Set<SearchSuggestionType>([
+    "article",
+    "question",
+    "dictionary",
+    "quiz",
+    "simulation",
+    "topic",
+]);
+
+function isSearchSuggestionType(value: unknown): value is SearchSuggestionType {
+    return typeof value === "string" && SEARCH_SUGGESTION_TYPES.has(value as SearchSuggestionType);
+}
+
 function toSnippet(value: string | null | undefined, maxLength = 120) {
     if (!value) return undefined;
 
@@ -68,6 +90,21 @@ function toAbsoluteSuggestionUrl(url: string, baseUrl: string) {
 function addSuggestion(suggestions: SearchSuggestion[], suggestion: SearchSuggestion) {
     const exists = suggestions.some((item) => item.url === suggestion.url || item.title === suggestion.title);
     if (!exists) suggestions.push(suggestion);
+}
+
+export function mapSearchSuggestionRpcRows(rows: unknown[]): SearchSuggestion[] {
+    return rows.flatMap((row) => {
+        const suggestion = row as SearchSuggestionRpcRow;
+        if (!isSearchSuggestionType(suggestion.source_type)) return [];
+        if (typeof suggestion.title !== "string" || typeof suggestion.url !== "string") return [];
+
+        return [{
+            type: suggestion.source_type,
+            title: suggestion.title,
+            description: typeof suggestion.description === "string" ? toSnippet(suggestion.description) : undefined,
+            url: suggestion.url,
+        }];
+    });
 }
 
 function getStaticSuggestions(query: string) {
@@ -130,6 +167,105 @@ export function buildOpenSearchSuggestions(
     ];
 }
 
+async function fetchRpcSuggestions(
+    supabase: PublicSupabaseClient,
+    query: string,
+    limit: number,
+): Promise<SearchSuggestion[] | null> {
+    const rpcClient = supabase as unknown as {
+        rpc: (
+            fn: "search_suggestions",
+            args: { search_text: string; match_count: number },
+        ) => Promise<{ data: unknown; error: unknown }>;
+    };
+
+    const { data, error } = await rpcClient.rpc("search_suggestions", {
+        search_text: query,
+        match_count: limit,
+    });
+
+    if (error || !Array.isArray(data)) return null;
+    return mapSearchSuggestionRpcRows(data);
+}
+
+async function fetchFallbackDatabaseSuggestions(
+    supabase: PublicSupabaseClient,
+    query: string,
+): Promise<SearchSuggestion[]> {
+    const suggestions: SearchSuggestion[] = [];
+    const searchTerm = buildSearchTerm(query);
+
+    const [articlesRes, questionsRes, dictionaryRes, quizzesRes] = await Promise.all([
+        supabase
+            .from("articles")
+            .select("title, slug, excerpt, category")
+            .eq("status", "published")
+            .not("slug", "is", null)
+            .or(`title.ilike.${searchTerm},excerpt.ilike.${searchTerm},category.ilike.${searchTerm}`)
+            .order("created_at", { ascending: false })
+            .limit(3),
+        supabase
+            .from("questions")
+            .select("id, title, content, category")
+            .eq("status", "published")
+            .or(`title.ilike.${searchTerm},content.ilike.${searchTerm},category.ilike.${searchTerm}`)
+            .order("created_at", { ascending: false })
+            .limit(2),
+        supabase
+            .from("dictionary_terms")
+            .select("term, definition, category")
+            .or(`term.ilike.${searchTerm},definition.ilike.${searchTerm},category.ilike.${searchTerm}`)
+            .order("term", { ascending: true })
+            .limit(3),
+        supabase
+            .from("quizzes")
+            .select("title, slug, description")
+            .or(`title.ilike.${searchTerm},description.ilike.${searchTerm}`)
+            .order("created_at", { ascending: false })
+            .limit(2),
+    ]);
+
+    for (const article of (articlesRes.data || []) as ArticleSuggestionRow[]) {
+        if (!article.slug) continue;
+        addSuggestion(suggestions, {
+            type: "article",
+            title: article.title,
+            description: toSnippet(article.excerpt || article.category),
+            url: `/makale/${article.slug}`,
+        });
+    }
+
+    for (const question of (questionsRes.data || []) as QuestionSuggestionRow[]) {
+        addSuggestion(suggestions, {
+            type: "question",
+            title: question.title,
+            description: toSnippet(question.content || question.category),
+            url: `/forum/${question.id}`,
+        });
+    }
+
+    for (const term of (dictionaryRes.data || []) as DictionarySuggestionRow[]) {
+        addSuggestion(suggestions, {
+            type: "dictionary",
+            title: term.term,
+            description: toSnippet(term.definition || term.category),
+            url: `/sozluk/${slugify(term.term)}`,
+        });
+    }
+
+    for (const quiz of (quizzesRes.data || []) as QuizSuggestionRow[]) {
+        if (!quiz.slug) continue;
+        addSuggestion(suggestions, {
+            type: "quiz",
+            title: quiz.title,
+            description: toSnippet(quiz.description || "Fizikhub fizik testi"),
+            url: `/testler/${quiz.slug}`,
+        });
+    }
+
+    return suggestions;
+}
+
 export async function getSearchSuggestions(rawQuery: string): Promise<SearchSuggestion[]> {
     const query = normalizeSuggestionQuery(rawQuery);
     if (query.length < 2) return [];
@@ -139,74 +275,15 @@ export async function getSearchSuggestions(rawQuery: string): Promise<SearchSugg
 
     try {
         const supabase = createStaticClient();
-        const searchTerm = buildSearchTerm(query);
+        const remainingLimit = MAX_SEARCH_SUGGESTIONS - suggestions.length;
 
-        const [articlesRes, questionsRes, dictionaryRes, quizzesRes] = await Promise.all([
-            supabase
-                .from("articles")
-                .select("title, slug, excerpt, category")
-                .eq("status", "published")
-                .not("slug", "is", null)
-                .or(`title.ilike.${searchTerm},excerpt.ilike.${searchTerm},category.ilike.${searchTerm}`)
-                .order("created_at", { ascending: false })
-                .limit(3),
-            supabase
-                .from("questions")
-                .select("id, title, content, category")
-                .eq("status", "published")
-                .or(`title.ilike.${searchTerm},content.ilike.${searchTerm},category.ilike.${searchTerm}`)
-                .order("created_at", { ascending: false })
-                .limit(2),
-            supabase
-                .from("dictionary_terms")
-                .select("term, definition, category")
-                .or(`term.ilike.${searchTerm},definition.ilike.${searchTerm},category.ilike.${searchTerm}`)
-                .order("term", { ascending: true })
-                .limit(3),
-            supabase
-                .from("quizzes")
-                .select("title, slug, description")
-                .or(`title.ilike.${searchTerm},description.ilike.${searchTerm}`)
-                .order("created_at", { ascending: false })
-                .limit(2),
-        ]);
+        if (remainingLimit > 0) {
+            const rpcSuggestions = await fetchRpcSuggestions(supabase, query, remainingLimit);
+            const databaseSuggestions = rpcSuggestions ?? await fetchFallbackDatabaseSuggestions(supabase, query);
 
-        for (const article of (articlesRes.data || []) as ArticleSuggestionRow[]) {
-            if (!article.slug) continue;
-            addSuggestion(suggestions, {
-                type: "article",
-                title: article.title,
-                description: toSnippet(article.excerpt || article.category),
-                url: `/makale/${article.slug}`,
-            });
-        }
-
-        for (const question of (questionsRes.data || []) as QuestionSuggestionRow[]) {
-            addSuggestion(suggestions, {
-                type: "question",
-                title: question.title,
-                description: toSnippet(question.content || question.category),
-                url: `/forum/${question.id}`,
-            });
-        }
-
-        for (const term of (dictionaryRes.data || []) as DictionarySuggestionRow[]) {
-            addSuggestion(suggestions, {
-                type: "dictionary",
-                title: term.term,
-                description: toSnippet(term.definition || term.category),
-                url: `/sozluk/${slugify(term.term)}`,
-            });
-        }
-
-        for (const quiz of (quizzesRes.data || []) as QuizSuggestionRow[]) {
-            if (!quiz.slug) continue;
-            addSuggestion(suggestions, {
-                type: "quiz",
-                title: quiz.title,
-                description: toSnippet(quiz.description || "Fizikhub fizik testi"),
-                url: `/testler/${quiz.slug}`,
-            });
+            for (const suggestion of databaseSuggestions) {
+                addSuggestion(suggestions, suggestion);
+            }
         }
     } catch (error) {
         console.error("search suggestions error:", error);
