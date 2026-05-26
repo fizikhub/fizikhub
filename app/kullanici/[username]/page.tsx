@@ -194,7 +194,7 @@ export default async function PublicProfilePage({ params }: PageProps) {
     };
 
     return (
-        <main className="min-h-screen bg-background relative selection:bg-emerald-500/30">
+        <main className="min-h-screen bg-background relative">
             <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

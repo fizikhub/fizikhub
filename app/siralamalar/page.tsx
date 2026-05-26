@@ -38,7 +38,7 @@ export default async function LeaderboardPage() {
     }
 
     return (
-        <main className="min-h-screen bg-background relative selection:bg-yellow-500/30">
+        <main className="min-h-screen bg-background relative">
             <BackgroundWrapper />
             <BreadcrumbJsonLd items={[{ name: 'Sıralamalar', href: '/siralamalar' }]} />
 

@@ -66,7 +66,7 @@ export default async function ProfilePage() {
 
 
     return (
-        <main className="min-h-screen bg-background relative selection:bg-primary/30">
+        <main className="min-h-screen bg-background relative">
             <div className="container max-w-7xl mx-auto px-3 sm:px-4 md:px-6 relative z-10 pt-3 sm:pt-4 lg:pt-8 pb-[calc(6.5rem+env(safe-area-inset-bottom))] sm:pb-32">
 
                 {/* HERO SECTION */}
