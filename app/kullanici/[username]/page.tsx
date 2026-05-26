@@ -17,7 +17,7 @@ const getCachedProfile = cache(async (username: string) => {
     const { data: profile } = await supabase
         .from('profiles')
         .select('id, username, full_name, avatar_url, cover_url, bio, website, location, created_at, updated_at, reputation, role, is_writer, is_verified, level, xp_current, xp_next')
-        .eq('username', username)
+        .eq('username', username.toLowerCase())
         .maybeSingle();
     return profile;
 });
@@ -37,7 +37,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
         supabase.from('answers').select('id', { count: 'exact', head: true }).eq('author_id', profile.id),
     ]);
 
-    const displayName = profile.full_name || `@${username}`;
+    const displayName = profile.full_name || `@${profile.username}`;
     const description = profile.bio
         ? `${displayName} — ${profile.bio.substring(0, 140)}`
         : `${displayName} adlı kullanıcının FizikHub profili. Makaleler, sorular ve bilimsel katkılar.`;
@@ -47,10 +47,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
         questionCount,
         answerCount,
     });
-    const canonicalUrl = `${getSiteUrl()}/kullanici/${username}`;
+    const canonicalUrl = `${getSiteUrl()}/kullanici/${profile.username}`;
 
     return {
-        title: `${displayName} (@${username})`,
+        title: `${displayName} (@${profile.username})`,
         description,
         robots: {
             index: shouldIndex,

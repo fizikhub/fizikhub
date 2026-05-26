@@ -321,7 +321,7 @@ export function ProfileEditForm({ user, profile }: ProfileEditFormProps) {
 
                                 {/* THEME SELECTION */}
                                 <div className="pt-4 pb-2 border-t border-dashed border-zinc-700">
-                                    <ThemeSelector username={profile?.username} />
+                                    <ThemeSelector />
                                 </div>
 
                                 {/* ACTION BUTTONS */}
