@@ -45,6 +45,32 @@ const TERM_SIMULATION_LINKS: Record<string, { href: string; label: string }[]> =
     "snell-yasasi": [{ href: "/simulasyonlar/optik-laboratuvari", label: "Optik laboratuvarı" }],
 };
 
+const CATEGORY_CONTEXT_NOTES: Record<string, string> = {
+    "Akışkanlar Mekaniği": "Akışkanlar mekaniğinde bu kavramı basınç, hız ve ortamın davranışı birlikte değişirken düşünmek en iyi sonucu verir.",
+    Astronomi: "Astronomi konularında bu terimi gözlem, uzaklık ölçeği ve gökcisimlerinin zaman içindeki değişimiyle birlikte okumak anlamayı kolaylaştırır.",
+    Astrofizik: "Astrofizikte bu kavram tek başına bir tanım değil; kütleçekim, ışınım ve gözlem verileriyle birlikte çalışan bir açıklama aracıdır.",
+    "Atom Fiziği": "Atom fiziğinde bu terim, çekirdek ve elektron davranışını ayırarak düşündüğünde daha net yerine oturur.",
+    Bilişim: "Bilişim tarafında bu kavramı fiziksel sistemlerin bilgi işleme biçimiyle birlikte okumak, soyut tanımı somutlaştırır.",
+    "Dalga Mekaniği": "Dalga mekaniğinde bu kavramı frekans, genlik ve ortam bilgisiyle birlikte ele almak gerekir; tek bir sayı çoğu zaman yeterli olmaz.",
+    "Elektrik Devreleri": "Devre konularında bu terimi akımın yolu, gerilimin paylaşımı ve elemanların bağlantı biçimiyle birlikte düşünmek pratik çözümü hızlandırır.",
+    Elektromanyetizma: "Elektromanyetizmada bu kavram, elektrik ve manyetik alanların birbirini nasıl etkilediğini takip ederken anlam kazanır.",
+    Elektronik: "Elektronikte bu terimi yalnızca parça adı gibi değil, sinyalin ve enerjinin devre içinde nasıl yönlendirildiğini anlatan bir araç gibi düşün.",
+    Fizik: "Fizikte bu kavramı bir formül ezberi olarak değil, hangi büyüklüğü ölçtüğünü ve hangi koşulda işe yaradığını sorarak öğrenmek daha kalıcıdır.",
+    Görelilik: "Görelilikte bu kavramı zaman, uzay ve gözlemci seçiminin birbirinden bağımsız olmadığını hatırlayarak okumak gerekir.",
+    Kimya: "Kimya başlığında bu terim, atomların bağ kurma biçimi ve maddenin makroskobik davranışı arasındaki köprüyü kurar.",
+    Kozmoloji: "Kozmolojide bu kavramı evrenin ölçeği, genişleme geçmişi ve gözlenebilir kanıtlarla birlikte değerlendirmek gerekir.",
+    "Kuantum Fiziği": "Kuantum fiziğinde bu kavram çoğu zaman gündelik sezgiyle değil, olasılık, ölçüm ve enerji düzeyi fikriyle daha doğru anlaşılır.",
+    Madde: "Madde konularında bu terim, mikroskobik yapı ile gözlediğimiz yoğunluk, iletkenlik veya faz gibi özellikler arasındaki bağlantıyı kurar.",
+    Matematik: "Matematikte bu kavram, fiziksel bir olayı sadeleştirmek ve ölçülebilir hale getirmek için kullanılan dilin parçasıdır.",
+    Mekanik: "Mekanikte bu terimi kuvvet, hareket ve enerji arasındaki ilişkiyi aynı anda izleyerek düşünmek en sağlam başlangıçtır.",
+    "Modern Fizik": "Modern fizikte bu kavram klasik sezginin yetmediği durumlarda ortaya çıkar; deney sonucu ve model ilişkisini birlikte okumak gerekir.",
+    "Nükleer Fizik": "Nükleer fizikte bu terim çekirdeğin kararlılığı, enerji dönüşümü ve radyasyon davranışıyla birlikte ele alındığında netleşir.",
+    Optik: "Optikte bu kavramı ışığın doğrultusu, dalga boyu ve ortam değişimiyle birlikte düşünmek görsel örnekleri açıklamayı kolaylaştırır.",
+    "Parçacık Fiziği": "Parçacık fiziğinde bu kavramı temel etkileşimler, yükler ve korunum yasalarıyla birlikte okumak gerekir.",
+    "Teorik Fizik": "Teorik fizikte bu kavram, gözlenen bir davranışı daha genel bir matematiksel çerçeveye yerleştirmek için kullanılır.",
+    Termodinamik: "Termodinamikte bu terimi ısı, iş, enerji aktarımı ve denge fikriyle birlikte düşündüğünde tanım kuru bir ezber olmaktan çıkar.",
+};
+
 function truncateAtWordBoundary(text: string, limit: number) {
     if (text.length <= limit) return text;
 
@@ -56,6 +82,14 @@ function truncateAtWordBoundary(text: string, limit: number) {
     }
 
     return `${candidate.slice(0, lastSpace).trim()}...`;
+}
+
+function getTermContextNote(term: string, category: string | null) {
+    if (!category) {
+        return `${term} kavramını öğrenirken önce neyi ölçtüğünü, sonra hangi örneklerde karşına çıktığını ayırmak tanımı daha kalıcı yapar.`;
+    }
+
+    return CATEGORY_CONTEXT_NOTES[category] || `${term} kavramını ${category} başlığı içinde, tanımdaki ana büyüklükleri ve örnek kullanım alanlarını ayırarak okumak en pratik yoldur.`;
 }
 
 async function getTermBySlug(slug: string) {
@@ -87,6 +121,12 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     return {
         title: `${term.term} Nedir? | Bilim Sözlüğü`,
         description,
+        keywords: [
+            `${term.term} nedir`,
+            `${term.term} tanımı`,
+            term.category || "bilim terimi",
+            "Fizikhub Bilim Sözlüğü",
+        ],
         openGraph: {
             title: `${term.term} Nedir? — Fizikhub Sözlük`,
             description,
@@ -153,14 +193,20 @@ export default async function DictionaryTermPage({ params }: PageProps) {
                 "@id": `${canonical}#defined-term`,
                 name: term.term,
                 description: term.definition,
+                alternateName: `${term.term} nedir`,
                 inDefinedTermSet: {
                     "@type": "DefinedTermSet",
+                    "@id": `${SITE_URL}/sozluk#defined-term-set`,
                     name: "Fizikhub Bilim Sözlüğü",
                     url: `${SITE_URL}/sozluk`,
                 },
                 termCode: slug,
                 url: canonical,
                 inLanguage: "tr-TR",
+                about: term.category ? {
+                    "@type": "Thing",
+                    name: term.category,
+                } : undefined,
             },
             {
                 "@type": "WebPage",
@@ -178,9 +224,15 @@ export default async function DictionaryTermPage({ params }: PageProps) {
                 mainEntity: {
                     "@id": `${canonical}#defined-term`,
                 },
+                educationalLevel: ["Ortaöğretim", "Lise", "Üniversiteye hazırlık"],
+                audience: {
+                    "@type": "EducationalAudience",
+                    educationalRole: "student",
+                },
             }
         ]
     };
+    const contextNote = getTermContextNote(term.term, term.category);
 
     return (
         <>
@@ -193,51 +245,52 @@ export default async function DictionaryTermPage({ params }: PageProps) {
                 { name: term.term, href: `/sozluk/${slug}` },
             ]} />
 
-            <main className="container mx-auto min-h-screen max-w-3xl px-4 py-8 md:py-12">
+            <main className="container mx-auto min-h-screen max-w-4xl px-4 pb-28 pt-7 md:pb-16 md:pt-10">
                 <Link
                     href="/sozluk"
-                    className="mb-6 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-zinc-500 transition-colors hover:text-white"
+                    className="mb-6 inline-flex min-h-11 items-center gap-2 rounded-full border-2 border-black bg-white px-4 py-2 text-xs font-black uppercase text-black shadow-[2px_2px_0px_0px_#000] transition-transform hover:-translate-y-0.5 dark:bg-zinc-900 dark:text-white"
                 >
                     <ArrowLeft className="h-4 w-4" />
                     Sözlüğe Dön
                 </Link>
 
-                <article className="rounded-lg border border-zinc-800 bg-zinc-950/80 p-5 sm:p-7">
-                    <div className="mb-4 flex flex-wrap items-center gap-2">
+                <article className="relative overflow-hidden rounded-xl border-[3px] border-black bg-zinc-950 p-5 text-white shadow-[6px_6px_0px_0px_#000] sm:p-7 md:p-9">
+                    <div className="relative z-10 mb-5 flex flex-wrap items-center gap-2">
                         {term.category && (
-                            <span className="rounded-md border border-zinc-700 bg-zinc-900 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider text-zinc-300">
+                            <span className="rounded-full border-2 border-white bg-zinc-900 px-3 py-1.5 text-[11px] font-black uppercase tracking-wider text-zinc-100 shadow-[2px_2px_0px_0px_#000]">
                                 {term.category}
                             </span>
                         )}
+                        <span className="rounded-full border-2 border-black bg-white px-3 py-1.5 text-[11px] font-black uppercase tracking-wider text-black">
+                            Bilim Sözlüğü
+                        </span>
                     </div>
 
-                    <h1 className="text-3xl font-black uppercase leading-tight tracking-normal text-white sm:text-4xl">
+                    <h1 className="relative z-10 inline-block max-w-full break-words border-[3px] border-black bg-[#FFC800] px-3 py-2 text-3xl font-black uppercase leading-tight tracking-normal text-black shadow-[4px_4px_0px_0px_#000] -rotate-1 sm:text-5xl">
                         {term.term}
                     </h1>
 
-                    <div className="mt-6 border-t border-zinc-800 pt-6">
-                        <h2 className="mb-3 text-sm font-black uppercase tracking-wider text-zinc-500">
+                    <section className="relative z-10 mt-7 border-t-[3px] border-zinc-800 pt-6">
+                        <h2 className="mb-3 text-sm font-black uppercase tracking-wider text-[#FFC800]">
                             {term.term} nedir?
                         </h2>
-                        <p className="text-base font-medium leading-relaxed text-zinc-300 sm:text-lg">
+                        <p className="text-lg font-semibold leading-relaxed text-zinc-100 sm:text-xl">
                             {term.definition}
                         </p>
-                    </div>
+                    </section>
 
-                    <div className="mt-6 border-t border-zinc-800 pt-5">
-                        <h2 className="mb-3 text-sm font-black uppercase tracking-wider text-zinc-500">
-                            Kısa not
+                    <section className="relative z-10 mt-6 border-t-[3px] border-zinc-800 pt-5">
+                        <h2 className="mb-3 text-sm font-black uppercase tracking-wider text-zinc-400">
+                            Nerede işine yarar?
                         </h2>
-                        <p className="text-sm font-medium leading-relaxed text-zinc-400 sm:text-base">
-                            {term.term} kavramı, {term.category || "bilim"} başlığındaki konuları okurken sık karşına çıkar.
-                            Tanımı akılda tutmanın en iyi yolu, kavramı yalnızca ezberlemek değil; hangi olayda, hangi ölçümde
-                            ya da hangi modelde işe yaradığını görmektir.
+                        <p className="text-base font-medium leading-relaxed text-zinc-300 sm:text-lg">
+                            {contextNote}
                         </p>
-                    </div>
+                    </section>
 
                     {relatedArticles.length > 0 && (
-                        <nav className="mt-6 border-t border-zinc-800 pt-5" aria-label="İlgili makaleler">
-                            <h2 className="mb-3 text-sm font-black uppercase tracking-wider text-zinc-500">
+                        <nav className="relative z-10 mt-6 border-t-[3px] border-zinc-800 pt-5" aria-label="İlgili makaleler">
+                            <h2 className="mb-3 text-sm font-black uppercase tracking-wider text-zinc-400">
                                 Bu konuyu derinleştir
                             </h2>
                             <div className="grid gap-2">
@@ -245,10 +298,10 @@ export default async function DictionaryTermPage({ params }: PageProps) {
                                     <Link
                                         key={article.slug}
                                         href={`/makale/${article.slug}`}
-                                        className="rounded-md border border-zinc-700 bg-zinc-900 px-3 py-3 text-sm font-bold text-zinc-200 transition-colors hover:border-yellow-400 hover:text-white"
+                                        className="rounded-xl border-2 border-black bg-white px-4 py-3 text-sm font-black text-black shadow-[3px_3px_0px_0px_#000] transition-transform hover:-translate-y-0.5"
                                     >
                                         {article.title}
-                                        <span className="mt-1 block text-xs font-medium leading-relaxed text-zinc-500">
+                                        <span className="mt-1 block text-xs font-semibold leading-relaxed text-zinc-600">
                                             {article.description}
                                         </span>
                                     </Link>
@@ -257,14 +310,14 @@ export default async function DictionaryTermPage({ params }: PageProps) {
                         </nav>
                     )}
 
-                    <nav className="mt-6 border-t border-zinc-800 pt-5" aria-label="İlgili öğrenme kaynakları">
-                        <h2 className="mb-3 text-sm font-black uppercase tracking-wider text-zinc-500">
+                    <nav className="relative z-10 mt-6 border-t-[3px] border-zinc-800 pt-5" aria-label="İlgili öğrenme kaynakları">
+                        <h2 className="mb-3 text-sm font-black uppercase tracking-wider text-zinc-400">
                             Test ve simülasyonla pekiştir
                         </h2>
                         <div className="flex flex-wrap gap-2">
                             <Link
                                 href="/testler"
-                                className="rounded-md border border-yellow-400 bg-yellow-400 px-3 py-2 text-xs font-black text-black transition-colors hover:bg-white"
+                                className="inline-flex min-h-11 items-center rounded-xl border-2 border-black bg-[#FFC800] px-4 py-2 text-xs font-black text-black shadow-[3px_3px_0px_0px_#000] transition-transform hover:-translate-y-0.5"
                             >
                                 Fizik testleri
                             </Link>
@@ -272,14 +325,14 @@ export default async function DictionaryTermPage({ params }: PageProps) {
                                 <Link
                                     key={simulation.href}
                                     href={simulation.href}
-                                    className="rounded-md border border-zinc-700 bg-zinc-900 px-3 py-2 text-xs font-semibold text-zinc-300 transition-colors hover:border-yellow-400 hover:text-white"
+                                    className="inline-flex min-h-11 items-center rounded-xl border-2 border-zinc-700 bg-zinc-900 px-4 py-2 text-xs font-black text-zinc-100 transition-colors hover:border-[#FFC800] hover:text-white"
                                 >
                                     {simulation.label}
                                 </Link>
                             )) : (
                                 <Link
                                     href="/simulasyonlar"
-                                    className="rounded-md border border-zinc-700 bg-zinc-900 px-3 py-2 text-xs font-semibold text-zinc-300 transition-colors hover:border-yellow-400 hover:text-white"
+                                    className="inline-flex min-h-11 items-center rounded-xl border-2 border-zinc-700 bg-zinc-900 px-4 py-2 text-xs font-black text-zinc-100 transition-colors hover:border-[#FFC800] hover:text-white"
                                 >
                                     Fizik simülasyonları
                                 </Link>
@@ -288,7 +341,7 @@ export default async function DictionaryTermPage({ params }: PageProps) {
                                 <Link
                                     key={link.href}
                                     href={link.href}
-                                    className="rounded-md border border-zinc-700 bg-zinc-900 px-3 py-2 text-xs font-semibold text-zinc-300 transition-colors hover:border-yellow-400 hover:text-white"
+                                    className="inline-flex min-h-11 items-center rounded-xl border-2 border-zinc-700 bg-zinc-900 px-4 py-2 text-xs font-black text-zinc-100 transition-colors hover:border-[#FFC800] hover:text-white"
                                 >
                                     {link.label}
                                 </Link>
@@ -297,8 +350,8 @@ export default async function DictionaryTermPage({ params }: PageProps) {
                     </nav>
 
                     {relatedTerms.length > 0 && (
-                        <nav className="mt-6 border-t border-zinc-800 pt-5" aria-label="İlgili sözlük terimleri">
-                            <h2 className="mb-3 text-sm font-black uppercase tracking-wider text-zinc-500">
+                        <nav className="relative z-10 mt-6 border-t-[3px] border-zinc-800 pt-5" aria-label="İlgili sözlük terimleri">
+                            <h2 className="mb-3 text-sm font-black uppercase tracking-wider text-zinc-400">
                                 İlgili terimler
                             </h2>
                             <div className="flex flex-wrap gap-2">
@@ -306,7 +359,7 @@ export default async function DictionaryTermPage({ params }: PageProps) {
                                     <Link
                                         key={relatedTerm.id}
                                         href={`/sozluk/${slugify(relatedTerm.term)}`}
-                                        className="rounded-md bg-zinc-900 px-3 py-2 text-xs font-semibold text-zinc-300 transition-colors hover:bg-zinc-800 hover:text-white"
+                                        className="inline-flex min-h-11 items-center rounded-xl border-2 border-black bg-white px-4 py-2 text-xs font-black text-black shadow-[2px_2px_0px_0px_#000] transition-transform hover:-translate-y-0.5"
                                     >
                                         {relatedTerm.term}
                                     </Link>
@@ -314,6 +367,8 @@ export default async function DictionaryTermPage({ params }: PageProps) {
                             </div>
                         </nav>
                     )}
+                    <div className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-white/5" />
+                    <div className="pointer-events-none absolute -bottom-16 -right-12 h-44 w-44 rounded-full bg-[#FFC800]/10" />
                 </article>
             </main>
         </>

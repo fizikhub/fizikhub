@@ -199,7 +199,7 @@ export const getQuestions = cache(async function (options?: { limit?: number }):
 });
 
 export const getDictionaryTerms = cache(async function (): Promise<DictionaryTerm[]> {
-    const key = 'dictionary:all';
+    const key = 'dictionary:all:v2';
     
     return withHybridCache<DictionaryTerm[]>(
         key,

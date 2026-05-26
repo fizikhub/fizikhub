@@ -11,6 +11,15 @@ const SITE_URL = "https://www.fizikhub.com";
 export const metadata: Metadata = {
     title: "Bilim Sözlüğü | Fizik, Uzay ve Bilim Terimleri",
     description: "Fizik, astronomi, kuantum, termodinamik ve modern bilim terimleri için kısa, güvenilir ve sade Türkçe açıklamalar.",
+    keywords: [
+        "bilim sözlüğü",
+        "fizik terimleri",
+        "kuantum sözlüğü",
+        "termodinamik terimleri",
+        "astronomi terimleri",
+        "elektrik devreleri sözlüğü",
+        "Fizikhub",
+    ],
     openGraph: {
         title: "Bilim Sözlüğü — Fizikhub",
         description: "Fizik, uzay ve modern bilim kavramları için kısa, sade ve güvenilir Türkçe açıklamalar.",
@@ -49,7 +58,7 @@ export const metadata: Metadata = {
 
 export const revalidate = 3600;
 
-const MAX_STRUCTURED_DATA_TERMS = 250;
+const MAX_STRUCTURED_DATA_TERMS = 500;
 
 export default async function DictionaryPage() {
     const terms = await getDictionaryTerms();
@@ -65,6 +74,11 @@ export default async function DictionaryPage() {
                 description: 'Fizik, astronomi, kuantum, termodinamik ve modern bilim terimleri için kısa Türkçe açıklamalar.',
                 url: `${SITE_URL}/sozluk`,
                 inLanguage: 'tr-TR',
+                keywords: ['bilim sözlüğü', 'fizik terimleri', 'astronomi terimleri', 'kuantum fiziği', 'termodinamik'],
+                audience: {
+                    '@type': 'EducationalAudience',
+                    educationalRole: 'student',
+                },
                 isPartOf: {
                     '@type': 'WebSite',
                     '@id': `${SITE_URL}/#website`,
@@ -83,6 +97,7 @@ export default async function DictionaryPage() {
                 description: 'Fizik, astronomi, kuantum, termodinamik ve modern bilim terimlerinin Türkçe açıklamaları.',
                 url: `${SITE_URL}/sozluk`,
                 inLanguage: 'tr-TR',
+                numberOfItems: terms.length,
                 hasDefinedTerm: terms.slice(0, MAX_STRUCTURED_DATA_TERMS).map((term) => ({
                     '@type': 'DefinedTerm',
                     name: term.term,
@@ -94,6 +109,7 @@ export default async function DictionaryPage() {
             {
                 '@type': 'ItemList',
                 name: 'Bilim Sözlüğü Terimleri',
+                numberOfItems: terms.length,
                 itemListElement: terms.slice(0, MAX_STRUCTURED_DATA_TERMS).map((term, index) => ({
                     '@type': 'ListItem',
                     position: index + 1,
