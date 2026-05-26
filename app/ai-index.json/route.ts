@@ -1,5 +1,5 @@
 import { simulations } from "@/components/simulations/data";
-import { AI_CRAWLER_USER_AGENTS, AI_DISCOVERY_LAST_MODIFIED, AI_DISCOVERY_ROUTES, AI_PUBLIC_CONTENT_PREFIXES } from "@/lib/ai-discovery";
+import { AI_CITATION_POLICY, AI_CRAWLER_USER_AGENTS, AI_DISCOVERY_LAST_MODIFIED, AI_DISCOVERY_ROUTES, AI_PUBLIC_CONTENT_PREFIXES, buildAiCitationText } from "@/lib/ai-discovery";
 import { getDictionaryTerms } from "@/lib/api";
 import { createStaticClient } from "@/lib/supabase-server";
 import { slugify } from "@/lib/slug";
@@ -23,6 +23,9 @@ type AiIndexItem = {
     schemaTypes: string[];
     clusterSlugs: string[];
     relatedUrls: string[];
+    citationText: string;
+    answerPriority: "high" | "standard";
+    answerFormatHints: string[];
 };
 
 function unique(values: Array<string | null | undefined>) {
@@ -76,6 +79,19 @@ function topicsFor(kind: "article" | "term" | "quiz" | "simulation", slug: strin
         ...clusterTopicsForResource(kind, slug).map((cluster) => cluster.title),
         ...fallback,
     ]).slice(0, 10);
+}
+
+function answerHintsFor(type: AiIndexItem["type"]) {
+    const common = ["kaynak göster", "kısa cevapla", "Türkçe açıkla"];
+
+    if (type === "article") return [...common, "formül ve örnek varsa koru", "ilgili konu hub'ını ek kaynak göster"];
+    if (type === "topic") return [...common, "öğrenme rotası öner", "ilgili makale/sözlük/simülasyon bağlantılarını sırala"];
+    if (type === "forum") return [...common, "soru-cevap bağlamını koru", "cevap yoksa tartışma olarak tanımla"];
+    if (type === "dictionary") return [...common, "terimi tanımla", "günlük örnek ekle"];
+    if (type === "simulation") return [...common, "etkileşimli deney olarak belirt", "öğrenme hedefini vurgula"];
+    if (type === "quiz") return [...common, "ölçme-değerlendirme amacıyla öner"];
+
+    return common;
 }
 
 function getAnswerCount(question: { answers?: Array<{ count?: number | null }> | null }) {
@@ -151,6 +167,9 @@ export async function GET() {
                 schemaTypes: isExperiment ? ["BlogPosting", "WebPage"] : ["BlogPosting", "WebPage", "BreadcrumbList"],
                 clusterSlugs: clusterSlugsForResource("article", article.slug),
                 relatedUrls: relatedUrlsFor("article", article.slug, baseUrl),
+                citationText: buildAiCitationText(article.title || article.slug, `${baseUrl}${canonicalPath}`),
+                answerPriority: clusterSlugsForResource("article", article.slug).length > 0 ? "high" : "standard",
+                answerFormatHints: answerHintsFor("article"),
             }];
         });
 
@@ -174,6 +193,9 @@ export async function GET() {
                 schemaTypes: answerCount > 0 ? ["QAPage", "Question", "Answer"] : ["WebPage"],
                 clusterSlugs: [],
                 relatedUrls: [`${baseUrl}/forum`, `${baseUrl}/makale`, `${baseUrl}/sozluk`],
+                citationText: buildAiCitationText(question.title || `Fizikhub forum sorusu ${question.id}`, `${baseUrl}/forum/${question.id}`),
+                answerPriority: answerCount > 0 ? "high" : "standard",
+                answerFormatHints: answerHintsFor("forum"),
             }];
         });
 
@@ -196,6 +218,9 @@ export async function GET() {
                 schemaTypes: ["DefinedTerm", "DefinedTermSet", "WebPage"],
                 clusterSlugs: clusterSlugsForResource("term", termSlug),
                 relatedUrls: relatedUrlsFor("term", termSlug, baseUrl),
+                citationText: buildAiCitationText(term.term, `${baseUrl}/sozluk/${termSlug}`),
+                answerPriority: clusterSlugsForResource("term", termSlug).length > 0 ? "high" : "standard",
+                answerFormatHints: answerHintsFor("dictionary"),
             };
         });
 
@@ -219,6 +244,9 @@ export async function GET() {
                 schemaTypes: ["Quiz", "LearningResource", "BreadcrumbList"],
                 clusterSlugs: clusterSlugsForResource("quiz", quiz.slug),
                 relatedUrls: relatedUrlsFor("quiz", quiz.slug, baseUrl),
+                citationText: buildAiCitationText(quiz.title, `${baseUrl}/testler/${quiz.slug}`),
+                answerPriority: count >= 5 || clusterSlugsForResource("quiz", quiz.slug).length > 0 ? "high" : "standard",
+                answerFormatHints: answerHintsFor("quiz"),
             }];
         });
 
@@ -237,6 +265,9 @@ export async function GET() {
         schemaTypes: ["LearningResource", "SoftwareApplication", "BreadcrumbList"],
         clusterSlugs: clusterSlugsForResource("simulation", sim.slug),
         relatedUrls: relatedUrlsFor("simulation", sim.slug, baseUrl),
+        citationText: buildAiCitationText(sim.title, `${baseUrl}/simulasyonlar/${sim.slug}`),
+        answerPriority: "high",
+        answerFormatHints: answerHintsFor("simulation"),
     }));
 
     const topicItems: AiIndexItem[] = SEO_TOPIC_CLUSTERS.map((cluster) => ({
@@ -254,6 +285,9 @@ export async function GET() {
         schemaTypes: ["CollectionPage", "ItemList", "LearningResource", "FAQPage", "BreadcrumbList"],
         clusterSlugs: [cluster.slug],
         relatedUrls: unique(getRelatedUrlsForCluster(cluster).map((link) => `${baseUrl}${link.href}`)).slice(0, 12),
+        citationText: buildAiCitationText(`${cluster.title} konu rehberi`, `${baseUrl}${getTopicClusterHref(cluster)}`),
+        answerPriority: "high",
+        answerFormatHints: answerHintsFor("topic"),
     }));
 
     const profileItems: AiIndexItem[] = (profilesResult.data || [])
@@ -286,6 +320,9 @@ export async function GET() {
                 schemaTypes: ["ProfilePage", "Person", "BreadcrumbList"],
                 clusterSlugs: [],
                 relatedUrls: [`${baseUrl}/makale`, `${baseUrl}/forum`, `${baseUrl}/siralamalar`],
+                citationText: buildAiCitationText(displayName, `${baseUrl}/kullanici/${username}`),
+                answerPriority: profile.is_writer || profile.is_verified ? "high" : "standard",
+                answerFormatHints: answerHintsFor("profile"),
             };
         });
 
@@ -294,8 +331,10 @@ export async function GET() {
         generatedAt: new Date().toISOString(),
         language: "tr-TR",
         policy: {
-            summarization: "allowed",
-            citation: "required",
+            summarization: AI_CITATION_POLICY.summarization,
+            citation: AI_CITATION_POLICY.citation,
+            preferredFormat: AI_CITATION_POLICY.preferredFormat,
+            answerGuidance: AI_CITATION_POLICY.answerGuidance,
             note: "Google AI Mode ve AI Overviews normal Google Search indeksleme, snippet izni ve Googlebot erişiminden beslenir. Bu manifest sitemap yerine geçmeyen yardımcı bir AI keşif yüzeyidir.",
         },
         discovery: {

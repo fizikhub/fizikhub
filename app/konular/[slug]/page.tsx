@@ -177,7 +177,12 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
             description,
             images: [`${baseUrl}/og-image.jpg`],
         },
-        alternates: { canonical },
+        alternates: {
+            canonical,
+            languages: {
+                "tr-TR": canonical,
+            },
+        },
         robots: {
             index: true,
             follow: true,
@@ -209,6 +214,7 @@ export default async function TopicClusterPage({ params }: PageProps) {
         )
         .slice(0, 6);
     const faqItems = getTopicFaqItems(cluster);
+    const quickAnswer = faqItems[0]?.answer || `${cluster.title} konusu Fizikhub'da makale, sözlük, test ve simülasyon kaynaklarıyla çalışılabilir.`;
 
     const jsonLd = {
         "@context": "https://schema.org",
@@ -222,6 +228,10 @@ export default async function TopicClusterPage({ params }: PageProps) {
                 inLanguage: "tr-TR",
                 isPartOf: { "@id": `${baseUrl}/#website` },
                 mainEntity: { "@id": `${canonical}#item-list` },
+                about: [cluster.title, ...cluster.aliases].map((topic) => ({
+                    "@type": "Thing",
+                    name: topic,
+                })),
             },
             {
                 "@type": "LearningResource",
@@ -232,6 +242,21 @@ export default async function TopicClusterPage({ params }: PageProps) {
                 educationalLevel: "Lise ve lisans başlangıç",
                 learningResourceType: "Konu rehberi",
                 teaches: [cluster.title, ...cluster.aliases],
+                provider: { "@id": `${baseUrl}/#organization` },
+                audience: {
+                    "@type": "EducationalAudience",
+                    educationalRole: "student",
+                },
+            },
+            {
+                "@type": "Question",
+                "@id": `${canonical}#quick-answer`,
+                name: cluster.intentQuestions[0] || `${cluster.title} nedir?`,
+                acceptedAnswer: {
+                    "@type": "Answer",
+                    text: quickAnswer,
+                    url: canonical,
+                },
             },
             {
                 "@type": "FAQPage",
@@ -291,6 +316,12 @@ export default async function TopicClusterPage({ params }: PageProps) {
                                 <p className="mt-5 max-w-3xl text-base font-semibold leading-8 text-muted-foreground sm:text-lg">
                                     {cluster.intentQuestions[0]} Bu sayfa, konuyu makaleler, sözlük tanımları, testler ve interaktif simülasyonlarla tek öğrenme rotasında toplar.
                                 </p>
+                                <div className="mt-6 max-w-3xl border-l-4 border-[#EAB308] pl-4">
+                                    <p className="text-xs font-black uppercase tracking-widest text-muted-foreground">Kısa cevap</p>
+                                    <p className="mt-2 text-sm font-semibold leading-7 text-foreground sm:text-base">
+                                        {quickAnswer}
+                                    </p>
+                                </div>
                             </div>
                             <aside className="border-t border-foreground/15 pt-5 lg:border-l lg:border-t-0 lg:pl-6 lg:pt-0">
                                 <div className="flex items-center gap-2 text-sm font-black">

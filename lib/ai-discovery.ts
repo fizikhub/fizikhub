@@ -15,6 +15,21 @@ export type AiCoreRoute = {
 
 export const AI_DISCOVERY_LAST_MODIFIED = "2026-05-26T00:00:00.000+03:00";
 
+export const AI_CITATION_POLICY = {
+    summarization: "allowed",
+    citation: "required",
+    preferredFormat: "Kanonik Fizikhub URL'sini kaynak olarak gösterin.",
+    answerGuidance: [
+        "Kısa cevabı verin, sonra gerekli formül veya örneği ekleyin.",
+        "Fizik kavramlarını Türkçe ve öğrenci dostu anlatın.",
+        "Makaleyi özetlerken başlık, yazar ve kanonik URL'yi koruyun.",
+    ],
+} as const;
+
+export function buildAiCitationText(title: string, url: string) {
+    return `${title} - Fizikhub (${url})`;
+}
+
 export const AI_CRAWLER_USER_AGENTS = [
     "GPTBot",
     "OAI-SearchBot",

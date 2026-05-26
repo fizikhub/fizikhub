@@ -12,7 +12,7 @@ import { ArticleErrorBoundary } from "@/components/blog/article-error-boundary";
 import { MarkdownRenderer } from "@/components/markdown-renderer";
 import { CollapsibleQuickAnswer } from "@/components/articles/collapsible-quick-answer";
 import { getSeoIntentForSlug, SEO_PRIORITY_ARTICLES, SEO_PRIORITY_SLUGS, type SeoIntentArticle } from "@/lib/seo-priority";
-import { getClustersForArticleSlug, getRelatedUrlsForCluster } from "@/lib/seo-topic-clusters";
+import { getClustersForArticleSlug, getRelatedUrlsForCluster, getTopicClusterHref } from "@/lib/seo-topic-clusters";
 import { buildMetaDescription, getArticleCanonicalPath, getSiteUrl, isLikelyIndexableArticle, isLikelyIndexableTitle, toAbsoluteUrl } from "@/lib/seo-utils";
 import Link from "next/link";
 
@@ -163,6 +163,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
         },
         alternates: {
             canonical: canonicalUrl,
+            languages: {
+                "tr-TR": canonicalUrl,
+            },
         },
         robots: {
             index: shouldIndex,
@@ -282,6 +285,7 @@ export default async function ArticlePage({ params }: PageProps) {
     const authorUrl = article.author?.username ? `${baseUrl}/kullanici/${article.author.username}` : baseUrl;
     const semanticTopics = intentOverride?.expandedKeywords || (articleTags && articleTags.length > 0 ? articleTags : [article.category || 'Fizik']);
     const topicClusters = getClustersForArticleSlug(article.slug || slug);
+    const clusterUrls = topicClusters.map((cluster) => `${baseUrl}${getTopicClusterHref(cluster)}`);
     const learningTopics = Array.from(new Set([
         ...topicClusters.map((cluster) => cluster.title),
         ...semanticTopics,
@@ -321,6 +325,21 @@ export default async function ArticlePage({ params }: PageProps) {
                 '@type': 'Thing',
                 name: topic,
             })),
+            mainEntityOfPage: {
+                '@type': 'WebPage',
+                '@id': articleUrl,
+            },
+            isPartOf: [
+                {
+                    '@type': 'WebSite',
+                    '@id': `${baseUrl}/#website`,
+                    name: 'Fizikhub',
+                },
+                ...clusterUrls.map((url) => ({
+                    '@type': 'CollectionPage',
+                    '@id': `${url}#collection`,
+                })),
+            ],
             mentions: intentOverride?.relatedQueries.map((topic) => ({
                 '@type': 'Thing',
                 name: topic,
@@ -356,15 +375,6 @@ export default async function ArticlePage({ params }: PageProps) {
                     height: 512,
                 },
             },
-            mainEntityOfPage: {
-                '@type': 'WebPage',
-                '@id': articleUrl,
-            },
-            isPartOf: {
-                '@type': 'WebSite',
-                '@id': `${baseUrl}/#website`,
-                name: 'Fizikhub',
-            },
         },
         {
             '@context': 'https://schema.org',
@@ -379,6 +389,16 @@ export default async function ArticlePage({ params }: PageProps) {
             educationalLevel: 'Lise ve lisans başlangıç',
             teaches: learningTopics,
             keywords: learningTopics.join(', '),
+            about: learningTopics.map((topic) => ({
+                '@type': 'Thing',
+                name: topic,
+            })),
+            ...(clusterUrls.length > 0 ? {
+                isPartOf: clusterUrls.map((url) => ({
+                    '@type': 'CollectionPage',
+                    '@id': `${url}#collection`,
+                })),
+            } : {}),
             mainEntity: {
                 '@id': `${articleUrl}#article`,
             },
@@ -395,6 +415,10 @@ export default async function ArticlePage({ params }: PageProps) {
             description: articleDescription,
             inLanguage: 'tr-TR',
             isPartOf: { '@id': `${baseUrl}/#website` },
+            relatedLink: [
+                ...clusterUrls,
+                ...topicClusters.flatMap(getRelatedUrlsForCluster).map((link) => `${baseUrl}${link.href}`),
+            ].filter((url, index, all) => all.indexOf(url) === index && url !== articleUrl).slice(0, 12),
             ...(intentOverride && {
                 mainEntity: {
                     '@id': `${articleUrl}#defined-term`,

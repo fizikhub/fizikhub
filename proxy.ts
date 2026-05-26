@@ -59,6 +59,14 @@ const PUBLIC_SEO_PREFIXES = [
     '/konular/',
     '/kullanici/',
 ];
+const LOW_VALUE_QUERY_PATHS = new Set([
+    '/ara',
+    '/forum',
+    '/makale',
+    '/sozluk',
+    '/testler',
+    '/simulasyonlar',
+]);
 const SEARCH_CRAWLER_PATTERN = /Googlebot|Googlebot-Image|Googlebot-News|Bingbot|DuckDuckBot|YandexBot|Applebot|LinkedInBot|Twitterbot|facebookexternalhit|Facebot|WhatsApp|Slackbot|TelegramBot|Instagram|Pinterest|Discordbot/i;
 
 type UpstashPipelineResult = Array<{ result?: unknown; error?: string }>;
@@ -214,6 +222,14 @@ function normalizeSeoUrl(request: NextRequest) {
 
 function isPublicSeoPath(pathname: string) {
     return PUBLIC_SEO_PATHS.has(pathname) || PUBLIC_SEO_PREFIXES.some((prefix) => pathname.startsWith(prefix));
+}
+
+export function isLowValueSeoQuery(pathname: string, searchParams: URLSearchParams) {
+    if (!LOW_VALUE_QUERY_PATHS.has(pathname)) return false;
+    if (searchParams.has('q')) return true;
+    if (searchParams.has('filter')) return true;
+    if (searchParams.get('sort') && searchParams.get('sort') !== 'newest') return true;
+    return false;
 }
 
 export function shouldBypassSession(pathname: string, userAgent: string) {
@@ -409,6 +425,11 @@ export async function proxy(request: NextRequest) {
         response = NextResponse.next();
     } else {
         response = await updateSession(request);
+    }
+
+    if (isLowValueSeoQuery(pathname, request.nextUrl.searchParams)) {
+        response.headers.set('X-Robots-Tag', 'noindex, follow');
+        response.headers.set('Cache-Control', 'private, no-store, max-age=0');
     }
 
     // Security headers are centralized in next.config.ts. Keep proxy focused on

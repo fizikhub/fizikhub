@@ -5,12 +5,12 @@ import { GET as authorSitemap } from "@/app/author-sitemap.xml/route";
 import { GET as openSearchDescriptor } from "@/app/opensearch.xml/route";
 import { GET as sitemapIndex } from "@/app/sitemap-index.xml/route";
 import { GET as topicSitemap } from "@/app/topic-sitemap.xml/route";
-import { AI_CRAWLER_USER_AGENTS, AI_DISCOVERY_ROUTES } from "@/lib/ai-discovery";
+import { AI_CITATION_POLICY, AI_CRAWLER_USER_AGENTS, AI_DISCOVERY_ROUTES, buildAiCitationText } from "@/lib/ai-discovery";
 import { isKnownAiCrawlerUserAgent } from "@/lib/ai-discovery";
 import { getVectorUrl } from "@/lib/search-results";
 import { getClusterResourceLinks, getPrimaryClusterHref, getTopicClusterBySlug, getTopicClusterHref, getTopicClustersForText, normalizeTopicSearchText, SEO_TOPIC_CLUSTERS } from "@/lib/seo-topic-clusters";
 import { isPrivateSeoPath } from "@/lib/seo-utils";
-import { shouldBypassSession } from "@/proxy";
+import { isLowValueSeoQuery, shouldBypassSession } from "@/proxy";
 
 function xmlLocs(xml: string) {
     return Array.from(xml.matchAll(/<loc>([^<]+)<\/loc>/g)).map((match) => match[1]);
@@ -100,6 +100,14 @@ describe("SEO topic sitemap", () => {
 });
 
 describe("SEO robots and canonical boundaries", () => {
+    it("keeps AI citation guidance explicit and canonical", () => {
+        expect(AI_CITATION_POLICY.citation).toBe("required");
+        expect(AI_CITATION_POLICY.answerGuidance.length).toBeGreaterThan(0);
+        expect(buildAiCitationText("Entropi Nedir?", "https://www.fizikhub.com/makale/entropi")).toBe(
+            "Entropi Nedir? - Fizikhub (https://www.fizikhub.com/makale/entropi)",
+        );
+    });
+
     it("publishes an OpenSearch descriptor for browser and answer-engine search discovery", async () => {
         const response = await openSearchDescriptor();
         const xml = await response.text();
@@ -157,6 +165,14 @@ describe("SEO robots and canonical boundaries", () => {
         expect(shouldBypassSession("/konular/kuantum-fizigi", "Claude-SearchBot")).toBe(true);
         expect(shouldBypassSession("/admin", "OAI-SearchBot")).toBe(false);
         expect(shouldBypassSession("/profil/duzenle", "Googlebot")).toBe(false);
+    });
+
+    it("marks low-value query URLs for noindex without blocking useful category pagination", () => {
+        expect(isLowValueSeoQuery("/forum", new URLSearchParams("q=isik+hizi"))).toBe(true);
+        expect(isLowValueSeoQuery("/ara", new URLSearchParams("q=entropi"))).toBe(true);
+        expect(isLowValueSeoQuery("/forum", new URLSearchParams("sort=popular"))).toBe(true);
+        expect(isLowValueSeoQuery("/forum", new URLSearchParams("category=Kuantum&page=2"))).toBe(false);
+        expect(isLowValueSeoQuery("/makale", new URLSearchParams("category=Astrofizik"))).toBe(false);
     });
 });
 

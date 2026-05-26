@@ -211,10 +211,15 @@ for (const sitemap of ["/sitemap.xml", "/topic-sitemap.xml", "/article-sitemap.x
 
 const aiIndex = JSON.parse(byPath.get("/ai-index.json").text);
 assert(Array.isArray(aiIndex.items) && aiIndex.items.length > 0, "/ai-index.json has no items");
+assert(aiIndex.policy?.citation === "required", "/ai-index.json policy must require citation");
+assert(Array.isArray(aiIndex.policy?.answerGuidance) && aiIndex.policy.answerGuidance.length > 0, "/ai-index.json has no answer guidance");
 const badAiUrls = aiIndex.items
   .map((item) => ({ url: item.url, reason: forbiddenReason(item.url) }))
   .filter((entry) => entry.reason);
 assert(badAiUrls.length === 0, `/ai-index.json contains forbidden URLs: ${JSON.stringify(badAiUrls.slice(0, 10))}`);
+const badAiDiscoveryItems = aiIndex.items
+  .filter((item) => !item.citationText || !item.answerPriority || !Array.isArray(item.answerFormatHints) || item.answerFormatHints.length === 0);
+assert(badAiDiscoveryItems.length === 0, `/ai-index.json has weak AI discovery items: ${JSON.stringify(badAiDiscoveryItems.slice(0, 5))}`);
 
 const feedText = byPath.get("/feed.xml").text;
 assert((feedText.match(/<item>/g) || []).length > 0, "/feed.xml has no RSS items");
@@ -248,6 +253,10 @@ for (const privatePath of ["/login", "/mesajlar", "/makale/yeni", "/paylas"]) {
 
 const publicSample = await fetchText("/makale");
 assert(!publicSample.xRobotsTag?.includes("noindex"), "/makale should not have X-Robots-Tag noindex");
+
+const lowValueQuerySample = await fetchText("/forum?q=isik+hizi");
+assert(lowValueQuerySample.xRobotsTag?.includes("noindex"), "/forum?q=... is missing X-Robots-Tag noindex");
+assert(lowValueQuerySample.xRobotsTag?.includes("follow"), "/forum?q=... should keep follow");
 
 const samplePaths = [
   locs(byPath.get("/topic-sitemap.xml").text)[0],
