@@ -9,6 +9,26 @@ const noindexHeader = [
   },
 ];
 
+const privateNoindexHeaders = [
+  ...noindexHeader,
+  {
+    key: 'Cache-Control',
+    value: 'private, no-store, max-age=0',
+  },
+  {
+    key: 'Pragma',
+    value: 'no-cache',
+  },
+];
+
+const apiNoindexHeaders = [
+  ...noindexHeader,
+  {
+    key: 'Cache-Control',
+    value: 'no-store, max-age=0',
+  },
+];
+
 const aiDiscoveryLinkHeader = [
   '<https://www.fizikhub.com/llms.txt>; rel="alternate"; type="text/plain"; title="Fizikhub LLM manifest"',
   '<https://www.fizikhub.com/ai-index.json>; rel="alternate"; type="application/json"; title="Fizikhub AI index"',
@@ -57,6 +77,8 @@ const contentSecurityPolicy = [
   "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://challenges.cloudflare.com https://*.vercel-analytics.com https://*.vercel-insights.com https://www.google-analytics.com https://generativelanguage.googleapis.com https://lh3.googleusercontent.com https://cdn-icons-png.flaticon.com https://www.transparenttextures.com",
   "frame-src 'self' https://challenges.cloudflare.com https://www.youtube.com https://youtube.com https://phet.colorado.edu",
   "media-src 'self' blob:",
+  "manifest-src 'self'",
+  "prefetch-src 'self'",
   "worker-src 'self' blob:",
   "object-src 'none'",
   "base-uri 'self'",
@@ -164,8 +186,28 @@ const nextConfig: NextConfig = {
     return [
       ...privateNoindexRoutes.map((source) => ({
         source,
-        headers: noindexHeader,
+        headers: privateNoindexHeaders,
       })),
+      {
+        source: '/api/health',
+        headers: apiNoindexHeaders,
+      },
+      {
+        source: '/api/metrics/:path*',
+        headers: apiNoindexHeaders,
+      },
+      {
+        source: '/api/security/:path*',
+        headers: apiNoindexHeaders,
+      },
+      {
+        source: '/api/time-limit/:path*',
+        headers: apiNoindexHeaders,
+      },
+      {
+        source: '/api/webhooks/:path*',
+        headers: apiNoindexHeaders,
+      },
       // Prevent indexing of font/media assets to clean up GSC "Crawled - not indexed" warnings
       {
         source: '/_next/static/media/:all*',
@@ -253,7 +295,7 @@ const nextConfig: NextConfig = {
           // Permissions Policy
           {
             key: 'Permissions-Policy',
-            value: 'camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=()',
+            value: 'accelerometer=(), autoplay=(), bluetooth=(), browsing-topics=(), camera=(), display-capture=(), encrypted-media=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), midi=(), payment=(), serial=(), usb=(), xr-spatial-tracking=(), clipboard-write=(self), web-share=(self)',
           },
           {
             key: 'Cross-Origin-Opener-Policy',
@@ -270,6 +312,10 @@ const nextConfig: NextConfig = {
           {
             key: 'X-Permitted-Cross-Domain-Policies',
             value: 'none',
+          },
+          {
+            key: 'X-Download-Options',
+            value: 'noopen',
           },
           // X-DNS-Prefetch-Control
           {

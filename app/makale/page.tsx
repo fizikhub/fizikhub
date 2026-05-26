@@ -3,6 +3,7 @@ import { ArticleFeed } from "@/components/articles/article-feed";
 import type { Metadata } from "next";
 import { unstable_cache } from "next/cache";
 import { SEO_PRIORITY_ARTICLES } from "@/lib/seo-priority";
+import { buildSafeIlikePattern } from "@/lib/security";
 import { isLikelyIndexableArticle } from "@/lib/seo-utils";
 
 export const revalidate = 60;
@@ -104,7 +105,8 @@ const getCachedArticles = (category?: string, sort?: string, searchQuery?: strin
         }
 
         if (searchQuery) {
-            query = query.or(`title.ilike.%${searchQuery}%,excerpt.ilike.%${searchQuery}%`);
+            const searchTerm = buildSafeIlikePattern(searchQuery);
+            query = query.or(`title.ilike.${searchTerm},excerpt.ilike.${searchTerm}`);
         }
 
         // Sorting

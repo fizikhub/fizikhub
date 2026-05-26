@@ -13,7 +13,7 @@ export type AiCoreRoute = {
     priority: string;
 };
 
-export const AI_DISCOVERY_LAST_MODIFIED = "2026-05-25T00:00:00.000+03:00";
+export const AI_DISCOVERY_LAST_MODIFIED = "2026-05-26T00:00:00.000+03:00";
 
 export const AI_CRAWLER_USER_AGENTS = [
     "GPTBot",

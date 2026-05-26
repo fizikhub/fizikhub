@@ -2,7 +2,7 @@
 
 import { createClient } from "@/lib/supabase-server";
 import { generateEmbedding } from "@/lib/gemini";
-import { sanitizeSearchQuery } from "@/lib/security";
+import { buildSafeIlikePattern } from "@/lib/security";
 import { slugify } from "@/lib/slug";
 import { simulations } from "@/components/simulations/data";
 import { getVectorUrl, type VectorSearchRow } from "@/lib/search-results";
@@ -80,8 +80,7 @@ function toSnippet(value: string | null | undefined, maxLength = 140): string | 
 }
 
 function buildSearchTerm(query: string): string {
-    const safeQuery = sanitizeSearchQuery(query).replace(/[(),]/g, " ");
-    return `%${safeQuery}%`;
+    return buildSafeIlikePattern(query);
 }
 
 async function fetchVectorRows(

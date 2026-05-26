@@ -258,7 +258,7 @@ export function Footer() {
                     
                     <div className="space-y-3">
                         <h2 className="max-w-[720px] text-[1.9rem] font-black uppercase leading-[1.03] tracking-tight sm:text-[2.5rem] lg:text-[3rem]">
-                            BİLİMİ <span className="text-[#FACC15] drop-shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:drop-shadow-[2px_2px_0px_rgba(0,0,0,0.8)]">Tİ&apos;YE ALIYORUZ</span> AMA CİDDİLİ ŞEKİLDE.
+                            BİLİMİ <span className="text-[#FACC15] drop-shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:drop-shadow-[2px_2px_0px_rgba(0,0,0,0.8)]">Tİ&apos;YE ALIYORUZ</span> AMA CİDDİ ŞEKİLDE.
                         </h2>
                     </div>
                 </div>

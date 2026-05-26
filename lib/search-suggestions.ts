@@ -1,5 +1,5 @@
 import { simulations } from "@/components/simulations/data";
-import { sanitizeSearchQuery } from "@/lib/security";
+import { buildSafeIlikePattern } from "@/lib/security";
 import { simulationMatchesQuery } from "@/lib/simulation-learning";
 import { getTopicClusterHref, getTopicClustersForText, normalizeTopicSearchText } from "@/lib/seo-topic-clusters";
 import { getSiteUrl, truncateForMeta } from "@/lib/seo-utils";
@@ -76,8 +76,7 @@ function toSnippet(value: string | null | undefined, maxLength = 120) {
 }
 
 function buildSearchTerm(query: string) {
-    const safeQuery = sanitizeSearchQuery(query).replace(/[(),]/g, " ");
-    return `%${safeQuery}%`;
+    return buildSafeIlikePattern(query);
 }
 
 function toAbsoluteSuggestionUrl(url: string, baseUrl: string) {

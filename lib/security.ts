@@ -14,6 +14,23 @@ export function sanitizeSearchQuery(query: string): string {
 }
 
 /**
+ * Build a bounded PostgREST ILIKE pattern for `.ilike()` and `.or()` filters.
+ * Commas and parentheses are control characters in PostgREST's `or` grammar, so
+ * keep them out of user-controlled filter strings.
+ */
+export function buildSafeIlikePattern(query: string): string {
+    const safeQuery = sanitizeSearchQuery(query)
+        .replace(/[(),]/g, " ")
+        .replace(/\s+/g, " ")
+        .trim()
+        .slice(0, 80);
+
+    if (!safeQuery) return "%__fizikhub_no_match__%";
+
+    return `%${safeQuery}%`;
+}
+
+/**
  * Allowed image MIME types for file uploads
  */
 export const ALLOWED_IMAGE_TYPES = [

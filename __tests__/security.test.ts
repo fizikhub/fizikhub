@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { validatePasswordStrength, sanitizeSearchQuery, validateImageFile } from '../lib/security';
+import { validatePasswordStrength, sanitizeSearchQuery, validateImageFile, buildSafeIlikePattern } from '../lib/security';
 
 describe('validatePasswordStrength', () => {
     it('should reject empty password', () => {
@@ -63,6 +63,25 @@ describe('sanitizeSearchQuery', () => {
 
     it('should handle empty string', () => {
         expect(sanitizeSearchQuery('')).toBe('');
+    });
+});
+
+describe('buildSafeIlikePattern', () => {
+    it('escapes LIKE wildcards and removes PostgREST or grammar separators', () => {
+        expect(buildSafeIlikePattern('kuantum%,başlık_(x)')).toBe('%kuantum\\% başlık\\_ x%');
+    });
+
+    it('normalizes whitespace and bounds long search strings', () => {
+        const query = '  fizik   '.repeat(40);
+        const result = buildSafeIlikePattern(query);
+
+        expect(result.startsWith('%fizik')).toBe(true);
+        expect(result.endsWith('%')).toBe(true);
+        expect(result.length).toBeLessThanOrEqual(82);
+    });
+
+    it('does not turn punctuation-only searches into match-all patterns', () => {
+        expect(buildSafeIlikePattern(',,,((()))')).toBe('%__fizikhub_no_match__%');
     });
 });
 

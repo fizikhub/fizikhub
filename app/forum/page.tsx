@@ -5,7 +5,7 @@ import { QuestionList } from "@/components/forum/question-list";
 import { QuestionOfTheWeek } from "@/components/forum/question-of-the-week";
 import { Ghost } from "lucide-react";
 import { BreadcrumbJsonLd } from "@/lib/breadcrumbs";
-import { sanitizeSearchQuery } from "@/lib/security";
+import { buildSafeIlikePattern } from "@/lib/security";
 import { getSiteUrl, stripMarkdownForMeta } from "@/lib/seo-utils";
 import type { Metadata } from "next";
 
@@ -100,8 +100,7 @@ export default async function ForumPage({ searchParams }: ForumPageProps) {
     }
 
     if (searchQuery) {
-        const sanitizedSearch = sanitizeSearchQuery(searchQuery);
-        query = query.ilike('title', `%${sanitizedSearch}%`);
+        query = query.ilike('title', buildSafeIlikePattern(searchQuery));
     }
 
     // Apply sorting

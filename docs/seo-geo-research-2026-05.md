@@ -19,6 +19,15 @@ Bu not, Fizikhub icin teknik SEO, GEO (Generative Engine Optimization), arama ve
 - Forum, test ve simülasyon metadata'larinda Googlebot snippet/image/video izinleri tutarli hale getirildi.
 - Yeni Supabase migration'i, public search fallback sorgulari ve forum/makale detay okumalari icin ek indeksler ekledi; semantic index sagligi ve public olmayan kayit sızıntılarını izleyen private audit view'lari olusturdu.
 
+## 2026-05-26 uygulama notu
+
+- Arama sorgulari icin tek bir `buildSafeIlikePattern` yardimcisi eklendi. Makale arsivi, global arama, forum aramasi ve OpenSearch onerileri artik PostgREST `ilike/or` filtrelerinde `%`, `_`, ters slash, virgul ve parantez kaynakli wildcard/filter genislemesini ayni sekilde sinirliyor.
+- Private/noindex uygulama yuzeyleri `Cache-Control: private, no-store` ile guclendirildi; webhook, metrics, CSP report, health ve time-limit API aileleri de `X-Robots-Tag: noindex, nofollow` + `no-store` basligi aliyor.
+- CSP'ye `manifest-src 'self'` ve `prefetch-src 'self'` eklendi. Permissions-Policy daha dar feature listesine cekildi, clipboard ve web-share yalnizca first-party icin birakildi.
+- Ana sayfa hero'su artik gorunur `Fizikhub` marka H1'i, hizli arama/forum/simulasyon aksiyonlari ve daha az mor/agresif fallback renkleriyle ilk viewport'ta daha anlasilir. 3D canvas yine idle sonrasina erteleniyor.
+- Populer yazilar slider'indaki otomatik prefetch kapatildi; feed sayfalarinda ilk yukte gereksiz route prefetch trafigi azalir.
+- AI kesif yuzeylerinin statik `lastmod` isareti 2026-05-26'ya cekildi.
+
 ## Siradaki buyuk hamleler
 
 - Search Console API baglantisi: GSC sorgu/URL verilerini haftalik cekip `seo_opportunities` tablosuna yazan Vercel Cron veya Supabase Edge Function eklenebilir.
