@@ -139,7 +139,7 @@ export function ChatWindow({
     return (
         <div className="flex flex-col h-[calc(100dvh-56px)] w-full bg-[#050505] font-[family-name:var(--font-outfit)] relative overflow-hidden">
             {/* Ambient gradient */}
-            <div className="absolute top-0 left-0 w-full h-[200px] bg-gradient-to-b from-[#FACC15]/[0.03] to-transparent pointer-events-none z-0" />
+            <div className="absolute top-0 left-0 w-full h-[200px] bg-gradient-to-b from-[#EAB308]/[0.03] to-transparent pointer-events-none z-0" />
             <div className="absolute bottom-0 left-0 w-full h-[100px] bg-gradient-to-t from-[#050505] to-transparent pointer-events-none z-[5]" />
 
             {/* Search Bar (toggleable) */}
@@ -200,9 +200,9 @@ export function ChatWindow({
                     <div className="h-full flex flex-col items-center justify-center space-y-5 opacity-60 px-8">
                         <div className="relative">
                             <div className="w-20 h-20 bg-gradient-to-br from-zinc-800 to-zinc-900 rounded-2xl flex items-center justify-center shadow-2xl transform rotate-3 border border-white/[0.06]">
-                                <Sparkles className="w-8 h-8 text-[#FACC15]" />
+                                <Sparkles className="w-8 h-8 text-[#EAB308]" />
                             </div>
-                            <div className="absolute -inset-2 blur-2xl bg-[#FACC15]/10 -z-10 rounded-full" />
+                            <div className="absolute -inset-2 blur-2xl bg-[#EAB308]/10 -z-10 rounded-full" />
                         </div>
                         <div className="text-center">
                             <h3 className="font-black text-xl text-white tracking-tight mb-1.5">
@@ -272,9 +272,9 @@ export function ChatWindow({
                         className="bg-zinc-900/80 backdrop-blur-xl border-t border-white/[0.06] overflow-hidden z-20"
                     >
                         <div className="flex items-center gap-3 px-4 py-2.5">
-                            <div className="w-1 h-8 bg-[#FACC15] rounded-full shrink-0" />
+                            <div className="w-1 h-8 bg-[#EAB308] rounded-full shrink-0" />
                             <div className="flex-1 min-w-0">
-                                <span className="text-[11px] font-bold text-[#FACC15]">
+                                <span className="text-[11px] font-bold text-[#EAB308]">
                                     <Reply className="w-3 h-3 inline mr-1" />
                                     {replyTo.sender_id === currentUserId ? "Kendine yanıt" : "Yanıtla"}
                                 </span>
@@ -338,7 +338,7 @@ export function ChatWindow({
                     <div
                         className={cn(
                             "flex-1 bg-zinc-900/80 border border-zinc-800 rounded-[22px] flex items-end transition-all",
-                            "hover:border-zinc-700 focus-within:border-[#FACC15]/40 focus-within:shadow-[0_0_0_1px_rgba(250,204,21,0.1)]",
+                            "hover:border-zinc-700 focus-within:border-[#EAB308]/40 focus-within:shadow-[0_0_0_1px_rgba(250,204,21,0.1)]",
                             editingMessage && "border-blue-500/30 focus-within:border-blue-500/50"
                         )}
                     >
@@ -372,7 +372,7 @@ export function ChatWindow({
                             "disabled:opacity-30 disabled:scale-100 disabled:shadow-none",
                             editingMessage
                                 ? "bg-blue-500 text-white shadow-[0_4px_12px_rgba(59,130,246,0.3)] hover:scale-105 active:scale-95"
-                                : "bg-[#FACC15] text-black shadow-[0_4px_12px_rgba(250,204,21,0.25)] hover:scale-105 active:scale-95"
+                                : "bg-[#EAB308] text-black shadow-[0_4px_12px_rgba(250,204,21,0.25)] hover:scale-105 active:scale-95"
                         )}
                     >
                         <Send

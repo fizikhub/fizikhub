@@ -74,7 +74,7 @@ export function DesktopSidebar() {
                         <div className="hidden lg:block">
                             <DankLogo />
                         </div>
-                        <div className="lg:hidden w-10 h-10 bg-black text-white rounded-lg flex items-center justify-center font-black text-xl shadow-[2px_2px_0px_0px_#FACC15]">
+                        <div className="lg:hidden w-10 h-10 bg-black text-white rounded-lg flex items-center justify-center font-black text-xl shadow-[2px_2px_0px_0px_#EAB308]">
                             F
                         </div>
                     </ViewTransitionLink>
@@ -93,12 +93,12 @@ export function DesktopSidebar() {
                             <div className={cn(
                                 "flex items-center justify-center lg:justify-start gap-4 p-3 rounded-xl border-[3px] transition-all group cursor-pointer relative",
                                 isActive 
-                                    ? "bg-black dark:bg-white text-white dark:text-black border-black dark:border-white shadow-[4px_4px_0px_0px_#FACC15] translate-x-[-2px] translate-y-[-2px]" 
+                                    ? "bg-black dark:bg-white text-white dark:text-black border-black dark:border-white shadow-[4px_4px_0px_0px_#EAB308] translate-x-[-2px] translate-y-[-2px]" 
                                     : "border-transparent hover:bg-neutral-100 dark:hover:bg-[#27272a] hover:border-black hover:shadow-[4px_4px_0px_0px_#000] dark:hover:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)] hover:translate-x-[-2px] hover:translate-y-[-2px]"
                             )}>
                                 <item.icon className={cn(
                                     "w-6 h-6 shrink-0 stroke-[2.5px] transition-colors",
-                                    isActive ? "text-[#FACC15] dark:text-black" : "text-black dark:text-white"
+                                    isActive ? "text-[#EAB308] dark:text-black" : "text-black dark:text-white"
                                 )} />
                                 <span className={cn(
                                     "hidden lg:block font-[family-name:var(--font-outfit)] font-black uppercase tracking-tight text-lg transition-colors",
@@ -152,7 +152,7 @@ export function DesktopSidebar() {
                     {user ? (
                         <ViewTransitionLink href="/profil" className="block w-full outline-none">
                             <div className="relative z-10 flex items-center justify-center lg:justify-start gap-3 p-2 lg:p-3 rounded-xl border-[3px] border-transparent hover:border-black hover:bg-neutral-100 dark:hover:bg-[#27272a] hover:shadow-[4px_4px_0px_0px_#000] dark:hover:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all group cursor-pointer w-full">
-                                <div className="w-10 h-10 rounded-[8px] border-[3px] border-black bg-[#FACC15] flex items-center justify-center shrink-0 overflow-hidden shadow-[2px_2px_0px_0px_#000]">
+                                <div className="w-10 h-10 rounded-[8px] border-[3px] border-black bg-[#EAB308] flex items-center justify-center shrink-0 overflow-hidden shadow-[2px_2px_0px_0px_#000]">
                                      {userProfile?.avatar_url || user.user_metadata?.avatar_url ? (
                                         <OptimizedAvatar
                                             src={userProfile?.avatar_url || user.user_metadata?.avatar_url}

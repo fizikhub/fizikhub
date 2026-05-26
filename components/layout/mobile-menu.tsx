@@ -18,7 +18,7 @@ const menuItems = [
     { href: '/siralamalar', label: 'Sıralama', icon: Trophy, color: 'group-hover:text-[#EAB308]', iconColor: 'text-[#EAB308]' },
     { href: '/sozluk', label: 'Sözlük', icon: Book, color: 'group-hover:text-[#00F0A0]', iconColor: 'text-[#00F0A0]' },
     { href: '/iletisim', label: 'İletişim', icon: Mail, color: 'group-hover:text-zinc-200', iconColor: 'text-zinc-200' },
-    { isAction: true, label: "HAP BİLGİ", sub: "Evrenin Sırları", icon: Zap, color: 'group-hover:text-[#FACC15]', iconColor: 'text-[#FACC15]' },
+    { isAction: true, label: "HAP BİLGİ", sub: "Evrenin Sırları", icon: Zap, color: 'group-hover:text-[#EAB308]', iconColor: 'text-[#EAB308]' },
 ];
 
 export function MobileMenu() {
@@ -70,7 +70,7 @@ export function MobileMenu() {
                     {/* 1. HEADER SECTION */}
                     <div className="relative h-16 bg-[#27272a] flex items-center justify-between px-5 border-b-[2px] border-black/60">
                         {/* "MENÜ" Badge */}
-                        <div className="bg-[#FACC15] border-2 border-black shadow-[2px_2px_0px_0px_#000] px-2.5 py-0.5 -rotate-2">
+                        <div className="bg-[#EAB308] border-2 border-black shadow-[2px_2px_0px_0px_#000] px-2.5 py-0.5 -rotate-2">
                             <span className="font-black text-base uppercase tracking-tighter text-black">
                                 MENÜ
                             </span>
@@ -116,7 +116,7 @@ export function MobileMenu() {
                                                         {item.label}
                                                     </span>
                                                     {item.sub && (
-                                                        <span className="text-[10px] font-bold uppercase tracking-widest text-[#FACC15] opacity-80 group-hover:opacity-100">
+                                                        <span className="text-[10px] font-bold uppercase tracking-widest text-[#EAB308] opacity-80 group-hover:opacity-100">
                                                             {item.sub}
                                                         </span>
                                                     )}
@@ -144,7 +144,7 @@ export function MobileMenu() {
                                                         {item.label}
                                                     </span>
                                                     {item.sub && (
-                                                        <span className="text-[10px] font-bold uppercase tracking-widest text-[#FACC15] opacity-80 group-hover:opacity-100">
+                                                        <span className="text-[10px] font-bold uppercase tracking-widest text-[#EAB308] opacity-80 group-hover:opacity-100">
                                                             {item.sub}
                                                         </span>
                                                     )}
@@ -160,7 +160,7 @@ export function MobileMenu() {
                         <div className="pt-4 mt-4 border-t-2 border-zinc-800">
                             {user ? (
                                 <Link prefetch={false} href="/profil" onClick={() => setOpen(false)}>
-                                    <button className="w-full py-3 font-black text-base border-[2px] border-black bg-[#FACC15] text-black shadow-[3px_3px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none active:translate-y-[3px] transition-all rounded-xl uppercase flex items-center justify-center gap-2 group">
+                                    <button className="w-full py-3 font-black text-base border-[2px] border-black bg-[#EAB308] text-black shadow-[3px_3px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none active:translate-y-[3px] transition-all rounded-xl uppercase flex items-center justify-center gap-2 group">
                                         <User className="w-5 h-5 stroke-[3px]" />
                                         Profil
                                     </button>

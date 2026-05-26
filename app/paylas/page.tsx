@@ -262,7 +262,7 @@ export default function PaylasPage() {
                 >
                     <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 relative z-10">
                         <div className="flex flex-col">
-                            <h1 className="text-[clamp(3.2rem,16vw,5.6rem)] md:text-7xl font-black text-[#FACC15] leading-[0.84] uppercase drop-shadow-[4px_4px_0px_#fff] text-stroke-black">
+                            <h1 className="text-[clamp(3.2rem,16vw,5.6rem)] md:text-7xl font-black text-[#EAB308] leading-[0.84] uppercase drop-shadow-[4px_4px_0px_#fff] text-stroke-black">
                                 Paylaşım<br />
                             </h1>
                             <div className="flex items-center">
@@ -302,8 +302,8 @@ export default function PaylasPage() {
                         description="Sıra dışı fikirleri, evrensel notları ve teorilerini kağıda (veya internete) dök."
                         href="/makale/yeni?type=blog"
                         icon={FileText}
-                        color="bg-[#FACC15]"
-                        accentColor="#FACC15"
+                        color="bg-[#EAB308]"
+                        accentColor="#EAB308"
                         eyebrow="Makale alanı"
                         colSpan="md:col-span-2 lg:col-span-2"
                         rowSpan="row-span-2"

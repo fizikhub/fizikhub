@@ -28,7 +28,7 @@ export function LeaderboardHeaderIcon({ silginimUser }: { silginimUser?: ShyUser
                 user={silginimUser}
             />
             <div
-                className="bg-[#FACC15] text-black p-3 rounded-xl border-[3px] border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] cursor-pointer hover:scale-105 transition-transform active:translate-y-[2px] active:shadow-none select-none"
+                className="bg-[#EAB308] text-black p-3 rounded-xl border-[3px] border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] cursor-pointer hover:scale-105 transition-transform active:translate-y-[2px] active:shadow-none select-none"
                 onDoubleClick={handleDoubleClick}
                 title="Çift tıkla!"
             >

@@ -31,7 +31,7 @@ export function ChatHeader({ otherUser, onSearch }: ChatHeaderProps) {
 
                 {/* Desktop back */}
                 <Link prefetch={false} href="/mesajlar" className="hidden md:block">
-                    <button className="h-9 w-9 bg-zinc-900 border border-zinc-800 flex items-center justify-center rounded-xl hover:bg-zinc-800 hover:border-[#FACC15]/30 active:scale-95 transition-all text-zinc-300 hover:text-[#FACC15]">
+                    <button className="h-9 w-9 bg-zinc-900 border border-zinc-800 flex items-center justify-center rounded-xl hover:bg-zinc-800 hover:border-[#EAB308]/30 active:scale-95 transition-all text-zinc-300 hover:text-[#EAB308]">
                         <ArrowLeft className="h-4.5 w-4.5 stroke-[2.5px]" />
                     </button>
                 </Link>

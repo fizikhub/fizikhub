@@ -50,7 +50,7 @@ export default async function LeaderboardPage() {
                         <h1 className="text-4xl md:text-6xl font-black uppercase tracking-tighter leading-none text-black dark:text-white drop-shadow-[2px_2px_0px_rgba(0,0,0,0.5)] dark:drop-shadow-none">
                             Liderlik Tablosu
                         </h1>
-                        <p className="text-lg md:text-xl text-zinc-600 dark:text-zinc-400 font-bold max-w-2xl border-l-4 border-[#FACC15] pl-3 py-1">
+                        <p className="text-lg md:text-xl text-zinc-600 dark:text-zinc-400 font-bold max-w-2xl border-l-4 border-[#EAB308] pl-3 py-1">
                             Topluluğun yıldızları. Soru sor, cevapla, üret ve yüksel!
                         </p>
                     </div>

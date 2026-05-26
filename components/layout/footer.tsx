@@ -103,7 +103,7 @@ const UFOAlien = () => (
             </radialGradient>
             <radialGradient id="footerCoreLight" cx="50%" cy="50%" r="50%">
                 <stop offset="0" stopColor="#fff7ad" />
-                <stop offset="0.55" stopColor="#facc15" />
+                <stop offset="0.55" stopColor="#EAB308" />
                 <stop offset="1" stopColor="#ca8a04" />
             </radialGradient>
             <clipPath id="footerDomeClip">
@@ -170,9 +170,9 @@ const UFOAlien = () => (
 
             {[
                 { cx: 49, cy: 96, fill: "#ef4444", delay: 0 },
-                { cx: 88, cy: 112, fill: "#facc15", delay: 0.55 },
+                { cx: 88, cy: 112, fill: "#EAB308", delay: 0.55 },
                 { cx: 130, cy: 116, fill: "#60a5fa", delay: 1.1 },
-                { cx: 172, cy: 112, fill: "#facc15", delay: 1.65 },
+                { cx: 172, cy: 112, fill: "#EAB308", delay: 1.65 },
                 { cx: 211, cy: 96, fill: "#ef4444", delay: 2.2 },
             ].map((light) => (
                 <motion.g
@@ -258,7 +258,7 @@ export function Footer() {
                     
                     <div className="space-y-3">
                         <h2 className="max-w-[720px] text-[1.9rem] font-black uppercase leading-[1.03] tracking-tight sm:text-[2.5rem] lg:text-[3rem]">
-                            BİLİMİ <span className="text-[#FACC15] drop-shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:drop-shadow-[2px_2px_0px_rgba(0,0,0,0.8)]">Tİ&apos;YE ALIYORUZ</span> AMA CİDDİ ŞEKİLDE.
+                            BİLİMİ <span className="text-[#EAB308] drop-shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:drop-shadow-[2px_2px_0px_rgba(0,0,0,0.8)]">Tİ&apos;YE ALIYORUZ</span> AMA CİDDİ ŞEKİLDE.
                         </h2>
                     </div>
                 </div>
@@ -275,7 +275,7 @@ export function Footer() {
                                     <li key={link.label}>
                                         <Link
                                             href={link.href}
-                                            className="group inline-flex items-center gap-1.5 text-[1.02rem] font-black uppercase tracking-normal text-zinc-500 transition-colors hover:text-[#FACC15] dark:text-zinc-400 dark:hover:text-[#FACC15]"
+                                            className="group inline-flex items-center gap-1.5 text-[1.02rem] font-black uppercase tracking-normal text-zinc-500 transition-colors hover:text-[#EAB308] dark:text-zinc-400 dark:hover:text-[#EAB308]"
                                         >
                                             <span>{link.label}</span>
                                             <ArrowUpRight className="h-4 w-4 opacity-0 transition-all duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:opacity-100" />
@@ -308,8 +308,8 @@ export function Footer() {
                                 aria-label={social.label}
                                 className={cn(
                                     "group flex h-10 w-10 items-center justify-center rounded-xl border-[2px] border-black bg-white transition-all duration-200 sm:h-11 sm:w-11 sm:border-[3px]",
-                                    "shadow-[3px_3px_0px_0px_#000] hover:-translate-y-0.5 hover:bg-[#FACC15] sm:shadow-[4px_4px_0px_0px_#000]",
-                                    "dark:border-zinc-700 dark:bg-zinc-950 dark:text-white dark:shadow-[3px_3px_0px_0px_#27272a] dark:hover:bg-[#FACC15] dark:hover:text-black sm:dark:shadow-[4px_4px_0px_0px_#27272a]"
+                                    "shadow-[3px_3px_0px_0px_#000] hover:-translate-y-0.5 hover:bg-[#EAB308] sm:shadow-[4px_4px_0px_0px_#000]",
+                                    "dark:border-zinc-700 dark:bg-zinc-950 dark:text-white dark:shadow-[3px_3px_0px_0px_#27272a] dark:hover:bg-[#EAB308] dark:hover:text-black sm:dark:shadow-[4px_4px_0px_0px_#27272a]"
                                 )}
                             >
                                 <social.icon className="h-4 w-4 sm:h-5 sm:w-5 stroke-[2.5px] transition-transform group-hover:scale-110" />

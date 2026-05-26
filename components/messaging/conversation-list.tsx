@@ -90,7 +90,7 @@ export function ConversationList({
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                                 placeholder="Konuşma ara..."
-                                className="w-full bg-zinc-900/60 border border-zinc-800 rounded-xl pl-10 pr-10 py-2.5 text-sm text-white placeholder:text-zinc-500 focus:outline-none focus:border-[#FACC15]/30 transition-colors"
+                                className="w-full bg-zinc-900/60 border border-zinc-800 rounded-xl pl-10 pr-10 py-2.5 text-sm text-white placeholder:text-zinc-500 focus:outline-none focus:border-[#EAB308]/30 transition-colors"
                                 autoFocus
                             />
                             <button
@@ -151,7 +151,7 @@ export function ConversationList({
                                             "relative flex items-center gap-3.5 p-3.5 rounded-2xl transition-all duration-200",
                                             "bg-zinc-900/30 border border-transparent",
                                             "hover:bg-zinc-900/70 hover:border-white/[0.06]",
-                                            hasUnread && "bg-zinc-900/60 border-[#FACC15]/10"
+                                            hasUnread && "bg-zinc-900/60 border-[#EAB308]/10"
                                         )}
                                     >
                                         {/* Avatar */}
@@ -175,7 +175,7 @@ export function ConversationList({
                                                 <h3
                                                     className={cn(
                                                         "text-[15px] font-semibold truncate pr-2",
-                                                        "group-hover:text-[#FACC15] transition-colors font-[family-name:var(--font-outfit)]",
+                                                        "group-hover:text-[#EAB308] transition-colors font-[family-name:var(--font-outfit)]",
                                                         hasUnread ? "text-white" : "text-zinc-200"
                                                     )}
                                                 >
@@ -210,7 +210,7 @@ export function ConversationList({
 
                                                 {/* Unread badge */}
                                                 {hasUnread && (
-                                                    <div className="w-5 h-5 bg-[#FACC15] text-black text-[10px] font-black flex items-center justify-center rounded-full shrink-0">
+                                                    <div className="w-5 h-5 bg-[#EAB308] text-black text-[10px] font-black flex items-center justify-center rounded-full shrink-0">
                                                         {conversation.unreadCount}
                                                     </div>
                                                 )}

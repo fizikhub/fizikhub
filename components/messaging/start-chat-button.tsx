@@ -37,7 +37,7 @@ export function StartChatButton({ otherUserId }: StartChatButtonProps) {
             disabled={loading}
             size="icon"
             variant="secondary"
-            className="rounded-full h-10 w-10 bg-[#FACC15]/10 hover:bg-[#FACC15]/20 text-[#FACC15] border-0 shadow-sm transition-all hover:scale-105 active:scale-95"
+            className="rounded-full h-10 w-10 bg-[#EAB308]/10 hover:bg-[#EAB308]/20 text-[#EAB308] border-0 shadow-sm transition-all hover:scale-105 active:scale-95"
             title="Mesaj Gönder"
         >
             <MessageCircle className="h-5 w-5" />

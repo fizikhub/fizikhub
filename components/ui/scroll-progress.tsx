@@ -34,7 +34,7 @@ export function ScrollProgress() {
     return (
         <div
             ref={progressRef}
-            className="fixed top-0 left-0 right-0 h-2 bg-[#FACC15] origin-left z-50 border-b-2 border-black scale-x-[var(--scroll-progress,0)] transform-gpu"
+            className="fixed top-0 left-0 right-0 h-2 bg-[#EAB308] origin-left z-50 border-b-2 border-black scale-x-[var(--scroll-progress,0)] transform-gpu"
         >
             <div className="absolute top-0 right-0 w-2 h-full bg-white animate-pulse" />
         </div>

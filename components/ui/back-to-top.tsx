@@ -39,9 +39,9 @@ export function BackToTop() {
             className="
                         fixed bottom-24 right-6 z-40
                         w-12 h-12
-                        bg-black text-[#FACC15]
+                        bg-black text-[#EAB308]
                         border-2 border-white
-                        shadow-[4px_4px_0px_#FACC15]
+                        shadow-[4px_4px_0px_#EAB308]
                         rounded-xl
                         flex items-center justify-center
                         cursor-pointer

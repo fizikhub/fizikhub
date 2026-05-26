@@ -68,7 +68,7 @@ export const ChemIcon = ({ className }: { className?: string }) => (
         {/* Flask */}
         <path d="M9 2h6v6l4 10a2 2 0 01-2 2H7a2 2 0 01-2-2l4-10V2z" stroke="#EAB308" strokeWidth="1.5" fill="#EAB308" fillOpacity="0.15" />
         {/* Liquid */}
-        <path d="M6 16h12" stroke="#FACC15" strokeWidth="3" />
+        <path d="M6 16h12" stroke="#EAB308" strokeWidth="3" />
         {/* Bubbles */}
         <circle cx="10" cy="14" r="1" fill="#FDE047" />
         <circle cx="14" cy="13" r="0.8" fill="#FDE047" />

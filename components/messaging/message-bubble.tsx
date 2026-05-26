@@ -111,7 +111,7 @@ export function MessageBubble({
                             className={cn(
                                 "mb-1 px-3 py-1.5 rounded-xl text-[12px] leading-tight border-l-2 max-w-[220px]",
                                 isMe
-                                    ? "bg-[#FACC15]/10 border-[#FACC15]/40 text-[#FACC15]/80 ml-auto"
+                                    ? "bg-[#EAB308]/10 border-[#EAB308]/40 text-[#EAB308]/80 ml-auto"
                                     : "bg-zinc-800/40 border-zinc-600 text-zinc-400"
                             )}
                         >
@@ -139,7 +139,7 @@ export function MessageBubble({
                             "px-4 py-2.5 text-[14.5px] leading-relaxed transition-all select-none relative",
                             // Color
                             isMe
-                                ? "bg-[#FACC15] text-black font-medium"
+                                ? "bg-[#EAB308] text-black font-medium"
                                 : "bg-zinc-800/90 text-white border border-white/[0.06]",
                             // Shape - first/last logic
                             isMe
@@ -230,7 +230,7 @@ export function MessageBubble({
                                     {/* React */}
                                     <button
                                         onClick={() => setShowReactions(!showReactions)}
-                                        className="p-1.5 text-zinc-400 hover:text-[#FACC15] rounded-lg hover:bg-zinc-800 transition-all text-[13px]"
+                                        className="p-1.5 text-zinc-400 hover:text-[#EAB308] rounded-lg hover:bg-zinc-800 transition-all text-[13px]"
                                     >
                                         😊
                                     </button>

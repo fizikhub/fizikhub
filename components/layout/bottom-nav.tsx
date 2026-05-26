@@ -175,7 +175,7 @@ export function BottomNav() {
                                 className="
                                     flex items-center justify-center
                                     w-12 h-12
-                                    bg-[#FACC15]
+                                    bg-[#EAB308]
                                     border-2 border-black dark:border-white
                                     rounded-full
                                     shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]

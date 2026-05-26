@@ -55,7 +55,7 @@ export default function NotFound() {
                         </defs>
                         {/* Disco Lights around 404 */}
                         {[...Array(12)].map((_, i) => (
-                            <circle key={i} r="3" fill={i % 2 === 0 ? "#FACC15" : "#ff00ff"} className="animate-pulse">
+                            <circle key={i} r="3" fill={i % 2 === 0 ? "#EAB308" : "#ff00ff"} className="animate-pulse">
                                 <animateMotion dur="6s" repeatCount="indefinite" path="M50,100 a150,50 0 1,0 300,0 a150,50 0 1,0 -300,0" begin={`${i * 0.5}s`} />
                             </circle>
                         ))}
@@ -100,7 +100,7 @@ export default function NotFound() {
                     transition={{ delay: 0.3 }}
                     className="space-y-4 max-w-lg mx-auto relative z-20 -mt-10 sm:-mt-12" // Negative top margin to pull text up overlapping with image feet
                 >
-                    <h1 className="text-3xl sm:text-5xl font-black text-[#FACC15] uppercase tracking-tighter leading-none skew-x-[-10deg]">
+                    <h1 className="text-3xl sm:text-5xl font-black text-[#EAB308] uppercase tracking-tighter leading-none skew-x-[-10deg]">
                         DENEY HATASI: <br />
                         <span className="text-[#ff00ff]">PARALEL EVREN SAPMASI</span>
                     </h1>
@@ -123,7 +123,7 @@ export default function NotFound() {
                     className="flex flex-col sm:flex-row gap-4 justify-center pt-8 w-full"
                 >
                     <Link prefetch={false} href="/" className="w-full sm:w-auto">
-                        <Button className="w-full h-14 px-8 bg-[#FACC15] hover:bg-[#EAB308] text-black text-lg font-black rounded-xl shadow-[6px_6px_0_black] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0_black] transition-all flex items-center justify-center gap-2 uppercase">
+                        <Button className="w-full h-14 px-8 bg-[#EAB308] hover:bg-[#EAB308] text-black text-lg font-black rounded-xl shadow-[6px_6px_0_black] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0_black] transition-all flex items-center justify-center gap-2 uppercase">
                             <EyeOff className="w-5 h-5" />
                             Görmedim Say, Eve Dön
                         </Button>

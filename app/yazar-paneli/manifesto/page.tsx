@@ -321,7 +321,7 @@ export default function ManifestoPage() {
                     </section>
 
                     {/* Final CTA */}
-                    <section className="bg-black text-white p-10 rounded-2xl border-[4px] border-yellow-400 relative overflow-hidden text-center shadow-[12px_12px_0px_0px_#facc15] hover:shadow-[16px_16px_0px_0px_#facc15] transition-shadow">
+                    <section className="bg-black text-white p-10 rounded-2xl border-[4px] border-yellow-400 relative overflow-hidden text-center shadow-[12px_12px_0px_0px_#EAB308] hover:shadow-[16px_16px_0px_0px_#EAB308] transition-shadow">
                         <PenTool className="absolute -bottom-6 -right-6 w-48 h-48 text-white opacity-5" />
                         <h2 className="text-4xl md:text-5xl font-black uppercase tracking-widest text-yellow-500 mb-6 italic transform -skew-x-6">Sıra Sende Koskoca Yazar!</h2>
                         <div className="max-w-3xl mx-auto space-y-6">

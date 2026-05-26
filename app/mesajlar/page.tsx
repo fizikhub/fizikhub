@@ -29,7 +29,7 @@ export default async function MessagesPage() {
                             Mesajlar
                         </h1>
                         <div className="flex items-center gap-2">
-                            <div className="h-8 w-8 bg-zinc-900 border border-zinc-800 rounded-xl flex items-center justify-center text-zinc-400 hover:text-[#FACC15] hover:border-[#FACC15]/30 transition-all cursor-pointer">
+                            <div className="h-8 w-8 bg-zinc-900 border border-zinc-800 rounded-xl flex items-center justify-center text-zinc-400 hover:text-[#EAB308] hover:border-[#EAB308]/30 transition-all cursor-pointer">
                                 <Plus className="h-4 w-4 stroke-[2.5px]" />
                             </div>
                         </div>
@@ -37,18 +37,18 @@ export default async function MessagesPage() {
                     <p className="text-zinc-500 text-sm font-medium">
                         Sohbetlerin ve bağlantıların
                     </p>
-                    <div className="h-[2px] bg-gradient-to-r from-[#FACC15]/30 via-zinc-800 to-transparent mt-4" />
+                    <div className="h-[2px] bg-gradient-to-r from-[#EAB308]/30 via-zinc-800 to-transparent mt-4" />
                 </div>
 
                 {conversations.length === 0 ? (
                     /* Empty State */
                     <div className="flex flex-col items-center justify-center py-20 bg-zinc-900/30 rounded-2xl border border-zinc-800/50">
                         <div className="relative mb-5">
-                            <div className="w-16 h-16 bg-gradient-to-br from-[#FACC15]/20 to-[#FACC15]/5 rounded-2xl flex items-center justify-center transform -rotate-3 border border-[#FACC15]/20">
-                                <MessageSquare className="h-7 w-7 text-[#FACC15]" />
+                            <div className="w-16 h-16 bg-gradient-to-br from-[#EAB308]/20 to-[#EAB308]/5 rounded-2xl flex items-center justify-center transform -rotate-3 border border-[#EAB308]/20">
+                                <MessageSquare className="h-7 w-7 text-[#EAB308]" />
                             </div>
                             <div className="absolute -top-1.5 -right-1.5 w-6 h-6 bg-zinc-800 rounded-lg flex items-center justify-center rotate-12 border border-white/[0.06]">
-                                <Sparkles className="h-3 w-3 text-[#FACC15]/60" />
+                                <Sparkles className="h-3 w-3 text-[#EAB308]/60" />
                             </div>
                         </div>
                         <h3 className="text-white font-bold text-lg mb-1.5">Henüz mesaj yok</h3>
@@ -79,7 +79,7 @@ export default async function MessagesPage() {
                                             "bg-zinc-900/30 border border-transparent",
                                             "hover:bg-zinc-900/70 hover:border-white/[0.06]",
                                             "active:scale-[0.99]",
-                                            hasUnread && "bg-zinc-900/50 border-[#FACC15]/10"
+                                            hasUnread && "bg-zinc-900/50 border-[#EAB308]/10"
                                         )}
                                     >
                                         {/* Avatar */}
@@ -91,7 +91,7 @@ export default async function MessagesPage() {
                                                 </AvatarFallback>
                                             </Avatar>
                                             {hasUnread && (
-                                                <div className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-[#FACC15] text-black text-[9px] font-black flex items-center justify-center rounded-full border-2 border-[#050505]">
+                                                <div className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-[#EAB308] text-black text-[9px] font-black flex items-center justify-center rounded-full border-2 border-[#050505]">
                                                     {conv.unreadCount}
                                                 </div>
                                             )}
@@ -103,7 +103,7 @@ export default async function MessagesPage() {
                                                 <h3
                                                     className={cn(
                                                         "text-[15px] font-semibold truncate pr-2",
-                                                        "group-hover:text-[#FACC15] transition-colors",
+                                                        "group-hover:text-[#EAB308] transition-colors",
                                                         hasUnread ? "text-white font-bold" : "text-zinc-200"
                                                     )}
                                                 >

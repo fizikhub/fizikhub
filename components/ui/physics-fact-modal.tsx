@@ -73,7 +73,7 @@ export function PhysicsFactModal({ open, onOpenChange }: PhysicsFactModalProps) 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="sm:max-w-md border-[4px] border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-white dark:bg-[#18181b] p-0 overflow-hidden rounded-xl gap-0">
-                <div className="bg-[#FACC15] w-full p-5 border-b-[4px] border-black flex items-center justify-between">
+                <div className="bg-[#EAB308] w-full p-5 border-b-[4px] border-black flex items-center justify-between">
                     <div className="flex items-center gap-3">
                         <div className="bg-white border-2 border-black rounded-lg p-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
                             <Zap className="w-6 h-6 text-black fill-black" />
@@ -92,7 +92,7 @@ export function PhysicsFactModal({ open, onOpenChange }: PhysicsFactModalProps) 
                             className="p-6 md:p-8 flex flex-col gap-4"
                         >
                             <h3 className="text-xl md:text-2xl font-black uppercase dark:text-white flex items-center gap-2">
-                                <Sparkles className="w-6 h-6 text-[#FACC15] shrink-0" />
+                                <Sparkles className="w-6 h-6 text-[#EAB308] shrink-0" />
                                 {currentFact.title}
                             </h3>
                             <DialogDescription className="text-base md:text-lg text-zinc-700 dark:text-zinc-300 font-medium leading-relaxed">

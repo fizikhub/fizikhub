@@ -18,7 +18,7 @@ function photonColor(wavelength: number) {
     if (wavelength < 380) return "#A78BFA";
     if (wavelength < 460) return "#60A5FA";
     if (wavelength < 540) return "#22C55E";
-    if (wavelength < 610) return "#FACC15";
+    if (wavelength < 610) return "#EAB308";
     if (wavelength < 700) return "#F97316";
     return "#EF4444";
 }
@@ -76,7 +76,7 @@ export function PhotoelectricSim({ simData }: { simData?: SimulationMeta }) {
                 <PhysicsSlider label="Dalga boyu" value={wavelength} min={200} max={800} step={10} unit="nm" onChange={setWavelength} color={beamColor} />
             </div>
             <div className="rounded-lg border-[2px] border-black bg-zinc-900 p-3 shadow-[2px_2px_0px_0px_#000]">
-                <PhysicsSlider label="Işık şiddeti" value={intensity} min={10} max={100} step={5} unit="%" onChange={setIntensity} color="#FACC15" />
+                <PhysicsSlider label="Işık şiddeti" value={intensity} min={10} max={100} step={5} unit="%" onChange={setIntensity} color="#EAB308" />
             </div>
             <div className="rounded-lg border-[2px] border-black bg-zinc-900 p-3 shadow-[2px_2px_0px_0px_#000]">
                 <PhysicsSlider label="İş fonksiyonu" value={workFunction} min={1.8} max={5.2} step={0.1} unit="eV" onChange={setWorkFunction} color={accentColor} />

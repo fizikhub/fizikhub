@@ -31,7 +31,7 @@ export function LeaderboardCard({ user, currentUserId }: LeaderboardCardProps) {
 
     // Deterministic vivid colors based on rank/index for hover
     const hoverColors = [
-        "hover:shadow-[#FACC15] hover:border-[#FACC15]", // Yellow
+        "hover:shadow-[#EAB308] hover:border-[#EAB308]", // Yellow
         "hover:shadow-[#4169E1] hover:border-[#4169E1]", // Blue
         "hover:shadow-[#16A34A] hover:border-[#16A34A]", // Green
         "hover:shadow-[#FF0080] hover:border-[#FF0080]", // Pink
