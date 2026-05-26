@@ -103,8 +103,8 @@ function FloatingUFO({ className, size = 120, delay = 0 }: { className?: string;
                 />
                 <defs>
                     <linearGradient id="beamGrad" x1="60" y1="56" x2="60" y2="120" gradientUnits="userSpaceOnUse">
-                        <stop stopColor="#FFC800" stopOpacity="0.5" />
-                        <stop offset="1" stopColor="#FFC800" stopOpacity="0" />
+                        <stop stopColor="#EAB308" stopOpacity="0.5" />
+                        <stop offset="1" stopColor="#EAB308" stopOpacity="0" />
                     </linearGradient>
                 </defs>
 
@@ -129,7 +129,7 @@ function FloatingUFO({ className, size = 120, delay = 0 }: { className?: string;
                         cx={x}
                         cy="53"
                         r="4"
-                        fill={["#FFC800", "#FF90E8", "#00F050", "#23A9FA", "#ff4444", "#FFC800"][i]}
+                        fill={["#EAB308", "#FF90E8", "#00F050", "#23A9FA", "#ff4444", "#EAB308"][i]}
                         stroke="#000"
                         strokeWidth="2"
                         animate={{ opacity: [0.4, 1, 0.4], scale: [0.9, 1.1, 0.9] }}
@@ -141,7 +141,7 @@ function FloatingUFO({ className, size = 120, delay = 0 }: { className?: string;
                 <line x1="60" y1="24" x2="60" y2="12" stroke="#000" strokeWidth="3" strokeLinecap="round" />
                 <motion.circle
                     cx="60" cy="9" r="5"
-                    fill="#FFC800" stroke="#000" strokeWidth="2.5"
+                    fill="#EAB308" stroke="#000" strokeWidth="2.5"
                     animate={{ scale: [1, 1.3, 1], opacity: [0.7, 1, 0.7] }}
                     transition={{ duration: 1.5, repeat: Infinity }}
                 />
@@ -151,7 +151,7 @@ function FloatingUFO({ className, size = 120, delay = 0 }: { className?: string;
 }
 
 // ─── FLYING ROCKET ──────────────────────────────────
-function FlyingRocket({ direction = "ltr", top = "20%", delay = 0, color = "#FFC800" }: { direction?: "ltr" | "rtl"; top?: string; delay?: number; color?: string }) {
+function FlyingRocket({ direction = "ltr", top = "20%", delay = 0, color = "#EAB308" }: { direction?: "ltr" | "rtl"; top?: string; delay?: number; color?: string }) {
     const isLtr = direction === "ltr";
     return (
         <motion.div
@@ -208,7 +208,7 @@ function FloatingPlanet({ className }: { className?: string }) {
         >
             <svg width="140" height="140" viewBox="0 0 140 140" fill="none">
                 {/* Ring behind */}
-                <ellipse cx="70" cy="70" rx="68" ry="14" fill="none" stroke="#FFC800" strokeWidth="3" opacity="0.25"
+                <ellipse cx="70" cy="70" rx="68" ry="14" fill="none" stroke="#EAB308" strokeWidth="3" opacity="0.25"
                     strokeDasharray="12 8" />
 
                 {/* Planet */}
@@ -220,7 +220,7 @@ function FloatingPlanet({ className }: { className?: string }) {
                 <ellipse cx="55" cy="48" rx="18" ry="12" fill="white" opacity="0.06" />
 
                 {/* Ring in front */}
-                <ellipse cx="70" cy="70" rx="68" ry="14" fill="none" stroke="#FFC800" strokeWidth="3" opacity="0.45" />
+                <ellipse cx="70" cy="70" rx="68" ry="14" fill="none" stroke="#EAB308" strokeWidth="3" opacity="0.45" />
 
                 {/* Moon orbiting */}
                 <motion.g
@@ -251,8 +251,8 @@ function Satellite({ className }: { className?: string }) {
                 <line x1="11" y1="32" x2="20" y2="32" stroke="#000" strokeWidth="1" />
                 <line x1="44" y1="32" x2="53" y2="32" stroke="#000" strokeWidth="1" />
                 <line x1="32" y1="24" x2="32" y2="14" stroke="#000" strokeWidth="2" strokeLinecap="round" />
-                <circle cx="32" cy="11" r="4" fill="#FFC800" stroke="#000" strokeWidth="2" />
-                <circle cx="32" cy="32" r="4" fill="#FFC800" stroke="#000" strokeWidth="2" />
+                <circle cx="32" cy="11" r="4" fill="#EAB308" stroke="#000" strokeWidth="2" />
+                <circle cx="32" cy="32" r="4" fill="#EAB308" stroke="#000" strokeWidth="2" />
             </svg>
         </motion.div>
     );
@@ -332,7 +332,7 @@ export function ContactPageClient() {
             </motion.div>
 
             {/* ──── FLYING ROCKETS ──── */}
-            <FlyingRocket direction="ltr" top="18%" delay={2} color="#FFC800" />
+            <FlyingRocket direction="ltr" top="18%" delay={2} color="#EAB308" />
             <FlyingRocket direction="rtl" top="62%" delay={10} color="#FF90E8" />
 
             {/* ──── CONTENT ──── */}
@@ -349,11 +349,11 @@ export function ContactPageClient() {
                         animate={{ scale: [1, 1.05, 1] }}
                         transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
                     >
-                        <Sparkles className="w-5 h-5 text-[#FFC800]" />
+                        <Sparkles className="w-5 h-5 text-[#EAB308]" />
                     </motion.div>
 
                     <h1 className="font-black uppercase tracking-tighter leading-[0.9] text-white" style={{ fontSize: "clamp(3rem, 10vw, 6rem)" }}>
-                        <span className="text-[#FFC800]">İLETİ</span>ŞİM
+                        <span className="text-[#EAB308]">İLETİ</span>ŞİM
                     </h1>
 
                     <p className="mt-5 text-zinc-400 font-semibold text-base sm:text-lg max-w-lg mx-auto leading-relaxed">
@@ -370,7 +370,7 @@ export function ContactPageClient() {
                             transition={{ delay: 0.6, duration: 0.6 }}
                         />
                         <motion.div
-                            className="w-2.5 h-2.5 rounded-full bg-[#FFC800] border-2 border-black"
+                            className="w-2.5 h-2.5 rounded-full bg-[#EAB308] border-2 border-black"
                             animate={{ scale: [1, 1.3, 1] }}
                             transition={{ duration: 2, repeat: Infinity }}
                         />
@@ -387,14 +387,14 @@ export function ContactPageClient() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-6">
 
                     {/* Email */}
-                    <NeoCard href="mailto:iletisim@fizikhub.com" className="bg-[#FFC800] hover:bg-[#ffda4a]" delay={0.2}>
+                    <NeoCard href="mailto:iletisim@fizikhub.com" className="bg-[#EAB308] hover:bg-[#ffda4a]" delay={0.2}>
                         <div className="flex items-start gap-4">
                             <motion.div
                                 className="flex-shrink-0 w-14 h-14 rounded-full bg-black border-[2.5px] border-black flex items-center justify-center shadow-[3px_3px_0_rgba(0,0,0,0.2)]"
                                 animate={{ rotate: [0, 5, -5, 0] }}
                                 transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
                             >
-                                <Mail className="w-7 h-7 text-[#FFC800]" strokeWidth={2.5} />
+                                <Mail className="w-7 h-7 text-[#EAB308]" strokeWidth={2.5} />
                             </motion.div>
                             <div>
                                 <span className="block text-[10px] font-black uppercase tracking-widest text-black/50 mb-1">E-Posta</span>
@@ -411,7 +411,7 @@ export function ContactPageClient() {
                     {/* Location */}
                     <NeoCard delay={0.3}>
                         <div className="flex items-start gap-4">
-                            <div className="flex-shrink-0 w-14 h-14 rounded-full bg-[#FFC800] border-[2.5px] border-black flex items-center justify-center shadow-[3px_3px_0_#000]">
+                            <div className="flex-shrink-0 w-14 h-14 rounded-full bg-[#EAB308] border-[2.5px] border-black flex items-center justify-center shadow-[3px_3px_0_#000]">
                                 <MapPin className="w-7 h-7 text-black" strokeWidth={2.5} />
                             </div>
                             <div>
@@ -443,7 +443,7 @@ export function ContactPageClient() {
                                 icon: <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z" /></svg>
                             },
                             {
-                                label: "E-Posta", href: "mailto:iletisim@fizikhub.com", bg: "#FFC800",
+                                label: "E-Posta", href: "mailto:iletisim@fizikhub.com", bg: "#EAB308",
                                 text: "text-black",
                                 icon: <Mail className="w-5 h-5" strokeWidth={2.5} />
                             },
@@ -497,10 +497,10 @@ export function ContactPageClient() {
                 {/* ── CTA BANNER ── */}
                 <NeoCard delay={0.6} className="relative">
                     {/* Cosmic glow */}
-                    <div className="absolute -top-20 -right-20 w-48 h-48 bg-[#FFC800]/5 rounded-full blur-3xl pointer-events-none" />
+                    <div className="absolute -top-20 -right-20 w-48 h-48 bg-[#EAB308]/5 rounded-full blur-3xl pointer-events-none" />
 
                     <div className="flex items-center gap-2 mb-3">
-                        <Rocket className="w-5 h-5 text-[#FFC800]" />
+                        <Rocket className="w-5 h-5 text-[#EAB308]" />
                         <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500">
                             Fikir &amp; İş Birliği
                         </p>
@@ -516,7 +516,7 @@ export function ContactPageClient() {
 
                     <motion.a
                         href="mailto:iletisim@fizikhub.com"
-                        className="mt-5 inline-flex items-center gap-2.5 bg-[#FFC800] border-[2.5px] border-black rounded-lg shadow-[3px_3px_0_#000] px-5 py-2.5 text-black font-black uppercase text-sm tracking-wide"
+                        className="mt-5 inline-flex items-center gap-2.5 bg-[#EAB308] border-[2.5px] border-black rounded-lg shadow-[3px_3px_0_#000] px-5 py-2.5 text-black font-black uppercase text-sm tracking-wide"
                         whileHover={{ x: -2, y: -2, boxShadow: "5px 5px 0 #000" }}
                         whileTap={{ x: 0, y: 0, boxShadow: "2px 2px 0 #000" }}
                     >

@@ -25,7 +25,7 @@ export default function Loading() {
                         {[1, 2, 3, 4].map((i) => (
                             <div key={i} className="rounded-[10px] border-[3px] border-black dark:border-zinc-700 overflow-hidden shadow-[4px_4px_0px_0px_#000] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.15)] bg-card">
                                 {/* Yellow Header Bar */}
-                                <div className="h-10 bg-[#FFBD2E]/30 dark:bg-[#FFBD2E]/10 border-b-[3px] border-black dark:border-zinc-700 flex items-center justify-between px-4">
+                                <div className="h-10 bg-[#EAB308]/30 dark:bg-[#EAB308]/10 border-b-[3px] border-black dark:border-zinc-700 flex items-center justify-between px-4">
                                     <Skeleton className="h-3 w-16 rounded bg-black/10" />
                                     <Skeleton className="h-3 w-20 rounded bg-black/10" />
                                 </div>

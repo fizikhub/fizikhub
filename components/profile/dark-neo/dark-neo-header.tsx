@@ -91,7 +91,7 @@ export function DarkNeoHeader({ profile, stats, isOwnProfile, isFollowing }: Dar
                             <div className="relative z-10 h-24 w-24 overflow-hidden rounded-2xl border border-zinc-200 bg-background p-1 shadow-md transition-transform group-hover:scale-[1.02] dark:border-zinc-800 sm:h-32 sm:w-32">
                                 <Avatar className="h-full w-full rounded-xl border border-zinc-200 dark:border-zinc-800">
                                     <AvatarImage src={profile?.avatar_url} className="object-cover scale-110" />
-                                    <AvatarFallback className="text-3xl font-black bg-[#FFC800] text-black rounded-none">
+                                    <AvatarFallback className="text-3xl font-black bg-[#EAB308] text-black rounded-none">
                                         {initial}
                                     </AvatarFallback>
                                 </Avatar>
@@ -108,7 +108,7 @@ export function DarkNeoHeader({ profile, stats, isOwnProfile, isFollowing }: Dar
                         <h1 className="max-w-full break-words text-[1.28rem] font-black leading-[1.02] tracking-tight text-foreground drop-shadow-sm sm:text-3xl">
                             {profile?.full_name || "Yeni Kullanıcı"}
                         </h1>
-                        <span className="inline-block max-w-full truncate rounded-md border border-black/50 bg-zinc-900 px-2 py-0.5 text-[10px] font-bold text-zinc-400 transition-all hover:bg-black hover:text-[#FFC800] sm:text-[11px]">
+                        <span className="inline-block max-w-full truncate rounded-md border border-black/50 bg-zinc-900 px-2 py-0.5 text-[10px] font-bold text-zinc-400 transition-all hover:bg-black hover:text-[#EAB308] sm:text-[11px]">
                             @{profile?.username || "kullaniciadi"}
                         </span>
                     </div>
@@ -131,7 +131,7 @@ export function DarkNeoHeader({ profile, stats, isOwnProfile, isFollowing }: Dar
                             </div>
                         )}
                         {profile?.website && (
-                            <a href={websiteHref} target="_blank" rel="noopener noreferrer" className="group flex min-w-0 items-center gap-1.5 transition-colors hover:text-[#FFC800]">
+                            <a href={websiteHref} target="_blank" rel="noopener noreferrer" className="group flex min-w-0 items-center gap-1.5 transition-colors hover:text-[#EAB308]">
                                 <LinkIcon className="w-3.5 h-3.5 text-zinc-600 group-hover:text-inherit" />
                                 <span className="max-w-full truncate decoration-zinc-600 underline-offset-4 group-hover:underline sm:max-w-[220px]">{profile.website.replace(/^https?:\/\//, '')}</span>
                             </a>
@@ -162,7 +162,7 @@ export function DarkNeoHeader({ profile, stats, isOwnProfile, isFollowing }: Dar
                                     </Link>
                                     {profile?.is_writer && (
                                         <Link prefetch={false} href="/yazar/yeni" onClick={handleActionClick} className="w-full sm:w-auto">
-                                            <button className="flex min-h-10 w-full items-center justify-center gap-1.5 rounded-xl border border-zinc-200 shadow-sm transition-all hover:scale-[1.02] active:scale-95 dark:border-zinc-800 bg-[#FFBD2E] px-3 py-2 text-[11px] font-bold text-black  transition-all hover:shadow-md hover:bg-[#FFD268]   active:scale-95  sm:w-auto sm:gap-2 sm:px-4 sm:py-2.5 sm:text-xs">
+                                            <button className="flex min-h-10 w-full items-center justify-center gap-1.5 rounded-xl border border-zinc-200 shadow-sm transition-all hover:scale-[1.02] active:scale-95 dark:border-zinc-800 bg-[#EAB308] px-3 py-2 text-[11px] font-bold text-black  transition-all hover:shadow-md hover:bg-[#EAB308]   active:scale-95  sm:w-auto sm:gap-2 sm:px-4 sm:py-2.5 sm:text-xs">
                                                 <PenSquare className="w-3.5 h-3.5 stroke-2" />
                                                 <span>Yaz</span>
                                             </button>

@@ -151,7 +151,7 @@ export function ProfileEditForm({ user, profile }: ProfileEditFormProps) {
                             {coverPreview ? (
                                 <Image src={coverPreview} alt="Cover" fill priority sizes="(max-width: 640px) 100vw, 672px" className="object-cover opacity-80 group-hover:opacity-60 transition-opacity" />
                             ) : (
-                                <div className="absolute inset-0 bg-gradient-to-tr from-[#FFC800]/20 via-purple-500/10 to-blue-500/20" />
+                                <div className="absolute inset-0 bg-gradient-to-tr from-[#EAB308]/20 via-purple-500/10 to-blue-500/20" />
                             )}
 
                             {/* Overlay Pattern */}
@@ -180,7 +180,7 @@ export function ProfileEditForm({ user, profile }: ProfileEditFormProps) {
                                 <div className="w-28 h-28 sm:w-32 sm:h-32 rounded-2xl border-[3px] border-black bg-[#27272a] p-1 shadow-[4px_4px_0px_0px_#000] relative overflow-hidden">
                                     <Avatar className="w-full h-full rounded-xl border border-black/10">
                                         <AvatarImage src={avatarPreview} className="object-cover" />
-                                        <AvatarFallback className="text-3xl font-black bg-[#FFC800] text-black">
+                                        <AvatarFallback className="text-3xl font-black bg-[#EAB308] text-black">
                                             {profile?.full_name?.[0] || "?"}
                                         </AvatarFallback>
                                     </Avatar>
@@ -199,7 +199,7 @@ export function ProfileEditForm({ user, profile }: ProfileEditFormProps) {
 
                             {/* UPDATE USERNAME HINT */}
                             <div className="absolute top-4 right-6 hidden sm:block">
-                                <span className="bg-[#FFC800] text-black text-xs font-black px-2 py-1 border-2 border-black shadow-[2px_2px_0px_0px_#000]">
+                                <span className="bg-[#EAB308] text-black text-xs font-black px-2 py-1 border-2 border-black shadow-[2px_2px_0px_0px_#000]">
                                     DÜZENLEME MODU
                                 </span>
                             </div>
@@ -211,13 +211,13 @@ export function ProfileEditForm({ user, profile }: ProfileEditFormProps) {
                                 <div className="space-y-1.5">
                                     <label className="text-xs font-black uppercase tracking-wider text-zinc-500 ml-1">İsim Soyisim</label>
                                     <div className="relative group">
-                                        <UserIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500 group-focus-within:text-[#FFC800] transition-colors" />
+                                        <UserIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500 group-focus-within:text-[#EAB308] transition-colors" />
                                         <input
                                             type="text"
                                             value={fullName}
                                             onChange={(e) => setFullName(e.target.value)}
                                             placeholder="Adınız Soyadınız"
-                                            className="w-full bg-zinc-900 text-white font-bold border-2 border-black h-12 pl-12 pr-4 rounded-lg focus:outline-none focus:shadow-[4px_4px_0px_0px_#FFC800] focus:-translate-y-1 transition-all placeholder:text-zinc-600"
+                                            className="w-full bg-zinc-900 text-white font-bold border-2 border-black h-12 pl-12 pr-4 rounded-lg focus:outline-none focus:shadow-[4px_4px_0px_0px_#EAB308] focus:-translate-y-1 transition-all placeholder:text-zinc-600"
                                         />
                                     </div>
                                 </div>

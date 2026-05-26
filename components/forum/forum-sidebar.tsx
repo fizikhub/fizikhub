@@ -24,7 +24,7 @@ export function ForumSidebar() {
             <div className={cn(
                 "flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 border-[2.5px]",
                 active
-                    ? "bg-[#FFBD2E] text-black border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_0px_rgba(255,255,255,0.3)] translate-x-[-2px] translate-y-[-2px] font-bold"
+                    ? "bg-[#EAB308] text-black border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_0px_rgba(255,255,255,0.3)] translate-x-[-2px] translate-y-[-2px] font-bold"
                     : "text-muted-foreground border-transparent hover:text-foreground hover:border-black dark:hover:border-zinc-600 hover:bg-muted/50 hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[3px_3px_0px_0px_rgba(255,255,255,0.2)] hover:translate-x-[-2px] hover:translate-y-[-2px]",
                 isCybernetic && "rounded-none border-transparent hover:border-cyan-500 hover:shadow-[0_0_10px_rgba(0,255,255,0.2)] hover:bg-cyan-950/30 hover:translate-x-0 hover:translate-y-0",
                 isCybernetic && active && "bg-cyan-950/30 text-cyan-400 border-cyan-400 border-l-4 shadow-none translate-x-0 translate-y-0",

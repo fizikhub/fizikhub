@@ -106,7 +106,7 @@ export default async function Image({ params }: { params: Promise<{ id: string }
                     </div>
                     <div
                         style={{
-                            background: "#FFBD2E",
+                            background: "#EAB308",
                             color: "#000",
                             padding: "6px 16px",
                             borderRadius: "20px",
@@ -174,7 +174,7 @@ export default async function Image({ params }: { params: Promise<{ id: string }
                         left: "0",
                         right: "0",
                         height: "6px",
-                        background: "linear-gradient(90deg, #06b6d4, #3b82f6, #8b5cf6, #FFBD2E)",
+                        background: "linear-gradient(90deg, #06b6d4, #3b82f6, #8b5cf6, #EAB308)",
                         display: "flex",
                     }}
                 />

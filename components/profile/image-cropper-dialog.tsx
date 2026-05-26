@@ -83,7 +83,7 @@ export function ImageCropperDialog({ open, onOpenChange, imageSrc, aspectRatio, 
                             step={0.1}
                             value={zoom}
                             onChange={(e) => setZoom(parseFloat(e.target.value))}
-                            className="flex-1 accent-[#FFC800] h-2 bg-zinc-800 rounded-lg appearance-none cursor-pointer"
+                            className="flex-1 accent-[#EAB308] h-2 bg-zinc-800 rounded-lg appearance-none cursor-pointer"
                         />
                     </div>
                 </div>
@@ -92,7 +92,7 @@ export function ImageCropperDialog({ open, onOpenChange, imageSrc, aspectRatio, 
                     <Button variant="ghost" onClick={() => onOpenChange(false)} disabled={loading}>
                         İptal
                     </Button>
-                    <Button onClick={handleSave} disabled={loading} className="bg-[#FFC800] text-black hover:bg-[#FFC800]/90">
+                    <Button onClick={handleSave} disabled={loading} className="bg-[#EAB308] text-black hover:bg-[#EAB308]/90">
                         {loading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
                         Uygula
                     </Button>

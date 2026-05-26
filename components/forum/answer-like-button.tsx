@@ -68,8 +68,8 @@ export function AnswerLikeButton({
             className={cn(
                 "flex items-center gap-1.5 px-3 h-9 rounded-lg transition-all duration-200 border-[2px] font-bold text-sm",
                 isLiked
-                    ? "bg-[#FFBD2E] text-black border-black dark:border-zinc-600 shadow-[2px_2px_0_0_#000] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.08)]"
-                    : "bg-white dark:bg-zinc-800 text-black dark:text-zinc-300 border-black dark:border-zinc-600 shadow-[2px_2px_0_0_#000] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.08)] hover:bg-[#FFBD2E]/20",
+                    ? "bg-[#EAB308] text-black border-black dark:border-zinc-600 shadow-[2px_2px_0_0_#000] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.08)]"
+                    : "bg-white dark:bg-zinc-800 text-black dark:text-zinc-300 border-black dark:border-zinc-600 shadow-[2px_2px_0_0_#000] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.08)] hover:bg-[#EAB308]/20",
                 "hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0_0_#000] dark:hover:shadow-[1px_1px_0_0_rgba(255,255,255,0.06)]"
             )}
             title={isLiked ? "Beğeniyi geri al" : "Beğen"}

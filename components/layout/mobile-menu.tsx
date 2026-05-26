@@ -12,10 +12,10 @@ import { m as motion } from "framer-motion";
 import { PhysicsFactModal } from "@/components/ui/physics-fact-modal";
 
 const menuItems = [
-    { href: '/', label: 'Ana Sayfa', icon: Home, color: 'group-hover:text-[#FFC800]', iconColor: 'text-[#FFC800]' },
+    { href: '/', label: 'Ana Sayfa', icon: Home, color: 'group-hover:text-[#EAB308]', iconColor: 'text-[#EAB308]' },
     { href: '/konular', label: 'Konular', icon: Compass, color: 'group-hover:text-[#23A9FA]', iconColor: 'text-[#23A9FA]' },
     { href: '/simulasyonlar', label: 'Simülasyon', icon: Atom, color: 'group-hover:text-[#23A9FA]', iconColor: 'text-[#23A9FA]' },
-    { href: '/siralamalar', label: 'Sıralama', icon: Trophy, color: 'group-hover:text-[#FFC800]', iconColor: 'text-[#FFC800]' },
+    { href: '/siralamalar', label: 'Sıralama', icon: Trophy, color: 'group-hover:text-[#EAB308]', iconColor: 'text-[#EAB308]' },
     { href: '/sozluk', label: 'Sözlük', icon: Book, color: 'group-hover:text-[#00F0A0]', iconColor: 'text-[#00F0A0]' },
     { href: '/iletisim', label: 'İletişim', icon: Mail, color: 'group-hover:text-zinc-200', iconColor: 'text-zinc-200' },
     { isAction: true, label: "HAP BİLGİ", sub: "Evrenin Sırları", icon: Zap, color: 'group-hover:text-[#FACC15]', iconColor: 'text-[#FACC15]' },

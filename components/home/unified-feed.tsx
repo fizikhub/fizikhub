@@ -254,7 +254,7 @@ export function UnifiedFeed({ items: initialItems, suggestedUsers = [], showExtr
                 <div className="sticky top-20 z-50 flex justify-center w-full pointer-events-none">
                     <button
                         onClick={applyPendingItems}
-                        className="pointer-events-auto flex items-center gap-2 px-4 py-2.5 rounded-full bg-[#FFBD2E] text-black border-[3px] border-black font-black uppercase text-xs sm:text-sm tracking-wider shadow-[4px_4px_0px_0px_#000] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_#000] active:translate-y-[4px] active:shadow-none transition-all animate-bounce"
+                        className="pointer-events-auto flex items-center gap-2 px-4 py-2.5 rounded-full bg-[#EAB308] text-black border-[3px] border-black font-black uppercase text-xs sm:text-sm tracking-wider shadow-[4px_4px_0px_0px_#000] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_#000] active:translate-y-[4px] active:shadow-none transition-all animate-bounce"
                     >
                         <RefreshCw className="w-4 h-4 animate-spin-slow" />
                         Yeni Paylaşımlar Var! ({pendingItems.length})
@@ -330,7 +330,7 @@ export function UnifiedFeed({ items: initialItems, suggestedUsers = [], showExtr
                                 <QuestionCard
                                     question={item.data}
                                     badgeLabel="SORU"
-                                    badgeClassName="bg-black text-[#FFBD2E] px-2 py-0.5 rounded-md font-black uppercase text-xs tracking-wider"
+                                    badgeClassName="bg-black text-[#EAB308] px-2 py-0.5 rounded-md font-black uppercase text-xs tracking-wider"
                                 />
                             </div>
                         )}
@@ -341,7 +341,7 @@ export function UnifiedFeed({ items: initialItems, suggestedUsers = [], showExtr
                             </LazyMount>
                         )}
                         {showExtras && index === 8 && (
-                            <LazyMount className="mt-6 min-h-40 rounded-[10px] bg-gradient-to-br from-[#FFBD2E] to-[#FFD466] p-6 border-[3px] border-black shadow-[4px_4px_0px_0px_#000]">
+                            <LazyMount className="mt-6 min-h-40 rounded-[10px] bg-gradient-to-br from-[#EAB308] to-[#EAB308] p-6 border-[3px] border-black shadow-[4px_4px_0px_0px_#000]">
                                 <div>
                                     <h3 className="font-black text-sm uppercase tracking-widest text-black mb-4 text-center">
                                         Haftanın Sorusu
@@ -367,7 +367,7 @@ export function UnifiedFeed({ items: initialItems, suggestedUsers = [], showExtr
             {!loading && hasMore && (
                 <button
                     onClick={loadMoreItems}
-                    className="w-full py-4 mt-2 font-black text-sm uppercase tracking-widest bg-[#FFBD2E] text-black border-[3px] border-black rounded-[8px] sm:rounded-[10px] shadow-[4px_4px_0px_0px_#000] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_#000] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all flex items-center justify-center gap-2"
+                    className="w-full py-4 mt-2 font-black text-sm uppercase tracking-widest bg-[#EAB308] text-black border-[3px] border-black rounded-[8px] sm:rounded-[10px] shadow-[4px_4px_0px_0px_#000] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_#000] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all flex items-center justify-center gap-2"
                 >
                     <RefreshCw className="w-4 h-4" />
                     Daha Fazla İçerik Göster

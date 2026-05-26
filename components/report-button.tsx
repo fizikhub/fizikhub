@@ -124,7 +124,7 @@ export function ReportButton({ contentType, contentId, variant = "ghost", size =
                     <Button variant="outline" onClick={() => setOpen(false)} className="border-[2px] border-black dark:border-zinc-600 rounded-lg font-bold shadow-[2px_2px_0_0_#000] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.06)]">
                         İptal
                     </Button>
-                    <Button onClick={handleSubmit} disabled={isSubmitting || !reason} className="bg-[#FFBD2E] text-black hover:bg-[#FFD268] border-[2px] border-black dark:border-zinc-600 rounded-lg font-bold shadow-[2px_2px_0_0_#000] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.06)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0_0_#000] transition-all">
+                    <Button onClick={handleSubmit} disabled={isSubmitting || !reason} className="bg-[#EAB308] text-black hover:bg-[#EAB308] border-[2px] border-black dark:border-zinc-600 rounded-lg font-bold shadow-[2px_2px_0_0_#000] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.06)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0_0_#000] transition-all">
                         {isSubmitting ? "Gönderiliyor..." : "Gönder"}
                     </Button>
                 </DialogFooter>

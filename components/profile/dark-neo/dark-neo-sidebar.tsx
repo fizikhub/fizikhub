@@ -22,10 +22,10 @@ export function DarkNeoSidebar({ profile, stats }: DarkNeoSidebarProps) {
             {/* ABOUT CARD - Vivid & Soft */}
             <div className="relative overflow-hidden rounded-xl border-2 border-black bg-background p-3 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] transition-all dark:border-zinc-800 dark:shadow-[3px_3px_0px_0px_rgba(0,0,0,0.5)] sm:p-5 sm:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:sm:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.5)]">
                 {/* Yellow Accent Bar */}
-                <div className="absolute top-0 left-0 w-full h-1 bg-[#FFC800] transform scale-x-100 transition-transform" />
+                <div className="absolute top-0 left-0 w-full h-1 bg-[#EAB308] transform scale-x-100 transition-transform" />
 
                 <h3 className="relative z-10 mb-3 flex items-center gap-2 border-b-2 border-dashed border-black/20 pb-2 text-[11px] font-black uppercase tracking-tight text-white/55 sm:mb-4 sm:text-xs">
-                    <span className="flex h-6 w-6 items-center justify-center rounded border-2 border-black bg-[#FFC800] text-black shadow-[2px_2px_0px_0px_#000]">
+                    <span className="flex h-6 w-6 items-center justify-center rounded border-2 border-black bg-[#EAB308] text-black shadow-[2px_2px_0px_0px_#000]">
                         <User className="w-3.5 h-3.5 stroke-[3px]" />
                     </span>
                     Hakkında
@@ -45,7 +45,7 @@ export function DarkNeoSidebar({ profile, stats }: DarkNeoSidebarProps) {
                         </div>
                         <div className="h-3 w-full overflow-hidden rounded-lg border-2 border-black bg-black shadow-inner">
                             <div
-                                className="h-full bg-gradient-to-r from-[#FFC800] to-orange-500 striped-pattern"
+                                className="h-full bg-gradient-to-r from-[#EAB308] to-orange-500 striped-pattern"
                                 style={{ width: `${(profile.xp_current / (profile.xp_next || 100)) * 100}%` }}
                             />
                         </div>

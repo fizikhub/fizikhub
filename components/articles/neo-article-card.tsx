@@ -137,7 +137,7 @@ export function NeoArticleCard({
                 />
 
                 {/* 1. IMAGE SECTION */}
-                <div className="relative aspect-[16/9] w-full border-b-2 sm:border-b-[3px] border-black bg-[#FFC800] z-10">
+                <div className="relative aspect-[16/9] w-full border-b-2 sm:border-b-[3px] border-black bg-[#EAB308] z-10">
                     <OptimizedImage
                         src={article.image_url || "/images/placeholder-article.webp"}
                         alt={article.title}
@@ -149,7 +149,7 @@ export function NeoArticleCard({
 
                     {/* Category Label */}
                     <div className="absolute top-3 left-3 z-20 perspective-500">
-                        <span className="inline-block bg-[#FFC800] border-[2px] border-black text-black px-2 py-0.5 sm:px-3 sm:py-1 font-black text-[10px] sm:text-xs uppercase shadow-[2px_2px_0px_0px_#000] rotate-[-2deg] group-hover:rotate-0 transition-transform origin-center hover:scale-110">
+                        <span className="inline-block bg-[#EAB308] border-[2px] border-black text-black px-2 py-0.5 sm:px-3 sm:py-1 font-black text-[10px] sm:text-xs uppercase shadow-[2px_2px_0px_0px_#000] rotate-[-2deg] group-hover:rotate-0 transition-transform origin-center hover:scale-110">
                             {article.category || "GENEL"}
                         </span>
                     </div>
@@ -160,7 +160,7 @@ export function NeoArticleCard({
 
                     {/* Title - High Contrast White in Dark Mode */}
                     <h3 className="font-[family-name:var(--font-outfit)] text-[17px] sm:text-2xl font-black text-black dark:text-zinc-50 leading-[1.1] uppercase tracking-tighter mb-0.5 sm:mb-1">
-                        <span className="bg-gradient-to-r from-transparent to-transparent group-hover:from-[#FFC800]/30 group-hover:to-[#FFC800]/30 transition-all duration-300 rounded-sm">
+                        <span className="bg-gradient-to-r from-transparent to-transparent group-hover:from-[#EAB308]/30 group-hover:to-[#EAB308]/30 transition-all duration-300 rounded-sm">
                             {article.title}
                         </span>
                     </h3>
@@ -212,7 +212,7 @@ export function NeoArticleCard({
                                     "w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-lg border-[1.5px] sm:border-2 border-black transition-all",
                                     "active:translate-x-[1px] active:translate-y-[1px] active:shadow-none",
                                     "shadow-[1.5px_1.5px_0px_0px_#000] sm:shadow-[2px_2px_0px_0px_#000] hover:shadow-[1px_1px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px]",
-                                    isLiked ? "bg-[#FFC800] text-black" : "bg-white dark:bg-[#18181b] text-black dark:text-white hover:bg-neutral-50 dark:hover:bg-zinc-800"
+                                    isLiked ? "bg-[#EAB308] text-black" : "bg-white dark:bg-[#18181b] text-black dark:text-white hover:bg-neutral-50 dark:hover:bg-zinc-800"
                                 )}
                             >
                                 <Heart className={cn("w-[18px] h-[18px] sm:w-5 sm:h-5 stroke-[2.5px]", isLiked ? "fill-black stroke-black" : "stroke-current")} />

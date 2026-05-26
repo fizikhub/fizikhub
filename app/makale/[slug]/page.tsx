@@ -83,7 +83,7 @@ function ArticleTopicClusterLinks({ slug }: { slug: string }) {
                             <Link
                                 key={link.href}
                                 href={link.href}
-                                className="rounded-[7px] border border-foreground/15 bg-background px-3 py-2 text-xs font-bold text-muted-foreground transition-colors hover:border-[#FFC800] hover:text-foreground"
+                                className="rounded-[7px] border border-foreground/15 bg-background px-3 py-2 text-xs font-bold text-muted-foreground transition-colors hover:border-[#EAB308] hover:text-foreground"
                             >
                                 {link.label}
                             </Link>

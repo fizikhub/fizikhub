@@ -81,7 +81,7 @@ export function LeaderboardCard({ user, currentUserId }: LeaderboardCardProps) {
 
                         // Backgrounds & Text Colors
                         isSilginim ? "bg-gradient-to-r from-pink-200 via-pink-300 to-rose-200 text-pink-950" :
-                            user.rank === 1 ? "bg-[#FFC800] text-black" :
+                            user.rank === 1 ? "bg-[#EAB308] text-black" :
                                 user.rank === 2 ? "bg-zinc-200 text-black" :
                                     user.rank === 3 ? "bg-orange-400 text-black" :
                                         "bg-white dark:bg-[#27272a] text-black dark:text-zinc-100" // Lighter dark background

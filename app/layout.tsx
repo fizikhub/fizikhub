@@ -122,95 +122,101 @@ export const metadata: Metadata = {
   }
 };
 
-const jsonLdOrg = {
-  '@context': 'https://schema.org',
-  '@type': ['Organization', 'EducationalOrganization'],
-  '@id': 'https://www.fizikhub.com/#organization',
-  name: 'Fizikhub',
-  alternateName: 'FizikHub',
-  url: 'https://www.fizikhub.com',
-  logo: {
-    '@type': 'ImageObject',
-    '@id': 'https://www.fizikhub.com/#logo',
-    url: 'https://www.fizikhub.com/icon-512.png',
-    width: 512,
-    height: 512,
-    caption: 'Fizikhub',
-  },
-  image: { '@id': 'https://www.fizikhub.com/#logo' },
-  description: 'Bilimi Ti\'ye Alıyoruz Ama Ciddi Şekilde. Fizik, astronomi, kuantum ve daha fazlası — Türkçe bilim platformu.',
-  foundingDate: '2024',
-  inLanguage: 'tr-TR',
-  areaServed: 'TR',
-  knowsAbout: [
-    'Fizik', 'Kuantum Fizigi', 'Astrofizik', 'Termodinamik', 'Klasik Mekanik',
-    'Nükleer Fizik', 'Optik', 'Elektromanyetizma', 'Kozmoloji', 'Bilim Tarihi',
-    'TYT Fizik', 'AYT Fizik', 'Astronomi', 'Kimya', 'Biyofizik'
-  ],
-  hasOfferCatalog: {
-    '@type': 'OfferCatalog',
-    name: 'Fizikhub İçerikleri',
-    itemListElement: [
-      { '@type': 'Offer', itemOffered: { '@type': 'Course', name: 'Fizik Testleri' } },
-      { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Bilim Forumu' } },
-      { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Fizik Simülasyonları' } },
-      { '@type': 'Offer', itemOffered: { '@type': 'Book', name: 'Bilim Sözlüğü' } },
-    ]
-  },
-  sameAs: [
-    'https://twitter.com/fizikhub',
-    'https://instagram.com/fizikhub'
-  ],
-  contactPoint: {
-    '@type': 'ContactPoint',
-    contactType: 'customer support',
-    email: 'iletisim@fizikhub.com',
-    availableLanguage: 'Turkish'
-  }
-};
-
-const jsonLdWebsite = {
-  '@context': 'https://schema.org',
-  '@type': 'WebSite',
-  '@id': 'https://www.fizikhub.com/#website',
-  name: 'Fizikhub',
-  alternateName: ['FizikHub', 'Fizik Hub'],
-  url: 'https://www.fizikhub.com',
-  description: 'Türkçe bilim platformu: fizik makaleleri, forum, sözlük, testler ve simülasyonlar.',
-  publisher: { '@id': 'https://www.fizikhub.com/#organization' },
-  inLanguage: 'tr-TR',
-  sameAs: [
-    'https://twitter.com/fizikhub',
-    'https://instagram.com/fizikhub'
-  ],
-  potentialAction: {
-    '@type': 'SearchAction',
-    target: {
-      '@type': 'EntryPoint',
-      urlTemplate: 'https://www.fizikhub.com/ara?q={search_term_string}',
-    },
-    'query-input': 'required name=search_term_string',
-  },
-  about: [
-    'Fizik',
-    'Kuantum fiziği',
-    'Kara delikler',
-    'Entropi',
-    'Karanlık madde',
-    'Astrofizik',
-    'Fizik formülleri'
-  ]
-};
-
-const jsonLdNavigation = {
+const jsonLdGraph = {
   '@context': 'https://schema.org',
   '@graph': [
-    { '@type': 'SiteNavigationElement', name: 'Makaleler', url: 'https://www.fizikhub.com/makale' },
-    { '@type': 'SiteNavigationElement', name: 'Forum', url: 'https://www.fizikhub.com/forum' },
-    { '@type': 'SiteNavigationElement', name: 'Sözlük', url: 'https://www.fizikhub.com/sozluk' },
-    { '@type': 'SiteNavigationElement', name: 'Konular', url: 'https://www.fizikhub.com/konular' },
-    { '@type': 'SiteNavigationElement', name: 'Testler', url: 'https://www.fizikhub.com/testler' },
-    { '@type': 'SiteNavigationElement', name: 'Simülasyonlar', url: 'https://www.fizikhub.com/simulasyonlar' }
+    {
+      '@type': ['Organization', 'EducationalOrganization'],
+      '@id': 'https://www.fizikhub.com/#organization',
+      name: 'Fizikhub',
+      alternateName: 'FizikHub',
+      url: 'https://www.fizikhub.com',
+      logo: {
+        '@type': 'ImageObject',
+        '@id': 'https://www.fizikhub.com/#logo',
+        url: 'https://www.fizikhub.com/icon-512.png',
+        width: 512,
+        height: 512,
+        caption: 'Fizikhub',
+      },
+      image: { '@id': 'https://www.fizikhub.com/#logo' },
+      description: 'Bilimi Ti\'ye Alıyoruz Ama Ciddi Şekilde. Fizik, astronomi, kuantum ve daha fazlası — Türkçe bilim platformu.',
+      foundingDate: '2024',
+      inLanguage: 'tr-TR',
+      areaServed: 'TR',
+      knowsAbout: [
+        'Fizik', 'Kuantum Fizigi', 'Astrofizik', 'Termodinamik', 'Klasik Mekanik',
+        'Nükleer Fizik', 'Optik', 'Elektromanyetizma', 'Kozmoloji', 'Bilim Tarihi',
+        'TYT Fizik', 'AYT Fizik', 'Astronomi', 'Kimya', 'Biyofizik'
+      ],
+      hasOfferCatalog: {
+        '@type': 'OfferCatalog',
+        name: 'Fizikhub İçerikleri',
+        itemListElement: [
+          { '@type': 'Offer', itemOffered: { '@type': 'Course', name: 'Fizik Testleri' } },
+          { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Bilim Forumu' } },
+          { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Fizik Simülasyonları' } },
+          { '@type': 'Offer', itemOffered: { '@type': 'Book', name: 'Bilim Sözlüğü' } },
+        ]
+      },
+      sameAs: [
+        'https://twitter.com/fizikhub',
+        'https://instagram.com/fizikhub'
+      ],
+      contactPoint: {
+        '@type': 'ContactPoint',
+        contactType: 'customer support',
+        email: 'iletisim@fizikhub.com',
+        availableLanguage: 'Turkish'
+      }
+    },
+    {
+      '@type': 'WebSite',
+      '@id': 'https://www.fizikhub.com/#website',
+      name: 'Fizikhub',
+      alternateName: ['FizikHub', 'Fizik Hub'],
+      url: 'https://www.fizikhub.com',
+      description: 'Türkçe bilim platformu: fizik makaleleri, forum, sözlük, testler ve simülasyonlar.',
+      publisher: { '@id': 'https://www.fizikhub.com/#organization' },
+      inLanguage: 'tr-TR',
+      sameAs: [
+        'https://twitter.com/fizikhub',
+        'https://instagram.com/fizikhub'
+      ],
+      potentialAction: {
+        '@type': 'SearchAction',
+        target: {
+          '@type': 'EntryPoint',
+          urlTemplate: 'https://www.fizikhub.com/ara?q={search_term_string}',
+        },
+        'query-input': 'required name=search_term_string',
+      },
+      about: [
+        'Fizik',
+        'Kuantum fiziği',
+        'Kara delikler',
+        'Entropi',
+        'Karanlık madde',
+        'Astrofizik',
+        'Fizik formülleri'
+      ]
+    },
+    {
+      '@type': 'WebPage',
+      '@id': 'https://www.fizikhub.com/#webpage',
+      url: 'https://www.fizikhub.com',
+      name: 'Fizikhub — Türkçe Fizik Forumu, Testler ve Bilim Sözlüğü',
+      isPartOf: { '@id': 'https://www.fizikhub.com/#website' },
+      about: { '@id': 'https://www.fizikhub.com/#organization' },
+      description: 'Fizikhub: Türkiye\'nin en aktif bilim, fizik, uzay, kuantum ve evren platformu.',
+      inLanguage: 'tr-TR'
+    },
+    { '@type': 'SiteNavigationElement', '@id': 'https://www.fizikhub.com/#nav-makale', name: 'Makaleler', url: 'https://www.fizikhub.com/makale' },
+    { '@type': 'SiteNavigationElement', '@id': 'https://www.fizikhub.com/#nav-forum', name: 'Forum', url: 'https://www.fizikhub.com/forum' },
+    { '@type': 'SiteNavigationElement', '@id': 'https://www.fizikhub.com/#nav-sozluk', name: 'Sözlük', url: 'https://www.fizikhub.com/sozluk' },
+    { '@type': 'SiteNavigationElement', '@id': 'https://www.fizikhub.com/#nav-konular', name: 'Konular', url: 'https://www.fizikhub.com/konular' },
+    { '@type': 'SiteNavigationElement', '@id': 'https://www.fizikhub.com/#nav-testler', name: 'Testler', url: 'https://www.fizikhub.com/testler' },
+    { '@type': 'SiteNavigationElement', '@id': 'https://www.fizikhub.com/#nav-simulasyonlar', name: 'Simülasyonlar', url: 'https://www.fizikhub.com/simulasyonlar' }
   ]
 };
 
@@ -322,15 +328,7 @@ export default async function RootLayout({
         />
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdOrg) }}
-        />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdWebsite) }}
-        />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdNavigation) }}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdGraph) }}
         />
 
         {/* Skip to content — keyboard accessibility */}
@@ -364,10 +362,10 @@ export default async function RootLayout({
           <Toaster
             position="top-center"
             toastOptions={{
-              className: "font-sans border-[3px] border-black bg-[#FFBD2E] text-black shadow-[4px_4px_0_0_#000] rounded-[4px] px-6 py-3 min-w-[200px] flex items-center justify-center text-center font-black tracking-widest uppercase",
+              className: "font-sans border-[3px] border-black bg-[#EAB308] text-black shadow-[4px_4px_0_0_#000] rounded-[4px] px-6 py-3 min-w-[200px] flex items-center justify-center text-center font-black tracking-widest uppercase",
               style: {
                 borderRadius: "4px",
-                background: "#FFBD2E",
+                background: "#EAB308",
                 color: "#000000",
               },
             }}

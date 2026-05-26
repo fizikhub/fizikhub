@@ -69,7 +69,7 @@ export function StickyActionBar({ questionId, votes, hasVoted }: StickyActionBar
                         {/* Vote Display */}
                         <div className={cn(
                             "flex items-center gap-1.5 px-3 py-2 text-sm font-black border-[2px] border-black dark:border-zinc-600 rounded-lg shadow-[2px_2px_0_0_#000] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.06)]",
-                            hasVoted ? "bg-[#FFBD2E] text-black" : "bg-neutral-100 dark:bg-zinc-800 text-black dark:text-white"
+                            hasVoted ? "bg-[#EAB308] text-black" : "bg-neutral-100 dark:bg-zinc-800 text-black dark:text-white"
                         )}>
                             <ChevronUp className="w-5 h-5 stroke-[3px]" />
                             <span className="text-base">{votes}</span>
@@ -86,7 +86,7 @@ export function StickyActionBar({ questionId, votes, hasVoted }: StickyActionBar
                         {/* Answer Button - Primary CTA */}
                         <button
                             onClick={scrollToAnswerForm}
-                            className="flex-1 flex items-center justify-center gap-2 px-6 py-2.5 border-[2.5px] border-black dark:border-zinc-600 bg-[#FFBD2E] text-black rounded-lg font-black tracking-wider uppercase text-sm shadow-[2px_2px_0_0_#000] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.06)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0_0_#000] transition-all"
+                            className="flex-1 flex items-center justify-center gap-2 px-6 py-2.5 border-[2.5px] border-black dark:border-zinc-600 bg-[#EAB308] text-black rounded-lg font-black tracking-wider uppercase text-sm shadow-[2px_2px_0_0_#000] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.06)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0_0_#000] transition-all"
                         >
                             <MessageSquare className="w-5 h-5 stroke-[2.5px]" />
                             <span>Cevap Yaz</span>

@@ -72,7 +72,7 @@ export function TutorialOverlay({ steps = [], isActive, onComplete, onSkip }: Tu
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 key={`spotlight-${currentStep}`}
-                className="absolute border-2 border-[#FFC800] rounded-xl shadow-[0_0_30px_rgba(255,200,0,0.3)] pointer-events-none"
+                className="absolute border-2 border-[#EAB308] rounded-xl shadow-[0_0_30px_rgba(255,200,0,0.3)] pointer-events-none"
                 style={{
                     top: targetRect.top - 8,
                     left: targetRect.left - 8,
@@ -127,7 +127,7 @@ export function TutorialOverlay({ steps = [], isActive, onComplete, onSkip }: Tu
                     <div className="flex justify-end relative z-10">
                         <button
                             onClick={handleNext}
-                            className="bg-[#FFC800] text-black px-4 py-2 rounded-xl font-black uppercase text-xs sm:text-sm border-2 border-black shadow-[3px_3px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_#000] active:translate-x-[3px] active:translate-y-[3px] active:shadow-none transition-all flex items-center gap-2 group/btn"
+                            className="bg-[#EAB308] text-black px-4 py-2 rounded-xl font-black uppercase text-xs sm:text-sm border-2 border-black shadow-[3px_3px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_#000] active:translate-x-[3px] active:translate-y-[3px] active:shadow-none transition-all flex items-center gap-2 group/btn"
                         >
                             {currentStep === steps.length - 1 ? "TAMAMLA" : "SIRADAKİ"}
                             {currentStep === steps.length - 1 ? 

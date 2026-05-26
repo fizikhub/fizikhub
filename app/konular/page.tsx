@@ -154,7 +154,7 @@ export default function TopicsPage() {
                                 <Link
                                     key={cluster.slug}
                                     href={getTopicClusterHref(cluster)}
-                                    className="group rounded-[8px] border border-foreground/15 bg-card p-4 transition-colors hover:border-[#FFC800]"
+                                    className="group rounded-[8px] border border-foreground/15 bg-card p-4 transition-colors hover:border-[#EAB308]"
                                 >
                                     <h3 className="font-black tracking-normal group-hover:text-yellow-500">
                                         {cluster.title}
@@ -184,7 +184,7 @@ export default function TopicsPage() {
                                 >
                                     <div className="grid gap-5 lg:grid-cols-[280px_1fr]">
                                         <div>
-                                            <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-[8px] border-2 border-black bg-[#FFC800] text-black shadow-[3px_3px_0_#000]">
+                                            <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-[8px] border-2 border-black bg-[#EAB308] text-black shadow-[3px_3px_0_#000]">
                                                 <Icon className="h-5 w-5" />
                                             </div>
                                             <h2 id={`${sectionId}-title`} className="text-2xl font-black tracking-normal">

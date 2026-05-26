@@ -86,7 +86,7 @@ export function ReadingControls({
                             variant="default"
                             size="icon"
                             onClick={scrollToTop}
-                            className="h-11 w-11 rounded-xl bg-[#FFC800] dark:bg-[#23A9FA] hover:bg-[#FFC800]/90 dark:hover:bg-[#23A9FA]/90 text-black dark:text-white border-[3px] border-black dark:border-white/20 shadow-[3px_3px_0px_#000] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)] transition-transform hover:-translate-y-1 active:translate-y-0"
+                            className="h-11 w-11 rounded-xl bg-[#EAB308] dark:bg-[#23A9FA] hover:bg-[#EAB308]/90 dark:hover:bg-[#23A9FA]/90 text-black dark:text-white border-[3px] border-black dark:border-white/20 shadow-[3px_3px_0px_#000] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)] transition-transform hover:-translate-y-1 active:translate-y-0"
                             aria-label="Başa dön"
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="m18 15-6-6-6 6"/></svg>
@@ -157,7 +157,7 @@ export function ReadingControls({
                                                     key={step}
                                                     className={cn(
                                                         "flex-1 rounded-full transition-colors",
-                                                        steps.indexOf(step) <= steps.indexOf(fontSize) ? "bg-[#FFC800]" : "bg-neutral-300 dark:bg-neutral-700"
+                                                        steps.indexOf(step) <= steps.indexOf(fontSize) ? "bg-[#EAB308]" : "bg-neutral-300 dark:bg-neutral-700"
                                                     )}
                                                 />
                                             ))}
@@ -191,7 +191,7 @@ export function ReadingControls({
                                                 onFontFamilyChange('sans');
                                             }}
                                         >
-                                            {fontFamily === 'sans' && <div className="absolute top-0 right-0 w-2 h-2 bg-[#FFC800]" />}
+                                            {fontFamily === 'sans' && <div className="absolute top-0 right-0 w-2 h-2 bg-[#EAB308]" />}
                                             MODERN
                                         </Button>
                                         <Button
@@ -206,7 +206,7 @@ export function ReadingControls({
                                                 onFontFamilyChange('serif');
                                             }}
                                         >
-                                            {fontFamily === 'serif' && <div className="absolute top-0 right-0 w-2 h-2 bg-[#FFC800]" />}
+                                            {fontFamily === 'serif' && <div className="absolute top-0 right-0 w-2 h-2 bg-[#EAB308]" />}
                                             KLASİK
                                         </Button>
                                     </div>

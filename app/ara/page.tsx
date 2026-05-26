@@ -50,7 +50,7 @@ const typeLabels: Record<SearchResultType, string> = {
 
 const typeStyles: Record<SearchResultType, string> = {
     article: "bg-[#23A9FA] text-black",
-    question: "bg-[#FFBD2E] text-black",
+    question: "bg-[#EAB308] text-black",
     user: "bg-[#28D17C] text-black",
     dictionary: "bg-[#B18CFF] text-black",
     quiz: "bg-[#FF6B6B] text-black",

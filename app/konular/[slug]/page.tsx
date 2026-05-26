@@ -335,7 +335,7 @@ export default async function TopicClusterPage({ params }: PageProps) {
                                         className="group rounded-[8px] border-2 border-black bg-card p-5 shadow-[4px_4px_0_#000] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0_#000] dark:border-zinc-700 dark:shadow-[4px_4px_0_rgba(255,255,255,0.12)] dark:hover:shadow-[2px_2px_0_rgba(255,255,255,0.12)]"
                                     >
                                         <div className="flex items-center justify-between gap-3">
-                                            <span className="inline-flex items-center gap-2 rounded-[7px] bg-[#FFC800] px-2.5 py-1 text-xs font-black uppercase text-black">
+                                            <span className="inline-flex items-center gap-2 rounded-[7px] bg-[#EAB308] px-2.5 py-1 text-xs font-black uppercase text-black">
                                                 <Icon className="h-3.5 w-3.5" />
                                                 {typeConfig[resource.type].label}
                                             </span>
@@ -391,7 +391,7 @@ export default async function TopicClusterPage({ params }: PageProps) {
                                     <Link
                                         key={related.slug}
                                         href={getTopicClusterHref(related)}
-                                        className="rounded-[7px] border border-foreground/15 px-4 py-2 text-sm font-black text-muted-foreground transition-colors hover:border-[#FFC800] hover:text-foreground"
+                                        className="rounded-[7px] border border-foreground/15 px-4 py-2 text-sm font-black text-muted-foreground transition-colors hover:border-[#EAB308] hover:text-foreground"
                                     >
                                         {related.title}
                                     </Link>

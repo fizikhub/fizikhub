@@ -76,7 +76,7 @@ export default function SimulasyonlarPage() {
     };
 
     return (
-        <div className="min-h-screen bg-neutral-50 dark:bg-[#18181b] text-black dark:text-zinc-50 pb-24 font-sans selection:bg-[#FFC800] selection:text-black relative">
+        <div className="min-h-screen bg-neutral-50 dark:bg-[#18181b] text-black dark:text-zinc-50 pb-24 font-sans selection:bg-[#EAB308] selection:text-black relative">
             
             <TutorialOverlay
                 steps={tutorialSteps}
@@ -90,7 +90,7 @@ export default function SimulasyonlarPage() {
                 <div className="max-w-[1400px] mx-auto px-4 py-4 md:py-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div className="flex items-center gap-4">
                         <ViewTransitionLink href="/">
-                            <span className="flex items-center justify-center w-10 h-10 bg-white dark:bg-[#27272a] border-[3px] border-black hover:bg-[#FFBD2E] dark:hover:bg-[#FFBD2E] hover:text-black transition-colors rounded-lg group cursor-pointer shadow-[2px_2px_0px_0px_#000] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none focus:outline-none">
+                            <span className="flex items-center justify-center w-10 h-10 bg-white dark:bg-[#27272a] border-[3px] border-black hover:bg-[#EAB308] dark:hover:bg-[#EAB308] hover:text-black transition-colors rounded-lg group cursor-pointer shadow-[2px_2px_0px_0px_#000] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none focus:outline-none">
                                 <ArrowLeft className="w-5 h-5 transition-colors stroke-[2.5px]" />
                             </span>
                         </ViewTransitionLink>
@@ -106,13 +106,13 @@ export default function SimulasyonlarPage() {
 
                     {/* Minimal Stats Widget */}
                     <div id="sims-stats" className="hidden md:flex items-center gap-3 bg-white dark:bg-[#27272a] px-4 py-2 rounded-lg border-[3px] border-black shadow-[3px_3px_0px_0px_#000]">
-                        <div className="w-8 h-8 bg-[#FFBD2E] border-2 border-black rounded-md flex items-center justify-center">
+                        <div className="w-8 h-8 bg-[#EAB308] border-2 border-black rounded-md flex items-center justify-center">
                             <Beaker className="w-4 h-4 text-black stroke-[3px]" />
                         </div>
                         <div className="flex flex-col">
                             <span className="text-[10px] text-neutral-500 dark:text-zinc-400 font-black uppercase tracking-widest leading-none">AKTİF LABORATUVAR</span>
                             <span className="text-black dark:text-white font-black text-sm tracking-tight flex items-baseline gap-1 mt-0.5 leading-none">
-                                {simulations.length} <span className="text-[#FFBD2E] font-bold text-xs">DENEY</span>
+                                {simulations.length} <span className="text-[#EAB308] font-bold text-xs">DENEY</span>
                             </span>
                         </div>
                     </div>
@@ -125,7 +125,7 @@ export default function SimulasyonlarPage() {
                     <div className="rounded-[8px] border-[3px] border-black bg-white p-5 shadow-[5px_5px_0px_0px_#000] dark:bg-[#27272a]">
                         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                             <div>
-                                <div className="mb-3 inline-flex items-center gap-2 rounded-[6px] border-2 border-black bg-[#FFBD2E] px-3 py-1 text-[10px] font-black uppercase tracking-widest text-black shadow-[2px_2px_0px_0px_#000]">
+                                <div className="mb-3 inline-flex items-center gap-2 rounded-[6px] border-2 border-black bg-[#EAB308] px-3 py-1 text-[10px] font-black uppercase tracking-widest text-black shadow-[2px_2px_0px_0px_#000]">
                                     <Compass className="h-3.5 w-3.5" />
                                     FizikHub öğrenme rotası
                                 </div>
@@ -166,16 +166,16 @@ export default function SimulasyonlarPage() {
                                 <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Bugünkü kısa rota</p>
                                 <h2 className="mt-1 text-xl font-black uppercase tracking-tight">4 deneylik ısınma</h2>
                             </div>
-                            <BookOpen className="h-6 w-6 text-[#FFBD2E]" />
+                            <BookOpen className="h-6 w-6 text-[#EAB308]" />
                         </div>
                         <div className="grid gap-2">
                             {recommendedPath.map((item) => (
                                 <ViewTransitionLink
                                     key={item.simulation.id}
                                     href={`/simulasyonlar/${item.simulation.slug}`}
-                                    className="group grid grid-cols-[2rem_1fr_auto] items-center gap-3 rounded-[7px] border-2 border-zinc-700 bg-zinc-950 px-3 py-3 transition-colors hover:border-[#FFBD2E]"
+                                    className="group grid grid-cols-[2rem_1fr_auto] items-center gap-3 rounded-[7px] border-2 border-zinc-700 bg-zinc-950 px-3 py-3 transition-colors hover:border-[#EAB308]"
                                 >
-                                    <span className="flex h-8 w-8 items-center justify-center rounded-[6px] border-2 border-black bg-[#FFBD2E] text-xs font-black text-black">
+                                    <span className="flex h-8 w-8 items-center justify-center rounded-[6px] border-2 border-black bg-[#EAB308] text-xs font-black text-black">
                                         {item.step}
                                     </span>
                                     <span className="min-w-0">
@@ -223,7 +223,7 @@ export default function SimulasyonlarPage() {
                                     className={cn(
                                         "px-5 py-2.5 rounded-full text-[11px] sm:text-xs font-black uppercase tracking-widest transition-all border-[3px] whitespace-nowrap",
                                         isActive
-                                            ? "bg-[#FFBD2E] text-black border-black shadow-[2px_2px_0px_0px_#000] translate-x-[-2px] translate-y-[-2px]"
+                                            ? "bg-[#EAB308] text-black border-black shadow-[2px_2px_0px_0px_#000] translate-x-[-2px] translate-y-[-2px]"
                                             : "bg-white dark:bg-[#27272a] text-black dark:text-zinc-300 border-black hover:bg-neutral-100 dark:hover:bg-zinc-800 hover:shadow-[2px_2px_0px_0px_#000] hover:translate-x-[-2px] hover:translate-y-[-2px]"
                                     )}
                                 >
@@ -267,7 +267,7 @@ export default function SimulasyonlarPage() {
                                     />
 
                                     {/* 1. Top Bar (Yellow Theme) */}
-                                    <div className="flex items-center justify-between px-4 py-3 border-b-[3px] border-black bg-[#FFBD2E] z-10 relative">
+                                    <div className="flex items-center justify-between px-4 py-3 border-b-[3px] border-black bg-[#EAB308] z-10 relative">
                                         <div className="flex items-center gap-2">
                                             <Beaker className="w-4 h-4 text-black stroke-[3px]" />
                                             <span className="font-black text-xs uppercase tracking-widest text-black">
@@ -293,7 +293,7 @@ export default function SimulasyonlarPage() {
                                                 <sim.icon className="w-6 h-6" style={{ color: sim.color, strokeWidth: 2.5 }} />
                                             </div>
                                             <div>
-                                                <h3 className="font-[family-name:var(--font-outfit)] text-xl sm:text-2xl font-black text-black dark:text-zinc-50 leading-[1.1] uppercase tracking-tighter mb-1.5 group-hover:text-[#A26FE3] dark:group-hover:text-[#FFBD2E] transition-colors line-clamp-2">
+                                                <h3 className="font-[family-name:var(--font-outfit)] text-xl sm:text-2xl font-black text-black dark:text-zinc-50 leading-[1.1] uppercase tracking-tighter mb-1.5 group-hover:text-[#A26FE3] dark:group-hover:text-[#EAB308] transition-colors line-clamp-2">
                                                     {sim.title}
                                                 </h3>
                                             </div>
@@ -325,7 +325,7 @@ export default function SimulasyonlarPage() {
                                                     </span>
                                                 </div>
                                                 <div className="h-2 overflow-hidden rounded-full border border-black/20 bg-white dark:border-white/10 dark:bg-zinc-950">
-                                                    <div className="h-full rounded-full bg-[#FFBD2E]" style={{ width: `${progress.percent}%` }} />
+                                                    <div className="h-full rounded-full bg-[#EAB308]" style={{ width: `${progress.percent}%` }} />
                                                 </div>
                                             </div>
                                         ) : null}
@@ -352,7 +352,7 @@ export default function SimulasyonlarPage() {
                                             </div>
 
                                             {/* Action Button */}
-                                            <div className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-lg border-[3px] border-black bg-white dark:bg-[#18181b] text-black dark:text-white group-hover:bg-[#FFBD2E] group-hover:text-black transition-all shadow-[2px_2px_0px_0px_#000] group-hover:shadow-[1px_1px_0px_0px_#000] group-hover:translate-x-[1px] group-hover:translate-y-[1px]">
+                                            <div className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-lg border-[3px] border-black bg-white dark:bg-[#18181b] text-black dark:text-white group-hover:bg-[#EAB308] group-hover:text-black transition-all shadow-[2px_2px_0px_0px_#000] group-hover:shadow-[1px_1px_0px_0px_#000] group-hover:translate-x-[1px] group-hover:translate-y-[1px]">
                                                 <Play className="w-4 h-4 sm:w-5 sm:h-5 stroke-[3px]" />
                                             </div>
                                         </div>

@@ -110,7 +110,7 @@ export function BookReviewGuide({ open, onOpenChange }: BookReviewGuideProps) {
                                         onClick={() => setStep(i)}
                                         className={cn(
                                             "w-3 h-3 rounded-[4px] border-[2px] border-black transition-all duration-300",
-                                            i === step ? "bg-[#FFC800] scale-125 shadow-[2px_2px_0px_0px_#000]" : "bg-white dark:bg-zinc-700 hover:bg-neutral-200 dark:hover:bg-zinc-500"
+                                            i === step ? "bg-[#EAB308] scale-125 shadow-[2px_2px_0px_0px_#000]" : "bg-white dark:bg-zinc-700 hover:bg-neutral-200 dark:hover:bg-zinc-500"
                                         )}
                                     />
                                 ))}

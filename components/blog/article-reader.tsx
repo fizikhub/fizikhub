@@ -225,21 +225,21 @@ export function ArticleReader({
                             // Headings
                             "prose-headings:font-black prose-headings:tracking-normal prose-headings:text-foreground",
                             "prose-h1:text-2xl sm:prose-h1:text-4xl md:prose-h1:text-5xl prose-h1:!mb-8 sm:prose-h1:!mb-12 prose-h1:leading-[1.15]",
-                            "prose-h2:text-[1.32rem] sm:prose-h2:text-3xl md:prose-h2:text-4xl prose-h2:mt-9 sm:prose-h2:mt-16 prose-h2:!mb-4 sm:prose-h2:!mb-8 prose-h2:border-l-[4px] sm:prose-h2:border-l-[8px] prose-h2:border-[#FFC800] prose-h2:pl-3 sm:prose-h2:pl-5 prose-h2:leading-[1.25]",
+                            "prose-h2:text-[1.32rem] sm:prose-h2:text-3xl md:prose-h2:text-4xl prose-h2:mt-9 sm:prose-h2:mt-16 prose-h2:!mb-4 sm:prose-h2:!mb-8 prose-h2:border-l-[4px] sm:prose-h2:border-l-[8px] prose-h2:border-[#EAB308] prose-h2:pl-3 sm:prose-h2:pl-5 prose-h2:leading-[1.25]",
                             "prose-h3:text-[1.14rem] sm:prose-h3:text-2xl md:prose-h3:text-3xl prose-h3:mt-7 sm:prose-h3:mt-12 prose-h3:!mb-3.5 sm:prose-h3:!mb-6 prose-h3:font-bold prose-h3:border-l-[4px] sm:prose-h3:border-l-[6px] prose-h3:border-[#23A9FA] prose-h3:pl-3 sm:prose-h3:pl-4 prose-h3:leading-[1.25]",
                             "prose-h4:text-base sm:prose-h4:text-xl prose-h4:mt-6 prose-h4:!mb-4 prose-h4:font-black prose-h4:text-foreground",
                             // Paragraphs & Text — optimized for mobile readability
                             "prose-p:text-[17px] sm:prose-p:text-[17px] md:prose-p:text-[18px] prose-p:text-[#1a1a1a] dark:prose-p:text-[#e5e5e5] prose-p:leading-[1.82] sm:prose-p:leading-[1.86] prose-p:mb-5 sm:prose-p:mb-7 prose-p:font-[450]",
-                            "prose-strong:text-black dark:prose-strong:text-white prose-strong:font-black prose-strong:bg-[#FFC800]/20 dark:prose-strong:bg-[#23A9FA]/20 prose-strong:px-1 prose-strong:rounded-sm",
+                            "prose-strong:text-black dark:prose-strong:text-white prose-strong:font-black prose-strong:bg-[#EAB308]/20 dark:prose-strong:bg-[#23A9FA]/20 prose-strong:px-1 prose-strong:rounded-sm",
                             // Links — break long URLs
-                            "prose-a:text-black dark:prose-a:text-white prose-a:font-black prose-a:no-underline prose-a:border-b-[3px] prose-a:border-[#23A9FA] dark:prose-a:border-[#FFC800] hover:prose-a:bg-[#23A9FA] dark:hover:prose-a:bg-[#FFC800] hover:prose-a:text-white dark:hover:prose-a:text-black prose-a:break-all prose-a:px-0.5",
+                            "prose-a:text-black dark:prose-a:text-white prose-a:font-black prose-a:no-underline prose-a:border-b-[3px] prose-a:border-[#23A9FA] dark:prose-a:border-[#EAB308] hover:prose-a:bg-[#23A9FA] dark:hover:prose-a:bg-[#EAB308] hover:prose-a:text-white dark:hover:prose-a:text-black prose-a:break-all prose-a:px-0.5",
                             // Lists
-                            "prose-li:text-[16.5px] sm:prose-li:text-[17px] md:prose-li:text-[18px] prose-li:text-zinc-800 dark:prose-li:text-zinc-300 prose-li:leading-[1.78] sm:prose-li:leading-relaxed prose-li:marker:text-[#FFC800] prose-li:marker:font-black prose-li:font-[450]",
+                            "prose-li:text-[16.5px] sm:prose-li:text-[17px] md:prose-li:text-[18px] prose-li:text-zinc-800 dark:prose-li:text-zinc-300 prose-li:leading-[1.78] sm:prose-li:leading-relaxed prose-li:marker:text-[#EAB308] prose-li:marker:font-black prose-li:font-[450]",
                             "prose-ul:pl-5 sm:prose-ul:pl-8 prose-ol:pl-5 sm:prose-ol:pl-8",
                             // Blockquotes
-                            "prose-blockquote:border-l-[5px] sm:prose-blockquote:border-l-[8px] prose-blockquote:border-black dark:prose-blockquote:border-[#FFC800] prose-blockquote:bg-[#FFC800]/10 dark:prose-blockquote:bg-[#FFC800]/5 prose-blockquote:py-4 sm:prose-blockquote:py-8 prose-blockquote:px-4 sm:prose-blockquote:px-10 prose-blockquote:my-7 sm:prose-blockquote:my-12 prose-blockquote:rounded-r-xl sm:prose-blockquote:rounded-r-2xl prose-blockquote:not-italic prose-blockquote:font-bold prose-blockquote:text-base sm:prose-blockquote:text-2xl prose-blockquote:leading-relaxed prose-blockquote:text-black dark:prose-blockquote:text-zinc-100",
+                            "prose-blockquote:border-l-[5px] sm:prose-blockquote:border-l-[8px] prose-blockquote:border-black dark:prose-blockquote:border-[#EAB308] prose-blockquote:bg-[#EAB308]/10 dark:prose-blockquote:bg-[#EAB308]/5 prose-blockquote:py-4 sm:prose-blockquote:py-8 prose-blockquote:px-4 sm:prose-blockquote:px-10 prose-blockquote:my-7 sm:prose-blockquote:my-12 prose-blockquote:rounded-r-xl sm:prose-blockquote:rounded-r-2xl prose-blockquote:not-italic prose-blockquote:font-bold prose-blockquote:text-base sm:prose-blockquote:text-2xl prose-blockquote:leading-relaxed prose-blockquote:text-black dark:prose-blockquote:text-zinc-100",
                             // Code
-                            "prose-code:bg-zinc-100 dark:prose-code:bg-zinc-800 prose-code:border-2 prose-code:border-black dark:prose-code:border-zinc-700 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded-md prose-code:text-[#FF3366] dark:prose-code:text-[#FFC800] prose-code:font-mono prose-code:text-[0.8em] sm:prose-code:text-[0.9em] prose-code:font-black prose-code:before:content-none prose-code:after:content-none prose-code:shadow-[2px_2px_0px_0px_#000] dark:prose-code:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.1)] prose-code:break-all",
+                            "prose-code:bg-zinc-100 dark:prose-code:bg-zinc-800 prose-code:border-2 prose-code:border-black dark:prose-code:border-zinc-700 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded-md prose-code:text-[#FF3366] dark:prose-code:text-[#EAB308] prose-code:font-mono prose-code:text-[0.8em] sm:prose-code:text-[0.9em] prose-code:font-black prose-code:before:content-none prose-code:after:content-none prose-code:shadow-[2px_2px_0px_0px_#000] dark:prose-code:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.1)] prose-code:break-all",
                             "prose-pre:bg-zinc-950 prose-pre:border-[3px] sm:prose-pre:border-4 prose-pre:border-black dark:prose-pre:border-zinc-700 prose-pre:rounded-xl prose-pre:shadow-[4px_4px_0px_0px_#000] sm:prose-pre:shadow-[8px_8px_0px_0px_#000] dark:prose-pre:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)] sm:dark:prose-pre:shadow-[8px_8px_0px_0px_rgba(0,0,0,0.8)] prose-pre:overflow-x-auto prose-pre:max-w-full",
                             // Images
                             "prose-img:rounded-xl prose-img:border-4 prose-img:border-black dark:prose-img:border-zinc-800 prose-img:shadow-[8px_8px_0px_0px_#000] dark:prose-img:shadow-[8px_8px_0px_0px_rgba(0,0,0,0.6)] prose-img:my-7 sm:prose-img:my-10 prose-img:mx-auto prose-img:max-w-full",
@@ -318,7 +318,7 @@ export function ArticleReader({
                                                         </Button>
                                                         <div className="flex-1 flex gap-1 h-1.5 justify-center">
                                                             {(['sm','base','lg','xl'] as const).map((step, idx) => (
-                                                                <div key={step} className={cn("flex-1 rounded-full transition-colors", idx <= ['sm','base','lg','xl'].indexOf(fontSize) ? "bg-[#FFC800]" : "bg-neutral-300 dark:bg-neutral-700")} />
+                                                                <div key={step} className={cn("flex-1 rounded-full transition-colors", idx <= ['sm','base','lg','xl'].indexOf(fontSize) ? "bg-[#EAB308]" : "bg-neutral-300 dark:bg-neutral-700")} />
                                                             ))}
                                                         </div>
                                                         <Button variant="ghost" size="sm" className="h-8 w-8 rounded-lg" onClick={() => { const steps: ('sm'|'base'|'lg'|'xl')[] = ['sm','base','lg','xl']; const i = steps.indexOf(fontSize); if(i<3) setFontSize(steps[i+1]); }} disabled={fontSize === 'xl'}>
@@ -330,11 +330,11 @@ export function ArticleReader({
                                                     <span className="text-[10px] font-black text-neutral-400 uppercase tracking-widest">YAZI TİPİ</span>
                                                     <div className="grid grid-cols-2 gap-2">
                                                         <Button variant={fontFamily === 'sans' ? 'default' : 'outline'} size="sm" className={cn("font-sans border-2 relative overflow-hidden", fontFamily === 'sans' ? "bg-black text-white hover:bg-black/90 border-black" : "border-neutral-200 dark:border-white/10 hover:bg-neutral-50")} onClick={() => setFontFamily('sans')}>
-                                                            {fontFamily === 'sans' && <div className="absolute top-0 right-0 w-2 h-2 bg-[#FFC800]" />}
+                                                            {fontFamily === 'sans' && <div className="absolute top-0 right-0 w-2 h-2 bg-[#EAB308]" />}
                                                             MODERN
                                                         </Button>
                                                         <Button variant={fontFamily === 'serif' ? 'default' : 'outline'} size="sm" className={cn("font-serif tracking-wide border-2 relative overflow-hidden", fontFamily === 'serif' ? "bg-black text-white hover:bg-black/90 border-black" : "border-neutral-200 dark:border-white/10 hover:bg-neutral-50")} onClick={() => setFontFamily('serif')}>
-                                                            {fontFamily === 'serif' && <div className="absolute top-0 right-0 w-2 h-2 bg-[#FFC800]" />}
+                                                            {fontFamily === 'serif' && <div className="absolute top-0 right-0 w-2 h-2 bg-[#EAB308]" />}
                                                             KLASİK
                                                         </Button>
                                                     </div>
@@ -367,7 +367,7 @@ export function ArticleReader({
                                                     variant="default"
                                                     size="icon"
                                                     onClick={scrollToTop}
-                                                    className="h-9 w-9 sm:h-10 sm:w-10 rounded-full bg-[#FFC800] dark:bg-[#23A9FA] hover:bg-[#FFC800]/90 dark:hover:bg-[#23A9FA]/90 text-black dark:text-white border-[2px] border-black dark:border-white/20"
+                                                    className="h-9 w-9 sm:h-10 sm:w-10 rounded-full bg-[#EAB308] dark:bg-[#23A9FA] hover:bg-[#EAB308]/90 dark:hover:bg-[#23A9FA]/90 text-black dark:text-white border-[2px] border-black dark:border-white/20"
                                                     aria-label="Başa dön"
                                                 >
                                                     <ArrowUp className="h-4 w-4 sm:h-5 sm:w-5 stroke-[3px]" />
@@ -402,7 +402,7 @@ export function ArticleReader({
                                 {/* Author */}
                                 <aside className="border-t-[3px] border-dashed border-black/10 dark:border-white/10 pt-8 sm:pt-12">
                                     <div className="flex items-center gap-2.5 sm:gap-3 mb-6 sm:mb-8">
-                                        <div className="w-1.5 sm:w-2 h-6 sm:h-8 bg-[#FFC800]" />
+                                        <div className="w-1.5 sm:w-2 h-6 sm:h-8 bg-[#EAB308]" />
                                         <h3 className="text-xl sm:text-2xl font-black text-foreground uppercase tracking-normal">Yazar</h3>
                                     </div>
                                     <AuthorCard author={article.author || {}} />
@@ -460,7 +460,7 @@ export function ArticleReader({
                                 {relatedArticles.length > 0 && (
                                     <div className="space-y-6 sm:space-y-8">
                                         <div className="flex items-center gap-2.5 sm:gap-3">
-                                            <div className="w-1.5 sm:w-2 h-6 sm:h-8 bg-[#FFC800]" />
+                                            <div className="w-1.5 sm:w-2 h-6 sm:h-8 bg-[#EAB308]" />
                                             <h3 className="text-xl sm:text-2xl font-black text-foreground uppercase tracking-normal">Benzer Makaleler</h3>
                                         </div>
                                         <RelatedArticles articles={relatedArticles} />

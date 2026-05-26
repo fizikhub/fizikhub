@@ -29,10 +29,10 @@ export function NeoArticleHero({ article, readingTime, titleOverride, introOverr
                 {/* 1. TOP BAR: Back Button Only */}
                 <div className="flex items-center justify-between mb-4 sm:mb-8">
                     <Link prefetch={false} href="/makale" className="group flex items-center gap-2 sm:gap-3 text-xs sm:text-sm font-black uppercase tracking-normal text-foreground hover:-translate-y-1 transition-transform active:translate-y-0">
-                        <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl border-[2.5px] border-black dark:border-zinc-600 bg-white dark:bg-zinc-800 shadow-[2px_2px_0px_0px_#000] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.08)] group-hover:shadow-[3px_3px_0px_0px_#000] group-hover:bg-[#FFC800] group-hover:text-black flex items-center justify-center transition-all">
+                        <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl border-[2.5px] border-black dark:border-zinc-600 bg-white dark:bg-zinc-800 shadow-[2px_2px_0px_0px_#000] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.08)] group-hover:shadow-[3px_3px_0px_0px_#000] group-hover:bg-[#EAB308] group-hover:text-black flex items-center justify-center transition-all">
                             <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 stroke-[3px]" />
                         </div>
-                        <span className="hidden sm:inline group-hover:text-[#FFC800] transition-colors">Geri Dön</span>
+                        <span className="hidden sm:inline group-hover:text-[#EAB308] transition-colors">Geri Dön</span>
                     </Link>
                 </div>
 
@@ -57,7 +57,7 @@ export function NeoArticleHero({ article, readingTime, titleOverride, introOverr
                     {/* Category Badge — Neo Brutalist */}
                     {article.category && (
                         <div className="mb-3 sm:mb-5">
-                            <span className="inline-flex items-center gap-1.5 px-3 py-1 sm:px-4 sm:py-1.5 bg-[#FFC800] text-black text-[10px] sm:text-xs font-black uppercase tracking-normal border-[2.5px] border-black shadow-[3px_3px_0px_0px_#000] hover:shadow-[1px_1px_0px_0px_#000] hover:translate-x-[2px] hover:translate-y-[2px] transition-all cursor-default select-none">
+                            <span className="inline-flex items-center gap-1.5 px-3 py-1 sm:px-4 sm:py-1.5 bg-[#EAB308] text-black text-[10px] sm:text-xs font-black uppercase tracking-normal border-[2.5px] border-black shadow-[3px_3px_0px_0px_#000] hover:shadow-[1px_1px_0px_0px_#000] hover:translate-x-[2px] hover:translate-y-[2px] transition-all cursor-default select-none">
                                 <Tag className="w-3 h-3 sm:w-3.5 sm:h-3.5 stroke-[3px]" />
                                 {article.category}
                             </span>
@@ -65,7 +65,7 @@ export function NeoArticleHero({ article, readingTime, titleOverride, introOverr
                     )}
 
                     {/* Title */}
-                    <h1 className="w-[calc(100vw-2rem)] max-w-full sm:w-auto sm:max-w-3xl text-[2rem] sm:text-4xl lg:text-5xl font-black text-foreground leading-[1.08] tracking-normal break-words mb-4 sm:mb-6 selection:bg-[#FFC800] selection:text-black">
+                    <h1 className="w-[calc(100vw-2rem)] max-w-full sm:w-auto sm:max-w-3xl text-[2rem] sm:text-4xl lg:text-5xl font-black text-foreground leading-[1.08] tracking-normal break-words mb-4 sm:mb-6 selection:bg-[#EAB308] selection:text-black">
                         {displayTitle}
                     </h1>
 
@@ -83,7 +83,7 @@ export function NeoArticleHero({ article, readingTime, titleOverride, introOverr
                             href={`/kullanici/${article.author?.username || 'anonim'}`}
                             className="flex items-center gap-2.5 group/author"
                         >
-                            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full border-[2.5px] border-black dark:border-zinc-600 overflow-hidden shadow-[2px_2px_0px_0px_#000] dark:shadow-[1px_1px_0px_0px_rgba(255,255,255,0.1)] bg-zinc-100 flex-shrink-0 group-hover/author:shadow-[3px_3px_0px_0px_#FFC800] transition-shadow">
+                            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full border-[2.5px] border-black dark:border-zinc-600 overflow-hidden shadow-[2px_2px_0px_0px_#000] dark:shadow-[1px_1px_0px_0px_rgba(255,255,255,0.1)] bg-zinc-100 flex-shrink-0 group-hover/author:shadow-[3px_3px_0px_0px_#EAB308] transition-shadow">
                                 <Image
                                     src={authorAvatar}
                                     alt={authorName}
@@ -92,7 +92,7 @@ export function NeoArticleHero({ article, readingTime, titleOverride, introOverr
                                     className="object-cover w-full h-full"
                                 />
                             </div>
-                            <span className="text-sm sm:text-base font-black text-foreground group-hover/author:text-[#FFC800] transition-colors">{authorName}</span>
+                            <span className="text-sm sm:text-base font-black text-foreground group-hover/author:text-[#EAB308] transition-colors">{authorName}</span>
                         </Link>
 
                         {/* Dot */}

@@ -85,7 +85,7 @@ export function CommentItem({ comment, allComments, isAdmin, onReply }: CommentI
                             variant="ghost"
                             size="sm"
                             onClick={() => onReply(comment.id)}
-                            className="h-auto p-1 px-2 -ml-2 text-[10px] sm:text-xs font-black uppercase tracking-widest text-muted-foreground hover:text-[#FFC800] hover:bg-[#FFC800]/10 transition-colors"
+                            className="h-auto p-1 px-2 -ml-2 text-[10px] sm:text-xs font-black uppercase tracking-widest text-muted-foreground hover:text-[#EAB308] hover:bg-[#EAB308]/10 transition-colors"
                         >
                             <Reply className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 stroke-[3px]" />
                             Yanıtla

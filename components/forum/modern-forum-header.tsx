@@ -391,8 +391,8 @@ export function ModernForumHeader() {
                                     className={cn(
                                         "px-4 py-2 text-[11px] sm:text-xs font-black uppercase tracking-wider border-[2.5px] transition-all duration-200 rounded-full relative",
                                         isActive
-                                            ? "bg-[#FFBD2E] text-black border-black shadow-[3px_3px_0px_0px_#000] translate-x-[-1px] translate-y-[-1px]"
-                                            : "bg-card text-foreground border-black dark:border-zinc-600 hover:border-black hover:bg-[#FFBD2E]/10 hover:shadow-[2px_2px_0px_0px_#000] dark:hover:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.3)] hover:translate-x-[-1px] hover:translate-y-[-1px]"
+                                            ? "bg-[#EAB308] text-black border-black shadow-[3px_3px_0px_0px_#000] translate-x-[-1px] translate-y-[-1px]"
+                                            : "bg-card text-foreground border-black dark:border-zinc-600 hover:border-black hover:bg-[#EAB308]/10 hover:shadow-[2px_2px_0px_0px_#000] dark:hover:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.3)] hover:translate-x-[-1px] hover:translate-y-[-1px]"
                                     )}
                                 >
                                     {category}
@@ -409,7 +409,7 @@ export function ModernForumHeader() {
                         className={cn(
                             "flex-1 md:flex-none px-4 py-1.5 text-[10px] sm:text-xs font-black uppercase transition-all rounded-lg border-2",
                             currentSort === 'newest'
-                                ? "bg-[#FFBD2E] text-black border-black shadow-[1px_1px_0px_0px_#000]"
+                                ? "bg-[#EAB308] text-black border-black shadow-[1px_1px_0px_0px_#000]"
                                 : "text-muted-foreground border-transparent hover:text-foreground hover:bg-muted"
                         )}
                     >
@@ -420,7 +420,7 @@ export function ModernForumHeader() {
                         className={cn(
                             "flex-1 md:flex-none px-4 py-1.5 text-[10px] sm:text-xs font-black uppercase transition-all rounded-lg border-2",
                             currentSort === 'popular'
-                                ? "bg-[#FFBD2E] text-black border-black shadow-[1px_1px_0px_0px_#000]"
+                                ? "bg-[#EAB308] text-black border-black shadow-[1px_1px_0px_0px_#000]"
                                 : "text-muted-foreground border-transparent hover:text-foreground hover:bg-muted"
                         )}
                     >

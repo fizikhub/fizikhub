@@ -31,7 +31,7 @@ export async function RelatedQuestions({ currentQuestionId, category }: RelatedQ
     return (
         <nav aria-label="Benzer sorular" className="pt-6 border-t-[2.5px] border-black/10 dark:border-zinc-800">
             <h3 className="text-base font-black mb-4 flex items-center gap-2 uppercase tracking-tight text-neutral-700 dark:text-zinc-300">
-                <span className="text-[#FFBD2E]">📚</span>
+                <span className="text-[#EAB308]">📚</span>
                 Benzer {category} Soruları
             </h3>
 
@@ -44,7 +44,7 @@ export async function RelatedQuestions({ currentQuestionId, category }: RelatedQ
                         className="group block p-4 bg-white dark:bg-[#1e1e21] border-[2px] border-black/20 dark:border-zinc-700 rounded-[10px] hover:border-black dark:hover:border-zinc-500 hover:shadow-[3px_3px_0_0_#000] dark:hover:shadow-[3px_3px_0_0_rgba(255,255,255,0.06)] transition-all duration-200 hover:-translate-y-0.5"
                     >
                         {/* Title */}
-                        <h4 className="font-bold text-sm line-clamp-2 mb-3 group-hover:text-[#FFBD2E] transition-colors text-foreground">
+                        <h4 className="font-bold text-sm line-clamp-2 mb-3 group-hover:text-[#EAB308] transition-colors text-foreground">
                             {q.title}
                         </h4>
 

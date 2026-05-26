@@ -92,13 +92,13 @@ export function CommentSection({ articleId, comments, isLoggedIn, isAdmin, userA
                             onChange={(e) => setContent(e.target.value)}
                             disabled={isSubmitting}
                             rows={3}
-                            className="resize-none border-2 sm:border-[3px] border-black dark:border-zinc-600 rounded-lg sm:rounded-xl shadow-[3px_3px_0px_0px_#000] sm:shadow-[4px_4px_0px_0px_#000] dark:shadow-[3px_3px_0px_0px_rgba(0,0,0,0.4)] sm:dark:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.4)] focus-visible:ring-0 focus-visible:border-[#FFC800] focus-visible:shadow-[3px_3px_0px_0px_#FFC800] sm:focus-visible:shadow-[4px_4px_0px_0px_#FFC800] transition-all text-sm sm:text-lg font-medium p-3 sm:p-4 bg-zinc-50 dark:bg-zinc-950/50"
+                            className="resize-none border-2 sm:border-[3px] border-black dark:border-zinc-600 rounded-lg sm:rounded-xl shadow-[3px_3px_0px_0px_#000] sm:shadow-[4px_4px_0px_0px_#000] dark:shadow-[3px_3px_0px_0px_rgba(0,0,0,0.4)] sm:dark:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.4)] focus-visible:ring-0 focus-visible:border-[#EAB308] focus-visible:shadow-[3px_3px_0px_0px_#EAB308] sm:focus-visible:shadow-[4px_4px_0px_0px_#EAB308] transition-all text-sm sm:text-lg font-medium p-3 sm:p-4 bg-zinc-50 dark:bg-zinc-950/50"
                         />
                         <div className="flex justify-end pt-1 sm:pt-2">
                             <Button 
                                 onClick={handleSubmit} 
                                 disabled={isSubmitting || !content.trim()}
-                                className="h-10 sm:h-12 bg-[#FFC800] hover:bg-[#FFC800]/90 text-black font-black uppercase tracking-widest px-6 sm:px-8 border-2 sm:border-[3px] border-black rounded-lg sm:rounded-xl shadow-[3px_3px_0px_0px_#000] sm:shadow-[4px_4px_0px_0px_#000] hover:shadow-[1px_1px_0px_0px_#000] sm:hover:shadow-[2px_2px_0px_0px_#000] hover:translate-x-[1px] sm:hover:translate-x-[2px] hover:translate-y-[1px] sm:hover:translate-y-[2px] active:shadow-none active:translate-x-[2px] sm:active:translate-x-[4px] active:translate-y-[2px] sm:active:translate-y-[4px] transition-all text-xs sm:text-base"
+                                className="h-10 sm:h-12 bg-[#EAB308] hover:bg-[#EAB308]/90 text-black font-black uppercase tracking-widest px-6 sm:px-8 border-2 sm:border-[3px] border-black rounded-lg sm:rounded-xl shadow-[3px_3px_0px_0px_#000] sm:shadow-[4px_4px_0px_0px_#000] hover:shadow-[1px_1px_0px_0px_#000] sm:hover:shadow-[2px_2px_0px_0px_#000] hover:translate-x-[1px] sm:hover:translate-x-[2px] hover:translate-y-[1px] sm:hover:translate-y-[2px] active:shadow-none active:translate-x-[2px] sm:active:translate-x-[4px] active:translate-y-[2px] sm:active:translate-y-[4px] transition-all text-xs sm:text-base"
                             >
                                 <Send className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-2 stroke-[3px]" />
                                 {isSubmitting ? "Gönderiliyor..." : (replyingTo ? "Yanıtla" : "Yorum Yap")}

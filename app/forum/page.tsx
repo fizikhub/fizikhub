@@ -194,7 +194,7 @@ export default async function ForumPage({ searchParams }: ForumPageProps) {
                         <div className="space-y-6 min-w-0 order-2 lg:order-1">
                             {!questions || questions.length === 0 ? (
                                 <div className="flex flex-col items-center justify-center py-20 px-6 text-center border-[3px] border-dashed border-black/30 dark:border-zinc-600 rounded-[10px] bg-card">
-                                    <div className="w-16 h-16 rounded-xl bg-[#FFBD2E]/20 border-[2.5px] border-black dark:border-zinc-600 flex items-center justify-center mb-5 shadow-[3px_3px_0px_0px_#000] dark:shadow-[3px_3px_0px_0px_rgba(255,255,255,0.1)]">
+                                    <div className="w-16 h-16 rounded-xl bg-[#EAB308]/20 border-[2.5px] border-black dark:border-zinc-600 flex items-center justify-center mb-5 shadow-[3px_3px_0px_0px_#000] dark:shadow-[3px_3px_0px_0px_rgba(255,255,255,0.1)]">
                                         <Ghost className="w-8 h-8 text-black dark:text-zinc-300" />
                                     </div>
                                     <h3 className="text-lg font-black uppercase tracking-tight text-foreground mb-2">

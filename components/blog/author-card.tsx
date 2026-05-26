@@ -33,7 +33,7 @@ export function AuthorCard({ author }: AuthorCardProps) {
             <div className="flex items-start gap-3 sm:gap-5 relative z-10">
                 {/* Avatar */}
                 <Link prefetch={false} href={`/kullanici/${username}`} className="shrink-0 mt-0.5 sm:mt-0">
-                    <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-xl border-2 sm:border-[3px] border-black dark:border-zinc-600 overflow-hidden bg-zinc-100 shadow-[2px_2px_0px_0px_#000] sm:shadow-[3px_3px_0px_0px_#000] group-hover:shadow-[3px_3px_0px_0px_#FFC800] sm:group-hover:shadow-[4px_4px_0px_0px_#FFC800] transition-shadow">
+                    <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-xl border-2 sm:border-[3px] border-black dark:border-zinc-600 overflow-hidden bg-zinc-100 shadow-[2px_2px_0px_0px_#000] sm:shadow-[3px_3px_0px_0px_#000] group-hover:shadow-[3px_3px_0px_0px_#EAB308] sm:group-hover:shadow-[4px_4px_0px_0px_#EAB308] transition-shadow">
                         <Image
                             src={author.avatar_url || "/images/default-avatar.png"}
                             alt={displayName}
@@ -48,12 +48,12 @@ export function AuthorCard({ author }: AuthorCardProps) {
                 <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap mb-1 sm:mb-1.5">
                         <Link prefetch={false} href={`/kullanici/${username}`}
-                            className="font-black text-[15px] sm:text-lg text-foreground hover:text-[#FFC800] transition-colors tracking-tight leading-none"
+                            className="font-black text-[15px] sm:text-lg text-foreground hover:text-[#EAB308] transition-colors tracking-tight leading-none"
                         >
                             {displayName}
                         </Link>
                         {author.is_writer && (
-                            <span className="text-[10px] font-black px-1.5 sm:px-2 py-0.5 bg-[#FFC800] text-black border-2 border-black rounded-[4px] shadow-[1px_1px_0px_0px_#000] uppercase pt-[3px]">
+                            <span className="text-[10px] font-black px-1.5 sm:px-2 py-0.5 bg-[#EAB308] text-black border-2 border-black rounded-[4px] shadow-[1px_1px_0px_0px_#000] uppercase pt-[3px]">
                                 Yazar
                             </span>
                         )}
@@ -67,7 +67,7 @@ export function AuthorCard({ author }: AuthorCardProps) {
                         </p>
                     )}
                     <Link prefetch={false} href={`/kullanici/${username}`}
-                        className="inline-flex items-center gap-1.5 text-xs font-black text-foreground hover:text-[#FFC800] mt-3 uppercase tracking-wider transition-colors group/link"
+                        className="inline-flex items-center gap-1.5 text-xs font-black text-foreground hover:text-[#EAB308] mt-3 uppercase tracking-wider transition-colors group/link"
                     >
                         <span>Profilini Gör</span>
                         <ArrowRight className="w-3.5 h-3.5 stroke-[3px] group-hover/link:translate-x-1 transition-transform" />

@@ -22,7 +22,7 @@ export function FeedSidebar({ suggestedUsers = [] }: { suggestedUsers?: any[] })
                 />
                 <div className="relative z-10">
                     <div className="flex items-center gap-3 mb-3">
-                        <div className="bg-[#FFBD2E] p-2 rounded-lg text-black border-[2px] border-black shadow-[2px_2px_0px_0px_#000]">
+                        <div className="bg-[#EAB308] p-2 rounded-lg text-black border-[2px] border-black shadow-[2px_2px_0px_0px_#000]">
                             <Sparkles className="w-5 h-5 fill-current" />
                         </div>
                         <h3 className="font-black text-xl text-black uppercase tracking-tight">Bilime Katkı Sağla</h3>

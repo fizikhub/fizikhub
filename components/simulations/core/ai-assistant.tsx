@@ -26,7 +26,7 @@ const SUGGESTED_PROMPTS = [
     "Bu deneydeki formülü sezgisel açıkla.",
 ];
 
-export function AiAssistant({ simId, parameters, color = "#FFBD2E" }: AiAssistantProps) {
+export function AiAssistant({ simId, parameters, color = "#EAB308" }: AiAssistantProps) {
     const [messages, setMessages] = useState<Message[]>([
         { sender: "ai", text: "FizikHub Yapay Zeka Laboratuvarına hoş geldin. Şu anki deney parametrelerini okuyabiliyorum; sana doğrudan cevabı ezberletmek yerine tahmin, gözlem ve formül bağı kurduracağım." }
     ]);
@@ -178,7 +178,7 @@ export function AiAssistant({ simId, parameters, color = "#FFBD2E" }: AiAssistan
             {/* Mission Submission Area */}
             {activeMission && (
                 <div className="p-3 bg-zinc-900 border-t-[3px] border-black flex flex-col gap-2">
-                    <div className="flex items-center gap-1.5 text-[10px] font-black uppercase text-[#FFBD2E]">
+                    <div className="flex items-center gap-1.5 text-[10px] font-black uppercase text-[#EAB308]">
                         <AlertCircle className="w-3.5 h-3.5" />
                         Aktif Deney Görevi Çözülüyor
                     </div>
@@ -227,12 +227,12 @@ export function AiAssistant({ simId, parameters, color = "#FFBD2E" }: AiAssistan
                             onChange={(e) => setInputValue(e.target.value.slice(0, MAX_CHAT_INPUT_LENGTH))}
                             disabled={isLoading}
                             maxLength={MAX_CHAT_INPUT_LENGTH}
-                            className="flex-1 h-11 bg-black border-2 border-black rounded-lg px-3 text-xs sm:text-sm font-bold text-white placeholder:text-zinc-600 focus:outline-none focus:border-[#FFBD2E]"
+                            className="flex-1 h-11 bg-black border-2 border-black rounded-lg px-3 text-xs sm:text-sm font-bold text-white placeholder:text-zinc-600 focus:outline-none focus:border-[#EAB308]"
                         />
                         <button
                             type="submit"
                             disabled={isLoading || !inputValue.trim()}
-                            className="w-11 h-11 bg-[#FFBD2E] text-black font-black border-2 border-black rounded-lg flex items-center justify-center shadow-[2px_2px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_#000] disabled:opacity-50 transition-all cursor-pointer"
+                            className="w-11 h-11 bg-[#EAB308] text-black font-black border-2 border-black rounded-lg flex items-center justify-center shadow-[2px_2px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_#000] disabled:opacity-50 transition-all cursor-pointer"
                         >
                             <Send className="w-4 h-4 stroke-[3px]" />
                         </button>

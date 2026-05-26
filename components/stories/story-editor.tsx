@@ -54,7 +54,7 @@ function DraggableTextItem({ layer, isSelected, onSelect, onStop }: { layer: Tex
         >
             <div
                 ref={nodeRef}
-                className={`absolute cursor-move px-4 py-2 rounded-lg border-2 transition-colors ${isSelected ? 'border-[#FFC800] bg-black/30 backdrop-blur-sm shadow-xl' : 'border-transparent'}`}
+                className={`absolute cursor-move px-4 py-2 rounded-lg border-2 transition-colors ${isSelected ? 'border-[#EAB308] bg-black/30 backdrop-blur-sm shadow-xl' : 'border-transparent'}`}
                 style={{
                     color: layer.color,
                     fontSize: `${layer.fontSize}px`,
@@ -127,7 +127,7 @@ export function StoryEditor() {
             {/* TOP BAR */}
             <div className="h-16 border-b border-white/10 flex items-center justify-between px-6 bg-[#1a1a1a]">
                 <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 bg-[#FFC800] rounded-lg flex items-center justify-center border-2 border-black shadow-[2px_2px_0px_0px_white]">
+                    <div className="w-8 h-8 bg-[#EAB308] rounded-lg flex items-center justify-center border-2 border-black shadow-[2px_2px_0px_0px_white]">
                         <LayoutGrid className="w-5 h-5 text-black" />
                     </div>
                     <span className="font-black text-xl tracking-tight hidden sm:inline">HİKAYE STÜDYOSU</span>
@@ -440,7 +440,7 @@ function StoryCreator({ groups, onPublish }: { groups: StoryGroup[], onPublish: 
                                 <div className="space-y-2">
                                     <Label className="text-xs">Renk</Label>
                                     <div className="flex gap-2 flex-wrap">
-                                        {['#ffffff', '#000000', '#FFC800', '#23A9FA', '#FF3366', '#10B981'].map(c => (
+                                        {['#ffffff', '#000000', '#EAB308', '#23A9FA', '#FF3366', '#10B981'].map(c => (
                                             <div
                                                 key={c}
                                                 className={`w-6 h-6 rounded-full cursor-pointer border-2 ${activeTextLayer.color === c ? 'border-white' : 'border-transparent'}`}
@@ -462,8 +462,8 @@ function StoryCreator({ groups, onPublish }: { groups: StoryGroup[], onPublish: 
                     <div className="space-y-8">
                         {/* MAIN TOOLS */}
                         <div className="grid grid-cols-2 gap-3">
-                            <Button variant="outline" className="h-20 flex-col gap-2 border-zinc-800 hover:border-[#FFC800]" onClick={() => fileInputRef.current?.click()}>
-                                <ImageIcon className="w-6 h-6 text-[#FFC800]" />
+                            <Button variant="outline" className="h-20 flex-col gap-2 border-zinc-800 hover:border-[#EAB308]" onClick={() => fileInputRef.current?.click()}>
+                                <ImageIcon className="w-6 h-6 text-[#EAB308]" />
                                 Görsel
                             </Button>
                             <Button variant="outline" className="h-20 flex-col gap-2 border-zinc-800 hover:border-[#23A9FA]" onClick={addTextLayer}>
@@ -480,7 +480,7 @@ function StoryCreator({ groups, onPublish }: { groups: StoryGroup[], onPublish: 
                                     value={effectiveSelectedGroupId}
                                     onChange={(e) => setSelectedGroupId(e.target.value)}
                                     disabled={groups.length === 0}
-                                    className="w-full bg-black border border-zinc-800 rounded-md p-2 text-sm focus:border-[#FFC800] outline-none"
+                                    className="w-full bg-black border border-zinc-800 rounded-md p-2 text-sm focus:border-[#EAB308] outline-none"
                                 >
                                     <option value="" disabled>Kart Seçin</option>
                                     {groups.map(g => (
@@ -705,7 +705,7 @@ function StoryManager({ groups, onUpdate }: { groups: StoryGroup[], onUpdate: ()
 
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                         {groups.map(group => (
-                            <div key={group.id} className="group relative bg-[#1a1a1a] rounded-xl border border-white/10 overflow-hidden hover:border-[#FFC800] transition-colors cursor-pointer" onClick={() => handleOpenGroup(group)}>
+                            <div key={group.id} className="group relative bg-[#1a1a1a] rounded-xl border border-white/10 overflow-hidden hover:border-[#EAB308] transition-colors cursor-pointer" onClick={() => handleOpenGroup(group)}>
                                 <div className="aspect-square relative">
                                     <Image
                                         src={group.cover_url || "/placeholder.png"}
@@ -837,7 +837,7 @@ function StoryManager({ groups, onUpdate }: { groups: StoryGroup[], onUpdate: ()
                                             { name: "Mavi", value: "#23A9FA" },
                                             { name: "Pembe", value: "#FF3366" },
                                             { name: "Yeşil", value: "#10B981" },
-                                            { name: "Sarı", value: "#FFC800" },
+                                            { name: "Sarı", value: "#EAB308" },
                                             { name: "FizikHub", value: "linear-gradient(to top right, #a855f7, #ec4899, #f97316)" }
                                         ].map((colorObj, i) => (
                                             <div
@@ -860,7 +860,7 @@ function StoryManager({ groups, onUpdate }: { groups: StoryGroup[], onUpdate: ()
                                 </div>
                             </div>
 
-                            <Button onClick={handleCreateGroup} className="w-full bg-[#FFC800] text-black font-bold hover:bg-[#FFD700]">
+                            <Button onClick={handleCreateGroup} className="w-full bg-[#EAB308] text-black font-bold hover:bg-[#FFD700]">
                                 OLUŞTUR
                             </Button>
                         </div>

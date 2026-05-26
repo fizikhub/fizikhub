@@ -88,7 +88,7 @@ export function ShareDrawer({ url, title, children }: ShareDrawerProps) {
                                     variant="ghost"
                                     size="icon"
                                     onClick={() => setIsOpen(false)}
-                                    className="h-9 w-9 border-[2px] border-black dark:border-zinc-600 rounded-lg bg-neutral-100 dark:bg-zinc-800 hover:bg-[#FFBD2E] hover:text-black shadow-[2px_2px_0_0_#000] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.06)] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0_0_#000]"
+                                    className="h-9 w-9 border-[2px] border-black dark:border-zinc-600 rounded-lg bg-neutral-100 dark:bg-zinc-800 hover:bg-[#EAB308] hover:text-black shadow-[2px_2px_0_0_#000] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.06)] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0_0_#000]"
                                 >
                                     <X className="h-4 w-4 stroke-[3px] text-black dark:text-zinc-300" />
                                 </Button>
@@ -100,7 +100,7 @@ export function ShareDrawer({ url, title, children }: ShareDrawerProps) {
                                         onClick={handleTwitterShare}
                                         className="w-full h-14 flex items-center justify-start gap-4 px-5 border-[2.5px] border-black dark:border-zinc-600 bg-white dark:bg-zinc-800 hover:bg-neutral-50 dark:hover:bg-zinc-700 rounded-[10px] shadow-[3px_3px_0_0_#000] dark:shadow-[3px_3px_0_0_rgba(255,255,255,0.06)] transition-all text-black dark:text-zinc-200 hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_0_#000]"
                                     >
-                                        <div className="bg-black text-white p-1.5 rounded-lg shadow-[2px_2px_0_0_#FFBD2E]">
+                                        <div className="bg-black text-white p-1.5 rounded-lg shadow-[2px_2px_0_0_#EAB308]">
                                             <Twitter className="h-4 w-4 fill-current" />
                                         </div>
                                         <span className="font-bold uppercase tracking-wider text-sm">X'te Paylaş</span>
@@ -122,7 +122,7 @@ export function ShareDrawer({ url, title, children }: ShareDrawerProps) {
                                 <motion.div whileTap={{ scale: 0.97 }}>
                                     <Button
                                         onClick={handleCopy}
-                                        className="w-full h-14 flex items-center justify-start gap-4 px-5 border-[2.5px] border-black dark:border-zinc-600 bg-[#FFBD2E] hover:bg-[#FFD268] rounded-[10px] shadow-[3px_3px_0_0_#000] dark:shadow-[3px_3px_0_0_rgba(255,255,255,0.06)] transition-all text-black hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_0_#000]"
+                                        className="w-full h-14 flex items-center justify-start gap-4 px-5 border-[2.5px] border-black dark:border-zinc-600 bg-[#EAB308] hover:bg-[#EAB308] rounded-[10px] shadow-[3px_3px_0_0_#000] dark:shadow-[3px_3px_0_0_rgba(255,255,255,0.06)] transition-all text-black hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_0_#000]"
                                     >
                                         <div className="bg-black text-white p-1.5 rounded-lg shadow-[2px_2px_0_0_#fff]">
                                             <Copy className="h-4 w-4 stroke-[3px]" />

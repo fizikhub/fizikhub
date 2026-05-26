@@ -144,7 +144,7 @@ export function CreateQuestionDialog({ trigger, defaultOpen = false }: CreateQue
                         <DialogTitle className="font-[family-name:var(--font-outfit)] text-xl font-black uppercase tracking-tighter flex items-center gap-3 text-black dark:text-zinc-50">
                             <span className={cn(
                                 "flex items-center justify-center w-8 h-8 text-sm",
-                                "bg-[#FFC800] text-black font-black border-[3px] border-black rounded-[4px] shadow-[2px_2px_0px_0px_#000]"
+                                "bg-[#EAB308] text-black font-black border-[3px] border-black rounded-[4px] shadow-[2px_2px_0px_0px_#000]"
                             )}>
                                 {step}
                             </span>
@@ -216,7 +216,7 @@ export function CreateQuestionDialog({ trigger, defaultOpen = false }: CreateQue
                                     <div className="flex items-center justify-between pb-3 border-b border-black/10 dark:border-white/10">
                                         <button
                                             onClick={() => setStep(1)}
-                                            className="px-3 py-1.5 border-[2px] border-black bg-[#FFC800] text-black font-black uppercase tracking-widest text-[10px] sm:text-xs flex items-center gap-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] transition-all rounded-[6px]"
+                                            className="px-3 py-1.5 border-[2px] border-black bg-[#EAB308] text-black font-black uppercase tracking-widest text-[10px] sm:text-xs flex items-center gap-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] transition-all rounded-[6px]"
                                         >
                                             <Tag className="h-3 w-3" />
                                             {formData.category}

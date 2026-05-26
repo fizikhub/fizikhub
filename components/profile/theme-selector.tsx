@@ -83,7 +83,7 @@ export function ThemeSelector({ username }: ThemeSelectorProps) {
                             className={cn(
                                 "flex flex-col items-center gap-2 p-3 rounded-xl border-2 transition-all group",
                                 isActive
-                                    ? "border-primary bg-primary/5 text-primary scale-100 shadow-[4px_4px_0px_0px_#FFC800]"
+                                    ? "border-primary bg-primary/5 text-primary scale-100 shadow-[4px_4px_0px_0px_#EAB308]"
                                     : "border-black bg-zinc-900 hover:bg-zinc-800 text-muted-foreground hover:text-foreground hover:-translate-y-1 hover:shadow-[4px_4px_0px_0px_#000]"
                             )}
                         >

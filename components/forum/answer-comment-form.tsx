@@ -52,7 +52,7 @@ export function AnswerCommentForm({ answerId, questionId, onCommentAdded, onCanc
                         value={content}
                         onChange={(e) => setContent(e.target.value)}
                         placeholder="Yanıtını yaz..."
-                        className="min-h-[40px] text-sm resize-none bg-white dark:bg-[#1a1a1d] border-[2.5px] border-black dark:border-zinc-700 focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-[#FFBD2E] dark:focus:border-[#FFBD2E] transition-all rounded-lg px-3 py-2.5 placeholder:text-neutral-400 dark:placeholder:text-zinc-600 shadow-[2px_2px_0_0_#000] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.06)] focus:shadow-[3px_3px_0_0_#000] dark:focus:shadow-[3px_3px_0_0_rgba(255,255,255,0.08)] dark:text-zinc-200"
+                        className="min-h-[40px] text-sm resize-none bg-white dark:bg-[#1a1a1d] border-[2.5px] border-black dark:border-zinc-700 focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-[#EAB308] dark:focus:border-[#EAB308] transition-all rounded-lg px-3 py-2.5 placeholder:text-neutral-400 dark:placeholder:text-zinc-600 shadow-[2px_2px_0_0_#000] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.06)] focus:shadow-[3px_3px_0_0_#000] dark:focus:shadow-[3px_3px_0_0_rgba(255,255,255,0.08)] dark:text-zinc-200"
                     />
 
                     {/* Actions bar */}
@@ -60,7 +60,7 @@ export function AnswerCommentForm({ answerId, questionId, onCommentAdded, onCanc
                         <Button type="button" variant="ghost" size="sm" onClick={onCancel} className="h-8 rounded-lg text-xs font-bold uppercase text-neutral-500 dark:text-zinc-400 hover:bg-neutral-100 dark:hover:bg-zinc-800 border-[2px] border-transparent hover:border-neutral-300 dark:hover:border-zinc-600 transition-all">
                             İptal
                         </Button>
-                        <Button type="submit" size="sm" disabled={isSubmitting || !content.trim()} className="h-8 rounded-lg text-xs font-bold uppercase bg-[#FFBD2E] text-black border-[2px] border-black dark:border-zinc-600 shadow-[2px_2px_0_0_#000] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.06)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-[1px_1px_0_0_#000] hover:bg-[#FFD268] transition-all">
+                        <Button type="submit" size="sm" disabled={isSubmitting || !content.trim()} className="h-8 rounded-lg text-xs font-bold uppercase bg-[#EAB308] text-black border-[2px] border-black dark:border-zinc-600 shadow-[2px_2px_0_0_#000] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.06)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-[1px_1px_0_0_#000] hover:bg-[#EAB308] transition-all">
                             {isSubmitting ? "..." : "Yanıtla"}
                         </Button>
                     </div>

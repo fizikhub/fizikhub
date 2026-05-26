@@ -120,7 +120,7 @@ export function BlogEditor101({ open, onOpenChange, userId, onDontShowAgain }: B
                                         onClick={() => setStep(i)}
                                         className={cn(
                                             "w-3 h-3 rounded-[4px] border-[2px] border-black transition-all duration-300",
-                                            i === step ? "bg-[#FFC800] scale-125 shadow-[2px_2px_0px_0px_#000]" : "bg-white dark:bg-zinc-700 hover:bg-neutral-200 dark:hover:bg-zinc-500"
+                                            i === step ? "bg-[#EAB308] scale-125 shadow-[2px_2px_0px_0px_#000]" : "bg-white dark:bg-zinc-700 hover:bg-neutral-200 dark:hover:bg-zinc-500"
                                         )}
                                     />
                                 ))}
@@ -167,7 +167,7 @@ export function BlogEditor101({ open, onOpenChange, userId, onDontShowAgain }: B
                                         "w-full sm:w-auto h-10 px-8 font-[family-name:var(--font-inter)] font-black uppercase tracking-widest transition-all rounded-[8px]",
                                         step < steps.length - 1
                                             ? "bg-black dark:bg-[#27272a] text-white border-[3px] border-black dark:border-zinc-500"
-                                            : "bg-[#FFC800] hover:bg-[#e6b400] text-black border-[3px] border-black",
+                                            : "bg-[#EAB308] hover:bg-[#e6b400] text-black border-[3px] border-black",
                                         "shadow-[2px_2px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_0px_#000] active:translate-y-[2px] active:translate-x-[2px] active:shadow-none"
                                     )}
                                 >

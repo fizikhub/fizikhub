@@ -134,7 +134,7 @@ export function DesktopSidebar() {
                     {/* Massive Action Button (Post/Create) */}
                     <div className="mt-6 lg:mt-8">
                         <ViewTransitionLink href="/paylas" className="block w-full outline-none">
-                            <div className="flex items-center justify-center lg:justify-start lg:gap-3 p-3 lg:px-4 bg-[#FFBD2E] rounded-xl border-[3px] border-black shadow-[4px_4px_0px_0px_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_#000] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all group">
+                            <div className="flex items-center justify-center lg:justify-start lg:gap-3 p-3 lg:px-4 bg-[#EAB308] rounded-xl border-[3px] border-black shadow-[4px_4px_0px_0px_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_#000] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all group">
                                 <Plus className="w-6 h-6 shrink-0 text-black stroke-[3px] group-hover:rotate-90 transition-transform" />
                                 <span className="hidden lg:block font-[family-name:var(--font-outfit)] font-black uppercase text-black text-[17px] tracking-tight whitespace-nowrap">
                                     Yeni Gönderi
@@ -176,7 +176,7 @@ export function DesktopSidebar() {
                         </ViewTransitionLink>
                     ) : (
                         <ViewTransitionLink href="/login" className="block w-full outline-none">
-                            <div className="relative z-10 flex items-center justify-center lg:justify-start gap-3 p-2 lg:p-3 rounded-xl border-[3px] border-black bg-white dark:bg-[#27272a] shadow-[4px_4px_0px_0px_#000] hover:bg-[#FFBD2E] dark:hover:bg-[#FFBD2E] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_#000] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all group w-full">
+                            <div className="relative z-10 flex items-center justify-center lg:justify-start gap-3 p-2 lg:p-3 rounded-xl border-[3px] border-black bg-white dark:bg-[#27272a] shadow-[4px_4px_0px_0px_#000] hover:bg-[#EAB308] dark:hover:bg-[#EAB308] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_#000] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all group w-full">
                                 <LogIn className="w-5 h-5 shrink-0 text-black dark:text-white group-hover:text-black stroke-[3px]" />
                                 <span className="hidden lg:block font-[family-name:var(--font-outfit)] font-black uppercase text-sm text-black dark:text-white group-hover:text-black">
                                     Giriş Yap

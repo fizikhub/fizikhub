@@ -85,35 +85,35 @@ function SimulationSeoContent({ sim }: { sim: (typeof simulations)[number] }) {
 
                 <div className="mt-7 grid gap-4 md:grid-cols-[0.9fr_1.1fr]">
                     <div className="rounded-[8px] border border-zinc-800 bg-black/40 p-4">
-                        <div className="mb-3 flex items-center gap-2 text-[#FFC800]">
+                        <div className="mb-3 flex items-center gap-2 text-[#EAB308]">
                             <Sparkles className="h-4 w-4" />
                             <h3 className="text-sm font-black uppercase tracking-widest">Öğrenme hedefi</h3>
                         </div>
                         <p className="text-lg font-black leading-snug text-white">{learning.bigQuestion}</p>
                         <p className="mt-3 text-sm font-semibold leading-6 text-zinc-400">{learning.outcome}</p>
                         <div className="mt-4 inline-flex items-center gap-2 rounded-[7px] border border-zinc-700 px-3 py-2 text-xs font-black uppercase tracking-widest text-zinc-300">
-                            <Clock3 className="h-3.5 w-3.5 text-[#FFC800]" />
+                            <Clock3 className="h-3.5 w-3.5 text-[#EAB308]" />
                             Yaklaşık {learning.estimatedMinutes} dakika
                         </div>
                     </div>
 
                     <div className="rounded-[8px] border border-zinc-800 bg-black/40 p-4">
-                        <div className="mb-3 flex items-center gap-2 text-[#FFC800]">
+                        <div className="mb-3 flex items-center gap-2 text-[#EAB308]">
                             <ListChecks className="h-4 w-4" />
                             <h3 className="text-sm font-black uppercase tracking-widest">Deney defteri</h3>
                         </div>
                         <ol className="space-y-3">
                             {learning.checkpoints.map((checkpoint, index) => (
                                 <li key={checkpoint} className="grid grid-cols-[1.75rem_1fr] gap-3 text-sm font-semibold leading-6 text-zinc-300">
-                                    <span className="flex h-7 w-7 items-center justify-center rounded-[6px] border border-zinc-700 bg-zinc-900 text-[11px] font-black text-[#FFC800]">
+                                    <span className="flex h-7 w-7 items-center justify-center rounded-[6px] border border-zinc-700 bg-zinc-900 text-[11px] font-black text-[#EAB308]">
                                         {index + 1}
                                     </span>
                                     <span>{checkpoint}</span>
                                 </li>
                             ))}
                         </ol>
-                        <div className="mt-4 rounded-[7px] border border-[#FFC800]/40 bg-[#FFC800]/10 p-3">
-                            <p className="text-[10px] font-black uppercase tracking-widest text-[#FFC800]">Hızlı kontrol</p>
+                        <div className="mt-4 rounded-[7px] border border-[#EAB308]/40 bg-[#EAB308]/10 p-3">
+                            <p className="text-[10px] font-black uppercase tracking-widest text-[#EAB308]">Hızlı kontrol</p>
                             <p className="mt-1 text-sm font-bold leading-6 text-zinc-100">{learning.quickCheck}</p>
                         </div>
                     </div>
@@ -127,8 +127,8 @@ function SimulationSeoContent({ sim }: { sim: (typeof simulations)[number] }) {
                             key={link.href}
                             href={link.href}
                             className={link.featured
-                                ? "rounded-[7px] border border-[#FFC800] bg-[#FFC800] px-3 py-2 text-xs font-black text-black"
-                                : "inline-flex items-center gap-1 rounded-[7px] border border-zinc-700 px-3 py-2 text-xs font-black text-zinc-100 hover:border-[#FFC800]"
+                                ? "rounded-[7px] border border-[#EAB308] bg-[#EAB308] px-3 py-2 text-xs font-black text-black"
+                                : "inline-flex items-center gap-1 rounded-[7px] border border-zinc-700 px-3 py-2 text-xs font-black text-zinc-100 hover:border-[#EAB308]"
                             }
                         >
                             {link.label}

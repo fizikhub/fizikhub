@@ -51,11 +51,11 @@ export function RelatedArticles({ articles }: RelatedArticlesProps) {
                         {/* Content */}
                         <div className="p-4 sm:p-5 space-y-2 sm:space-y-3">
                             <div>
-                                <span className="inline-block px-2 sm:px-2.5 py-0.5 sm:py-1 bg-[#FFC800] text-black border-2 border-black rounded-[4px] sm:rounded-md text-[9px] sm:text-[10px] font-black uppercase tracking-widest shadow-[1px_1px_0px_0px_#000] sm:shadow-[2px_2px_0px_0px_#000]">
+                                <span className="inline-block px-2 sm:px-2.5 py-0.5 sm:py-1 bg-[#EAB308] text-black border-2 border-black rounded-[4px] sm:rounded-md text-[9px] sm:text-[10px] font-black uppercase tracking-widest shadow-[1px_1px_0px_0px_#000] sm:shadow-[2px_2px_0px_0px_#000]">
                                     {article.category}
                                 </span>
                             </div>
-                            <h4 className="font-black text-base sm:text-xl leading-tight line-clamp-2 group-hover:text-[#FFC800] transition-colors tracking-tight">
+                            <h4 className="font-black text-base sm:text-xl leading-tight line-clamp-2 group-hover:text-[#EAB308] transition-colors tracking-tight">
                                 {article.title}
                             </h4>
                             <p className="text-[10px] sm:text-xs font-bold text-muted-foreground uppercase tracking-widest mt-1 sm:mt-0">

@@ -121,10 +121,10 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
                 />
 
                 {/* Hover accent line on left */}
-                <div className="absolute left-0 top-0 bottom-0 w-[4px] bg-[#FFBD2E] opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20 rounded-l-[10px]" />
+                <div className="absolute left-0 top-0 bottom-0 w-[4px] bg-[#EAB308] opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20 rounded-l-[10px]" />
 
                 {/* 1. Header Bar (Yellow Theme) */}
-                <div className="flex items-center justify-between px-4 py-2.5 border-b-[3px] border-black dark:border-zinc-700 bg-gradient-to-r from-[#FFBD2E] to-[#FFD466] z-10 relative">
+                <div className="flex items-center justify-between px-4 py-2.5 border-b-[3px] border-black dark:border-zinc-700 bg-gradient-to-r from-[#EAB308] to-[#EAB308] z-10 relative">
                     <span className="font-black text-[11px] uppercase tracking-[0.15em] text-black">
                         {question.category || "GENEL"}
                     </span>
@@ -133,7 +133,7 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
                             {formatRelativeTime(question.created_at, renderedAt)}
                         </time>
                         {badgeLabel && (
-                            <div className="bg-black text-[#FFBD2E] px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider">
+                            <div className="bg-black text-[#EAB308] px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider">
                                 {badgeLabel}
                             </div>
                         )}
@@ -144,7 +144,7 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
                 <div className="flex-1 p-4 sm:p-5 flex flex-col gap-2.5 z-10 relative">
 
                     {/* Title */}
-                    <h2 className="font-[family-name:var(--font-outfit)] text-lg sm:text-2xl font-black text-black dark:text-zinc-50 leading-tight uppercase tracking-tight group-hover:text-[#FFBD2E] transition-colors duration-200 line-clamp-2">
+                    <h2 className="font-[family-name:var(--font-outfit)] text-lg sm:text-2xl font-black text-black dark:text-zinc-50 leading-tight uppercase tracking-tight group-hover:text-[#EAB308] transition-colors duration-200 line-clamp-2">
                         {question.title}
                     </h2>
 
@@ -173,7 +173,7 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
                                     e.stopPropagation();
                                     setIsExpanded(true);
                                 }}
-                                className="mt-3 text-[10px] font-black uppercase tracking-widest text-[#FFBD2E] bg-black hover:bg-zinc-800 px-3 py-1.5 rounded-md transition-colors border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,0.3)]"
+                                className="mt-3 text-[10px] font-black uppercase tracking-widest text-[#EAB308] bg-black hover:bg-zinc-800 px-3 py-1.5 rounded-md transition-colors border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,0.3)]"
                             >
                                 Devamını Oku
                             </button>
@@ -215,7 +215,7 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
                                     className="w-full h-full"
                                 />
                             </div>
-                            <span className="text-[11px] font-black uppercase tracking-wider text-neutral-500 dark:text-zinc-500 group-hover/author:text-[#FFBD2E] transition-colors">
+                            <span className="text-[11px] font-black uppercase tracking-wider text-neutral-500 dark:text-zinc-500 group-hover/author:text-[#EAB308] transition-colors">
                                 {question.full_name || question.profiles?.username}
                             </span>
                         </button>

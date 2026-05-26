@@ -193,7 +193,7 @@ export function ShareInputCard({ user: initialUser }: ShareInputCardProps) {
             <div className="relative h-9 sm:h-10 border-b border-zinc-700/60 bg-zinc-900/60 backdrop-blur-sm flex items-center select-none rounded-t-2xl overflow-hidden z-10">
                 <div className="absolute left-3 sm:left-4 flex gap-1.5 z-10">
                     <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#FF5F56]" />
-                    <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#FFBD2E]" />
+                    <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#EAB308]" />
                     <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#27C93F]" />
                 </div>
                 <div className="flex-1 text-center text-[10px] sm:text-xs font-bold text-zinc-400 uppercase tracking-[0.15em]">

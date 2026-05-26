@@ -81,7 +81,7 @@ export default async function RozetlerPage() {
                             )}
                         </div>
                     </div>
-                    <div className="h-1 w-full bg-gradient-to-r from-[#23A9FA] via-purple-500 to-[#FFC800] rounded-full" />
+                    <div className="h-1 w-full bg-gradient-to-r from-[#23A9FA] via-purple-500 to-[#EAB308] rounded-full" />
                 </div>
 
                 {/* Kategori Grupları */}

@@ -41,7 +41,7 @@ export function RuntimeEffects() {
       🪐 Bilimi Ti'ye Alıyoruz Ama Ciddili Şekilde!
       👨‍💻 Kodları incelemeyi seviyor musun? Aramıza katıl!
         `,
-        "color: #FFBD2E; font-weight: bold; font-family: monospace; font-size: 12px;"
+        "color: #EAB308; font-weight: bold; font-family: monospace; font-size: 12px;"
       );
     }
 

@@ -166,7 +166,7 @@ export function ArticleHero({ article, readingTime }: ArticleHeroProps) {
                     <div className="container max-w-4xl mx-auto px-4 mt-8">
                         {/* Category — Neo Brutalist */}
                         <div className="mb-4">
-                            <span className="inline-flex items-center gap-1.5 px-3 py-1 sm:px-4 sm:py-1.5 bg-[#FFC800] text-black text-[10px] sm:text-xs font-black uppercase tracking-[0.15em] border-[2.5px] border-black shadow-[3px_3px_0px_0px_#000] hover:shadow-[1px_1px_0px_0px_#000] hover:translate-x-[2px] hover:translate-y-[2px] transition-all cursor-default select-none">
+                            <span className="inline-flex items-center gap-1.5 px-3 py-1 sm:px-4 sm:py-1.5 bg-[#EAB308] text-black text-[10px] sm:text-xs font-black uppercase tracking-[0.15em] border-[2.5px] border-black shadow-[3px_3px_0px_0px_#000] hover:shadow-[1px_1px_0px_0px_#000] hover:translate-x-[2px] hover:translate-y-[2px] transition-all cursor-default select-none">
                                 <Tag className="w-3 h-3 sm:w-3.5 sm:h-3.5 stroke-[3px]" />
                                 {article.category || "Genel"}
                             </span>

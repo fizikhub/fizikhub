@@ -10,7 +10,7 @@ const simButtonVariants = cva(
     {
         variants: {
             variant: {
-                default: "bg-[#FFC800] text-black hover:bg-[#FFD633]",
+                default: "bg-[#EAB308] text-black hover:bg-[#FFD633]",
                 secondary: "bg-white text-black hover:bg-neutral-100 dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800",
                 destructive: "bg-[#EF4444] text-white hover:bg-red-600",
                 outline: "bg-transparent hover:bg-neutral-100 dark:hover:bg-zinc-800",

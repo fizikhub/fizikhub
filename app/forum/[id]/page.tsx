@@ -387,7 +387,7 @@ export default async function QuestionPage({ params }: PageProps) {
     };
 
     const tagColors = [
-        "bg-[#FFBD2E] text-black", // Neo Yellow
+        "bg-[#EAB308] text-black", // Neo Yellow
         "bg-neo-pink text-white", // Neo Pink
         "bg-neo-blue text-white", // Neo Blue
         "bg-[#4ADE80] text-black", // Neo Green
@@ -395,7 +395,7 @@ export default async function QuestionPage({ params }: PageProps) {
     ];
 
     return (
-        <div className="min-h-screen bg-background pb-20 relative overflow-x-hidden selection:bg-[#FFBD2E]/20 selection:text-[#FFBD2E]">
+        <div className="min-h-screen bg-background pb-20 relative overflow-x-hidden selection:bg-[#EAB308]/20 selection:text-[#EAB308]">
             <ReadingProgress />
             <BackgroundWrapper />
             <BreadcrumbJsonLd items={[
@@ -437,13 +437,13 @@ export default async function QuestionPage({ params }: PageProps) {
                             />
 
                             {/* 1. Yellow Neo-Brutalist Header Bar */}
-                            <div className="flex items-center justify-between px-4 sm:px-5 py-2.5 border-b-[2.5px] border-black dark:border-zinc-700 bg-gradient-to-r from-[#FFBD2E] to-[#FFD466] z-10 relative">
+                            <div className="flex items-center justify-between px-4 sm:px-5 py-2.5 border-b-[2.5px] border-black dark:border-zinc-700 bg-gradient-to-r from-[#EAB308] to-[#EAB308] z-10 relative">
                                 <span className="font-black text-xs sm:text-sm uppercase tracking-widest text-black">
                                     {question.category || "GENEL"}
                                 </span>
                                 <div className="flex items-center gap-2">
                                     {isSolved && (
-                                        <div className="flex items-center gap-1 bg-black text-[#FFBD2E] px-2.5 py-1 rounded-full text-[10px] sm:text-xs font-bold uppercase">
+                                        <div className="flex items-center gap-1 bg-black text-[#EAB308] px-2.5 py-1 rounded-full text-[10px] sm:text-xs font-bold uppercase">
                                             <CheckCircle2 className="h-3 w-3" />
                                             Çözüldü
                                         </div>
@@ -464,7 +464,7 @@ export default async function QuestionPage({ params }: PageProps) {
                                     </Link>
                                     <div className="flex flex-col leading-tight">
                                         <Link prefetch={false} href={`/kullanici/${question.profiles?.username}`}
-                                            className="font-bold text-base sm:text-lg hover:text-[#FFBD2E] transition-colors flex items-center gap-1.5"
+                                            className="font-bold text-base sm:text-lg hover:text-[#EAB308] transition-colors flex items-center gap-1.5"
                                         >
                                             @{question.profiles?.username || "Anonim"}
                                             {question.profiles?.is_verified && (
@@ -532,7 +532,7 @@ export default async function QuestionPage({ params }: PageProps) {
                                         url={`${process.env.NEXT_PUBLIC_APP_URL || 'https://www.fizikhub.com'}/forum/${question.id}`}
                                         title={question.title}
                                     >
-                                        <Button variant="ghost" size="icon" className="h-9 w-9 border-[2px] border-black dark:border-zinc-600 bg-white dark:bg-zinc-800 rounded-lg text-black dark:text-zinc-300 shadow-[2px_2px_0_0_#000] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.08)] hover:bg-[#FFBD2E] hover:text-black hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0_0_#000] transition-all pointer-events-auto">
+                                        <Button variant="ghost" size="icon" className="h-9 w-9 border-[2px] border-black dark:border-zinc-600 bg-white dark:bg-zinc-800 rounded-lg text-black dark:text-zinc-300 shadow-[2px_2px_0_0_#000] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.08)] hover:bg-[#EAB308] hover:text-black hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0_0_#000] transition-all pointer-events-auto">
                                             <Share2 className="h-3.5 w-3.5 stroke-[2.5px]" />
                                         </Button>
                                     </ShareDrawer>
@@ -568,7 +568,7 @@ export default async function QuestionPage({ params }: PageProps) {
                         <section aria-label="Cevaplar" className="mt-8 sm:mt-10 max-w-full px-2 sm:px-0">
                             <div className="flex items-center justify-between px-1 mb-5">
                                 <h3 className="text-lg sm:text-xl font-black uppercase tracking-tight flex items-center gap-2">
-                                    <MessageSquare className="h-5 w-5 text-[#FFBD2E]" />
+                                    <MessageSquare className="h-5 w-5 text-[#EAB308]" />
                                     Cevaplar
                                     <span className="text-sm font-bold text-neutral-500 dark:text-zinc-500 bg-neutral-100 dark:bg-zinc-800 px-2.5 py-0.5 rounded-full border border-neutral-200 dark:border-zinc-700">{answers?.length || 0}</span>
                                 </h3>
@@ -595,7 +595,7 @@ export default async function QuestionPage({ params }: PageProps) {
                         {/* Explore Sidebar */}
                         <div className="bg-white dark:bg-[#1e1e21] border-[2.5px] border-black dark:border-zinc-700 rounded-[10px] p-5 shadow-[4px_4px_0_0_#000] dark:shadow-[4px_4px_0_0_rgba(255,255,255,0.08)]">
                             <h3 className="font-[family-name:var(--font-outfit)] text-lg font-black mb-4 flex items-center gap-2 uppercase tracking-tight">
-                                <Flame className="h-5 w-5 text-[#FFBD2E]" />
+                                <Flame className="h-5 w-5 text-[#EAB308]" />
                                 Keşfet
                             </h3>
                             <div className="space-y-3">
@@ -603,7 +603,7 @@ export default async function QuestionPage({ params }: PageProps) {
                                     Fizik dünyasında en çok konuşulan konulara göz at.
                                 </p>
                                 <div className="space-y-2">
-                                    <Button variant="outline" className="w-full justify-start font-bold text-xs uppercase border-[2px] border-black dark:border-zinc-600 hover:bg-[#FFBD2E] hover:text-black hover:border-black h-10 rounded-lg shadow-[2px_2px_0_0_#000] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.08)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0_0_#000] transition-all dark:text-zinc-300" asChild>
+                                    <Button variant="outline" className="w-full justify-start font-bold text-xs uppercase border-[2px] border-black dark:border-zinc-600 hover:bg-[#EAB308] hover:text-black hover:border-black h-10 rounded-lg shadow-[2px_2px_0_0_#000] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.08)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0_0_#000] transition-all dark:text-zinc-300" asChild>
                                         <Link prefetch={false} href="/forum?sort=popular">Popüler Sorular</Link>
                                     </Button>
                                     <Button variant="outline" className="w-full justify-start font-bold text-xs uppercase border-[2px] border-black dark:border-zinc-600 hover:bg-neo-pink hover:text-white hover:border-black h-10 rounded-lg shadow-[2px_2px_0_0_#000] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.08)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0_0_#000] transition-all dark:text-zinc-300" asChild>

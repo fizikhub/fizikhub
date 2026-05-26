@@ -66,7 +66,7 @@ export function ForumHeaderFallback({ currentCategory = "Tümü", currentSort = 
                                 className={cn(
                                     "px-4 py-2 w-20 sm:w-24 h-8 sm:h-9 border-[2.5px] rounded-full",
                                     currentCategory === category
-                                        ? "bg-[#FFBD2E]/50 border-black/50"
+                                        ? "bg-[#EAB308]/50 border-black/50"
                                         : "bg-card border-black/20 dark:border-zinc-600/50"
                                 )}
                             />
@@ -74,8 +74,8 @@ export function ForumHeaderFallback({ currentCategory = "Tümü", currentSort = 
                     </div>
                 </div>
                 <div className="flex items-center gap-1 bg-card p-1 rounded-xl border-[2.5px] border-black/20 dark:border-zinc-600/50 w-full md:w-auto h-[44px] animate-pulse">
-                    <div className={cn("flex-1 md:w-24 h-full rounded-lg", currentSort === 'newest' ? "bg-[#FFBD2E]/50" : "bg-muted")} />
-                    <div className={cn("flex-1 md:w-24 h-full rounded-lg", currentSort === 'popular' ? "bg-[#FFBD2E]/50" : "bg-muted")} />
+                    <div className={cn("flex-1 md:w-24 h-full rounded-lg", currentSort === 'newest' ? "bg-[#EAB308]/50" : "bg-muted")} />
+                    <div className={cn("flex-1 md:w-24 h-full rounded-lg", currentSort === 'popular' ? "bg-[#EAB308]/50" : "bg-muted")} />
                 </div>
             </div>
         </div>

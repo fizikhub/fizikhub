@@ -84,7 +84,7 @@ export function DarkNeoFeed({
 
     const tabs = [
         { id: "posts", label: "Gönderiler", icon: LayoutList, color: "bg-[#23A9FA] text-black" }, // Vivid Blue
-        { id: "replies", label: "Yanıtlar", icon: MessageCircle, color: "bg-[#FFC800] text-black" }, // Vivid Yellow
+        { id: "replies", label: "Yanıtlar", icon: MessageCircle, color: "bg-[#EAB308] text-black" }, // Vivid Yellow
         ...(isOwnProfile ? [
             { id: "saved", label: "Kayıtlı", icon: Bookmark, color: "bg-[#FF3366] text-white" }, // Vivid Pink
             { id: "drafts", label: "Taslaklar", icon: FileText, color: "bg-[#00F050] text-black" } // Vivid Green
@@ -237,11 +237,11 @@ export function DarkNeoFeed({
                                     answers.map((answer) => (
                                         <div key={answer.id} className="group relative cursor-pointer overflow-hidden rounded-xl border-2 border-black bg-background p-4 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:bg-zinc-50 hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:border-zinc-800 dark:shadow-[3px_3px_0px_0px_rgba(0,0,0,0.5)] dark:hover:bg-zinc-900/50 dark:hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.5)] sm:p-5 sm:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
                                             {/* Top Line Accent */}
-                                            <div className="absolute top-0 left-0 w-full h-1 bg-[#FFC800] transform origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-300" />
+                                            <div className="absolute top-0 left-0 w-full h-1 bg-[#EAB308] transform origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-300" />
 
                                             <div className="flex items-start justify-between mb-3 relative z-10">
                                                 <div className="flex items-center gap-2 text-[10px] font-black text-zinc-500 uppercase tracking-wider">
-                                                    <MessageCircle className="w-3.5 h-3.5 text-[#FFC800] stroke-[2.5px]" />
+                                                    <MessageCircle className="w-3.5 h-3.5 text-[#EAB308] stroke-[2.5px]" />
                                                     <span>{new Date(answer.created_at).toLocaleDateString("tr-TR")}</span>
                                                 </div>
                                                 {answer.is_accepted && (
@@ -250,10 +250,10 @@ export function DarkNeoFeed({
                                                     </div>
                                                 )}
                                             </div>
-                                            <h4 className="font-black text-base text-foreground mb-2 group-hover:text-[#FFC800] transition-colors leading-snug relative z-10">
+                                            <h4 className="font-black text-base text-foreground mb-2 group-hover:text-[#EAB308] transition-colors leading-snug relative z-10">
                                                 {Array.isArray(answer.questions) ? answer.questions[0]?.title : answer.questions?.title || "Soru Başlığı Bulunamadı"}
                                             </h4>
-                                            <div className="text-zinc-400 text-sm leading-relaxed pl-3 border-l-2 border-zinc-700 group-hover:border-[#FFC800] transition-colors relative z-10">
+                                            <div className="text-zinc-400 text-sm leading-relaxed pl-3 border-l-2 border-zinc-700 group-hover:border-[#EAB308] transition-colors relative z-10">
                                                 {answer.content.replace(/<[^>]*>?/gm, "").slice(0, 150)}...
                                             </div>
                                         </div>

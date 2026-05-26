@@ -32,7 +32,7 @@ export function WriteArticleAction() {
         <>
             <Button 
                 onClick={handleAction}
-                className="font-black border-2 border-black dark:border-zinc-800 bg-[#FFBD2E] text-black hover:bg-[#FFD268] transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.5)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none h-11 px-5"
+                className="font-black border-2 border-black dark:border-zinc-800 bg-[#EAB308] text-black hover:bg-[#EAB308] transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.5)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none h-11 px-5"
             >
                 <PenSquare className="w-4 h-4 mr-2" />
                 Yazı Yaz

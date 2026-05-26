@@ -335,7 +335,7 @@ export default function ManifestoPage() {
 
                         <div className="mt-12 flex justify-center">
                             <Link href="/yazar/yeni">
-                                <button className="group relative bg-[#FFBD2E] text-black font-black text-2xl py-4 px-10 rounded-xl border-[3px] border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[4px] hover:translate-y-[4px] transition-all flex items-center gap-3 uppercase italic">
+                                <button className="group relative bg-[#EAB308] text-black font-black text-2xl py-4 px-10 rounded-xl border-[3px] border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[4px] hover:translate-y-[4px] transition-all flex items-center gap-3 uppercase italic">
                                     Yazmaya Başla <ArrowRight className="w-6 h-6 group-hover:translate-x-2 transition-transform" />
                                 </button>
                             </Link>

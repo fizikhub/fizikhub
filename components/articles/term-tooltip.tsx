@@ -18,7 +18,7 @@ export function TermTooltip({ term, slug, definition, category = "Fizik Terimi",
     return (
         <Tooltip>
             <TooltipTrigger asChild>
-                <span className="inline cursor-help border-b-2 border-dashed border-[#FFC800] hover:text-[#FFC800] transition-colors font-bold">
+                <span className="inline cursor-help border-b-2 border-dashed border-[#EAB308] hover:text-[#EAB308] transition-colors font-bold">
                     {children}
                 </span>
             </TooltipTrigger>
@@ -26,7 +26,7 @@ export function TermTooltip({ term, slug, definition, category = "Fizik Terimi",
                 side="top"
                 align="center"
                 sideOffset={6}
-                className="z-50 max-w-[280px] sm:max-w-xs p-4 border-[3px] border-black bg-[#FFBD2E] text-black shadow-[4px_4px_0_0_#000] rounded-[4px] font-sans transition-all duration-150 animate-in fade-in-0 zoom-in-95"
+                className="z-50 max-w-[280px] sm:max-w-xs p-4 border-[3px] border-black bg-[#EAB308] text-black shadow-[4px_4px_0_0_#000] rounded-[4px] font-sans transition-all duration-150 animate-in fade-in-0 zoom-in-95"
             >
                 <div className="flex flex-col gap-1 text-left select-none">
                     <div className="flex items-center justify-between border-b-2 border-black/10 pb-1.5 mb-1.5">

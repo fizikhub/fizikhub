@@ -236,7 +236,7 @@ export function ProfileSettingsDialog({
 
             {/* 4. ACCOUNT & ACTIONS (Sticky on Mobile) */}
             <div className="fixed bottom-0 left-0 right-0 p-4 border-t bg-background/80 backdrop-blur-md md:static md:bg-transparent md:border-0 md:p-0 flex flex-col gap-3 z-50">
-                <Button onClick={handleSaveProfile} disabled={isLoading} className="w-full bg-[#FFC800] text-black hover:bg-[#FFC800]/90 font-bold h-12 rounded-xl text-base">
+                <Button onClick={handleSaveProfile} disabled={isLoading} className="w-full bg-[#EAB308] text-black hover:bg-[#EAB308]/90 font-bold h-12 rounded-xl text-base">
                     {isLoading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Save className="w-4 h-4 mr-2" />}
                     Kaydet
                 </Button>

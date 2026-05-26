@@ -18,9 +18,9 @@ export function QuickNav() {
             form.scrollIntoView({ behavior: "smooth", block: "center" });
 
             // Highlight the form briefly
-            form.classList.add("ring-4", "ring-[#FFBD2E]", "ring-offset-2", "dark:ring-offset-black");
+            form.classList.add("ring-4", "ring-[#EAB308]", "ring-offset-2", "dark:ring-offset-black");
             setTimeout(() => {
-                form.classList.remove("ring-4", "ring-[#FFBD2E]", "ring-offset-2", "dark:ring-offset-black");
+                form.classList.remove("ring-4", "ring-[#EAB308]", "ring-offset-2", "dark:ring-offset-black");
             }, 1000);
         }
         setIsOpen(false);
@@ -46,7 +46,7 @@ export function QuickNav() {
                         </button>
                         <button
                             onClick={scrollToAnswerForm}
-                            className="flex items-center gap-3 px-4 py-3 bg-[#FFBD2E] text-black border-[2.5px] border-black dark:border-zinc-700 rounded-[10px] shadow-[4px_4px_0_0_#000] dark:shadow-[4px_4px_0_0_rgba(255,255,255,0.06)] font-black uppercase text-xs tracking-wider active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all"
+                            className="flex items-center gap-3 px-4 py-3 bg-[#EAB308] text-black border-[2.5px] border-black dark:border-zinc-700 rounded-[10px] shadow-[4px_4px_0_0_#000] dark:shadow-[4px_4px_0_0_rgba(255,255,255,0.06)] font-black uppercase text-xs tracking-wider active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all"
                         >
                             <MessageSquare className="w-4 h-4 stroke-[3px]" />
                             <span>Senin Görüşün Ne?</span>
@@ -57,7 +57,7 @@ export function QuickNav() {
 
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="w-12 h-12 bg-[#FFBD2E] border-[2.5px] border-black dark:border-zinc-700 rounded-[10px] shadow-[4px_4px_0_0_#000] dark:shadow-[4px_4px_0_0_rgba(255,255,255,0.06)] flex items-center justify-center active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all hover:bg-[#FFD268]"
+                className="w-12 h-12 bg-[#EAB308] border-[2.5px] border-black dark:border-zinc-700 rounded-[10px] shadow-[4px_4px_0_0_#000] dark:shadow-[4px_4px_0_0_rgba(255,255,255,0.06)] flex items-center justify-center active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all hover:bg-[#EAB308]"
             >
                 {isOpen ? (
                     <X className="w-6 h-6 stroke-[3px] text-black" />

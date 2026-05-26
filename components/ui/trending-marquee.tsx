@@ -46,7 +46,7 @@ export function TrendingMarquee({ items }: TrendingMarqueeProps) {
                                 )}
                                 {item.title}
                             </span>
-                            <Zap className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-zinc-600 group-hover:text-[#FFC800] transition-colors" />
+                            <Zap className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-zinc-600 group-hover:text-[#EAB308] transition-colors" />
                         </Link>
                     ))}
                 </motion.div>

@@ -194,7 +194,7 @@ export function ModernExploreView({
                                     className={cn(
                                         "px-4 py-2 text-xs font-black uppercase tracking-wider cursor-pointer border-[2px] border-black transition-all whitespace-nowrap rounded-md",
                                         isActuallyActive
-                                            ? "bg-[#FFC800] text-black shadow-[3px_3px_0px_0px_#000] -translate-y-[1px] transform"
+                                            ? "bg-[#EAB308] text-black shadow-[3px_3px_0px_0px_#000] -translate-y-[1px] transform"
                                             : "bg-white text-black hover:bg-zinc-100 hover:shadow-[3px_3px_0px_0px_#000] hover:-translate-y-[1px]"
                                     )}
                                 >
