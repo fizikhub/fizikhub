@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, MessageSquareQuote, Compass, HelpCircle, Link as LinkIcon, BookOpen } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 
@@ -26,134 +26,175 @@ export function CollapsibleQuickAnswer({ override, relatedArticles }: QuickAnswe
     const [isOpen, setIsOpen] = useState(true);
 
     return (
-        <section className="container mx-auto max-w-3xl px-4 mt-10 sm:mt-14 mb-6">
-            <button
-                onClick={() => setIsOpen(!isOpen)}
+        <section className="container mx-auto max-w-3xl px-4 mt-6 sm:mt-10 mb-8 z-10 relative">
+            <div 
                 className={cn(
-                    "w-full flex items-center justify-between gap-3",
-                    "px-5 py-4 sm:px-6 sm:py-5",
-                    "bg-zinc-50 dark:bg-zinc-950",
-                    "border-2 border-zinc-200 dark:border-zinc-800",
-                    "transition-all duration-200",
-                    isOpen ? "rounded-t-2xl border-b-0" : "rounded-2xl hover:border-zinc-300 dark:hover:border-zinc-700"
+                    "border-[3px] border-black bg-white dark:bg-[#18181b]",
+                    "shadow-[6px_6px_0px_0px_#000] dark:shadow-[6px_6px_0px_0px_rgba(0,0,0,0.5)]",
+                    "rounded-2xl transition-all duration-300"
                 )}
-                aria-expanded={isOpen}
-                id="quick-answer-toggle"
             >
-                <div className="flex items-center gap-3">
-                    <span className="flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-[#FFC800] border-2 border-black text-black font-black text-sm shadow-[2px_2px_0px_0px_#000]">
-                        ⚡
-                    </span>
-                    <div className="text-left">
-                        <p className="text-xs font-black uppercase tracking-wider text-zinc-500">Kısa Cevap</p>
-                        <p className="text-base sm:text-lg font-black text-zinc-950 dark:text-white leading-tight mt-0.5">
-                            {override.summaryTitle}
-                        </p>
-                    </div>
-                </div>
-                <ChevronDown
+                {/* Accordion Toggle Header */}
+                <button
+                    onClick={() => setIsOpen(!isOpen)}
                     className={cn(
-                        "w-5 h-5 sm:w-6 sm:h-6 text-zinc-500 transition-transform duration-300 flex-shrink-0",
-                        isOpen && "rotate-180"
+                        "w-full flex items-center justify-between gap-3",
+                        "px-5 py-4 sm:px-6 sm:py-5",
+                        "transition-colors duration-200 text-left select-none",
+                        isOpen ? "border-b-[3px] border-black bg-zinc-50/50 dark:bg-[#202024] rounded-t-[13px]" : "rounded-2xl hover:bg-zinc-50 dark:hover:bg-[#242427]"
                     )}
-                />
-            </button>
-
-            <div
-                className={cn(
-                    "overflow-hidden transition-all duration-300 ease-in-out",
-                    isOpen ? "max-h-[3000px] opacity-100" : "max-h-0 opacity-0"
-                )}
-            >
-                <div className="border-2 border-t-0 border-zinc-200 dark:border-zinc-800 rounded-b-2xl bg-zinc-50 dark:bg-zinc-950 px-5 py-5 sm:px-6 sm:py-6 space-y-6">
-                    {/* Summary */}
-                    <p className="text-base font-medium leading-8 text-zinc-700 dark:text-zinc-300">
-                        {override.summary}
-                    </p>
-
-                    {/* Formula & Example */}
-                    <div className="grid gap-4 border-t border-zinc-200 pt-5 dark:border-zinc-800 sm:grid-cols-2">
+                    aria-expanded={isOpen}
+                    id="quick-answer-toggle"
+                >
+                    <div className="flex items-center gap-3">
+                        <span className="flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-[#FFE500] border-2 border-black text-black font-black text-sm shadow-[2px_2px_0px_0px_#000] transform hover:rotate-12 transition-transform">
+                            ⚡
+                        </span>
                         <div>
-                            <p className="text-xs font-black uppercase tracking-wider text-zinc-500">{override.formulaTitle}</p>
-                            <p className="mt-2 rounded-[8px] border border-zinc-300 bg-white px-3 py-2 font-mono text-sm font-black text-zinc-950 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50">
-                                {override.formula}
+                            <p className="text-[10px] font-black uppercase tracking-wider text-zinc-500 dark:text-zinc-400">HIZLI ÖZET & GEO CEVAP</p>
+                            <p className="text-base sm:text-lg font-black text-zinc-950 dark:text-white leading-tight mt-0.5">
+                                {override.summaryTitle}
                             </p>
-                            <p className="mt-2 text-sm leading-7 text-zinc-600 dark:text-zinc-400">{override.formulaExplanation}</p>
-                        </div>
-                        <div>
-                            <p className="text-xs font-black uppercase tracking-wider text-zinc-500">{override.exampleTitle}</p>
-                            <p className="mt-2 text-sm leading-7 text-zinc-600 dark:text-zinc-400">{override.example}</p>
                         </div>
                     </div>
+                    <ChevronDown
+                        className={cn(
+                            "w-5 h-5 sm:w-6 sm:h-6 text-zinc-500 transition-transform duration-300 flex-shrink-0 stroke-[3px]",
+                            isOpen && "rotate-180 text-black dark:text-[#FFE500]"
+                        )}
+                    />
+                </button>
 
-                    {/* Subtopics */}
-                    <div className="border-t border-zinc-200 pt-5 dark:border-zinc-800">
-                        <h3 className="text-lg font-black tracking-normal text-zinc-950 dark:text-white">
-                            Bu konuda bilmen gereken alt başlıklar
-                        </h3>
-                        <div className="mt-3 flex flex-wrap gap-2">
-                            {override.subtopics.map((topic) => (
-                                <span
-                                    key={topic}
-                                    className="rounded-[7px] border border-zinc-300 bg-white px-2.5 py-1.5 text-xs font-black text-zinc-900 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100"
-                                >
-                                    {topic}
-                                </span>
-                            ))}
+                {/* Collapsible Content */}
+                <div
+                    className={cn(
+                        "overflow-hidden transition-all duration-300 ease-in-out",
+                        isOpen ? "max-h-[3500px] opacity-100" : "max-h-0 opacity-0"
+                    )}
+                >
+                    <div className="px-5 py-6 sm:px-7 sm:py-7 space-y-7 rounded-b-2xl">
+                        
+                        {/* Summary Block */}
+                        <div className="relative">
+                            <p className="text-base sm:text-lg font-bold leading-relaxed text-zinc-900 dark:text-zinc-100 pl-4 border-l-4 border-[#FFE500]">
+                                {override.summary}
+                            </p>
                         </div>
-                    </div>
 
-                    {/* FAQ */}
-                    <div className="grid gap-4 border-t border-zinc-200 pt-5 dark:border-zinc-800">
-                        <h3 className="text-lg font-black tracking-normal text-zinc-950 dark:text-white">
-                            Sık sorulan sorular
-                        </h3>
-                        {override.questions.map((item) => (
-                            <div key={item.question}>
-                                <h4 className="text-base font-black text-zinc-950 dark:text-white">{item.question}</h4>
-                                <p className="mt-1 text-sm leading-7 text-zinc-600 dark:text-zinc-400">{item.answer}</p>
+                        {/* Formula & Example Section */}
+                        <div className="grid gap-5 border-t-2 border-zinc-800/20 dark:border-zinc-800/80 pt-6 sm:grid-cols-2">
+                            <div className="space-y-2">
+                                <div className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wider text-zinc-400">
+                                    <MessageSquareQuote className="w-3.5 h-3.5" />
+                                    <span>{override.formulaTitle}</span>
+                                </div>
+                                <p className="rounded-xl border-2 border-black bg-zinc-50 px-4 py-3 font-mono text-sm font-black text-black dark:bg-[#242427] dark:text-zinc-50 shadow-[3px_3px_0px_0px_#000] dark:border-zinc-700">
+                                    {override.formula}
+                                </p>
+                                <p className="text-xs leading-relaxed font-semibold text-zinc-500 dark:text-zinc-400 pt-1">
+                                    {override.formulaExplanation}
+                                </p>
                             </div>
-                        ))}
-                    </div>
 
-                    {/* Related + Terms */}
-                    <div className="grid gap-4 border-t border-zinc-200 pt-5 dark:border-zinc-800 sm:grid-cols-2">
-                        <div>
-                            <p className="text-xs font-black uppercase tracking-wider text-zinc-500">İlgili okumalar</p>
-                            <div className="mt-3 grid gap-2">
-                                {relatedArticles.map((article) => (
-                                    <Link
-                                        key={article.slug}
-                                        href={`/makale/${article.slug}`}
-                                        className="text-sm font-black text-zinc-950 underline decoration-[#FFC800] decoration-2 underline-offset-4 hover:text-zinc-700 dark:text-white dark:hover:text-zinc-200"
-                                    >
-                                        {article.title}
-                                    </Link>
-                                ))}
+                            <div className="space-y-2">
+                                <div className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wider text-zinc-400">
+                                    <Compass className="w-3.5 h-3.5" />
+                                    <span>{override.exampleTitle}</span>
+                                </div>
+                                <div className="rounded-xl border-2 border-black bg-zinc-50/50 p-4 text-xs sm:text-sm leading-relaxed font-bold text-zinc-700 dark:text-zinc-300 dark:bg-zinc-900/40 dark:border-zinc-700">
+                                    {override.example}
+                                </div>
                             </div>
                         </div>
-                        <div>
-                            <p className="text-xs font-black uppercase tracking-wider text-zinc-500">Terimler ve aranan alt konular</p>
-                            <div className="mt-3 flex flex-wrap gap-2">
-                                {override.termLinks.map((link) => (
-                                    <Link
-                                        key={link.href}
-                                        href={link.href}
-                                        className="rounded-[7px] border border-zinc-950 bg-[#FFC800] px-2.5 py-1.5 text-xs font-black text-black hover:bg-white"
-                                    >
-                                        {link.label}
-                                    </Link>
-                                ))}
-                                {override.relatedQueries.map((query) => (
+
+                        {/* Subtopics Section */}
+                        <div className="border-t-2 border-zinc-800/20 dark:border-zinc-800/80 pt-6">
+                            <h3 className="text-sm font-black uppercase tracking-wider text-zinc-500 dark:text-zinc-400 mb-3 flex items-center gap-2">
+                                <HelpCircle className="w-4 h-4 stroke-[2.5px]" />
+                                Bu konuda bilinmesi gereken alt başlıklar
+                            </h3>
+                            <div className="flex flex-wrap gap-2">
+                                {override.subtopics.map((topic) => (
                                     <span
-                                        key={query}
-                                        className="rounded-[7px] border border-zinc-300 bg-white px-2.5 py-1.5 text-xs font-black text-zinc-900 hover:border-zinc-950 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100"
+                                        key={topic}
+                                        className="rounded-lg border-2 border-black bg-white px-3 py-1.5 text-xs font-black text-zinc-900 dark:border-zinc-700 dark:bg-[#242427] dark:text-zinc-100 shadow-[2px_2px_0px_0px_#000] transition-transform hover:-translate-y-0.5 cursor-default select-none"
                                     >
-                                        {query}
+                                        {topic}
                                     </span>
                                 ))}
                             </div>
                         </div>
+
+                        {/* FAQ Section */}
+                        <div className="border-t-2 border-zinc-800/20 dark:border-zinc-800/80 pt-6 space-y-4">
+                            <h3 className="text-sm font-black uppercase tracking-wider text-zinc-500 dark:text-zinc-400 flex items-center gap-2">
+                                <BookOpen className="w-4 h-4 stroke-[2.5px]" />
+                                Sık Sorulan Sorular
+                            </h3>
+                            <div className="grid gap-4 sm:grid-cols-2">
+                                {override.questions.map((item, idx) => (
+                                    <div 
+                                        key={item.question}
+                                        className="p-4 bg-zinc-50 dark:bg-[#242427] border-2 border-black rounded-xl shadow-[3px_3px_0px_0px_#000] dark:border-zinc-700"
+                                    >
+                                        <h4 className="text-sm sm:text-base font-black text-zinc-950 dark:text-white flex items-start gap-1.5">
+                                            <span className="text-[#FFE500] font-black">Q{idx+1}.</span>
+                                            {item.question}
+                                        </h4>
+                                        <p className="mt-1.5 text-xs sm:text-sm leading-relaxed font-semibold text-zinc-600 dark:text-zinc-400">
+                                            {item.answer}
+                                        </p>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Related and Terms Section */}
+                        <div className="grid gap-5 border-t-2 border-zinc-800/20 dark:border-zinc-800/80 pt-6 sm:grid-cols-2">
+                            <div className="space-y-3">
+                                <p className="text-[10px] font-black uppercase tracking-wider text-zinc-400 flex items-center gap-1.5">
+                                    <LinkIcon className="w-3.5 h-3.5" />
+                                    İlgili okumalar
+                                </p>
+                                <div className="grid gap-2">
+                                    {relatedArticles.map((article) => (
+                                        <Link
+                                            key={article.slug}
+                                            href={`/makale/${article.slug}`}
+                                            className="text-sm font-black text-zinc-950 dark:text-white underline decoration-[#FFE500] decoration-[3px] underline-offset-4 hover:text-zinc-700 dark:hover:text-zinc-200 transition-colors w-fit leading-tight"
+                                        >
+                                            {article.title}
+                                        </Link>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div className="space-y-3">
+                                <p className="text-[10px] font-black uppercase tracking-wider text-zinc-400">
+                                    Anahtar Kavramlar & Terimler
+                                </p>
+                                <div className="flex flex-wrap gap-2">
+                                    {override.termLinks.map((link) => (
+                                        <Link
+                                            key={link.href}
+                                            href={link.href}
+                                            className="rounded-lg border-2 border-black bg-[#FFE500] px-3 py-1.5 text-xs font-black text-black shadow-[2px_2px_0px_0px_#000] transition-all hover:-translate-x-[2px] hover:-translate-y-[2px] hover:shadow-[4px_4px_0px_0px_#000] hover:bg-white active:translate-x-[1px] active:translate-y-[1px] active:shadow-none"
+                                        >
+                                            {link.label}
+                                        </Link>
+                                    ))}
+                                    {override.relatedQueries.map((query) => (
+                                        <span
+                                            key={query}
+                                            className="rounded-lg border-2 border-black bg-white px-3 py-1.5 text-xs font-black text-zinc-950 dark:bg-zinc-800 dark:text-zinc-200 dark:border-zinc-700 shadow-[2px_2px_0px_0px_#000] cursor-default select-none"
+                                        >
+                                            {query}
+                                        </span>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
             </div>

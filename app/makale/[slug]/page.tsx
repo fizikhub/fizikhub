@@ -336,6 +336,13 @@ export default async function ArticlePage({ params }: PageProps) {
                 '@id': article.author?.username ? `${authorUrl}#person` : `${baseUrl}/#organization`,
                 name: article.author?.full_name || article.author?.username || 'Fizikhub Ekibi',
                 url: authorUrl,
+                jobTitle: article.author?.full_name ? 'Bilim Editörü / Fizikçi' : undefined,
+                worksFor: {
+                    '@type': 'Organization',
+                    name: 'Fizikhub',
+                    url: baseUrl,
+                },
+                knowsAbout: ['Fizik', 'Kozmoloji', 'Astrofizik', 'Dalga Mekaniği', 'Termodinamik', 'Kuantum Fiziği'],
             },
             publisher: {
                 '@type': 'Organization',
@@ -523,7 +530,12 @@ export default async function ArticlePage({ params }: PageProps) {
                             introOverride={intentOverride?.summary}
                         />
 
-
+                        {intentOverride && (
+                            <CollapsibleQuickAnswer
+                                override={intentOverride}
+                                relatedArticles={getIntentRelatedArticles(intentOverride, article.slug)}
+                            />
+                        )}
 
                         {/* Only interactive reader is wrapped — fallback shows plain article text */}
                         <ArticleErrorBoundary fallback={
@@ -548,12 +560,6 @@ export default async function ArticlePage({ params }: PageProps) {
                             />
                         </ArticleErrorBoundary>
 
-                        {intentOverride && (
-                            <CollapsibleQuickAnswer
-                                override={intentOverride}
-                                relatedArticles={getIntentRelatedArticles(intentOverride, article.slug)}
-                            />
-                        )}
                         <ArticleTopicClusterLinks slug={article.slug} />
                     </>
                 )}
