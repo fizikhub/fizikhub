@@ -13,10 +13,10 @@
         --popover: 0 0% 100%;
         --popover-foreground: 0 0% 0%;
 
-        /* Brand Primary (FizikHub Yellow) */
-        --primary: 47 100% 50%;
+        /* Brand Primary (Premium Gold/Yellow) */
+        --primary: 45 93% 47%;
         --primary-foreground: 0 0% 0%;
-        --primary-hover: 47 100% 45%;
+        --primary-hover: 45 93% 42%;
 
         --secondary: 0 0% 90%;
         --secondary-foreground: 0 0% 0%;
@@ -48,19 +48,18 @@
     }
 
     .dark {
-        --background: 0 0% 16%;
-        /* RGB(41, 41, 41) */
+        --background: 240 6% 10%; /* rgb(24, 24, 27) */
         --foreground: 0 0% 98%;
 
-        --card: 240 10% 4%;
+        --card: 240 6% 10%; /* rgb(24, 24, 27) */
         --card-foreground: 0 0% 98%;
 
-        --popover: 240 10% 4%;
+        --popover: 240 6% 10%; /* rgb(24, 24, 27) */
         --popover-foreground: 0 0% 98%;
 
-        --primary: 47 100% 50%;
+        --primary: 45 93% 47%;
         --primary-foreground: 0 0% 0%;
-        --primary-hover: 47 100% 45%;
+        --primary-hover: 45 93% 42%;
 
         --secondary: 240 4% 16%;
         --secondary-foreground: 0 0% 98%;
@@ -171,7 +170,7 @@
     }
 
     ::selection {
-        background-color: #FFC800;
+        background-color: #EAB308;
         color: #000;
     }
 
@@ -267,7 +266,7 @@
     }
 
     .prose h2 {
-        border-left: 8px solid #FFC800;
+        border-left: 8px solid #EAB308;
         padding-left: 1rem;
     }
 
@@ -317,7 +316,7 @@
         margin-top: 0.02em;
         margin-bottom: -0.1em;
         padding: 0;
-        color: #FFC800; /* FizikHub Yellow — always */
+        color: #EAB308; /* FizikHub Yellow — always */
         text-shadow: 2px 2px 0px rgba(0,0,0,0.15);
         text-transform: uppercase;
     }
@@ -332,7 +331,7 @@
     }
 
     .dark .article-content > p:first-of-type::first-letter {
-        color: #FFC800; /* Keep yellow in dark mode too — brand consistency */
+        color: #EAB308; /* Keep yellow in dark mode too — brand consistency */
         text-shadow: 2px 2px 0px rgba(0,0,0,0.5);
     }
 
@@ -351,7 +350,7 @@
         line-height: 1;
         font-family: Georgia, "Times New Roman", serif;
         font-weight: 900;
-        color: #FFC800;
+        color: #EAB308;
         opacity: 0.25;
         pointer-events: none;
         z-index: 0;
@@ -391,7 +390,7 @@
         opacity: 1;
     }
     .code-copy-btn:hover {
-        background: #FFC800;
+        background: #EAB308;
         color: #000;
         border-color: #000;
         transform: translateY(-1px);
@@ -424,7 +423,7 @@
         text-align: center;
         font-size: 0.75em;
         font-weight: 800;
-        background: #FFC800;
+        background: #EAB308;
         color: #000;
         padding: 0.4em 1em;
         margin-top: 1em;

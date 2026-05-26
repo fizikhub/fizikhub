@@ -108,7 +108,7 @@ export function DictionaryList({ initialTerms }: DictionaryListProps) {
                                 className={[
                                     "inline-flex min-h-11 shrink-0 items-center gap-2 rounded-full border-[3px] px-4 py-2 text-[11px] font-black uppercase transition-transform active:translate-x-0.5 active:translate-y-0.5",
                                     isActive
-                                        ? "border-black bg-[#FFC800] text-black shadow-[3px_3px_0px_0px_#000]"
+                                        ? "border-black bg-[#EAB308] text-black shadow-[3px_3px_0px_0px_#000]"
                                         : "border-black bg-white text-black shadow-[2px_2px_0px_0px_#000] hover:bg-zinc-100 dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800",
                                 ].join(" ")}
                                 aria-pressed={isActive}
@@ -191,6 +191,7 @@ export function DictionaryList({ initialTerms }: DictionaryListProps) {
                             whileHover={{ scale: 1.02, y: -4 }}
                             whileTap={{ scale: 0.98 }}
                             className="group flex h-full flex-col"
+                            style={{ contentVisibility: index > 8 ? 'auto' : 'visible', containIntrinsicSize: index > 8 ? 'auto 200px' : 'auto' }}
                         >
                             <Link
                                 href={`/sozluk/${slugify(item.term)}`}
@@ -198,7 +199,7 @@ export function DictionaryList({ initialTerms }: DictionaryListProps) {
                                 className="relative flex h-full min-h-[190px] flex-col overflow-hidden rounded-xl border-[3px] border-black bg-white p-4 shadow-[4px_4px_0px_0px_#000] transition-colors hover:bg-neutral-50 dark:bg-zinc-900 dark:hover:bg-zinc-800 sm:min-h-[220px] sm:p-6"
                             >
                                 <div className="relative z-10 mb-4 flex flex-col items-start gap-3">
-                                    <h3 className="max-w-full break-words border-2 border-black bg-[#FFC800] px-2 py-1 text-xl font-black leading-tight text-black shadow-[2px_2px_0px_0px_#000] transition-transform origin-left -rotate-1 group-hover:rotate-0 sm:text-2xl">
+                                    <h3 className="max-w-full break-words border-2 border-black bg-[#EAB308] px-2 py-1 text-xl font-black leading-tight text-black shadow-[2px_2px_0px_0px_#000] transition-transform origin-left -rotate-1 group-hover:rotate-0 sm:text-2xl">
                                         {item.term}
                                     </h3>
                                     <Badge variant="outline" className="rounded-full border-2 border-black bg-white px-3 py-1 text-[10px] font-black uppercase tracking-wider text-black shadow-sm">

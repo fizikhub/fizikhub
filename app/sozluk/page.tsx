@@ -131,7 +131,7 @@ export default async function DictionaryPage() {
                 <section className="group relative mb-8 flex flex-col overflow-hidden rounded-xl border-[3px] border-black bg-white p-5 shadow-[4px_4px_0px_0px_#000] dark:bg-zinc-900 sm:p-6 lg:flex-row lg:items-center lg:justify-between">
                     <div className="relative z-10 flex flex-col items-start gap-3">
                         <div className="flex flex-wrap items-center gap-3">
-                            <h1 className="border-2 border-black bg-[#FFC800] px-3 py-1 text-2xl font-black uppercase leading-tight text-black shadow-[2px_2px_0px_0px_#000] transition-transform origin-left -rotate-1 group-hover:rotate-0 sm:text-3xl md:text-4xl">
+                            <h1 className="border-2 border-black bg-[#EAB308] px-3 py-1 text-2xl font-black uppercase leading-tight text-black shadow-[2px_2px_0px_0px_#000] transition-transform origin-left -rotate-1 group-hover:rotate-0 sm:text-3xl md:text-4xl">
                                 Bilim Sözlüğü
                             </h1>
                             <div className="inline-flex items-center gap-1.5 rounded-full border-2 border-black bg-white px-3 py-1 text-[10px] font-black uppercase tracking-wider text-black shadow-sm">
