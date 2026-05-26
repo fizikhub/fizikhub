@@ -248,60 +248,93 @@ export default async function DictionaryTermPage({ params }: PageProps) {
             <main className="container mx-auto min-h-screen max-w-4xl px-4 pb-28 pt-7 md:pb-16 md:pt-10">
                 <Link
                     href="/sozluk"
-                    className="mb-6 inline-flex min-h-11 items-center gap-2 rounded-full border-2 border-black bg-white px-4 py-2 text-xs font-black uppercase text-black shadow-[2px_2px_0px_0px_#000] transition-transform hover:-translate-y-0.5 dark:bg-zinc-900 dark:text-white"
+                    className="mb-6 inline-flex min-h-11 items-center gap-2 rounded-xl border-2 border-black bg-[#18181b] px-4 py-2 text-xs font-black uppercase text-white shadow-[3px_3px_0px_0px_#000] transition-all hover:-translate-x-[2px] hover:-translate-y-[2px] hover:bg-[#FFE500] hover:text-black hover:shadow-[5px_5px_0px_0px_#000] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[1px_1px_0px_0px_#000] dark:border-black"
                 >
-                    <ArrowLeft className="h-4 w-4" />
+                    <ArrowLeft className="h-4 w-4 stroke-[3px]" />
                     Sözlüğe Dön
                 </Link>
 
-                <article className="relative overflow-hidden rounded-xl border-[3px] border-black bg-zinc-950 p-5 text-white shadow-[6px_6px_0px_0px_#000] sm:p-7 md:p-9">
-                    <div className="relative z-10 mb-5 flex flex-wrap items-center gap-2">
+                <article className="relative overflow-hidden rounded-[16px] border-[3px] border-black bg-[#18181b] p-6 text-white shadow-[8px_8px_0px_0px_#000] sm:p-8 md:p-10">
+                    
+                    {/* Technical Grid Pattern Overlay */}
+                    <div className="absolute inset-0 pointer-events-none opacity-[0.03] bg-[linear-gradient(to_right,#ffffff_1px,transparent_1px),linear-gradient(to_bottom,#ffffff_1px,transparent_1px)] bg-[size:20px_20px]" />
+
+                    {/* Physics Theme Decoration: Atomic Shell on top-right */}
+                    <div className="pointer-events-none absolute -right-6 -top-6 z-0 h-40 w-40 opacity-[0.03] text-white">
+                        <svg viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-full w-full">
+                            <circle cx="50" cy="50" r="4" fill="currentColor" />
+                            <ellipse cx="50" cy="50" rx="36" ry="12" transform="rotate(0 50 50)" />
+                            <ellipse cx="50" cy="50" rx="36" ry="12" transform="rotate(60 50 50)" />
+                            <ellipse cx="50" cy="50" rx="36" ry="12" transform="rotate(120 50 50)" />
+                            <circle cx="14" cy="50" r="1.5" fill="currentColor" />
+                            <circle cx="68" cy="18" r="1.5" fill="currentColor" />
+                            <circle cx="68" cy="82" r="1.5" fill="currentColor" />
+                        </svg>
+                    </div>
+
+                    {/* Physics Theme Decoration: Quantum Wave on bottom-right */}
+                    <div className="pointer-events-none absolute -bottom-4 -right-4 z-0 h-36 w-48 opacity-[0.04] text-[#FFE500]">
+                        <svg viewBox="0 0 150 100" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-full w-full">
+                            <line x1="10" y1="50" x2="140" y2="50" strokeDasharray="3 3" />
+                            <line x1="20" y1="10" x2="20" y2="90" strokeDasharray="3 3" />
+                            <path d="M 20 50 Q 50 10, 80 50 T 140 50" fill="none" stroke="currentColor" strokeWidth="2" />
+                            <line x1="50" y1="50" x2="50" y2="20" />
+                            <polygon points="50,15 47,22 53,22" fill="currentColor" />
+                            <line x1="110" y1="50" x2="110" y2="80" />
+                            <polygon points="110,85 107,78 113,78" fill="currentColor" />
+                        </svg>
+                    </div>
+
+                    <div className="relative z-10 mb-6 flex flex-wrap items-center gap-2">
                         {term.category && (
-                            <span className="rounded-full border-2 border-white bg-zinc-900 px-3 py-1.5 text-[11px] font-black uppercase tracking-wider text-zinc-100 shadow-[2px_2px_0px_0px_#000]">
+                            <span className="rounded-xl border-2 border-black bg-[#242427] px-3 py-1.5 text-[10px] sm:text-[11px] font-black uppercase tracking-wider text-zinc-100 shadow-[2px_2px_0px_0px_#000]">
                                 {term.category}
                             </span>
                         )}
-                        <span className="rounded-full border-2 border-black bg-white px-3 py-1.5 text-[11px] font-black uppercase tracking-wider text-black">
+                        <span className="rounded-xl border-2 border-black bg-[#FFE500] px-3 py-1.5 text-[10px] sm:text-[11px] font-black uppercase tracking-wider text-black shadow-[2px_2px_0px_0px_#000]">
                             Bilim Sözlüğü
                         </span>
                     </div>
 
-                    <h1 className="relative z-10 inline-block max-w-full break-words border-[3px] border-black bg-[#FFC800] px-3 py-2 text-3xl font-black uppercase leading-tight tracking-normal text-black shadow-[4px_4px_0px_0px_#000] -rotate-1 sm:text-5xl">
+                    <h1 className="relative z-10 inline-block max-w-full break-words border-[3px] border-black bg-[#FFE500] px-4 py-2.5 text-3xl font-black uppercase leading-tight tracking-normal text-black shadow-[4px_4px_0px_0px_#000] -rotate-1 sm:text-5xl md:text-6xl transition-transform duration-200 hover:rotate-0">
                         {term.term}
                     </h1>
 
-                    <section className="relative z-10 mt-7 border-t-[3px] border-zinc-800 pt-6">
-                        <h2 className="mb-3 text-sm font-black uppercase tracking-wider text-[#FFC800]">
+                    <section className="relative z-10 mt-8 border-t-2 border-zinc-800/80 pt-6">
+                        <h2 className="mb-3 text-sm font-black uppercase tracking-wider text-[#FFE500] border-l-4 border-[#FFE500] pl-3 leading-none">
                             {term.term} nedir?
                         </h2>
-                        <p className="text-lg font-semibold leading-relaxed text-zinc-100 sm:text-xl">
+                        <p className="text-lg font-bold leading-relaxed text-zinc-100 sm:text-xl md:text-2xl">
                             {term.definition}
                         </p>
                     </section>
 
-                    <section className="relative z-10 mt-6 border-t-[3px] border-zinc-800 pt-5">
-                        <h2 className="mb-3 text-sm font-black uppercase tracking-wider text-zinc-400">
+                    <section className="relative z-10 mt-6 border-t-2 border-zinc-800/80 pt-6">
+                        <h2 className="mb-3 text-sm font-black uppercase tracking-wider text-zinc-400 border-l-4 border-zinc-500 pl-3 leading-none">
                             Nerede işine yarar?
                         </h2>
-                        <p className="text-base font-medium leading-relaxed text-zinc-300 sm:text-lg">
+                        <p className="text-base font-semibold leading-relaxed text-zinc-300 sm:text-lg">
                             {contextNote}
                         </p>
                     </section>
 
                     {relatedArticles.length > 0 && (
-                        <nav className="relative z-10 mt-6 border-t-[3px] border-zinc-800 pt-5" aria-label="İlgili makaleler">
-                            <h2 className="mb-3 text-sm font-black uppercase tracking-wider text-zinc-400">
+                        <nav className="relative z-10 mt-8 border-t-2 border-zinc-800/80 pt-6" aria-label="İlgili makaleler">
+                            <h2 className="mb-4 text-sm font-black uppercase tracking-wider text-zinc-400 border-l-4 border-zinc-500 pl-3 leading-none">
                                 Bu konuyu derinleştir
                             </h2>
-                            <div className="grid gap-2">
+                            <div className="grid gap-3 sm:grid-cols-2">
                                 {relatedArticles.map((article) => (
                                     <Link
                                         key={article.slug}
                                         href={`/makale/${article.slug}`}
-                                        className="rounded-xl border-2 border-black bg-white px-4 py-3 text-sm font-black text-black shadow-[3px_3px_0px_0px_#000] transition-transform hover:-translate-y-0.5"
+                                        className="group relative rounded-xl border-2 border-black bg-[#242427] p-4 text-sm font-black text-white shadow-[3px_3px_0px_0px_#000] transition-all hover:-translate-x-[2px] hover:-translate-y-[2px] hover:shadow-[5px_5px_0px_0px_#000] active:translate-x-[1px] active:translate-y-[1px] active:shadow-[2px_2px_0px_0px_#000]"
                                     >
-                                        {article.title}
-                                        <span className="mt-1 block text-xs font-semibold leading-relaxed text-zinc-600">
+                                        <div className="flex items-center justify-between mb-1">
+                                            <span className="group-hover:text-[#FFE500] transition-colors leading-snug">{article.title}</span>
+                                            <span className="text-zinc-500 font-normal group-hover:text-white transition-colors pl-2">→</span>
+                                        </div>
+                                        <span className="block text-xs font-semibold leading-relaxed text-zinc-400 group-hover:text-zinc-300 transition-colors">
                                             {article.description}
                                         </span>
                                     </Link>
@@ -310,14 +343,14 @@ export default async function DictionaryTermPage({ params }: PageProps) {
                         </nav>
                     )}
 
-                    <nav className="relative z-10 mt-6 border-t-[3px] border-zinc-800 pt-5" aria-label="İlgili öğrenme kaynakları">
-                        <h2 className="mb-3 text-sm font-black uppercase tracking-wider text-zinc-400">
+                    <nav className="relative z-10 mt-8 border-t-2 border-zinc-800/80 pt-6" aria-label="İlgili öğrenme kaynakları">
+                        <h2 className="mb-4 text-sm font-black uppercase tracking-wider text-zinc-400 border-l-4 border-zinc-500 pl-3 leading-none">
                             Test ve simülasyonla pekiştir
                         </h2>
-                        <div className="flex flex-wrap gap-2">
+                        <div className="flex flex-wrap gap-2.5">
                             <Link
                                 href="/testler"
-                                className="inline-flex min-h-11 items-center rounded-xl border-2 border-black bg-[#FFC800] px-4 py-2 text-xs font-black text-black shadow-[3px_3px_0px_0px_#000] transition-transform hover:-translate-y-0.5"
+                                className="inline-flex min-h-11 items-center rounded-xl border-2 border-black bg-[#FFE500] px-4 py-2 text-xs font-black text-black shadow-[3px_3px_0px_0px_#000] transition-all hover:-translate-x-[2px] hover:-translate-y-[2px] hover:shadow-[5px_5px_0px_0px_#000] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[1px_1px_0px_0px_#000]"
                             >
                                 Fizik testleri
                             </Link>
@@ -325,14 +358,14 @@ export default async function DictionaryTermPage({ params }: PageProps) {
                                 <Link
                                     key={simulation.href}
                                     href={simulation.href}
-                                    className="inline-flex min-h-11 items-center rounded-xl border-2 border-zinc-700 bg-zinc-900 px-4 py-2 text-xs font-black text-zinc-100 transition-colors hover:border-[#FFC800] hover:text-white"
+                                    className="inline-flex min-h-11 items-center rounded-xl border-2 border-black bg-[#242427] px-4 py-2 text-xs font-black text-zinc-100 shadow-[3px_3px_0px_0px_#000] transition-all hover:-translate-x-[2px] hover:-translate-y-[2px] hover:bg-[#FFE500] hover:text-black hover:shadow-[5px_5px_0px_0px_#000] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[1px_1px_0px_0px_#000]"
                                 >
                                     {simulation.label}
                                 </Link>
                             )) : (
                                 <Link
                                     href="/simulasyonlar"
-                                    className="inline-flex min-h-11 items-center rounded-xl border-2 border-zinc-700 bg-zinc-900 px-4 py-2 text-xs font-black text-zinc-100 transition-colors hover:border-[#FFC800] hover:text-white"
+                                    className="inline-flex min-h-11 items-center rounded-xl border-2 border-black bg-[#242427] px-4 py-2 text-xs font-black text-zinc-100 shadow-[3px_3px_0px_0px_#000] transition-all hover:-translate-x-[2px] hover:-translate-y-[2px] hover:bg-[#FFE500] hover:text-black hover:shadow-[5px_5px_0px_0px_#000] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[1px_1px_0px_0px_#000]"
                                 >
                                     Fizik simülasyonları
                                 </Link>
@@ -341,7 +374,7 @@ export default async function DictionaryTermPage({ params }: PageProps) {
                                 <Link
                                     key={link.href}
                                     href={link.href}
-                                    className="inline-flex min-h-11 items-center rounded-xl border-2 border-zinc-700 bg-zinc-900 px-4 py-2 text-xs font-black text-zinc-100 transition-colors hover:border-[#FFC800] hover:text-white"
+                                    className="inline-flex min-h-11 items-center rounded-xl border-2 border-black bg-[#242427] px-4 py-2 text-xs font-black text-zinc-100 shadow-[3px_3px_0px_0px_#000] transition-all hover:-translate-x-[2px] hover:-translate-y-[2px] hover:bg-[#FFE500] hover:text-black hover:shadow-[5px_5px_0px_0px_#000] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[1px_1px_0px_0px_#000]"
                                 >
                                     {link.label}
                                 </Link>
@@ -350,8 +383,8 @@ export default async function DictionaryTermPage({ params }: PageProps) {
                     </nav>
 
                     {relatedTerms.length > 0 && (
-                        <nav className="relative z-10 mt-6 border-t-[3px] border-zinc-800 pt-5" aria-label="İlgili sözlük terimleri">
-                            <h2 className="mb-3 text-sm font-black uppercase tracking-wider text-zinc-400">
+                        <nav className="relative z-10 mt-8 border-t-2 border-zinc-800/80 pt-6" aria-label="İlgili sözlük terimleri">
+                            <h2 className="mb-4 text-sm font-black uppercase tracking-wider text-zinc-400 border-l-4 border-zinc-500 pl-3 leading-none">
                                 İlgili terimler
                             </h2>
                             <div className="flex flex-wrap gap-2">
@@ -359,7 +392,7 @@ export default async function DictionaryTermPage({ params }: PageProps) {
                                     <Link
                                         key={relatedTerm.id}
                                         href={`/sozluk/${slugify(relatedTerm.term)}`}
-                                        className="inline-flex min-h-11 items-center rounded-xl border-2 border-black bg-white px-4 py-2 text-xs font-black text-black shadow-[2px_2px_0px_0px_#000] transition-transform hover:-translate-y-0.5"
+                                        className="inline-flex min-h-11 items-center rounded-xl border-2 border-black bg-zinc-800 px-4 py-2 text-xs font-black text-zinc-100 shadow-[2px_2px_0px_0px_#000] transition-all hover:-translate-x-[2px] hover:-translate-y-[2px] hover:bg-[#FFE500] hover:text-black hover:shadow-[4px_4px_0px_0px_#000] active:translate-x-[1px] active:translate-y-[1px] active:shadow-[1px_1px_0px_0px_#000]"
                                     >
                                         {relatedTerm.term}
                                     </Link>
@@ -367,8 +400,6 @@ export default async function DictionaryTermPage({ params }: PageProps) {
                             </div>
                         </nav>
                     )}
-                    <div className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-white/5" />
-                    <div className="pointer-events-none absolute -bottom-16 -right-12 h-44 w-44 rounded-full bg-[#FFC800]/10" />
                 </article>
             </main>
         </>
