@@ -13,7 +13,8 @@ import {
     GraduationCap,
     Trophy,
     Megaphone,
-    Download
+    Download,
+    Activity
 } from "lucide-react";
 
 const sidebarItems = [
@@ -61,6 +62,11 @@ const sidebarItems = [
         title: "Duyurular",
         href: "/admin/broadcast",
         icon: Megaphone
+    },
+    {
+        title: "Sayfa Deneyimi",
+        href: "/admin/page-experience",
+        icon: Activity
     },
     {
         title: "Video İndirici",
