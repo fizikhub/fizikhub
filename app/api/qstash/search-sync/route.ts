@@ -1,10 +1,38 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase-admin";
 import { generateEmbedding } from "@/lib/gemini";
-import { verifySignatureAppRouter } from "@upstash/qstash/nextjs";
+import { Receiver } from "@upstash/qstash";
 
-async function handler(req: Request) {
+export const dynamic = "force-dynamic";
+
+export async function POST(req: Request) {
     try {
+        // --- Lazy QStash signature verification ---
+        const signingKey = process.env.QSTASH_CURRENT_SIGNING_KEY;
+        const nextSigningKey = process.env.QSTASH_NEXT_SIGNING_KEY;
+
+        if (signingKey && nextSigningKey) {
+            const receiver = new Receiver({
+                currentSigningKey: signingKey,
+                nextSigningKey: nextSigningKey,
+            });
+
+            const body = await req.clone().text();
+            const signature = req.headers.get("upstash-signature") ?? "";
+
+            const isValid = await receiver
+                .verify({ body, signature })
+                .catch(() => false);
+
+            if (!isValid) {
+                return NextResponse.json({ error: "Invalid QStash signature" }, { status: 401 });
+            }
+        } else if (process.env.NODE_ENV === "production") {
+            console.warn("[QStash] Signing keys missing in production – rejecting request.");
+            return NextResponse.json({ error: "Signing keys not configured" }, { status: 500 });
+        }
+
+        // --- Process embedding ---
         const payload = await req.json();
         const { textContent, tableSingular, recordId, metadata } = payload;
 
@@ -68,4 +96,3 @@ async function handler(req: Request) {
     }
 }
 
-export const POST = verifySignatureAppRouter(handler);
