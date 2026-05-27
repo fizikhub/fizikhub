@@ -2,8 +2,7 @@
 
 import { m as motion } from "framer-motion";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { MapPin, Calendar, Link as LinkIcon, Edit3, ShieldCheck, MessageCircle, Settings, PenSquare, PlusCircle, Sparkles } from "lucide-react";
-
+import { MapPin, Calendar, Link as LinkIcon, Edit3, ShieldCheck, MessageCircle, Settings, PenSquare, PlusCircle } from "lucide-react";
 import Link from "next/link";
 import { FollowButton } from "../follow-button";
 import { formatNumber } from "@/lib/utils";
@@ -106,28 +105,13 @@ export function DarkNeoHeader({ profile, stats, isOwnProfile, isFollowing }: Dar
 
                     {/* NAME & HANDLE */}
                     <div className="mb-3 mt-1 flex min-w-0 flex-col items-start gap-1 sm:mb-4 sm:mt-0">
-                        <div className="flex items-center gap-2 flex-wrap">
-                            <h1 className="max-w-full break-words text-[1.28rem] font-black leading-[1.02] tracking-tight text-foreground drop-shadow-sm sm:text-3xl">
-                                {profile?.full_name || "Yeni Kullanıcı"}
-                            </h1>
-                            {/* Academic Credentials Badge */}
-                            {(profile?.username === "barannnbozkurttb" || profile?.is_writer) && (
-                                <span className="inline-flex items-center gap-1.5 rounded-full bg-[#8B5CF6]/15 border border-[#8B5CF6]/40 px-2.5 py-0.5 text-[10px] font-black text-[#A78BFA] uppercase tracking-wider">
-                                    <Sparkles className="w-3 h-3" />
-                                    Harvard & MIT Physics
-                                </span>
-                            )}
-                            {profile?.role === "admin" && (
-                                <span className="inline-flex items-center gap-1.5 rounded-full bg-[#FF3366]/15 border border-[#FF3366]/40 px-2.5 py-0.5 text-[10px] font-black text-[#FF3366] uppercase tracking-wider">
-                                    SpaceX Command Lead
-                                </span>
-                            )}
-                        </div>
+                        <h1 className="max-w-full break-words text-[1.28rem] font-black leading-[1.02] tracking-tight text-foreground drop-shadow-sm sm:text-3xl">
+                            {profile?.full_name || "Yeni Kullanıcı"}
+                        </h1>
                         <span className="inline-block max-w-full truncate rounded-md border border-black/50 bg-zinc-900 px-2 py-0.5 text-[10px] font-bold text-zinc-400 transition-all hover:bg-black hover:text-[#EAB308] sm:text-[11px]">
                             @{profile?.username || "kullaniciadi"}
                         </span>
                     </div>
-
 
                     {/* BIO */}
                     {profile?.bio && (
