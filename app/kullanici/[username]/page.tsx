@@ -17,7 +17,7 @@ const getCachedProfile = cache(async (username: string) => {
     const cleanUsername = decodeURIComponent(username).trim();
     const { data: profile } = await supabase
         .from('profiles')
-        .select('id, username, full_name, avatar_url, cover_url, bio, website, location, created_at, updated_at, reputation, role, is_writer, is_verified, level, xp_current, xp_next')
+        .select('id, username, full_name, avatar_url, cover_url, cover_offset_y, bio, website, created_at, updated_at, reputation, role, is_writer, is_verified')
         .ilike('username', cleanUsername)
         .maybeSingle();
     return profile;

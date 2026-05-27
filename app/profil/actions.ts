@@ -27,7 +27,6 @@ interface ProfileUpdateData {
     website?: string;
     social_links?: SocialLinks;
     cover_offset_y?: number;
-    location?: string;
     onboarding_completed?: boolean;
     username?: string;
     username_changes_count?: number;
@@ -177,7 +176,6 @@ export async function updateProfile(formData: {
     website?: string;
     social_links?: SocialLinks;
     cover_offset_y?: number;
-    location?: string;
     onboarding_completed?: boolean;
     wants_email_notifications?: boolean;
 }) {
@@ -196,7 +194,6 @@ export async function updateProfile(formData: {
     if (formData.website !== undefined) updateData.website = formData.website;
     if (formData.social_links !== undefined) updateData.social_links = formData.social_links;
     if (formData.cover_offset_y !== undefined) updateData.cover_offset_y = formData.cover_offset_y;
-    if (formData.location !== undefined) updateData.location = formData.location;
     if (formData.onboarding_completed !== undefined) updateData.onboarding_completed = formData.onboarding_completed;
     if (formData.wants_email_notifications !== undefined) updateData.wants_email_notifications = formData.wants_email_notifications;
 
@@ -224,7 +221,6 @@ export async function saveProfileChanges(formData: FormData) {
     const fullName = formData.get("full_name") as string;
     const bio = formData.get("bio") as string;
     const website = formData.get("website") as string;
-    const location = formData.get("location") as string;
     const newUsername = formData.get("username") as string;
     const wantsEmailNotifications = formData.get("wants_email_notifications") === "true";
     const avatarFile = formData.get("avatar") as File | null;
@@ -237,7 +233,6 @@ export async function saveProfileChanges(formData: FormData) {
         if (fullName !== null) updateData.full_name = fullName;
         if (bio !== null) updateData.bio = bio;
         if (website !== null) updateData.website = website;
-        if (location !== null) updateData.location = location;
         if (formData.has("wants_email_notifications")) updateData.wants_email_notifications = wantsEmailNotifications;
 
         // 2. Avatar Upload
