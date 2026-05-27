@@ -14,7 +14,8 @@ import {
     Trophy,
     Megaphone,
     Download,
-    Activity
+    Activity,
+    FileSearch
 } from "lucide-react";
 
 const sidebarItems = [
@@ -67,6 +68,11 @@ const sidebarItems = [
         title: "Sayfa Deneyimi",
         href: "/admin/page-experience",
         icon: Activity
+    },
+    {
+        title: "İçerik Kalitesi (SEO)",
+        href: "/admin/content-quality",
+        icon: FileSearch
     },
     {
         title: "Video İndirici",
