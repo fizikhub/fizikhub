@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase-admin";
-import { generateEmbedding } from "@/lib/gemini";
 import { slugify } from "@/lib/slug";
 import { rateLimiter } from "@/lib/upstash";
 
@@ -161,11 +160,7 @@ export async function POST(req: Request) {
                 return NextResponse.json({ message: "Document removed due to status change", source_type: tableSingular, source_id: recordId });
             }
 
-            // --- ASYNC BACKGROUND EXECUTION ---
-            // We use Next.js `after` API (available in Next 15+) to run the heavy Gemini API
-            // and DB upsert in the background AFTER the HTTP response is sent.
-            // This prevents webhook timeouts and improves system resilience.
-            
+            // --- ASYNC BACKGROUND EXECUTION VIA QSTASH ---
             const textContent = buildSearchableText(table, record);
             const metadata = {
                 source_id: recordId.toString(),
@@ -176,70 +171,30 @@ export async function POST(req: Request) {
                 cover_image: record.cover_url || record.image_url || null,
             };
 
-            const processEmbeddingJob = async () => {
-                try {
-                    const embedding = await generateEmbedding(textContent);
-                    if (!embedding) {
-                        console.error(`[Search-Sync Background] Failed to generate embedding for ${tableSingular} ${recordId}`);
-                        return;
-                    }
+            try {
+                const { Client } = await import("@upstash/qstash");
+                const qstash = new Client({ token: process.env.QSTASH_TOKEN || "" });
+                
+                // Ensure NEXT_PUBLIC_APP_URL does not end with a slash
+                const baseUrl = process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, "") || "https://fizikhub.com";
+                const qstashUrl = `${baseUrl}/api/qstash/search-sync`;
 
-                    // Query if document already exists
-                    const { data: existingDoc, error: queryError } = await supabase
-                        .from("documents")
-                        .select("id")
-                        .filter("metadata->>source_id", "eq", recordId.toString())
-                        .filter("metadata->>source_type", "eq", tableSingular)
-                        .maybeSingle();
-
-                    if (queryError) {
-                        console.error(`[Search-Sync Background] Error querying existing document:`, queryError);
-                    }
-
-                    let syncError = null;
-                    if (existingDoc?.id) {
-                        const { error } = await supabase
-                            .from("documents")
-                            .update({
-                                content: textContent,
-                                embedding: embedding,
-                                metadata: metadata,
-                            })
-                            .eq("id", existingDoc.id);
-                        syncError = error;
-                    } else {
-                        const { error } = await supabase
-                            .from("documents")
-                            .insert({
-                                content: textContent,
-                                embedding: embedding,
-                                metadata: metadata,
-                            });
-                        syncError = error;
-                    }
-
-                    if (syncError) {
-                        console.error(`[Search-Sync Background UPSERT] DB Error for ${tableSingular} ${recordId}:`, syncError);
-                    } else {
-                        console.log(`[Search-Sync Background] Successfully processed embedding for ${tableSingular} ${recordId}`);
-                    }
-                } catch (err) {
-                    console.error(`[Search-Sync Background] Fatal error during embedding job for ${tableSingular} ${recordId}:`, err);
-                }
-            };
-
-            // Using after to safely defer the task
-            // We import after dynamically or use unstable_after to be safe across Next.js versions.
-            import("next/server").then((mod) => {
-                if (typeof mod.after === "function") {
-                    mod.after(processEmbeddingJob);
-                } else if (typeof (mod as any).unstable_after === "function") {
-                    (mod as any).unstable_after(processEmbeddingJob);
-                } else {
-                    // Fallback for local dev or older Next.js 14 runtimes
-                    processEmbeddingJob();
-                }
-            });
+                await qstash.publishJSON({
+                    url: qstashUrl,
+                    body: {
+                        textContent,
+                        tableSingular,
+                        recordId,
+                        metadata
+                    },
+                    retries: 3,
+                });
+                console.log(`[Search-Sync] Queued QStash job for ${tableSingular} ${recordId}`);
+            } catch (qErr) {
+                console.error("[Search-Sync] Failed to publish QStash job:", qErr);
+                // We don't fail the webhook completely to allow Supabase to consider it delivered,
+                // but we log the error.
+            }
 
             // Return immediately without waiting for the embedding to finish
             return NextResponse.json({ 
