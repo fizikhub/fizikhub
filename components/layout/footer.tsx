@@ -275,7 +275,7 @@ export function Footer() {
                                     <li key={link.label}>
                                         <Link
                                             href={link.href}
-                                            className="group inline-flex items-center gap-1.5 text-[1.02rem] font-black uppercase tracking-normal text-zinc-500 transition-colors hover:text-[#EAB308] dark:text-zinc-400 dark:hover:text-[#EAB308]"
+                                            className="group inline-flex items-center gap-1.5 py-1 text-[1.02rem] font-black uppercase tracking-normal text-zinc-500 transition-colors hover:text-[#EAB308] dark:text-zinc-400 dark:hover:text-[#EAB308]"
                                         >
                                             <span>{link.label}</span>
                                             <ArrowUpRight className="h-4 w-4 opacity-0 transition-all duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:opacity-100" />
@@ -327,10 +327,10 @@ export function Footer() {
                     <div className="flex flex-wrap justify-center gap-x-6 gap-y-3">
                         {UTILITY_LINKS.map((link) => (
                             <Link
-                                key={link.label}
-                                href={link.href}
-                                className="text-[12px] font-black uppercase tracking-wider text-zinc-500 transition-colors hover:text-black dark:text-zinc-400 dark:hover:text-white"
-                            >
+                                                                key={link.label}
+                                                                href={link.href}
+                                                                className="inline-block py-2 px-1 text-[12px] font-black uppercase tracking-wider text-zinc-500 transition-colors hover:text-black dark:text-zinc-400 dark:hover:text-white"
+                                                            >
                                 {link.label}
                             </Link>
                         ))}
