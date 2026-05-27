@@ -21,7 +21,6 @@ import { PhotoelectricSim } from "@/components/simulations/PhotoelectricSim";
 import { getClustersForSimulationSlug, getRelatedUrlsForCluster } from "@/lib/seo-topic-clusters";
 // Note: Solar System remains in subdirectory as it might be complex/3D
 import SolarSystemSim from "@/components/simulations/solar-system/solar-system-sim";
-import SpaceXSim from "@/components/simulations/SpaceXSim";
 
 
 type SerializableSimulation = Omit<(typeof simulations)[number], "icon">;
@@ -251,9 +250,6 @@ export default async function SimulationPage({ params }: { params: Promise<{ slu
             break;
         case "solar":
             Component = SolarSystemSim;
-            break;
-        case "spacex":
-            Component = SpaceXSim;
             break;
         case "wave":
             Component = WaveSim;
