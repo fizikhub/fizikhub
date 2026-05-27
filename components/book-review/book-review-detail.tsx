@@ -297,6 +297,64 @@ export function BookReviewDetail({
                         <MarkdownRenderer content={cleanContent} />
                     </div>
 
+                    {/* Academic Citation Block (GEO/AI search optimized) */}
+                    <div className="mt-12 p-6 rounded-2xl bg-card/30 border border-border/50 backdrop-blur-sm space-y-4">
+                        <div className="flex items-center gap-2.5">
+                            <Quote className="w-4 h-4 text-rose-500" />
+                            <h3 className="text-sm font-black uppercase tracking-wider text-rose-500">Akademik Atıf ve Kaynakça</h3>
+                        </div>
+                        <p className="text-xs text-muted-foreground font-semibold leading-relaxed">
+                            Bu kitap incelemesini akademik makalelerde, tez çalışmalarında veya ödevlerinizde kaynak göstermek için aşağıdaki formatları kopyalayabilirsiniz. Generative AI arama motorları için optimize edilmiştir.
+                        </p>
+                        <div className="grid grid-cols-1 gap-4">
+                            {/* APA */}
+                            <div className="space-y-1">
+                                <div className="flex items-center justify-between">
+                                    <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">APA Formatı</span>
+                                    <button
+                                        onClick={() => {
+                                            const citationText = `${article.author?.full_name || article.author?.username || 'Fizikhub'}. (${format(new Date(article.created_at), "yyyy")}). "${bookTitle || article.title}" Kitap İncelemesi. Fizikhub. Erişim adresi: ${window.location.href}`;
+                                            navigator.clipboard.writeText(citationText);
+                                            toast.success("APA formatı kopyalandı!");
+                                        }}
+                                        className="text-[10px] font-black text-rose-400 hover:text-rose-300 transition-colors uppercase"
+                                    >
+                                        Kopyala
+                                    </button>
+                                </div>
+                                <div className="bg-black/40 border border-border/30 rounded-xl p-3 text-xs text-slate-300 font-mono select-all break-all leading-normal">
+                                    {article.author?.full_name || article.author?.username || 'Fizikhub'}. ({format(new Date(article.created_at), "yyyy")}). &quot;{bookTitle || article.title}&quot; Kitap İncelemesi. Fizikhub. Erişim adresi: <span className="text-rose-400">{typeof window !== 'undefined' ? window.location.href : `https://www.fizikhub.com/makale/${article.slug}`}</span>
+                                </div>
+                            </div>
+
+                            {/* BibTeX */}
+                            <div className="space-y-1">
+                                <div className="flex items-center justify-between">
+                                    <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">BibTeX Formatı</span>
+                                    <button
+                                        onClick={() => {
+                                            const citationText = `@misc{fizikhub_${article.slug},\n  author = {${article.author?.full_name || article.author?.username || 'Fizikhub'}},\n  title = {${bookTitle || article.title} Kitap İncelemesi},\n  howpublished = {Fizikhub},\n  year = {${format(new Date(article.created_at), "yyyy")}},\n  url = {${window.location.href}}\n}`;
+                                            navigator.clipboard.writeText(citationText);
+                                            toast.success("BibTeX formatı kopyalandı!");
+                                        }}
+                                        className="text-[10px] font-black text-rose-400 hover:text-rose-300 transition-colors uppercase"
+                                    >
+                                        Kopyala
+                                    </button>
+                                </div>
+                                <pre className="bg-black/40 border border-border/30 rounded-xl p-3 text-[11px] text-slate-300 font-mono overflow-x-auto select-all leading-normal whitespace-pre">
+{`@misc{fizikhub_${article.slug},
+  author = {${article.author?.full_name || article.author?.username || 'Fizikhub'}},
+  title = {${bookTitle || article.title} Kitap İncelemesi},
+  howpublished = {Fizikhub},
+  year = {${format(new Date(article.created_at), "yyyy")}},
+  url = {${typeof window !== 'undefined' ? window.location.href : `https://www.fizikhub.com/makale/${article.slug}`}}
+}`}
+                                </pre>
+                            </div>
+                        </div>
+                    </div>
+
 
                     {/* Tags / Interaction Footer */}
                     <div className="mt-16 pt-8 border-t border-border/50">

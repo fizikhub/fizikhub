@@ -4,9 +4,8 @@ import { m as motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { SpaceBackground } from "@/components/home/space-background";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { MessageSquare, Twitter, Github, Linkedin, Instagram, Calendar, Link as LinkIcon, Microscope, Activity, Scan, Bell, Bookmark } from "lucide-react";
+import { Twitter, Github, Linkedin, Instagram, Calendar, Link as LinkIcon, Microscope, Activity } from "lucide-react";
 import { StartChatButton } from "@/components/messaging/start-chat-button";
 import { FollowButton } from "@/components/profile/follow-button";
 import { EditProfileButton } from "@/components/profile/edit-profile-button";
@@ -14,7 +13,7 @@ import { BadgeDisplay } from "@/components/badge-display";
 import { ReputationDisplay } from "@/components/reputation-display";
 import { format } from "date-fns";
 import { tr } from "date-fns/locale";
-import { QuestionCard } from "@/components/forum/question-card";
+import { Variants } from "framer-motion";
 
 interface PublicProfileViewProps {
     profile: any;
@@ -52,7 +51,7 @@ export function PublicProfileView({
         }
     };
 
-    const itemVariants: any = {
+    const itemVariants: Variants = {
         hidden: { opacity: 0, y: 20 },
         visible: {
             opacity: 1,

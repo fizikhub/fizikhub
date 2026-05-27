@@ -21,6 +21,9 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { createClient } from "@/lib/supabase";
+import { toast } from "sonner";
+import { format } from "date-fns";
+import { tr } from "date-fns/locale";
 
 interface ArticleReaderProps {
     article: any;
@@ -455,6 +458,66 @@ export function ArticleReader({
                                         </div>
                                     </div>
                                 )}
+
+                                 {/* Academic Citation Block (GEO/AI search optimized) */}
+                                <div className="space-y-5">
+                                    <div className="flex items-center gap-2.5 sm:gap-3">
+                                        <div className="w-1.5 sm:w-2 h-6 sm:h-8 bg-[#EAB308]" />
+                                        <h3 className="text-xl sm:text-2xl font-black text-foreground uppercase tracking-normal">Akademik Atıf & Kaynakça</h3>
+                                    </div>
+                                    <div className="p-5 bg-white dark:bg-zinc-900 border-[3px] border-black dark:border-zinc-700 rounded-xl shadow-[4px_4px_0px_0px_#000] dark:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.4)] space-y-4">
+                                        <p className="text-xs text-muted-foreground font-semibold leading-relaxed">
+                                            Bu bilimsel makaleyi veya deneyi akademik çalışmalarınızda, tez araştırmalarınızda veya ödevlerinizde referans göstermek için aşağıdaki formatları kopyalayabilirsiniz. Yapay zeka arama motorları (GEO) için optimize edilmiştir.
+                                        </p>
+                                        <div className="grid grid-cols-1 gap-4">
+                                            {/* APA */}
+                                            <div className="space-y-1">
+                                                <div className="flex items-center justify-between">
+                                                    <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">APA Formatı</span>
+                                                    <button
+                                                        onClick={() => {
+                                                            const citationText = `${article.author?.full_name || article.author?.username || 'Fizikhub'}. (${format(new Date(article.created_at), "yyyy")}). "${article.title}". Fizikhub. Erişim adresi: ${window.location.href}`;
+                                                            navigator.clipboard.writeText(citationText);
+                                                            toast.success("APA formatı kopyalandı!");
+                                                        }}
+                                                        className="text-[10px] font-black text-[#EAB308] hover:text-[#EAB308]/80 transition-colors uppercase"
+                                                    >
+                                                        Kopyala
+                                                    </button>
+                                                </div>
+                                                <div className="bg-zinc-55 dark:bg-black/40 border border-black/5 dark:border-border/30 rounded-lg p-3 text-xs text-neutral-800 dark:text-slate-300 font-mono select-all break-all leading-normal">
+                                                    {article.author?.full_name || article.author?.username || 'Fizikhub'}. ({format(new Date(article.created_at), "yyyy")}). &quot;{article.title}&quot;. Fizikhub. Erişim adresi: <span className="text-[#23A9FA] dark:text-[#EAB308]">{typeof window !== 'undefined' ? window.location.href : `https://www.fizikhub.com/makale/${article.slug}`}</span>
+                                                </div>
+                                            </div>
+
+                                            {/* BibTeX */}
+                                            <div className="space-y-1">
+                                                <div className="flex items-center justify-between">
+                                                    <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">BibTeX Formatı</span>
+                                                    <button
+                                                        onClick={() => {
+                                                            const citationText = `@misc{fizikhub_${article.slug},\n  author = {${article.author?.full_name || article.author?.username || 'Fizikhub'}},\n  title = {${article.title}},\n  howpublished = {Fizikhub},\n  year = {${format(new Date(article.created_at), "yyyy")}},\n  url = {${window.location.href}}\n}`;
+                                                            navigator.clipboard.writeText(citationText);
+                                                            toast.success("BibTeX formatı kopyalandı!");
+                                                        }}
+                                                        className="text-[10px] font-black text-[#EAB308] hover:text-[#EAB308]/80 transition-colors uppercase"
+                                                    >
+                                                        Kopyala
+                                                    </button>
+                                                </div>
+                                                <pre className="bg-zinc-55 dark:bg-black/40 border border-black/5 dark:border-border/30 rounded-lg p-3 text-[11px] text-neutral-800 dark:text-slate-300 font-mono overflow-x-auto select-all leading-normal whitespace-pre">
+{`@misc{fizikhub_${article.slug},
+  author = {${article.author?.full_name || article.author?.username || 'Fizikhub'}},
+  title = {${article.title}},
+  howpublished = {Fizikhub},
+  year = {${format(new Date(article.created_at), "yyyy")}},
+  url = {${typeof window !== 'undefined' ? window.location.href : `https://www.fizikhub.com/makale/${article.slug}`}}
+}`}
+                                                </pre>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
 
                                 {/* Related Articles */}
                                 {relatedArticles.length > 0 && (

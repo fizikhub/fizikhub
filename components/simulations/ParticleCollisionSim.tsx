@@ -6,7 +6,7 @@ import { PhysicsSlider } from "./core/ui";
 import { Play, Pause, RotateCcw, CheckCircle2 } from "lucide-react";
 import { m as motion, AnimatePresence } from "framer-motion";
 
-export function ParticleCollisionSim({ simData }: { simData: any }) {
+export function ParticleCollisionSim({ simData }: { simData: { title?: string; color?: string; [key: string]: unknown } }) {
     const accentColor = simData?.color || "#DC2626";
     const canvasWidth = 800;
     const canvasHeight = 400;
@@ -78,6 +78,7 @@ export function ParticleCollisionSim({ simData }: { simData: any }) {
     useEffect(() => {
         animationRef.current = requestAnimationFrame(loop);
         return () => { if (animationRef.current) cancelAnimationFrame(animationRef.current); };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isPlaying, mass1, mass2, restitution, v1, v2]);
 
     const [missions, setMissions] = useState([

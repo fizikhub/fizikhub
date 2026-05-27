@@ -144,7 +144,7 @@ export function ProfileSettingsButton({
         await signOut();
     };
 
-    const SettingsContent = () => (
+    const settingsContent = (
         <div className="space-y-6 py-4">
             {/* Avatar Upload */}
             <div className="space-y-2 flex flex-col items-center">
@@ -170,7 +170,7 @@ export function ProfileSettingsButton({
 
             {/* Theme Selector */}
             <div className="space-y-2 pb-2 border-b">
-                <ThemeSelector username={currentUsername} />
+                <ThemeSelector />
             </div>
 
             {/* Username */}
@@ -291,7 +291,7 @@ export function ProfileSettingsButton({
         </div>
     );
 
-    const SettingsFooter = () => (
+    const settingsFooter = (
         <>
             <Button
                 variant="outline"
@@ -330,9 +330,9 @@ export function ProfileSettingsButton({
                                 Profil ayarlarınızı buradan yönetebilirsiniz.
                             </SheetDescription>
                         </SheetHeader>
-                        <SettingsContent />
+                        {settingsContent}
                         <SheetFooter className="mt-6">
-                            <SettingsFooter />
+                            {settingsFooter}
                         </SheetFooter>
                     </SheetContent>
                 </Sheet>
@@ -388,9 +388,9 @@ export function ProfileSettingsButton({
                             Profil ayarlarınızı buradan yönetebilirsiniz.
                         </DialogDescription>
                     </DialogHeader>
-                    <SettingsContent />
+                    {settingsContent}
                     <DialogFooter>
-                        <SettingsFooter />
+                        {settingsFooter}
                     </DialogFooter>
                 </DialogContent>
             </Dialog>

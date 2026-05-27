@@ -6,7 +6,7 @@ import { PhysicsSlider, PhysicsToggle } from "./core/ui";
 import { Play, Pause, RotateCcw, CheckCircle2 } from "lucide-react";
 import { m as motion, AnimatePresence } from "framer-motion";
 
-export function ProjectileSim({ simData }: { simData: any }) {
+export function ProjectileSim({ simData }: { simData: { title?: string; color?: string; [key: string]: unknown } }) {
     const accentColor = simData?.color || "#E8590C";
     // -------------------------------------------------------------
     // 1. PHYSICS STATE
@@ -73,6 +73,7 @@ export function ProjectileSim({ simData }: { simData: any }) {
         return () => {
             if (animationRef.current) cancelAnimationFrame(animationRef.current);
         };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isPlaying, timeOfFlight]);
 
     useEffect(() => {

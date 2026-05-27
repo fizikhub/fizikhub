@@ -6,7 +6,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Badge } from "@/components/ui/badge";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
-import { CheckCircle2, XCircle, ArrowRight, RotateCcw, Trophy, Play, Frown, PartyPopper, Zap, ThumbsDown } from "lucide-react";
+import { CheckCircle2, ArrowRight, RotateCcw, Trophy, Play, PartyPopper, ThumbsDown } from "lucide-react";
 import { submitQuizResult } from "@/app/testler/actions";
 import { m as motion, AnimatePresence } from "framer-motion";
 import confetti from "canvas-confetti";

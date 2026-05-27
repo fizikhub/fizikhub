@@ -161,16 +161,12 @@ export async function POST(req: Request) {
                 return NextResponse.json({ message: "Document removed due to status change", source_type: tableSingular, source_id: recordId });
             }
 
-            // Construct text content and request embedding from Gemini
+            // --- ASYNC BACKGROUND EXECUTION ---
+            // We use Next.js `after` API (available in Next 15+) to run the heavy Gemini API
+            // and DB upsert in the background AFTER the HTTP response is sent.
+            // This prevents webhook timeouts and improves system resilience.
+            
             const textContent = buildSearchableText(table, record);
-            const embedding = await generateEmbedding(textContent);
-
-            if (!embedding) {
-                console.error(`[Search-Sync] Failed to generate embedding for ${tableSingular} ${recordId}`);
-                return NextResponse.json({ error: "Embedding generation failed" }, { status: 500 });
-            }
-
-            // Construct standard metadata schema expected by the RPC & search Global Action
             const metadata = {
                 source_id: recordId.toString(),
                 source_type: tableSingular,
@@ -180,53 +176,77 @@ export async function POST(req: Request) {
                 cover_image: record.cover_url || record.image_url || null,
             };
 
-            // Query if document already exists
-            const { data: existingDoc, error: queryError } = await supabase
-                .from("documents")
-                .select("id")
-                .filter("metadata->>source_id", "eq", recordId.toString())
-                .filter("metadata->>source_type", "eq", tableSingular)
-                .maybeSingle();
+            const processEmbeddingJob = async () => {
+                try {
+                    const embedding = await generateEmbedding(textContent);
+                    if (!embedding) {
+                        console.error(`[Search-Sync Background] Failed to generate embedding for ${tableSingular} ${recordId}`);
+                        return;
+                    }
 
-            if (queryError) {
-                console.error(`[Search-Sync] Error querying existing document:`, queryError);
-            }
+                    // Query if document already exists
+                    const { data: existingDoc, error: queryError } = await supabase
+                        .from("documents")
+                        .select("id")
+                        .filter("metadata->>source_id", "eq", recordId.toString())
+                        .filter("metadata->>source_type", "eq", tableSingular)
+                        .maybeSingle();
 
-            let syncError = null;
+                    if (queryError) {
+                        console.error(`[Search-Sync Background] Error querying existing document:`, queryError);
+                    }
 
-            if (existingDoc?.id) {
-                // Update existing document
-                const { error } = await supabase
-                    .from("documents")
-                    .update({
-                        content: textContent,
-                        embedding: embedding,
-                        metadata: metadata,
-                    })
-                    .eq("id", existingDoc.id);
-                syncError = error;
-            } else {
-                // Insert new document
-                const { error } = await supabase
-                    .from("documents")
-                    .insert({
-                        content: textContent,
-                        embedding: embedding,
-                        metadata: metadata,
-                    });
-                syncError = error;
-            }
+                    let syncError = null;
+                    if (existingDoc?.id) {
+                        const { error } = await supabase
+                            .from("documents")
+                            .update({
+                                content: textContent,
+                                embedding: embedding,
+                                metadata: metadata,
+                            })
+                            .eq("id", existingDoc.id);
+                        syncError = error;
+                    } else {
+                        const { error } = await supabase
+                            .from("documents")
+                            .insert({
+                                content: textContent,
+                                embedding: embedding,
+                                metadata: metadata,
+                            });
+                        syncError = error;
+                    }
 
-            if (syncError) {
-                console.error(`[Search-Sync UPSERT] DB Error for ${tableSingular} ${recordId}:`, syncError);
-                return NextResponse.json({ error: "Database upsert failed", details: syncError }, { status: 500 });
-            }
+                    if (syncError) {
+                        console.error(`[Search-Sync Background UPSERT] DB Error for ${tableSingular} ${recordId}:`, syncError);
+                    } else {
+                        console.log(`[Search-Sync Background] Successfully processed embedding for ${tableSingular} ${recordId}`);
+                    }
+                } catch (err) {
+                    console.error(`[Search-Sync Background] Fatal error during embedding job for ${tableSingular} ${recordId}:`, err);
+                }
+            };
 
+            // Using after to safely defer the task
+            // We import after dynamically or use unstable_after to be safe across Next.js versions.
+            import("next/server").then((mod) => {
+                if (typeof mod.after === "function") {
+                    mod.after(processEmbeddingJob);
+                } else if (typeof (mod as any).unstable_after === "function") {
+                    (mod as any).unstable_after(processEmbeddingJob);
+                } else {
+                    // Fallback for local dev or older Next.js 14 runtimes
+                    processEmbeddingJob();
+                }
+            });
+
+            // Return immediately without waiting for the embedding to finish
             return NextResponse.json({ 
-                message: "Document indexed successfully", 
+                message: "Document indexing job queued successfully", 
                 source_type: tableSingular, 
                 source_id: recordId, 
-                action: existingDoc?.id ? "updated" : "inserted" 
+                action: "queued" 
             });
         }
 

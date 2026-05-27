@@ -7,6 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Clock, UserIcon, Bot, Search, Filter, Edit3 } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -35,7 +36,7 @@ const ArticleCard = memo(({ article }: { article: any }) => {
                 <div className="flex items-center gap-2">
                     <div className="w-8 h-8 rounded-full border border-zinc-700 bg-zinc-900 flex items-center justify-center overflow-hidden">
                         {author?.avatar_url ? (
-                            <img src={author.avatar_url} alt={author.full_name || "Yazar"} className="w-full h-full object-cover" loading="lazy" />
+                            <Image src={author.avatar_url} alt={author.full_name || "Yazar"} width={32} height={32} className="w-full h-full object-cover" />
                         ) : (
                             <UserIcon className="w-4 h-4 text-zinc-500" />
                         )}

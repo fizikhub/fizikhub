@@ -394,6 +394,73 @@ export default function PaylasPage() {
                     </Link>
                 </motion.div>
 
+                {/* E-E-A-T and GEO/SEO Context Section */}
+                <motion.section
+                    variants={item}
+                    initial="hidden"
+                    animate="show"
+                    className="mt-12 p-6 sm:p-8 bg-white dark:bg-zinc-900 border-[3px] border-black dark:border-zinc-700 rounded-[1.35rem] shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_0px_rgba(255,255,255,0.08)] text-black dark:text-zinc-100 relative overflow-hidden"
+                >
+                    {/* Top yellow accent strip */}
+                    <div className="absolute top-0 left-0 right-0 h-2 bg-[#EAB308]"></div>
+
+                    <div className="relative z-10 space-y-6">
+                        <div className="flex flex-col gap-2">
+                            <span className="text-[10px] font-black uppercase text-[#EAB308] tracking-widest">Fizikhub Bilimsel Yayıncılık</span>
+                            <h2 className="text-2xl sm:text-3xl font-black uppercase tracking-tight leading-none">
+                                Bilimsel İçerik Standartları ve E-E-A-T Rehberi
+                            </h2>
+                        </div>
+
+                        <p className="text-sm sm:text-base font-semibold leading-relaxed text-zinc-600 dark:text-zinc-300">
+                            Fizikhub; fizik, kozmoloji, astrofizik ve modern bilim disiplinlerinde Türkçe ve nitelikli kaynak ihtiyacını karşılamak için kurulmuş, akran denetimine önem veren dinamik bir bilimsel paylaşım merkezidir. Burada yaptığınız her paylaşım, hem arama motorlarının (SEO) hem de yeni nesil yapay zeka arama motorlarının (GEO - Generative Engine Optimization) akademik doğruluk standartlarına göre taranır ve dizine eklenir.
+                        </p>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t border-zinc-200 dark:border-zinc-800">
+                            <div className="space-y-3">
+                                <h3 className="text-lg font-black uppercase text-rose-500">Paylaşım Modellerimiz</h3>
+                                <ul className="space-y-2 text-xs sm:text-sm font-semibold text-zinc-600 dark:text-zinc-400">
+                                    <li>
+                                        <strong className="text-black dark:text-white">Blog & Makaleler:</strong> Evrensel teoriler, görelilik kuramları, parçacık fiziği bulguları gibi derin konuları sade ve yapılandırılmış biçimde ele alan ana yayın yüzeyidir.
+                                    </li>
+                                    <li>
+                                        <strong className="text-black dark:text-white">Forum Soruları:</strong> Kafanıza takılan karmaşık fizik denklemleri, akademik ödevler veya kozmolojik teoriler hakkında topluluktan ve uzman yazarlardan hızlı, güvenilir cevaplar alabileceğiniz interaktif alandır.
+                                    </li>
+                                    <li>
+                                        <strong className="text-black dark:text-white">Bilimsel Deneyler:</strong> Laboratuvar veya dijital fizik simülasyon sonuçlarını, hipotezlerinizi, metotlarınızı ve gözlem verilerinizi topluluğa sunabileceğiniz deneysel veri merkezidir.
+                                    </li>
+                                    <li>
+                                        <strong className="text-black dark:text-white">Kitap İncelemeleri:</strong> Bilim tarihine geçmiş klasik eserlerden güncel popüler bilim yayınlarına kadar önemli kitapların eleştirel analizlerinin yapıldığı entelektüel köşedir.
+                                    </li>
+                                    <li>
+                                        <strong className="text-black dark:text-white">Sözlük Terimleri:</strong> Akademik sis ve jargondan uzak, kavramların özünü açıklayan ve tüm bilim insanları ile öğrencilerin yararlanabileceği ansiklopedik Türkçe terimler bankasıdır.
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <div className="space-y-3">
+                                <h3 className="text-lg font-black uppercase text-blue-500">Neden Fizikhub'da Yazmalısın?</h3>
+                                <div className="space-y-3 text-xs sm:text-sm font-semibold text-zinc-600 dark:text-zinc-400">
+                                    <p>
+                                        <strong className="text-black dark:text-white">Akademik E-E-A-T Uyumu:</strong> Yazarlarımızın profilleri, uzmanlık alanları ve kaynakçaları Google E-E-A-T (Deneyim, Uzmanlık, Yetkinlik, Güvenilirlik) kurallarına göre indekslenir. Bu sayede paylaşımlarınız internet aramalarında en üst sıralara tırmanır.
+                                    </p>
+                                    <p>
+                                        <strong className="text-black dark:text-white">Gelişmiş Yapay Zeka (GEO) Görünürlüğü:</strong> İçeriklerimiz ChatGPT, Gemini, Perplexity gibi üretken yapay zeka arama motorlarının rahatlıkla okuyabileceği, referans gösterebileceği ve atıf yapabileceği temiz bir JSON-LD şeması ile sarmalanır.
+                                    </p>
+                                    <p>
+                                        <strong className="text-black dark:text-white">Türkçe Bilim Topluluğu:</strong> Türkiye'nin ve dünyanın dört bir yanından fizik meraklısı, mühendis, akademisyen ve öğrencilerden oluşan nitelikli bir kitleye doğrudan erişim sağlarsınız.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="pt-4 border-t border-zinc-200 dark:border-zinc-800 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 text-xs font-bold text-zinc-500">
+                            <span>© 2026 Fizikhub Bilimsel Yayıncılık Standartları</span>
+                            <span>Akran Denetimli Popüler Bilim Platformu</span>
+                        </div>
+                    </div>
+                </motion.section>
+
             </div>
 
             <style jsx global>{`

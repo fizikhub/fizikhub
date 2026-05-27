@@ -60,7 +60,7 @@ export function ReportDialog({ resourceId, resourceType, trigger }: ReportDialog
             } else {
                 toast.error(result.error || "Bir hata oluştu.");
             }
-        } catch (error) {
+        } catch {
             toast.error("Bir hata oluştu.");
         } finally {
             setIsSubmitting(false);

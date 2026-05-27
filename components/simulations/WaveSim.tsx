@@ -6,7 +6,7 @@ import { PhysicsSlider, PhysicsToggle } from "./core/ui";
 import { Play, Pause, RotateCcw, CheckCircle2 } from "lucide-react";
 import { m as motion, AnimatePresence } from "framer-motion";
 
-export function WaveSim({ simData }: { simData: any }) {
+export function WaveSim({ simData }: { simData: { title?: string; color?: string; [key: string]: unknown } }) {
     const accentColor = simData?.color || "#16A34A";
     const canvasWidth = 800;
     const canvasHeight = 400;
@@ -36,6 +36,7 @@ export function WaveSim({ simData }: { simData: any }) {
     useEffect(() => {
         animationRef.current = requestAnimationFrame(loop);
         return () => { if (animationRef.current) cancelAnimationFrame(animationRef.current); };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isPlaying]);
 
     const generateWavePath = (amp: number, freq: number, yOffset: number) => {

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import Image from "next/image";
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
@@ -139,7 +140,7 @@ export function ProfileSettingsDialog({
         }
     };
 
-    const SettingsForm = () => (
+    const settingsForm = (
         <div className="space-y-6 pb-24 md:pb-0">
             {/* 1. VISUAL IDENTITY */}
             <div className="space-y-4">
@@ -150,7 +151,7 @@ export function ProfileSettingsDialog({
                     {/* Cover */}
                     <div className="h-32 bg-muted relative">
                         {tempCover ? (
-                            <img src={tempCover} className="w-full h-full object-cover" alt="Cover" />
+                            <Image src={tempCover} fill className="object-cover" alt="Cover" />
                         ) : (
                             <div className="w-full h-full bg-neutral-100 dark:bg-neutral-900" />
                         )}
@@ -271,7 +272,7 @@ export function ProfileSettingsDialog({
                             <SheetTitle>Profili Düzenle</SheetTitle>
                         </SheetHeader>
                         <div className="flex-1 overflow-y-auto px-6 py-6">
-                            <SettingsForm />
+                            {settingsForm}
                         </div>
                     </SheetContent>
                 </Sheet>
@@ -303,7 +304,7 @@ export function ProfileSettingsDialog({
                         <DialogTitle className="text-xl font-black uppercase">Profili Düzenle</DialogTitle>
                     </div>
                     <div className="flex-1 overflow-y-auto p-6">
-                        <SettingsForm />
+                        {settingsForm}
                     </div>
                 </DialogContent>
             </Dialog>

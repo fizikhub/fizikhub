@@ -1,8 +1,7 @@
 import dotenv from "dotenv";
 import path from "path";
 import { fileURLToPath } from "url";
-import { GoogleGenerativeAI } from "@google/generative-ai";
-
+// import { GoogleGenerativeAI } from "@google/generative-ai";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -15,8 +14,7 @@ if (!geminiKey) {
     process.exit(1);
 }
 
-const genAI = new GoogleGenerativeAI(geminiKey);
-
+// const genAI = new GoogleGenerativeAI(geminiKey);
 async function test() {
     try {
         console.log("Listing models...");

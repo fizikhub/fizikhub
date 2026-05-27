@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
+import Image from "next/image";
 import { ArticleEditor } from "@/components/article/article-editor";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -73,7 +74,7 @@ export function NewArticleForm({ userId, isFirstArticle, hasSeenGuide, initialDa
                 toast.info('Önceki taslağınız geri yüklendi.', { duration: 3000 });
             }
         } catch { }
-    }, []);
+    }, [initialData, draftKey]);
 
     // Auto-save to localStorage every 5 seconds when content changes
     useEffect(() => {
@@ -94,7 +95,7 @@ export function NewArticleForm({ userId, isFirstArticle, hasSeenGuide, initialDa
         return () => {
             if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
         };
-    }, [title, content, excerpt, category, coverUrl]);
+    }, [title, content, excerpt, category, coverUrl, draftKey]);
 
     // Warn before leaving with unsaved content
     useEffect(() => {
@@ -227,7 +228,7 @@ export function NewArticleForm({ userId, isFirstArticle, hasSeenGuide, initialDa
                 {/* Cover Image Header */}
                 {coverUrl && (
                     <div className="relative w-full aspect-[21/9] sm:aspect-[4/1] bg-black border-b-[3px] border-black group">
-                        <img src={coverUrl} alt="Cover" className="w-full h-full object-cover opacity-90 transition-opacity group-hover:opacity-100" />
+                        <Image src={coverUrl} alt="Cover" fill className="object-cover opacity-90 transition-opacity group-hover:opacity-100" />
                         <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors" />
                         <Button
                             variant="destructive"

@@ -74,7 +74,7 @@ export function ReportButton({ contentType, contentId, variant = "ghost", size =
             setOpen(false);
             setReason("");
             setDescription("");
-        } catch (error: any) {
+        } catch (error) {
             console.error("Report error:", error);
             toast.error("Bir hata oluştu");
         } finally {

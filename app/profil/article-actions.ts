@@ -1,7 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase-server";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 
 export async function createArticle(formData: FormData) {
     try {
@@ -116,7 +116,7 @@ export async function updateArticle(formData: FormData) {
     }
 
     revalidatePath("/profil");
-    revalidatePath("/makale");
+    (revalidateTag as any)("articles");
 
     return { success: true };
 }
@@ -151,7 +151,7 @@ export async function deleteArticle(articleId: number) {
     }
 
     revalidatePath("/profil");
-    revalidatePath("/makale");
+    (revalidateTag as any)("articles");
 
     return { success: true };
 }

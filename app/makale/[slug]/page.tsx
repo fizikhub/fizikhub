@@ -283,6 +283,7 @@ export default async function ArticlePage({ params }: PageProps) {
     const articleUrl = `${baseUrl}/makale/${article.slug}`;
     const articleImageUrl = toAbsoluteUrl(article.cover_url || (article as any).image_url, baseUrl) || `${baseUrl}/api/og?title=${encodeURIComponent(article.title)}`;
     const authorUrl = article.author?.username ? `${baseUrl}/kullanici/${article.author.username}` : baseUrl;
+    const authorName = article.author?.full_name || article.author?.username || 'Fizikhub Ekibi';
     const semanticTopics = intentOverride?.expandedKeywords || (articleTags && articleTags.length > 0 ? articleTags : [article.category || 'Fizik']);
     const topicClusters = getClustersForArticleSlug(article.slug || slug);
     const clusterUrls = topicClusters.map((cluster) => `${baseUrl}${getTopicClusterHref(cluster)}`);
@@ -296,8 +297,51 @@ export default async function ArticlePage({ params }: PageProps) {
         .filter(Boolean);
     const video = getFirstYoutubeVideo(article.content);
 
+    let reviewMeta: any = {};
+    if (article.category === 'Kitap İncelemesi' && article.content) {
+        try {
+            const match = article.content.match(/^<!--meta\s+(.*?)\s+-->/);
+            if (match && match[1]) {
+                reviewMeta = JSON.parse(match[1]);
+            }
+        } catch (e) {
+            console.error("Failed to parse book review metadata in page schema", e);
+        }
+    }
+
     const jsonLd = [
-        {
+        ...(article.category === 'Kitap İncelemesi' ? [{
+            '@context': 'https://schema.org',
+            '@type': 'Review',
+            '@id': `${articleUrl}#review`,
+            'url': articleUrl,
+            'headline': displayTitle,
+            'description': articleDescription,
+            'datePublished': article.created_at,
+            'dateModified': (article as any).updated_at || article.created_at,
+            'inLanguage': 'tr-TR',
+            'author': {
+                '@type': 'Person',
+                'name': authorName,
+            },
+            'publisher': {
+                '@id': `${baseUrl}/#organization`,
+            },
+            'itemReviewed': {
+                '@type': 'Book',
+                'name': reviewMeta.bookTitle || article.title,
+                'author': {
+                    '@type': 'Person',
+                    'name': reviewMeta.bookAuthor || 'Bilinmeyen Yazar'
+                }
+            },
+            'reviewRating': {
+                '@type': 'Rating',
+                'ratingValue': reviewMeta.rating || 8,
+                'bestRating': '10',
+                'worstRating': '1'
+            }
+        }] : [{
             '@context': 'https://schema.org',
             '@type': 'BlogPosting',
             '@id': `${articleUrl}#article`,
@@ -375,7 +419,7 @@ export default async function ArticlePage({ params }: PageProps) {
                     height: 512,
                 },
             },
-        },
+        }]),
         {
             '@context': 'https://schema.org',
             '@type': 'LearningResource',

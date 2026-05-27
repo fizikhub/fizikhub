@@ -1,12 +1,12 @@
 "use client";
 
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback } from "react";
 import Cropper from "react-easy-crop";
 import { Point, Area } from "react-easy-crop";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
-import { Loader2, Crop, ZoomIn, ZoomOut, Check, X, Image as ImageIcon } from "lucide-react";
+import { Loader2, Crop, ZoomIn, ZoomOut, Check, X } from "lucide-react";
 import getCroppedImg from "@/lib/crop-image";
 import { toast } from "sonner";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";

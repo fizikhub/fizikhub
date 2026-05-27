@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import React, { useState, useCallback } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, Trail, Stars } from "@react-three/drei";
 import * as THREE from "three";
@@ -163,7 +163,7 @@ function Scene({
     );
 }
 
-export default function SolarSystemSim({ simData }: { simData: any }) {
+export default function SolarSystemSim({ simData }: { simData: { title?: string; color?: string; [key: string]: unknown } }) {
     // -- State --
     const [isPlaying, setIsPlaying] = useState(true);
     const [gravityConstant, setGravityConstant] = useState(0.8);
@@ -205,7 +205,7 @@ export default function SolarSystemSim({ simData }: { simData: any }) {
             }
             return m;
         }));
-    }, [gravityConstant, timeScale, isPlaying]);
+    }, []);
 
     const resetSim = () => {
         setPlanets(INITIAL_PLANETS);

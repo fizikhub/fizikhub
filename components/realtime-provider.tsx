@@ -40,9 +40,7 @@ export function RealtimeProvider() {
           table: "notifications",
           filter: `recipient_id=eq.${userId}`,
         },
-        (payload) => {
-          const notification = payload.new;
-          
+        () => {
           // Show toast notification
           toast("Yeni Bildirim!", {
             description: "Biri seninle etkileşime geçti. İncelemek için tıkla.",

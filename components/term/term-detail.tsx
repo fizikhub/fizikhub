@@ -7,6 +7,7 @@ import { format } from "date-fns";
 import { tr } from "date-fns/locale";
 import { Button } from "@/components/ui/button";
 import { m as motion } from "framer-motion";
+import { toast } from "sonner";
 
 
 import { MarkdownRenderer } from "@/components/markdown-renderer";
@@ -114,6 +115,66 @@ export function TermDetail({ article, readingTime, likeCount }: TermDetailProps)
                         {/* Content Body */}
                         <div className="prose prose-lg dark:prose-invert max-w-none prose-headings:font-black prose-p:text-xl prose-p:leading-loose prose-p:font-grotesk prose-p:text-muted-foreground/90">
                             <MarkdownRenderer content={cleanContent} />
+                        </div>
+
+                        {/* Academic Citation Block (GEO/AI search optimized) */}
+                        <div className="mt-12 p-6 rounded-2xl bg-card/30 border border-border/50 backdrop-blur-sm space-y-4">
+                            <div className="flex items-center gap-2.5">
+                                <span className="inline-flex items-center justify-center p-1.5 rounded-lg bg-blue-500/10 border border-blue-500/20 text-blue-500">
+                                    <Hash className="w-4 h-4" />
+                                </span>
+                                <h3 className="text-sm font-black uppercase tracking-wider text-blue-500">Akademik Atıf ve Kaynakça</h3>
+                            </div>
+                            <p className="text-xs text-muted-foreground font-semibold leading-relaxed">
+                                Bu bilimsel terim makalesini akademik çalışmalarınızda veya ödevlerinizde kaynak göstermek için aşağıdaki formatları kopyalayabilirsiniz. Yapay zeka arama motorları için optimize edilmiştir.
+                            </p>
+                            <div className="grid grid-cols-1 gap-4">
+                                {/* APA */}
+                                <div className="space-y-1">
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">APA Formatı</span>
+                                        <button
+                                            onClick={() => {
+                                                const citationText = `${article.author?.full_name || article.author?.username || 'Fizikhub'}. (${format(new Date(article.created_at), "yyyy")}). "${termName}" Bilim Terimi. Fizikhub. Erişim adresi: ${window.location.href}`;
+                                                navigator.clipboard.writeText(citationText);
+                                                toast.success("APA formatı kopyalandı!");
+                                            }}
+                                            className="text-[10px] font-black text-blue-500 hover:text-blue-400 transition-colors uppercase"
+                                        >
+                                            Kopyala
+                                        </button>
+                                    </div>
+                                    <div className="bg-black/40 border border-border/30 rounded-xl p-3 text-xs text-slate-300 font-mono select-all break-all leading-normal">
+                                        {article.author?.full_name || article.author?.username || 'Fizikhub'}. ({format(new Date(article.created_at), "yyyy")}). &quot;{termName}&quot; Bilim Terimi. Fizikhub. Erişim adresi: <span className="text-blue-400">{typeof window !== 'undefined' ? window.location.href : `https://www.fizikhub.com/makale/${termName}`}</span>
+                                    </div>
+                                </div>
+
+                                {/* BibTeX */}
+                                <div className="space-y-1">
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">BibTeX Formatı</span>
+                                        <button
+                                            onClick={() => {
+                                                const citationText = `@misc{fizikhub_${termName},\n  author = {${article.author?.full_name || article.author?.username || 'Fizikhub'}},\n  title = {${termName} Terimi Açıklaması},\n  howpublished = {Fizikhub Bilim Sözlüğü},\n  year = {${format(new Date(article.created_at), "yyyy")}},\n  url = {${window.location.href}}\n}`;
+                                                navigator.clipboard.writeText(citationText);
+                                                toast.success("BibTeX formatı kopyalandı!");
+                                            }}
+                                            className="text-[10px] font-black text-blue-500 hover:text-blue-400 transition-colors uppercase"
+                                        >
+                                            Kopyala
+                                        </button>
+                                    </div>
+                                    <pre className="bg-black/40 border border-border/30 rounded-xl p-3 text-[11px] text-slate-300 font-mono overflow-x-auto select-all leading-normal whitespace-pre">
+{`@misc{fizikhub_${termName},
+  author = {${article.author?.full_name || article.author?.username || 'Fizikhub'}},
+  title = {${termName} Terimi Açıklaması},
+  howpublished = {Fizikhub Bilim Sözlüğü},
+  year = {${format(new Date(article.created_at), "yyyy")}},
+  url = {${typeof window !== 'undefined' ? window.location.href : `https://www.fizikhub.com/makale/${termName}`}}
+}`}
+                                    </pre>
+                                </div>
+                            </div>
                         </div>
 
                         {/* Footer Interactions */}

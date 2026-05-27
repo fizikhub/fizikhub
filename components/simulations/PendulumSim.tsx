@@ -2,11 +2,11 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { SimulationLayout } from "./core/simulation-layout";
-import { PhysicsSlider, PhysicsToggle } from "./core/ui";
+import { PhysicsSlider } from "./core/ui";
 import { Play, Pause, RotateCcw, CheckCircle2 } from "lucide-react";
 import { m as motion, AnimatePresence } from "framer-motion";
 
-export function PendulumSim({ simData }: { simData: any }) {
+export function PendulumSim({ simData }: { simData: { title?: string; color?: string; [key: string]: unknown } }) {
     const accentColor = simData?.color || "#D97706";
     // 1. PHYSICS STATE
     const [length, setLength] = useState(2.0);
@@ -59,6 +59,7 @@ export function PendulumSim({ simData }: { simData: any }) {
     useEffect(() => {
         animationRef.current = requestAnimationFrame(loop);
         return () => { if (animationRef.current) cancelAnimationFrame(animationRef.current); };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isPlaying, gravity, length, damping]);
 
     useEffect(() => {

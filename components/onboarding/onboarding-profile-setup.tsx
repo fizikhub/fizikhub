@@ -2,6 +2,7 @@
 
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { uploadAvatar, uploadCover, updateProfile, updateUsername } from "@/app/profil/actions";
 import { Camera, Loader2, ArrowRight, AtSign, User as UserIcon, Upload, Image as ImageIcon } from "lucide-react";
 import { toast } from "sonner";
@@ -133,7 +134,7 @@ export function OnboardingProfileSetup({ user, profile }: OnboardingProfileSetup
                             onClick={() => coverInputRef.current?.click()}
                         >
                             {coverPreview ? (
-                                <img src={coverPreview} alt="Cover" className="w-full h-full object-cover opacity-80 group-hover:opacity-60 transition-opacity" />
+                                <Image src={coverPreview} alt="Cover" fill className="object-cover opacity-80 group-hover:opacity-60 transition-opacity" />
                             ) : (
                                 <div className="absolute inset-0 bg-white/[0.02]" />
                             )}

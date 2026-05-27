@@ -66,7 +66,7 @@ export function RapidScienceEditorModal({ isOpen, onClose }: RapidScienceEditorM
         try {
             // 1. Upload Image
             const fileName = `story-${Date.now()}-${Math.random().toString(36).substring(7)}`;
-            const { data: uploadData, error: uploadError } = await supabase.storage
+            const { error: uploadError } = await supabase.storage
                 .from('article-images') // Reusing existing bucket for now
                 .upload(`stories/${fileName}`, imageFile);
 
@@ -111,9 +111,9 @@ export function RapidScienceEditorModal({ isOpen, onClose }: RapidScienceEditorM
             // Force reload to see new story (simple way)
             window.location.reload();
 
-        } catch (error: any) {
+        } catch (error) {
             console.error(error);
-            toast.error("Hata: " + error.message);
+            toast.error("Hata oluştu.");
         } finally {
             setIsSubmitting(false);
         }

@@ -6,7 +6,7 @@ import { PhysicsSlider, PhysicsToggle } from "./core/ui";
 import { Play, Pause, RotateCcw, CheckCircle2 } from "lucide-react";
 import { m as motion, AnimatePresence } from "framer-motion";
 
-export function SpringMassSim({ simData }: { simData: any }) {
+export function SpringMassSim({ simData }: { simData: { title?: string; color?: string; [key: string]: unknown } }) {
     const accentColor = simData?.color || "#2563EB";
     // STATE
     const [springConstant, setSpringConstant] = useState(20);
@@ -15,7 +15,6 @@ export function SpringMassSim({ simData }: { simData: any }) {
     const [gravity, setGravity] = useState(9.81);
     const [showForces, setShowForces] = useState(true);
     const [isPlaying, setIsPlaying] = useState(false);
-    const [time, setTime] = useState(0);
     const unstretchedLength = 50;
     const [y, setY] = useState(() => (2 * 9.81) / 20 + 30);
     const [velocity, setVelocity] = useState(0);
@@ -27,7 +26,7 @@ export function SpringMassSim({ simData }: { simData: any }) {
     const kineticEnergy = 0.5 * mass * velocity * velocity;
     const springPotentialEnergy = 0.5 * springConstant * y * y;
 
-    const resetSim = () => { setIsPlaying(false); setTime(0); setY(equilibriumY + 30); setVelocity(0); if (animationRef.current) cancelAnimationFrame(animationRef.current); };
+    const resetSim = () => { setIsPlaying(false); setY(equilibriumY + 30); setVelocity(0); if (animationRef.current) cancelAnimationFrame(animationRef.current); };
 
     const updatePhysics = (dt: number) => {
         if (dt > 0.1) dt = 0.1;
@@ -41,7 +40,6 @@ export function SpringMassSim({ simData }: { simData: any }) {
             });
             return prevY;
         });
-        setTime(t => t + dt);
     };
 
     const loop = (timestamp: number) => {
@@ -55,6 +53,7 @@ export function SpringMassSim({ simData }: { simData: any }) {
     useEffect(() => {
         animationRef.current = requestAnimationFrame(loop);
         return () => { if (animationRef.current) cancelAnimationFrame(animationRef.current); };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isPlaying, springConstant, mass, damping, gravity]);
 
     const canvasWidth = 800;

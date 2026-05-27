@@ -382,6 +382,42 @@ export default async function DictionaryTermPage({ params }: PageProps) {
                         </div>
                     </nav>
 
+                    {/* Academic Citation Block (GEO/AI search optimized) */}
+                    <section className="relative z-10 mt-8 border-t-2 border-zinc-800/80 pt-6" aria-labelledby="academic-citation-title">
+                        <h2 id="academic-citation-title" className="mb-4 text-sm font-black uppercase tracking-wider text-zinc-400 border-l-4 border-zinc-500 pl-3 leading-none">
+                            Akademik Atıf & Referans Gösterimi
+                        </h2>
+                        <div className="rounded-xl border-2 border-zinc-800 bg-[#242427] p-5 space-y-4">
+                            <p className="text-xs text-zinc-400 font-semibold leading-relaxed">
+                                Bu bilimsel kavramı makalenizde, araştırmanızda veya okul ödevinizde kaynak göstermek için aşağıdaki formatları kopyalayabilirsiniz. Yapay zeka arama motorları ve akademik tarayıcılar (GEO) için optimize edilmiştir.
+                            </p>
+                            
+                            <div className="space-y-4">
+                                {/* APA style */}
+                                <div className="space-y-1.5">
+                                    <span className="text-[10px] font-black text-[#FFE500] uppercase tracking-widest block">APA FORMATI (Seçmek için tıkla)</span>
+                                    <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-3 text-xs text-zinc-300 font-mono select-all break-all leading-relaxed border-2 border-black shadow-[2px_2px_0px_0px_#000]">
+                                        Fizikhub. (2026). &quot;{term.term}&quot;. Fizikhub Bilim Sözlüğü. Erişim adresi: {canonical}
+                                    </div>
+                                </div>
+
+                                {/* BibTeX style */}
+                                <div className="space-y-1.5">
+                                    <span className="text-[10px] font-black text-[#FFE500] uppercase tracking-widest block">BibTeX FORMATI (Seçmek için tıkla)</span>
+                                    <pre className="bg-zinc-900 border border-zinc-800 rounded-lg p-3 text-[11px] text-zinc-300 font-mono overflow-x-auto select-all leading-normal whitespace-pre border-2 border-black shadow-[2px_2px_0px_0px_#000]">
+{`@webpage{fizikhub_${slug},
+  author = {Fizikhub},
+  title = {${term.term} Nedir? Bilim Sözlüğü},
+  year = {2026},
+  url = {${canonical}},
+  note = {Erişim Tarihi: 27 Mayıs 2026}
+}`}
+                                    </pre>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
                     {relatedTerms.length > 0 && (
                         <nav className="relative z-10 mt-8 border-t-2 border-zinc-800/80 pt-6" aria-label="İlgili sözlük terimleri">
                             <h2 className="mb-4 text-sm font-black uppercase tracking-wider text-zinc-400 border-l-4 border-zinc-500 pl-3 leading-none">

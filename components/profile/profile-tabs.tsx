@@ -3,15 +3,11 @@
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { MessageSquare, FileText, Bookmark, Bell, MessageCircle, Microscope, Activity } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
+import { MessageSquare, FileText, Bookmark, Bell, Microscope, Activity } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { QuestionCard } from "@/components/forum/question-card";
-import { formatDistanceToNow, format } from "date-fns";
 import { tr } from "date-fns/locale";
-import { NotificationsList } from "@/components/profile/notifications-list";
-import { ConversationList } from "@/components/messaging/conversation-list";
+import { formatDistanceToNow, format } from "date-fns";
 import { ProfileArticleCard } from "@/components/profile/profile-article-card";
 
 interface ProfileTabsProps {
@@ -21,8 +17,6 @@ interface ProfileTabsProps {
     conversations: any[];
     bookmarkedArticles: any[];
     bookmarkedQuestions: any[];
-    userId: string;
-    profile: any;
 }
 
 export function ProfileTabs({
@@ -31,9 +25,7 @@ export function ProfileTabs({
     answers,
     conversations,
     bookmarkedArticles,
-    bookmarkedQuestions,
-    userId,
-    profile
+    bookmarkedQuestions
 }: ProfileTabsProps) {
     return (
         <Tabs defaultValue="articles" className="mb-20">

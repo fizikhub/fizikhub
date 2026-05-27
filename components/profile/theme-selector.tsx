@@ -6,15 +6,12 @@ import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import { Moon, Leaf, FlaskConical, Pi, Star } from "lucide-react";
 
-interface ThemeSelectorProps {
-    username?: string;
-}
-
-export function ThemeSelector({ username }: ThemeSelectorProps) {
+export function ThemeSelector() {
     const { theme, setTheme } = useTheme();
     const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setMounted(true);
     }, []);
 
