@@ -6,3 +6,5 @@ export { ElectricFieldSim } from "./ElectricFieldSim";
 export { ParticleCollisionSim } from "./ParticleCollisionSim";
 export { OhmCircuitSim } from "./OhmCircuitSim";
 export { PhotoelectricSim } from "./PhotoelectricSim";
+export { default as SpaceXSim } from "./SpaceXSim";
+

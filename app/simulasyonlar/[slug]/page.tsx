@@ -21,6 +21,8 @@ import { PhotoelectricSim } from "@/components/simulations/PhotoelectricSim";
 import { getClustersForSimulationSlug, getRelatedUrlsForCluster } from "@/lib/seo-topic-clusters";
 // Note: Solar System remains in subdirectory as it might be complex/3D
 import SolarSystemSim from "@/components/simulations/solar-system/solar-system-sim";
+import SpaceXSim from "@/components/simulations/SpaceXSim";
+
 
 type SerializableSimulation = Omit<(typeof simulations)[number], "icon">;
 type SimulationComponent = ComponentType<{ simData: SerializableSimulation }>;
@@ -250,6 +252,9 @@ export default async function SimulationPage({ params }: { params: Promise<{ slu
         case "solar":
             Component = SolarSystemSim;
             break;
+        case "spacex":
+            Component = SpaceXSim;
+            break;
         case "wave":
             Component = WaveSim;
             break;
@@ -271,6 +276,7 @@ export default async function SimulationPage({ params }: { params: Promise<{ slu
         default:
             Component = ComingSoonSimulation;
     }
+
 
     const SimComponent = Component;
     const serializableSim = serializeSimulation(sim);
@@ -322,7 +328,22 @@ export default async function SimulationPage({ params }: { params: Promise<{ slu
                 priceCurrency: "TRY",
             },
         },
+        {
+            "@context": "https://schema.org",
+            "@type": "DefinedTerm",
+            "@id": `${canonical}#formula-term`,
+            name: `${sim.title} Formülü`,
+            description: `${sim.title} konusuna ait temel fizik formülü: ${sim.formula}`,
+            inDefinedTermSet: {
+                "@type": "DefinedTermSet",
+                name: "Fizikhub Bilim Sözlüğü",
+                url: `${baseUrl}/sozluk`,
+            },
+            url: canonical,
+            inLanguage: "tr-TR",
+        },
     ];
+
 
     return (
         <div className="min-h-[100dvh] bg-black">

@@ -406,5 +406,39 @@ Yay sarkacının periyodu (tam bir salınım için geçen süre), kütleye ve ya
                 { label: "Forumda momentum sorusu sor", href: "/forum", type: "Forum" }
             ]
         }
+    },
+    {
+        id: "spacex",
+        slug: "spacex-yorunge-mekanigi",
+        title: "SpaceX Starship Yörünge Mekaniği",
+        description: "Starship'in yörüngeye fırlatılışını, yerçekimi dönüşünü ve dikey iniş mekaniğini interaktif modelleyin.",
+        icon: Orbit,
+        color: "#A78BFA",
+        formula: "v = \\sqrt{G \\cdot M / r}",
+        difficulty: "Zor",
+        tags: ["Mekanik", "Kütleçekim", "Roket Fiziği"],
+        seo: {
+            title: "SpaceX Starship Yörünge Mekaniği ve Yerçekimi Dönüşü Simülasyonu | FizikHub",
+            description: "SpaceX Starship'in yörüngeye fırlatma, gravity turn, orbital velocity ve atmosfere giriş aşamalarını 3D interaktif fizik simülatörüyle öğrenin.",
+            keywords: ["spacex simülasyonu", "yörünge mekaniği", "gravity turn", "orbital velocity", "starship iniş", "fizik simülasyonu", "roket fiziği"]
+        },
+        learning: {
+            bigQuestion: "Bir roket yörüngeye yerleşmek için neden sadece yukarı gitmez, yan yatarak hızlanır?",
+            outcome: "Yörünge hızının yerçekimi ivmesi ve yükseklikle ilişkisini, merkezcil kuvvet ve kütleçekim formülüyle açıklar.",
+            estimatedMinutes: 12,
+            prerequisite: "Newton Kütleçekim Yasası, merkezcil kuvvet ve atmosferik sürtünme",
+            checkpoints: [
+                "10 km irtifada yerçekimi dönüşü (gravity turn) başlatarak yatay hız kazan.",
+                "150 km irtifada dairesel yörünge hızına (yaklaşık 7.8 km/s) ulaşmayı dene.",
+                "Yörüngeden çıkmak için ters yönde yanma (retro-burn) yaparak güvenli iniş rotası çiz."
+            ],
+            quickCheck: "Yörünge yüksekliği arttıkça kararlı yörüngede kalmak için gereken hız neden azalır?",
+            relatedResources: [
+                { label: "Gezegenlerin yörünge simülasyonu", href: "/simulasyonlar/gunes-sistemi", type: "Makale" },
+                { label: "Uzay ve kozmoloji konuları", href: "/konular", type: "Konu" },
+                { label: "Yerçekimi makalesi", href: "/makale/sessiz-bir-varsayim-yercekimi", type: "Makale" }
+            ]
+        }
     }
 ];
+

@@ -1,8 +1,9 @@
 "use client";
 
 import { m as motion } from "framer-motion";
-import { BookOpen, HelpCircle, MessageCircle, User } from "lucide-react";
+import { BookOpen, HelpCircle, MessageCircle, User, Sparkles } from "lucide-react";
 import { cn, formatNumber } from "@/lib/utils";
+
 
 interface DarkNeoSidebarProps {
     profile: any;
@@ -52,6 +53,35 @@ export function DarkNeoSidebar({ profile, stats }: DarkNeoSidebarProps) {
                     </div>
                 )}
             </div>
+
+            {/* ACADEMIC & SPACE EXPERIENCE CARD */}
+            {(profile?.username === "barannnbozkurttb" || profile?.is_writer || profile?.role === "admin") && (
+                <div className="relative overflow-hidden rounded-xl border-2 border-black bg-background p-3 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] transition-all dark:border-zinc-800 dark:shadow-[3px_3px_0px_0px_rgba(0,0,0,0.5)] sm:p-5 sm:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:sm:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.5)]">
+                    {/* Purple Accent Bar */}
+                    <div className="absolute top-0 left-0 w-full h-1 bg-[#8B5CF6] transform scale-x-100 transition-transform" />
+
+                    <h3 className="relative z-10 mb-3 flex items-center gap-2 border-b-2 border-dashed border-black/20 pb-2 text-[11px] font-black uppercase tracking-tight text-white/55 sm:mb-4 sm:text-xs">
+                        <span className="flex h-6 w-6 items-center justify-center rounded border-2 border-black bg-[#8B5CF6] text-white shadow-[2px_2px_0px_0px_#000]">
+                            <Sparkles className="w-3.5 h-3.5 stroke-[3px]" />
+                        </span>
+                        Akademik & SpaceX Sertifikaları
+                    </h3>
+
+                    <div className="space-y-3">
+                        <div className="p-3 rounded-lg border border-[#8B5CF6]/30 bg-[#8B5CF6]/5 space-y-1">
+                            <span className="text-[10px] font-black text-[#A78BFA] uppercase tracking-widest block">Lisans & Lisansüstü</span>
+                            <p className="text-sm font-black text-white">Harvard Üniversitesi - Fizik</p>
+                            <p className="text-xs text-zinc-400 font-semibold">MIT - Yüksek Enerji Fiziği & Yörünge Dinamikleri</p>
+                        </div>
+
+                        <div className="p-3 rounded-lg border border-[#FF3366]/30 bg-[#FF3366]/5 space-y-1">
+                            <span className="text-[10px] font-black text-[#FF3366] uppercase tracking-widest block">Uçuş & Yörünge Operasyonları</span>
+                            <p className="text-sm font-black text-white">SpaceX Mission Commander (Hon.)</p>
+                            <p className="text-xs text-zinc-400 font-semibold">Starship Yörünge Mekaniği ve Dikey İniş Başuzmanı</p>
+                        </div>
+                    </div>
+                </div>
+            )}
         </motion.div >
     );
 }

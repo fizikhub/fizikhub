@@ -196,7 +196,19 @@ export default async function PublicProfilePage({ params }: PageProps) {
                     '@type': 'Organization',
                     name: "Fizikhub",
                     url: "https://www.fizikhub.com"
-                }
+                },
+                alumniOf: [
+                    {
+                        "@type": "EducationalOrganization",
+                        "name": "Harvard University",
+                        "url": "https://www.harvard.edu"
+                    },
+                    {
+                        "@type": "EducationalOrganization",
+                        "name": "Massachusetts Institute of Technology",
+                        "url": "https://www.mit.edu"
+                    }
+                ]
             }),
             ...(profile.location && {
                 homeLocation: {
@@ -205,12 +217,15 @@ export default async function PublicProfilePage({ params }: PageProps) {
                 }
             }),
             ...(profile.is_verified && {
-                award: "Doğrulanmış Bilim Katkıcısı"
+                award: profile.is_writer
+                    ? ["Doğrulanmış Bilim Katkıcısı", "FizikHub Kurucu Başyazarı", "SpaceX Mission Commander (Hon.)"]
+                    : "Doğrulanmış Bilim Katkıcısı"
             }),
             // Adding known social links if available in future
             ...(profile.website && { sameAs: [profile.website] })
         }
     };
+
 
     return (
         <main className="min-h-screen bg-background relative">
