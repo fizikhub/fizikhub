@@ -25,7 +25,8 @@ type ForumQuestionRow = {
     votes?: number | null;
     tags?: string[] | null;
     profiles?: unknown;
-    answers?: Array<{ count?: number | null }> | null;
+    answers?: any[] | null;
+    all_answers?: Array<{ count?: number | null }> | null;
 };
 
 export async function generateMetadata({ searchParams }: ForumPageProps): Promise<Metadata> {
@@ -78,21 +79,40 @@ export default async function ForumPage({ searchParams }: ForumPageProps) {
 
     const category = typeof params.category === 'string' ? params.category : undefined;
     const sort = typeof params.sort === 'string' ? params.sort : 'newest';
+    const filter = typeof params.filter === 'string' ? params.filter : undefined;
     const searchQuery = typeof params.q === 'string' ? params.q : undefined;
     const requestedPage = typeof params.page === 'string' ? Number.parseInt(params.page, 10) : 1;
     const page = Number.isFinite(requestedPage) ? Math.max(requestedPage, 1) : 1;
     const limit = 18;
     const offset = (page - 1) * limit;
 
+    let selectString = `
+        id, title, content, created_at, category, votes, tags,
+        profiles(username, full_name, avatar_url, is_verified),
+        answers(count)
+    `;
+
+    if (filter === 'solved') {
+        selectString = `
+            id, title, content, created_at, category, votes, tags,
+            profiles(username, full_name, avatar_url, is_verified),
+            answers!inner(id, is_accepted),
+            all_answers:answers(count)
+        `;
+    } else if (filter === 'unanswered') {
+        selectString = `
+            id, title, content, created_at, category, votes, tags,
+            profiles(username, full_name, avatar_url, is_verified),
+            answers(id)
+        `;
+    }
+
     // Build query
     let query = supabase
         .from('questions')
-        .select(`
-            id, title, content, created_at, category, votes, tags,
-            profiles(username, full_name, avatar_url, is_verified),
-            answers(count)
-        `)
-        .eq('status', 'published');
+        .select(selectString) as any;
+
+    query = query.eq('status', 'published');
 
     // Apply filters
     if (category && category !== "Tümü") {
@@ -101,6 +121,12 @@ export default async function ForumPage({ searchParams }: ForumPageProps) {
 
     if (searchQuery) {
         query = query.ilike('title', buildSafeIlikePattern(searchQuery));
+    }
+
+    if (filter === 'solved') {
+        query = query.eq('answers.is_accepted', true);
+    } else if (filter === 'unanswered') {
+        query = query.is('answers', null);
     }
 
     // Apply sorting
@@ -148,7 +174,7 @@ export default async function ForumPage({ searchParams }: ForumPageProps) {
         url: canonicalUrl,
         mainEntity: {
             '@type': 'ItemList',
-            itemListElement: questions?.map((q, i) => ({
+            itemListElement: questions?.map((q: any, i: number) => ({
                 '@type': 'ListItem',
                 position: i + 1,
                 url: `${baseUrl}/forum/${q.id}`,
@@ -182,11 +208,31 @@ export default async function ForumPage({ searchParams }: ForumPageProps) {
             <div className="bg-background min-h-screen pb-20">
                 <div className="container py-4 md:py-8 px-4 md:px-8 max-w-[1600px] mx-auto">
                     {/* SEO-friendly heading — visible and descriptive */}
-                    <h1 className="sr-only">
-                        {category && category !== 'Tümü'
-                            ? `${category} Soruları — Fizikhub Bilim Forumu`
-                            : 'Fizikhub Bilim Forumu — Fizik Soruları ve Tartışmalar'}
-                    </h1>
+                    <div className="mb-6 md:mb-8 border-[3px] border-black dark:border-zinc-700 bg-white dark:bg-[#1e1e21] p-5 rounded-[10px] shadow-[4px_4px_0px_0px_#000] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] relative overflow-hidden">
+                        <div className="absolute top-0 left-0 w-full h-1.5 bg-[#EAB308]"></div>
+                        <h1 className="text-xl sm:text-3xl font-black uppercase tracking-tight text-black dark:text-zinc-50 flex items-center gap-3">
+                            <span className="bg-[#EAB308] border-2 border-black text-black px-2.5 py-0.5 rounded-full text-xs sm:text-sm font-black tracking-widest uppercase">
+                                {category && category !== 'Tümü' ? category : 'Genel'}
+                            </span>
+                            {category && category !== 'Tümü'
+                                ? `${category} Soruları ve Tartışmaları`
+                                : filter === 'solved'
+                                ? 'Fizikhub Çözülmüş Bilim Soruları'
+                                : filter === 'unanswered'
+                                ? 'Fizikhub Cevaplanmamış Bilim Soruları'
+                                : 'Fizikhub Bilim Forumu'}
+                        </h1>
+                        <p className="text-xs sm:text-sm font-medium text-muted-foreground mt-2 leading-relaxed">
+                            {category && category !== 'Tümü'
+                                ? `${category} alanı altındaki soru-cevap paylaşımları, topluluk çözümleri ve akademik tartışmalar.`
+                                : filter === 'solved'
+                                ? 'Topluluk tarafından doğrulanmış ve çözüme kavuşturulmuş fizik ve bilim soruları.'
+                                : filter === 'unanswered'
+                                ? 'Henüz yanıtlanmamış, katkınızı ve bilimsel açıklamalarınızı bekleyen fizik ve bilim soruları.'
+                                : 'Merak ettiğin fizik ve bilim sorularını sor, tartışmalara katıl ve topluluktan öğren. TYT, AYT, Kuantum, Astrofizik ve fazlası.'}
+                        </p>
+                    </div>
+
                     <ModernForumHeader />
 
                     <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-6 lg:gap-10">
@@ -200,22 +246,34 @@ export default async function ForumPage({ searchParams }: ForumPageProps) {
                                     <h3 className="text-lg font-black uppercase tracking-tight text-foreground mb-2">
                                         {searchQuery
                                             ? `"${searchQuery}" için sonuç bulunamadı`
+                                            : filter === 'solved'
+                                            ? "Henüz çözülmüş soru bulunmuyor"
+                                            : filter === 'unanswered'
+                                            ? "Tüm sorular cevaplanmış!"
                                             : "Henüz soru sorulmamış"}
                                     </h3>
                                     <p className="text-sm font-medium text-muted-foreground max-w-sm leading-relaxed">
                                         {searchQuery
                                             ? "Farklı anahtar kelimelerle aramayı deneyebilirsin."
+                                            : filter === 'solved'
+                                            ? "Diğer sorulara cevap vererek ilk çözümlü soruyu sen oluşturabilirsin!"
+                                            : filter === 'unanswered'
+                                            ? "Yeni bir soru sorarak tartışmayı başlatabilirsin."
                                             : "Bu kategori sessiz görünüyor. İlk soruyu sen sorarak tartışmayı başlatabilirsin!"}
                                     </p>
                                 </div>
                             ) : (
                                 <QuestionList
                                     initialQuestions={((questions || []) as ForumQuestionRow[]).map((q) => {
-                                        const { answers, ...questionForClient } = q;
+                                        const { answers, all_answers, ...questionForClient } = q;
+                                        const actualAnswers = all_answers ?? answers;
+                                        const answerCount = filter === 'unanswered'
+                                            ? 0
+                                            : (actualAnswers?.[0]?.count ?? actualAnswers?.length ?? 0);
                                         return {
                                             ...questionForClient,
                                             content: q.content ? q.content.slice(0, 350) : '',
-                                            answer_count: answers?.[0]?.count || 0
+                                            answer_count: answerCount
                                         };
                                     })}
                                     userVotes={userVotes}

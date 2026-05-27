@@ -240,7 +240,7 @@ export function ModernForumHeader() {
                             </filter>
                         </svg>
 
-                        <motion.h1
+                        <motion.div
                             className="text-4xl sm:text-6xl font-black tracking-tighter text-white/90 uppercase leading-none font-mono relative"
                             initial="hidden"
                             whileInView="visible"
@@ -342,7 +342,7 @@ export function ModernForumHeader() {
                                     }}
                                 />
                             </span>
-                        </motion.h1>
+                        </motion.div>
                     </div>
 
                     {/* Input Trigger (Chalk Panel Style) */}

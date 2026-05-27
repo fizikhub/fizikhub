@@ -28,6 +28,7 @@ import { ReadingProgress } from "@/components/forum/reading-progress";
 import { ShareDrawer } from "@/components/forum/share-drawer";
 import { BreadcrumbJsonLd } from "@/lib/breadcrumbs";
 import { getSiteUrl, isIndexableForumQuestion, stripMarkdownForMeta, truncateForMeta } from "@/lib/seo-utils";
+import { CitationBlock } from "@/components/forum/citation-block";
 
 import type { Metadata } from "next";
 
@@ -424,7 +425,7 @@ export default async function QuestionPage({ params }: PageProps) {
                         </div>
 
                         {/* QUESTION CARD - Neo-Brutalist */}
-                        <article itemScope itemType="https://schema.org/Question" className={cn(
+                        <article id="question" itemScope itemType="https://schema.org/Question" className={cn(
                             "relative overflow-hidden transition-all duration-200",
                             "bg-white dark:bg-[#1e1e21]",
                             "border-[2.5px] border-black dark:border-zinc-700 rounded-[10px]",
@@ -513,6 +514,12 @@ export default async function QuestionPage({ params }: PageProps) {
                                         })}
                                     </div>
                                 )}
+
+                                {/* Citation Block (GEO/E-E-A-T) */}
+                                <CitationBlock
+                                    title={question.title}
+                                    url={`${baseUrl}/forum/${question.id}`}
+                                />
                             </div>
 
                             {/* 4. Stats & Actions Combined */}
