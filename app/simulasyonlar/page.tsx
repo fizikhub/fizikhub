@@ -69,8 +69,13 @@ export default async function SimulasyonlarPage() {
                 mainEntity: { "@id": `${baseUrl}/simulasyonlar/#item-list` },
                 publisher: {
                     "@type": "Organization",
-                    "name": "Fizikhub",
-                    "url": baseUrl
+                    name: "Fizikhub",
+                    url: baseUrl,
+                    address: {
+                        "@type": "PostalAddress",
+                        addressCountry: "TR",
+                        addressLocality: "Istanbul"
+                    }
                 }
             },
             {

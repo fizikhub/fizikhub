@@ -32,6 +32,7 @@ interface ProfileUpdateData {
     username_changes_count?: number;
     cover_url?: string;
     wants_email_notifications?: boolean;
+    location?: string;
 }
 
 export async function getDeferredProfileFeed() {
@@ -178,6 +179,7 @@ export async function updateProfile(formData: {
     cover_offset_y?: number;
     onboarding_completed?: boolean;
     wants_email_notifications?: boolean;
+    location?: string;
 }) {
     const supabase = await createClient();
     const { data: { user }, error: authError } = await supabase.auth.getUser();
@@ -196,6 +198,7 @@ export async function updateProfile(formData: {
     if (formData.cover_offset_y !== undefined) updateData.cover_offset_y = formData.cover_offset_y;
     if (formData.onboarding_completed !== undefined) updateData.onboarding_completed = formData.onboarding_completed;
     if (formData.wants_email_notifications !== undefined) updateData.wants_email_notifications = formData.wants_email_notifications;
+    if (formData.location !== undefined) updateData.location = formData.location;
 
     const { error: updateError } = await supabase
         .from('profiles')
@@ -225,6 +228,7 @@ export async function saveProfileChanges(formData: FormData) {
     const wantsEmailNotifications = formData.get("wants_email_notifications") === "true";
     const avatarFile = formData.get("avatar") as File | null;
     const coverFile = formData.get("cover") as File | null;
+    const location = formData.get("location") as string;
 
     try {
         const updateData: ProfileUpdateData = {};
@@ -233,6 +237,7 @@ export async function saveProfileChanges(formData: FormData) {
         if (fullName !== null) updateData.full_name = fullName;
         if (bio !== null) updateData.bio = bio;
         if (website !== null) updateData.website = website;
+        if (location !== null) updateData.location = location;
         if (formData.has("wants_email_notifications")) updateData.wants_email_notifications = wantsEmailNotifications;
 
         // 2. Avatar Upload

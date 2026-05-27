@@ -253,6 +253,17 @@ export default async function Home() {
           '@type': 'ImageObject',
           url: `${baseUrl}/favicon.ico`
         },
+        contactPoint: {
+          '@type': 'ContactPoint',
+          contactType: 'customer support',
+          email: 'iletisim@fizikhub.com',
+          availableLanguage: ['Turkish', 'English']
+        },
+        address: {
+          '@type': 'PostalAddress',
+          addressCountry: 'TR',
+          addressLocality: 'Istanbul'
+        },
         sameAs: [
           'https://twitter.com/fizikhub',
           'https://github.com/fizikhub'

@@ -17,7 +17,7 @@ const getCachedProfile = cache(async (username: string) => {
     const cleanUsername = decodeURIComponent(username).trim();
     const { data: profile } = await supabase
         .from('profiles')
-        .select('id, username, full_name, avatar_url, cover_url, cover_offset_y, bio, website, created_at, updated_at, reputation, role, is_writer, is_verified')
+        .select('id, username, full_name, avatar_url, cover_url, cover_offset_y, bio, website, created_at, updated_at, reputation, role, is_writer, is_verified, location, level, xp_current, xp_next')
         .ilike('username', cleanUsername)
         .maybeSingle();
     return profile;
@@ -196,6 +196,12 @@ export default async function PublicProfilePage({ params }: PageProps) {
                     '@type': 'Organization',
                     name: "Fizikhub",
                     url: "https://www.fizikhub.com"
+                }
+            }),
+            ...(profile.location && {
+                homeLocation: {
+                    '@type': 'Place',
+                    name: profile.location
                 }
             }),
             ...(profile.is_verified && {
