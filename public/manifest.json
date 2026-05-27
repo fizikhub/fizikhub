@@ -1,7 +1,7 @@
 {
   "name": "FizikHub",
   "short_name": "FizikHub",
-  "description": "BİLİMİ Tİ'YE ALIYORUZ AMA CİDDİLİ ŞEKİLDE. Evrenin sırlarını çözmeye çalışanların buluşma noktası.",
+  "description": "BİLİMİ Tİ'YE ALIYORUZ AMA CİDDİ ŞEKİLDE. Evrenin sırlarını çözmeye çalışanların buluşma noktası.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",

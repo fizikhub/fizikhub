@@ -327,10 +327,10 @@ export function Footer() {
                     <div className="flex flex-wrap justify-center gap-x-6 gap-y-3">
                         {UTILITY_LINKS.map((link) => (
                             <Link
-                                                                key={link.label}
-                                                                href={link.href}
-                                                                className="inline-block py-2 px-1 text-[12px] font-black uppercase tracking-wider text-zinc-500 transition-colors hover:text-black dark:text-zinc-400 dark:hover:text-white"
-                                                            >
+                                key={link.label}
+                                href={link.href}
+                                className="inline-block py-2 px-1 text-[12px] font-black uppercase tracking-wider text-zinc-500 transition-colors hover:text-black dark:text-zinc-400 dark:hover:text-white"
+                            >
                                 {link.label}
                             </Link>
                         ))}

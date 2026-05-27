@@ -50,6 +50,7 @@ export default function SpaceXSim({ simData }: { simData: { title?: string; colo
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const lastTimeRef = useRef<number>(0);
     const trailPoints = useRef<{ x: number; y: number }[]>([]);
+    const loggedPhases = useRef({ climb: false, orbit: false });
 
     // Metrics
     const dist = Math.sqrt(rocket.x * rocket.x + rocket.y * rocket.y);
@@ -105,13 +106,18 @@ export default function SpaceXSim({ simData }: { simData: { title?: string; colo
 
     // Track active missions
     useEffect(() => {
-        setMissions(prev => prev.map(m => {
-            if (!m.isCompleted && m.condition(rocket, altitude, speed)) {
-                return { ...m, isCompleted: true };
-            }
-            return m;
-        }));
-    }, [rocket, altitude, speed]);
+        const metMission = missions.find(m => !m.isCompleted && m.condition(rocket, altitude, speed));
+        if (metMission) {
+            setTimeout(() => {
+                setMissions(prev => prev.map(m => {
+                    if (m.id === metMission.id) {
+                        return { ...m, isCompleted: true };
+                    }
+                    return m;
+                }));
+            }, 0);
+        }
+    }, [rocket, altitude, speed, missions]);
 
     // Handle game ticks
     const resetSim = () => {
@@ -119,6 +125,7 @@ export default function SpaceXSim({ simData }: { simData: { title?: string; colo
         setIsPlaying(false);
         setTimeScale(1);
         trailPoints.current = [];
+        loggedPhases.current = { climb: false, orbit: false };
         setTelemetryLogs([
             "SYSTEM RESET: Starship Flight Systems Restored.",
             "LAUNCH STANDBY: Awaiting Ignition Command..."
@@ -465,7 +472,7 @@ export default function SpaceXSim({ simData }: { simData: { title?: string; colo
         return () => {
             cancelAnimationFrame(frameId);
         };
-    }, [isPlaying, rocket, dist, timeScale, updatePhysics, accentColor]);
+    }, [isPlaying, rocket, dist, timeScale, updatePhysics, accentColor, heatingIntensity, speed]);
 
     // Handle resizing to fit dynamic layout correctly
     useEffect(() => {
@@ -485,11 +492,13 @@ export default function SpaceXSim({ simData }: { simData: { title?: string; colo
 
     // Telemetry Events Logger on state triggers
     useEffect(() => {
-        if (altitude > 0.05 && altitude < 1.0) {
+        if (altitude > 0.05 && altitude < 1.0 && !loggedPhases.current.climb) {
             logEvent("CLIMB PHASE: Clearing thick lower atmosphere.");
+            loggedPhases.current.climb = true;
         }
-        if (altitude >= ATMOSPHERE_HEIGHT && altitude < ATMOSPHERE_HEIGHT + 0.5) {
+        if (altitude >= ATMOSPHERE_HEIGHT && altitude < ATMOSPHERE_HEIGHT + 0.5 && !loggedPhases.current.orbit) {
             logEvent("ATMOSPHERE EDGE: Entering orbit environment.");
+            loggedPhases.current.orbit = true;
         }
     }, [altitude, logEvent]);
 
