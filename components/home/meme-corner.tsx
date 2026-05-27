@@ -13,8 +13,10 @@ export function MemeCorner() {
     const [load3D, setLoad3D] = useState(false);
 
     useEffect(() => {
-        // Skip only for users who prefer reduced motion
+        // Skip for users who prefer reduced motion or are on mobile devices (width < 768)
+        // to prevent WebGL/Three.js context load overhead and scrolling lag on mobile.
         if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+        if (window.innerWidth < 768) return;
 
         const enable3D = () => setLoad3D(true);
 
