@@ -14,10 +14,11 @@ interface PageProps {
 
 const getCachedProfile = cache(async (username: string) => {
     const supabase = createStaticClient();
+    const cleanUsername = decodeURIComponent(username).trim();
     const { data: profile } = await supabase
         .from('profiles')
         .select('id, username, full_name, avatar_url, cover_url, bio, website, location, created_at, updated_at, reputation, role, is_writer, is_verified, level, xp_current, xp_next')
-        .eq('username', username.toLowerCase())
+        .ilike('username', cleanUsername)
         .maybeSingle();
     return profile;
 });
@@ -188,6 +189,18 @@ export default async function PublicProfilePage({ params }: PageProps) {
                     userInteractionCount: stats.articlesCount + stats.answersCount + stats.questionsCount
                 }
             ],
+            // Adding E-E-A-T credibility details (GEO)
+            ...(profile.is_writer && {
+                jobTitle: "Fizik ve Bilim Yazarı",
+                affiliation: {
+                    '@type': 'Organization',
+                    name: "Fizikhub",
+                    url: "https://www.fizikhub.com"
+                }
+            }),
+            ...(profile.is_verified && {
+                award: "Doğrulanmış Bilim Katkıcısı"
+            }),
             // Adding known social links if available in future
             ...(profile.website && { sameAs: [profile.website] })
         }

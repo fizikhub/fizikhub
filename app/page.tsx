@@ -228,6 +228,50 @@ export default async function Home() {
         dateModified: latestArticleDate,
       },
       {
+        '@type': 'WebSite',
+        '@id': `${baseUrl}/#website`,
+        url: baseUrl,
+        name: 'Fizikhub',
+        description: 'Fizik, uzay, kuantum ve bilim içerikleri için Türkçe başvuru kaynağı.',
+        inLanguage: 'tr-TR',
+        publisher: { '@id': `${baseUrl}/#organization` },
+        potentialAction: {
+          '@type': 'SearchAction',
+          target: {
+            '@type': 'EntryPoint',
+            urlTemplate: `${baseUrl}/ara?q={search_term_string}`
+          },
+          'query-input': 'required name=search_term_string'
+        }
+      },
+      {
+        '@type': 'Organization',
+        '@id': `${baseUrl}/#organization`,
+        name: 'Fizikhub',
+        url: baseUrl,
+        logo: {
+          '@type': 'ImageObject',
+          url: `${baseUrl}/favicon.ico`
+        },
+        sameAs: [
+          'https://twitter.com/fizikhub',
+          'https://github.com/fizikhub'
+        ]
+      },
+      {
+        '@type': 'WebPage',
+        '@id': `${baseUrl}/#webpage`,
+        url: baseUrl,
+        name: 'Fizikhub Ana Sayfa',
+        isPartOf: { '@id': `${baseUrl}/#website` },
+        contributor: suggestedUsers.map((user) => ({
+          '@type': 'Person',
+          name: user.full_name || `@${user.username}`,
+          url: `${baseUrl}/kullanici/${user.username}`,
+          jobTitle: user.is_writer ? "Fizik ve Bilim Yazarı" : "Bilim Katkıcısı"
+        }))
+      },
+      {
         '@type': 'ItemList',
         '@id': `${baseUrl}/#latest-articles`,
         name: 'Öne çıkan Fizikhub makaleleri',
