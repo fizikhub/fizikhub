@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { CommentItem } from "./comment-item";
 import { createComment } from "@/app/makale/[slug]/actions";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 interface Comment {
     id: number;
@@ -26,16 +27,21 @@ interface CommentSectionProps {
     isLoggedIn: boolean;
     isAdmin: boolean;
     userAvatar?: string | null;
+    currentUsername?: string | null;
 }
 
-export function CommentSection({ articleId, comments, isLoggedIn, isAdmin, userAvatar }: CommentSectionProps) {
+export function CommentSection({ articleId, comments, isLoggedIn, isAdmin, userAvatar, currentUsername }: CommentSectionProps) {
     const [content, setContent] = useState("");
     const [replyingTo, setReplyingTo] = useState<number | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const router = useRouter();
 
     // Organize comments into parent-child structure
     const topLevelComments = comments.filter(c => !c.parent_comment_id);
-    const getReplies = (parentId: number) => comments.filter(c => c.parent_comment_id === parentId);
+    
+    // Find replying target user details
+    const replyingComment = replyingTo ? comments.find(c => c.id === replyingTo) : null;
+    const replyingUsername = replyingComment ? (replyingComment.profiles.full_name || replyingComment.profiles.username) : "";
 
     const handleSubmit = async () => {
         if (!content.trim()) {
@@ -50,6 +56,7 @@ export function CommentSection({ articleId, comments, isLoggedIn, isAdmin, userA
             toast.success(replyingTo ? "Yanıt eklendi!" : "Yorum eklendi!");
             setContent("");
             setReplyingTo(null);
+            router.refresh(); // Refresh page to show new comment immediately
         } else {
             toast.error(result.error || "Bir hata oluştu");
         }
@@ -60,7 +67,9 @@ export function CommentSection({ articleId, comments, isLoggedIn, isAdmin, userA
     const handleReply = (commentId: number) => {
         setReplyingTo(commentId);
         // Focus on textarea
-        document.getElementById('comment-textarea')?.focus();
+        setTimeout(() => {
+            document.getElementById('comment-textarea')?.focus();
+        }, 50);
     };
 
     return (
@@ -73,7 +82,7 @@ export function CommentSection({ articleId, comments, isLoggedIn, isAdmin, userA
                             <div className="flex items-center justify-between bg-yellow-400/10 border-2 border-yellow-500/30 p-3 rounded-lg text-sm text-foreground font-bold">
                                 <span className="flex items-center gap-2">
                                     <MessageSquare className="h-4 w-4 text-yellow-600" />
-                                    Bir yoruma yanıt veriyorsunuz
+                                    @{replyingUsername} kullanıcısına yanıt veriyorsunuz
                                 </span>
                                 <Button
                                     variant="ghost"
@@ -87,7 +96,7 @@ export function CommentSection({ articleId, comments, isLoggedIn, isAdmin, userA
                         )}
                         <Textarea
                             id="comment-textarea"
-                            placeholder={replyingTo ? "Yanıtınızı çok net bir şekilde ifade edin..." : "Düşüncelerinizi paylaşın..."}
+                            placeholder={replyingTo ? `@${replyingUsername} kullanıcısına yanıt yazın...` : "Düşüncelerinizi paylaşın..."}
                             value={content}
                             onChange={(e) => setContent(e.target.value)}
                             disabled={isSubmitting}
@@ -125,6 +134,7 @@ export function CommentSection({ articleId, comments, isLoggedIn, isAdmin, userA
                                 comment={comment}
                                 allComments={comments}
                                 isAdmin={isAdmin}
+                                currentUsername={currentUsername}
                                 onReply={handleReply}
                             />
                         </div>

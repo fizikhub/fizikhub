@@ -63,7 +63,8 @@ export function ArticleReader({
         isBookmarked: initialBookmarked,
         isLoggedIn: isLoggedIn,
         isAdmin: isAdmin,
-        userAvatar: userAvatar
+        userAvatar: userAvatar,
+        currentUsername: undefined as string | undefined
     });
 
     useEffect(() => {
@@ -80,7 +81,7 @@ export function ArticleReader({
                 const [likesRes, bookmarksRes, profileRes] = await Promise.all([
                     supabase.from('article_likes').select('id').eq('article_id', article.id).eq('user_id', user.id).maybeSingle(),
                     supabase.from('article_bookmarks').select('id').eq('article_id', article.id).eq('user_id', user.id).maybeSingle(),
-                    supabase.from('profiles').select('avatar_url').eq('id', user.id).maybeSingle()
+                    supabase.from('profiles').select('username, avatar_url').eq('id', user.id).maybeSingle()
                 ]);
 
                 setUserContext({
@@ -88,7 +89,8 @@ export function ArticleReader({
                     isBookmarked: !!bookmarksRes.data,
                     isLoggedIn: true,
                     isAdmin: isUserAdmin,
-                    userAvatar: profileRes.data?.avatar_url || baseAvatar
+                    userAvatar: profileRes.data?.avatar_url || baseAvatar,
+                    currentUsername: profileRes.data?.username || user.user_metadata?.username
                 });
             } catch (err) {
                 // Silently fail — user context is non-critical and defaults are already set
@@ -544,6 +546,7 @@ export function ArticleReader({
                                         isLoggedIn={userContext.isLoggedIn}
                                         isAdmin={userContext.isAdmin}
                                         userAvatar={userContext.userAvatar}
+                                        currentUsername={userContext.currentUsername}
                                     />
                                 </div>
                             </div>
