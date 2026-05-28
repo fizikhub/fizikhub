@@ -20,7 +20,7 @@ export async function generateMetadata({ searchParams }: PageProps): Promise<Met
     const query = typeof params.q === 'string' ? params.q : undefined;
     const hasLowValueParams = Boolean(query || page || (sort && sort !== 'latest'));
     const canonicalUrl = category
-        ? `https://www.fizikhub.com/makale?category=${encodeURIComponent(category)}`
+        ? `https://www.fizikhub.com/makale/kategori/${category.toLocaleLowerCase('tr-TR')}`
         : "https://www.fizikhub.com/makale";
     const title = category
         ? `${category} Makaleleri ve Bilimsel Yazılar`
@@ -204,7 +204,7 @@ export default async function MakalePage({ searchParams }: PageProps) {
     ]);
 
     const canonicalUrl = category
-        ? `https://www.fizikhub.com/makale?category=${encodeURIComponent(category)}`
+        ? `https://www.fizikhub.com/makale/kategori/${category.toLocaleLowerCase('tr-TR')}`
         : "https://www.fizikhub.com/makale";
 
     const jsonLd = {

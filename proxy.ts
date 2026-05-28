@@ -496,3 +496,7 @@ export const config = {
         '/((?!_next/static|_next/image|favicon.ico|sw.js|workbox-.*\\.js|manifest\\.json|.*\\.(?:svg|png|jpg|jpeg|gif|webp|avif|woff|woff2|ico)$).*)',
     ],
 }
+
+// Next.js 16 native proxy capability exports
+export { proxy as middleware };
+export default proxy;

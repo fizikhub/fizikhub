@@ -197,9 +197,25 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         priority: 0.78,
     }));
 
+    const NON_ARTICLE_CATEGORIES = ["Kitap İncelemesi", "Deney", "Terim"];
+    const uniqueCategories = Array.from(new Set(
+        (articlesResult.data || [])
+            .map((article) => article.category)
+            .filter(Boolean)
+            .filter((cat) => !NON_ARTICLE_CATEGORIES.includes(cat))
+    ));
+
+    const categoryPages: MetadataRoute.Sitemap = uniqueCategories.map((category) => ({
+        url: `${baseUrl}/makale/kategori/${category.toLocaleLowerCase('tr-TR')}`,
+        lastModified: STATIC_LAST_MODIFIED,
+        changeFrequency: 'weekly' as const,
+        priority: 0.8,
+    }));
+
     return [
         ...staticPages,
         ...topicPages,
+        ...categoryPages,
         ...questionPages,
         ...articlePages,
         ...termPages,
