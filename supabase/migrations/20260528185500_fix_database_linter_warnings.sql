@@ -4,16 +4,27 @@
 
 BEGIN;
 
--- 1. Create covering index for the foreign key on public.article_approvals (user_id)
--- Resolves: 0001_unindexed_foreign_keys
+-- 1. public.article_approvals: Create covering index for user_id foreign key constraint
 CREATE INDEX IF NOT EXISTS idx_article_approvals_user_id ON public.article_approvals (user_id);
 
--- 2. Drop redundant/duplicate composite indexes that are covered by high-performance idx_fh_ composite indexes
+-- 2. Recreate covering indexes for essential foreign keys to satisfy 0001_unindexed_foreign_keys.
+-- These must be kept even if they show up as "unused" in testing because they prevent full table scans
+-- on delete/update operations on parent tables (like auth.users or public.articles).
+CREATE INDEX IF NOT EXISTS idx_answer_likes_user_id ON public.answer_likes (user_id);
+CREATE INDEX IF NOT EXISTS idx_article_bookmarks_article_id ON public.article_bookmarks (article_id);
+CREATE INDEX IF NOT EXISTS idx_article_notes_user_id ON public.article_notes (user_id);
+CREATE INDEX IF NOT EXISTS idx_follows_following_id ON public.follows (following_id);
+CREATE INDEX IF NOT EXISTS idx_messages_reply_to_id ON public.messages (reply_to_id);
+CREATE INDEX IF NOT EXISTS idx_question_bookmarks_question_id ON public.question_bookmarks (question_id);
+CREATE INDEX IF NOT EXISTS idx_question_votes_user_id ON public.question_votes (user_id);
+CREATE INDEX IF NOT EXISTS idx_stories_author_id ON public.stories (author_id);
+CREATE INDEX IF NOT EXISTS idx_stories_group_id ON public.stories (group_id);
+CREATE INDEX IF NOT EXISTS idx_user_badges_badge_id ON public.user_badges (badge_id);
+CREATE INDEX IF NOT EXISTS idx_user_quiz_attempts_quiz_id ON public.user_quiz_attempts (quiz_id);
+CREATE INDEX IF NOT EXISTS idx_user_quiz_attempts_user_id ON public.user_quiz_attempts (user_id);
+
+-- 3. Drop redundant/duplicate composite indexes that are covered by high-performance idx_fh_ composite indexes
 -- Resolves: 0005_unused_index (reduces write overhead and frees disk space)
-DROP INDEX IF EXISTS public.idx_answer_likes_user_id;
-DROP INDEX IF EXISTS public.idx_article_bookmarks_article_id;
-DROP INDEX IF EXISTS public.idx_question_bookmarks_question_id;
-DROP INDEX IF EXISTS public.idx_question_votes_user_id;
 DROP INDEX IF EXISTS public.idx_article_likes_article_user;
 DROP INDEX IF EXISTS public.idx_answer_comment_likes_comment_user;
 DROP INDEX IF EXISTS public.idx_question_bookmarks_question_user;
@@ -25,14 +36,8 @@ DROP INDEX IF EXISTS public.idx_fh_question_bookmarks_question_user;
 DROP INDEX IF EXISTS public.idx_fh_answer_likes_answer_user;
 DROP INDEX IF EXISTS public.idx_fh_answer_comment_likes_comment_user;
 
--- 3. Drop unused single-column indexes on low-cardinality or rarely-filtered fields
-DROP INDEX IF EXISTS public.idx_follows_following_id;
-DROP INDEX IF EXISTS public.idx_messages_reply_to_id;
+-- 4. Drop unused single-column indexes on low-cardinality or rarely-filtered fields that are NOT foreign keys
 DROP INDEX IF EXISTS public.idx_quiz_questions_quiz_id;
-DROP INDEX IF EXISTS public.idx_stories_author_id;
-DROP INDEX IF EXISTS public.idx_stories_group_id;
-DROP INDEX IF EXISTS public.idx_user_badges_badge_id;
-DROP INDEX IF EXISTS public.idx_user_quiz_attempts_quiz_id;
 DROP INDEX IF EXISTS public.idx_article_notes_user;
 DROP INDEX IF EXISTS public.idx_user_quiz_attempts_user_cover;
 DROP INDEX IF EXISTS public.idx_profiles_writer;
@@ -42,7 +47,7 @@ DROP INDEX IF EXISTS public.idx_questions_votes_desc;
 DROP INDEX IF EXISTS public.idx_answer_comments_answer_created_at;
 DROP INDEX IF EXISTS public.idx_conversations_last_message_at;
 
--- 4. Drop redundant or unused trigram (trgm) and text search GIN indexes
+-- 5. Drop redundant or unused trigram (trgm) and text search GIN indexes
 DROP INDEX IF EXISTS public.idx_articles_title_trgm;
 DROP INDEX IF EXISTS public.trgm_idx_articles_title;
 DROP INDEX IF EXISTS public.idx_articles_category_trgm;
@@ -72,7 +77,7 @@ DROP INDEX IF EXISTS public.idx_fh_profiles_writer_reputation;
 DROP INDEX IF EXISTS public.web_vitals_events_name_created_at_idx;
 DROP INDEX IF EXISTS public.web_vitals_events_pathname_created_at_idx;
 
--- 5. Refresh query planner statistics on modified tables
+-- 6. Refresh query planner statistics on modified tables
 ANALYZE public.article_approvals;
 ANALYZE public.articles;
 ANALYZE public.questions;
