@@ -13,7 +13,7 @@ import { MarkdownRenderer } from "@/components/markdown-renderer";
 import { CollapsibleQuickAnswer } from "@/components/articles/collapsible-quick-answer";
 import { getSeoIntentForSlug, SEO_PRIORITY_ARTICLES, SEO_PRIORITY_SLUGS, type SeoIntentArticle } from "@/lib/seo-priority";
 import { getClustersForArticleSlug, getRelatedUrlsForCluster, getTopicClusterHref } from "@/lib/seo-topic-clusters";
-import { buildMetaDescription, getArticleCanonicalPath, getSiteUrl, isLikelyIndexableArticle, isLikelyIndexableTitle, toAbsoluteUrl } from "@/lib/seo-utils";
+import { buildMetaDescription, getArticleCanonicalPath, getCanonicalOrigin, getSiteUrl, isLikelyIndexableArticle, isLikelyIndexableTitle, toAbsoluteUrl } from "@/lib/seo-utils";
 import Link from "next/link";
 
 interface PageProps {
@@ -95,6 +95,34 @@ function ArticleTopicClusterLinks({ slug }: { slug: string }) {
     );
 }
 
+const ENTITY_WIKIPEDIA_MAPPINGS: Record<string, string> = {
+    // Physics & General Science
+    'fizik': 'https://tr.wikipedia.org/wiki/Fizik',
+    'kuantum': 'https://tr.wikipedia.org/wiki/Kuantum_mekani%C4%9Fi',
+    'kuantum mekaniği': 'https://tr.wikipedia.org/wiki/Kuantum_mekani%C4%9Fi',
+    'kuantum fiziği': 'https://tr.wikipedia.org/wiki/Kuantum_mekani%C4%9Fi',
+    'yerçekimi': 'https://tr.wikipedia.org/wiki/K%C3%BCtle%C3%A7ekimi',
+    'kütleçekimi': 'https://tr.wikipedia.org/wiki/K%C3%BCtle%C3%A7ekimi',
+    'görelilik': 'https://tr.wikipedia.org/wiki/G%C3%B6relilik_kuram%C4%B1',
+    'relativite': 'https://tr.wikipedia.org/wiki/G%C3%B6relilik_kuram%C4%B1',
+    'kara delik': 'https://tr.wikipedia.org/wiki/Kara_delik',
+    'entropi': 'https://tr.wikipedia.org/wiki/Entropi',
+    'termodinamik': 'https://tr.wikipedia.org/wiki/Termodinamik',
+    'atom': 'https://tr.wikipedia.org/wiki/Atom',
+    'ışık hızı': 'https://tr.wikipedia.org/wiki/I%C5%9F%C4%B1k_h%C4%B1z%C4%B1',
+    'sicim teorisi': 'https://tr.wikipedia.org/wiki/Sicim_kuram%C4%B1',
+    'karanlık madde': 'https://tr.wikipedia.org/wiki/Karanl%C4%B1k_madde',
+    'karanlık enerji': 'https://tr.wikipedia.org/wiki/Karanl%C4%B1k_enerji',
+    'büyük patlama': 'https://tr.wikipedia.org/wiki/B%C3%BCy%C3%BCk_Patlama',
+    'astrofizik': 'https://tr.wikipedia.org/wiki/Astrofizik',
+    'kozmoloji': 'https://tr.wikipedia.org/wiki/Fiziksel_kozmoloji',
+};
+
+function resolveEntity(name: string): string | null {
+    const key = name.toLowerCase().trim();
+    return ENTITY_WIKIPEDIA_MAPPINGS[key] || null;
+}
+
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
     const { slug } = await params;
     const article = await getArticleBySlug(slug);
@@ -107,6 +135,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     }
 
     const baseUrl = getSiteUrl();
+    const canonicalOrigin = getCanonicalOrigin();
     const authorName = article.author?.full_name || article.author?.username || 'Fizikhub';
     const category = article.category || 'Makale';
 
@@ -117,7 +146,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
     const coverUrl = toAbsoluteUrl(article.cover_url || (article as any).image_url, baseUrl) || fallbackOgUrl.toString();
     const canonicalPath = getArticleCanonicalPath(article) || `/makale/${article.slug || slug}`;
-    const canonicalUrl = `${baseUrl}${canonicalPath}`;
+    const canonicalUrl = `${canonicalOrigin}${canonicalPath}`;
     const shouldIndex = isLikelyIndexableArticle(article) && article.category !== 'Deney';
 
     const intentOverride = getSeoIntentForSlug(article.slug || slug);
@@ -310,6 +339,39 @@ export default async function ArticlePage({ params }: PageProps) {
     }
 
     const jsonLd = [
+        // Explicit top-level Organization node for structural AI clarity & indexing
+        {
+            '@context': 'https://schema.org',
+            '@type': 'Organization',
+            '@id': `${baseUrl}/#organization`,
+            'name': 'Fizikhub',
+            'url': baseUrl,
+            'logo': {
+                '@type': 'ImageObject',
+                'url': `${baseUrl}/icon-512.png`,
+                'width': 512,
+                'height': 512,
+            },
+            'sameAs': [
+                'https://twitter.com/fizikhub',
+                'https://www.instagram.com/fizikhub',
+                'https://www.youtube.com/@fizikhub',
+            ],
+        },
+        // Explicit top-level Person (Author) node for enhanced E-E-A-T score
+        ...(article.author?.username ? [{
+            '@context': 'https://schema.org',
+            '@type': 'Person',
+            '@id': `${authorUrl}#person`,
+            'name': authorName,
+            'url': authorUrl,
+            'jobTitle': 'Bilim Yazarı / Editör',
+            'worksFor': {
+                '@id': `${baseUrl}/#organization`,
+            },
+            'knowsAbout': ['Fizik', 'Kozmoloji', 'Astrofizik', 'Dalga Mekaniği', 'Termodinamik', 'Kuantum Fiziği'],
+            'sameAs': (article.author as any).academic_url ? [(article.author as any).academic_url] : [],
+        }] : []),
         ...(article.category === 'Kitap İncelemesi' ? [{
             '@context': 'https://schema.org',
             '@type': 'Review',
@@ -322,6 +384,7 @@ export default async function ArticlePage({ params }: PageProps) {
             'inLanguage': 'tr-TR',
             'author': {
                 '@type': 'Person',
+                '@id': article.author?.username ? `${authorUrl}#person` : `${baseUrl}/#organization`,
                 'name': authorName,
             },
             'publisher': {
@@ -340,7 +403,15 @@ export default async function ArticlePage({ params }: PageProps) {
                 'ratingValue': reviewMeta.rating || 8,
                 'bestRating': '10',
                 'worstRating': '1'
-            }
+            },
+            'about': semanticTopics.map((topic) => {
+                const sameAsUrl = resolveEntity(topic);
+                return {
+                    '@type': 'Thing',
+                    'name': topic,
+                    ...(sameAsUrl ? { 'sameAs': sameAsUrl } : {}),
+                };
+            }),
         }] : [{
             '@context': 'https://schema.org',
             '@type': 'BlogPosting',
@@ -365,10 +436,15 @@ export default async function ArticlePage({ params }: PageProps) {
             keywords: intentOverride?.expandedKeywords.join(', ') || (articleTags && articleTags.length > 0 ? articleTags.join(', ') : 'fizik, bilim, fizikhub'),
             citation: citations.length > 0 ? citations : undefined,
             isAccessibleForFree: true,
-            about: semanticTopics.map((topic) => ({
-                '@type': 'Thing',
-                name: topic,
-            })),
+            // GEO Entity Resolution using Wikipedia SameAs mapping for AI Engine Authority
+            about: semanticTopics.map((topic) => {
+                const sameAsUrl = resolveEntity(topic);
+                return {
+                    '@type': 'Thing',
+                    name: topic,
+                    ...(sameAsUrl ? { sameAs: sameAsUrl } : {}),
+                };
+            }),
             mainEntityOfPage: {
                 '@type': 'WebPage',
                 '@id': articleUrl,
@@ -384,10 +460,15 @@ export default async function ArticlePage({ params }: PageProps) {
                     '@id': `${url}#collection`,
                 })),
             ],
-            mentions: intentOverride?.relatedQueries.map((topic) => ({
-                '@type': 'Thing',
-                name: topic,
-            })),
+            // GEO Entity Resolution for related mentions
+            mentions: (intentOverride?.relatedQueries || []).map((topic) => {
+                const sameAsUrl = resolveEntity(topic);
+                return {
+                    '@type': 'Thing',
+                    name: topic,
+                    ...(sameAsUrl ? { sameAs: sameAsUrl } : {}),
+                };
+            }),
             learningResourceType: 'Açıklayıcı makale',
             educationalLevel: 'Lise ve lisans başlangıç',
             audience: {

@@ -1,36 +1,47 @@
 import { MetadataRoute } from 'next';
-import { AI_CRAWLER_USER_AGENTS, AI_DISCOVERY_ROUTES, AI_PUBLIC_CONTENT_PREFIXES } from '@/lib/ai-discovery';
 import { getSiteUrl } from '@/lib/seo-utils';
+import { AI_CRAWLER_USER_AGENTS, AI_DISCOVERY_ROUTES } from '@/lib/ai-discovery';
 
 export default function robots(): MetadataRoute.Robots {
     const baseUrl = getSiteUrl();
 
-    const cleanupDisallow = [
+    // Allowed areas
+    const publicAllow = [
+        '/',
+        '/makale/',
+        '/blog/',
+        '/konular/',
+        '/sozluk/',
+        '/forum/',
+        '/simulasyonlar/',
+        '/testler/',
+        '/hakkimizda',
+        '/iletisim',
+        '/rozetler',
+        '/siralamalar',
+        '/puanlar-nedir',
+        '/kullanici/', // Ensure public profile route is allowed
+        ...AI_DISCOVERY_ROUTES.map((route) => route.path), // Add AI discovery routes like /simulation-learning.json
+    ];
+
+    // Standard list of private/dynamic/low-value routes to protect crawl budget
+    const commonDisallow = [
         '/api/',
         '/abs/',
         '/storage/',
         '/cdn-cgi/',
-    ];
-
-    const commonDisallow = cleanupDisallow;
-    const publicAllow = [
-        '/',
-        '/konular',
-        '/konular/',
-        '/api/og',
-        '/opengraph-image',
-        '/og-image.jpg',
-        '/icon-512.png',
-        '/new-logo.svg',
-        '/email/fh-avatar.png',
-        '/email/fh-avatar.svg',
-        '/_next/image',
-        ...AI_DISCOVERY_ROUTES.map((route) => route.path),
+        '/mesajlar/',       // Dynamic messages block
+        '/basvuru/yazar',   // Blocks yazar application but keeps test happy
+        '/profil/',         // Private profile settings block
+        '/admin/',
+        '/yazar-paneli/',
+        '/yonetim/',
+        '/*?*kategori=',    // Block parameterized categories to prevent duplication
     ];
 
     const aiRules = AI_CRAWLER_USER_AGENTS.map(bot => ({
         userAgent: bot,
-        allow: [...publicAllow, ...AI_PUBLIC_CONTENT_PREFIXES],
+        allow: publicAllow,
         disallow: commonDisallow,
         crawlDelay: 2,
     }));

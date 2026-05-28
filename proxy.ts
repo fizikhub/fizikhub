@@ -232,6 +232,12 @@ export function isLowValueSeoQuery(pathname: string, searchParams: URLSearchPara
     return false;
 }
 
+function decodeCategorySlug(slug: string): string {
+    const decoded = decodeURIComponent(slug);
+    if (!decoded) return '';
+    return decoded.charAt(0).toLocaleUpperCase('tr-TR') + decoded.slice(1);
+}
+
 export function shouldBypassSession(pathname: string, userAgent: string) {
     if (SEO_METADATA_PATHS.has(pathname)) return true;
     if (pathname.startsWith('/api/og')) return true;
@@ -250,6 +256,45 @@ export async function proxy(request: NextRequest) {
     // 301 Redirect for /index to /
     if (pathname === '/index') {
         return NextResponse.redirect(`${CANONICAL_ORIGIN}/`, 301);
+    }
+
+    // Clean Category URLs redirects and internal rewrites for GEO/SEO
+    if (pathname.startsWith('/blog/kategori/')) {
+        const categorySlug = pathname.replace(/^\/blog\/kategori\//, '');
+        const url = canonicalRedirectUrl(request);
+        url.pathname = `/makale/kategori/${categorySlug}`;
+        return NextResponse.redirect(url, 301);
+    }
+
+    if (pathname.startsWith('/makale/kategori/')) {
+        const categorySlug = pathname.replace(/^\/makale\/kategori\//, '');
+        const categoryName = decodeCategorySlug(categorySlug);
+        
+        const url = request.nextUrl.clone();
+        url.pathname = '/makale';
+        url.searchParams.set('category', categoryName);
+        
+        return NextResponse.rewrite(url);
+    }
+
+    // Redirect legacy parameterized URLs to clean category URLs
+    if (pathname === '/blog' || pathname === '/makale') {
+        const kategori = request.nextUrl.searchParams.get('kategori') || request.nextUrl.searchParams.get('category');
+        if (kategori) {
+            const url = canonicalRedirectUrl(request);
+            url.pathname = `/makale/kategori/${kategori.toLowerCase()}`;
+            url.searchParams.delete('kategori');
+            url.searchParams.delete('category');
+            
+            // Preserve other query parameters if they exist
+            request.nextUrl.searchParams.forEach((value, key) => {
+                if (key !== 'kategori' && key !== 'category') {
+                    url.searchParams.set(key, value);
+                }
+            });
+            
+            return NextResponse.redirect(url, 301);
+        }
     }
 
     // Legacy blog URLs were replaced by /makale. Normalize them in one hop so

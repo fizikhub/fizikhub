@@ -191,6 +191,9 @@ export function isIndexableProfile(profile: {
 }
 
 export function isPrivateSeoPath(pathname: string) {
+    if (pathname === "/yazar/rehber" || pathname.startsWith("/yazar/rehber/")) {
+        return false; // Author guide is a public resources page
+    }
     return PRIVATE_SEO_PATH_PREFIXES.some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`));
 }
 

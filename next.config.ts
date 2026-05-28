@@ -178,7 +178,53 @@ const nextConfig: NextConfig = {
   // SEO/canonical redirects live in proxy.ts so query cleanup can happen in a
   // single hop without Next.js preserving legacy query parameters.
   async redirects() {
-    return [];
+    return [
+      {
+        source: '/index',
+        destination: '/',
+        permanent: true,
+      },
+      {
+        source: '/blog',
+        destination: '/makale',
+        permanent: true,
+      },
+      {
+        source: '/blog/:slug*',
+        destination: '/makale/:slug*',
+        permanent: true,
+      },
+      {
+        source: '/kesfet',
+        destination: '/makale',
+        permanent: true,
+      },
+      {
+        source: '/test-mkn0gnnsixw',
+        destination: '/makale/test-mkn0gnnsixw',
+        permanent: true,
+      },
+      {
+        source: '/serway-1-kitap-i-ncelemesi-mkkynylwexp',
+        destination: '/makale/serway-1-kitap-i-ncelemesi-mkkynylwexp',
+        permanent: true,
+      },
+      {
+        source: '/azteklerden-gunumuze-tutun-tarihcesi-kimyasi-ve-etkileri-1769018062247',
+        destination: '/makale/azteklerden-gunumuze-tutun-tarihcesi-kimyasi-ve-etkileri-1769018062247',
+        permanent: true,
+      },
+      {
+        source: '/matematik-ile-her-seyi-kusursuzca-kanitlayabilir-miyiz-1768299779741',
+        destination: '/makale/matematik-ile-her-seyi-kusursuzca-kanitlayabilir-miyiz-1768299779741',
+        permanent: true,
+      },
+      {
+        source: '/solar-system/our-solar-system/in-depth',
+        destination: '/simulasyonlar/gunes-sistemi',
+        permanent: true,
+      },
+    ];
   },
 
   // Security & Caching Headers
