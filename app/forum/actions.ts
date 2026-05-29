@@ -537,18 +537,43 @@ export async function deleteQuestion(questionId: number) {
         return { success: false, error: "Bu işlemi yapmaya yetkiniz yok." };
     }
 
-    const { error } = await supabase
-        .from('questions')
-        .delete()
-        .eq('id', questionId);
+    const adminSupabase = createAdminClient();
 
-    if (error) {
-        console.error("Delete Question Error:", error);
-        return { success: false, error: "Soru silinirken hata oluştu." };
+    try {
+        // Delete all associated resources to bypass foreign key constraints
+        const { data: answers } = await adminSupabase
+            .from('answers')
+            .select('id')
+            .eq('question_id', questionId);
+
+        if (answers && answers.length > 0) {
+            const answerIds = answers.map(a => a.id);
+            await adminSupabase.from('answer_comments').delete().in('answer_id', answerIds);
+            await adminSupabase.from('answer_likes').delete().in('answer_id', answerIds);
+            await adminSupabase.from('answers').delete().in('id', answerIds);
+        }
+
+        await adminSupabase.from('question_votes').delete().eq('question_id', questionId);
+        await adminSupabase.from('question_bookmarks').delete().eq('question_id', questionId);
+        await adminSupabase.from('question_views').delete().eq('question_id', questionId);
+        await adminSupabase.from('notifications').delete().eq('resource_id', questionId.toString()).eq('resource_type', 'question');
+
+        const { error } = await adminSupabase
+            .from('questions')
+            .delete()
+            .eq('id', questionId);
+
+        if (error) {
+            console.error("Delete Question Error:", error);
+            return { success: false, error: "Soru silinirken hata oluştu." };
+        }
+
+        revalidatePath('/forum');
+        return { success: true };
+    } catch (err: any) {
+        console.error("Delete Question Exception:", err);
+        return { success: false, error: err.message || "Soru silinirken bir hata oluştu." };
     }
-
-    revalidatePath('/forum');
-    return { success: true };
 }
 
 export async function toggleAnswerAcceptance(answerId: number, questionId: number) {
