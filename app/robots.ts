@@ -80,6 +80,7 @@ export default function robots(): MetadataRoute.Robots {
         sitemap: [
             `${baseUrl}/sitemap-index.xml`,
             `${baseUrl}/sitemap.xml`,
+            `${baseUrl}/news-sitemap.xml`,
             `${baseUrl}/topic-sitemap.xml`,
             `${baseUrl}/ai-sitemap.xml`,
             `${baseUrl}/author-sitemap.xml`,

@@ -175,6 +175,15 @@ export function MarkdownRenderer({
                     rehypeHighlight,
                 ]}
                 components={{
+                    blockquote: ({ node, children, ...props }: any) => (
+                        <blockquote 
+                            data-geo="quotation" 
+                            className="border-l-4 border-zinc-800 dark:border-zinc-200 bg-zinc-100 dark:bg-zinc-900/50 p-4 rounded-r-lg my-6 font-medium italic text-zinc-800 dark:text-zinc-200 shadow-sm" 
+                            {...props}
+                        >
+                            {children}
+                        </blockquote>
+                    ),
                     h1: ({ node, ...props }) => {
                         if (demoteH1) {
                             return <h2 {...props} />;
