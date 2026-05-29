@@ -10,6 +10,7 @@ import { BookReviewDetail } from "@/components/book-review/book-review-detail";
 import { TermDetail } from "@/components/term/term-detail";
 import { ArticleErrorBoundary } from "@/components/blog/article-error-boundary";
 import { MarkdownRenderer } from "@/components/markdown-renderer";
+import { ServerMarkdownRenderer } from "@/components/server-markdown-renderer";
 import { CollapsibleQuickAnswer } from "@/components/articles/collapsible-quick-answer";
 import { getSeoIntentForSlug, SEO_PRIORITY_ARTICLES, SEO_PRIORITY_SLUGS, type SeoIntentArticle } from "@/lib/seo-priority";
 import { getClustersForArticleSlug, getRelatedUrlsForCluster, getTopicClusterHref } from "@/lib/seo-topic-clusters";
@@ -632,7 +633,19 @@ export default async function ArticlePage({ params }: PageProps) {
             <ReadingProgress />
 
             <div className="min-h-screen overflow-x-hidden bg-background pb-20">
-                {article.category === 'Kitap İncelemesi' ? (
+            {/* 
+              SEO: Server-rendered article content for search engine crawlers.
+              This is the full article text rendered as static HTML on the server,
+              ensuring Google can read it without executing JavaScript.
+              Hidden from visual users via sr-only but fully crawlable.
+            */}
+            <article className="sr-only" aria-hidden="true" data-seo-content="true">
+                <h1>{article.title}</h1>
+                {article.excerpt && <p>{article.excerpt}</p>}
+                <ServerMarkdownRenderer content={article.content || ""} />
+            </article>
+
+            {article.category === 'Kitap İncelemesi' ? (
                     <ArticleErrorBoundary fallback={
                         <div className="container max-w-4xl mx-auto px-4 py-10">
                             <h1 className="text-3xl font-black mb-4">{article.title}</h1>
