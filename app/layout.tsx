@@ -312,7 +312,7 @@ export default async function RootLayout({
           href="/opensearch.xml"
         />
       </head>
-      <body suppressHydrationWarning className={`${inter.variable} ${lora.variable} font-sans min-h-[100dvh] flex flex-col pb-16 md:pb-0 bg-background text-foreground`}>
+      <body suppressHydrationWarning className={`${inter.variable} ${lora.variable} font-sans min-h-[100dvh] flex flex-col pb-[calc(72px+env(safe-area-inset-bottom))] md:pb-0 bg-background text-foreground`}>
         {/* GLOBAL PROGRESS BAR (Neo-Brutalist) */}
         <NextTopLoader 
           color="#00F5D4"

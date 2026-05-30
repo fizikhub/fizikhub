@@ -74,18 +74,18 @@ export function Navbar() {
                 - Height: h-14 (56px) - Optimized for Mobile
                 - Style: Dark Glass Neo-Brutalist
             */}
-            <header className="fixed top-0 left-0 right-0 z-50 h-[53px] sm:h-16 md:hidden" role="banner">
+            <header className="fixed top-0 left-0 right-0 z-50 h-[58px] sm:h-16 md:hidden" role="banner">
                 <div
                     className={cn(
                         "h-full",
-                        "flex items-center justify-between px-4 sm:px-6",
-                        "bg-[#09090b]/80 backdrop-blur-xl border-b border-white/10",
-                        "shadow-lg",
+                        "flex items-center justify-between gap-2 px-3 sm:px-6",
+                        "bg-[#09090b]/88 backdrop-blur-md border-b border-white/10",
+                        "shadow-[0_8px_24px_rgba(0,0,0,0.28)]",
                         "w-full relative"
                     )}
                 >
                     {/* PHYSICS RAIN BACKGROUND (FLOWING UP) - REDUCED OPACITY & CLIPPED */}
-                    <div className="absolute inset-0 overflow-hidden pointer-events-none select-none opacity-30 rounded-b-xl">
+                    <div className="absolute inset-0 overflow-hidden pointer-events-none select-none opacity-25">
                         {raindrops.map((drop, i) => (
                             <div
                                 key={i}
@@ -114,14 +114,14 @@ export function Navbar() {
                     />
 
                     {/* LEFT: BRAND */}
-                    <div className="relative z-50 flex-shrink-0 pt-0.5 hover:scale-105 transition-transform duration-300">
+                    <div className="relative z-50 min-w-0 flex-shrink pt-0.5 hover:scale-[1.02] transition-transform duration-300">
                         <ViewTransitionLink href="/" aria-label="Ana Sayfa">
                             <DankLogo />
                         </ViewTransitionLink>
                     </div>
 
                     {/* RIGHT: COMPACT CONTROLS */}
-                    <div className="relative z-50 flex items-center gap-2">
+                    <div className="relative z-50 flex flex-shrink-0 items-center gap-1.5 sm:gap-2.5">
 
                         {/* Desktop Links (Will be hidden anyway since parent is md:hidden, but kept for structural purity) */}
                         <nav className="hidden md:flex items-center gap-2 mr-6" aria-label="Ana navigasyon">
@@ -146,9 +146,9 @@ export function Navbar() {
                             id="desktop-search-trigger"
                             onClick={() => setIsSearchOpen(true)}
                             aria-label="Ara"
-                            className="no-min-size flex items-center justify-center w-8 h-8 box-border bg-white border-2 border-black rounded-lg shadow-[2px_2px_0px_0px_#000] cursor-pointer hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_0px_#000] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all p-0"
+                            className="no-min-size flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 box-border bg-white border-2 border-black rounded-[8px] shadow-[2px_2px_0px_0px_#000] cursor-pointer hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_0px_#000] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all p-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#EAB308]"
                         >
-                            <Search className="w-4 h-4 text-black stroke-[3px]" />
+                            <Search className="w-[18px] h-[18px] sm:w-5 sm:h-5 text-black stroke-[3px]" />
                         </button>
 
                         {/* 2. ZAP - OPTIMIZED (32px) */}
@@ -156,9 +156,9 @@ export function Navbar() {
                             id="desktop-zap-trigger"
                             onClick={() => setIsFactOpen(true)}
                             aria-label="Günün Hap Bilgisi"
-                            className="no-min-size flex items-center justify-center w-8 h-8 box-border bg-[#EAB308] border-2 border-black rounded-lg shadow-[2px_2px_0px_0px_#000] cursor-pointer hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_0px_#000] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all mr-1 p-0"
+                            className="no-min-size flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 box-border bg-[#EAB308] border-2 border-black rounded-[8px] shadow-[2px_2px_0px_0px_#000] cursor-pointer hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_0px_#000] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all p-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
                         >
-                            <Zap className="w-4 h-4 text-black fill-black stroke-[3px]" />
+                            <Zap className="w-[18px] h-[18px] sm:w-5 sm:h-5 text-black fill-black stroke-[3px]" />
                         </button>
 
                         {/* 3. MOBILE MENU (FULLSCREEN REBOOT) */}
@@ -169,7 +169,7 @@ export function Navbar() {
                 </div>
             </header >
 
-            <div className="h-[53px] sm:h-[64px] md:hidden" />
+            <div className="h-[58px] sm:h-[64px] md:hidden" />
             <CommandPalette isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
             <PhysicsFactModal open={isFactOpen} onOpenChange={setIsFactOpen} />
         </>
