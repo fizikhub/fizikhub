@@ -1,7 +1,9 @@
 "use client";
 
+import Link from "next/link";
 import { ViewTransitionLink } from "@/components/ui/view-transition-link"; // [NEW]
 import Image from "next/image";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 import { formatDistanceToNow } from "date-fns";
 import { tr } from "date-fns/locale";
@@ -25,26 +27,23 @@ interface BookReviewCardProps {
     index?: number;
 }
 
-export function BookReviewCard({ article }: BookReviewCardProps) {
+export function BookReviewCard({ article, index = 0 }: BookReviewCardProps) {
     // Parse Metadata
-    let metadata: Record<string, string | number> = {};
+    let metadata: any = {};
     if (article.content) {
         try {
             const match = article.content.match(/^<!--meta\s+(.*?)\s+-->/);
             if (match && match[1]) {
-                const parsed = JSON.parse(match[1]);
-                if (parsed && typeof parsed === "object") {
-                    metadata = parsed as Record<string, string | number>;
-                }
+                metadata = JSON.parse(match[1]);
             }
         } catch (e) {
             console.error("Failed to parse book review metadata", e);
         }
     }
 
-    const bookTitle = String(metadata.bookTitle || article.title);
-    const bookAuthor = String(metadata.bookAuthor || "Bilinmeyen Yazar");
-    const rating = Number(metadata.rating || 0);
+    const bookTitle = metadata.bookTitle || article.title;
+    const bookAuthor = metadata.bookAuthor || "Bilinmeyen Yazar";
+    const rating = metadata.rating || 0;
     const displayExcerpt = article.excerpt || "";
     const authorName = article.author?.full_name || article.author?.username || "Anonim";
 
@@ -102,18 +101,18 @@ export function BookReviewCard({ article }: BookReviewCardProps) {
                         </div>
 
                         {/* Title & Author - PREMIUM TYPOGRAPHY */}
-                        <h3 className="font-sans text-xl sm:text-2xl font-black text-black dark:text-white leading-[1.1] mb-2 pr-10">
+                        <h3 className="font-[family-name:var(--font-outfit)] text-xl sm:text-2xl font-black text-black dark:text-white leading-[1.1] mb-2 pr-10 tracking-tight">
                             {bookTitle}
                         </h3>
                         <div className="flex items-center gap-3 mb-4">
                             <div className="w-6 h-[3px] bg-[#E11D48]" />
-                            <p className="text-sm font-bold font-mono text-neutral-600 dark:text-zinc-400 uppercase">
+                            <p className="text-sm font-bold font-mono text-neutral-600 dark:text-zinc-400 uppercase tracking-widest">
                                 {bookAuthor}
                             </p>
                         </div>
 
                         {/* Excerpt - High Legibility */}
-                        <p className="font-sans text-sm font-semibold text-neutral-700 dark:text-zinc-300 line-clamp-3 leading-relaxed">
+                        <p className="font-[family-name:var(--font-inter)] text-sm font-medium text-neutral-700 dark:text-zinc-300 line-clamp-3 leading-relaxed">
                             {displayExcerpt}
                         </p>
                     </div>
@@ -121,11 +120,11 @@ export function BookReviewCard({ article }: BookReviewCardProps) {
                     {/* Footer - Minimalist Author */}
                     <div className="mt-4 pt-0 flex items-center justify-between">
                         <div className="flex items-center gap-2 text-neutral-500 group-hover:text-black dark:group-hover:text-white transition-colors">
-                            <span className="text-[11px] font-black uppercase">
+                            <span className="text-[11px] font-black uppercase tracking-widest">
                                 {authorName}
                             </span>
                             <span className="text-[10px] opacity-50">•</span>
-                            <time className="text-[10px] font-bold uppercase opacity-75">
+                            <time className="text-[10px] font-bold uppercase tracking-wide opacity-75">
                                 {formatDistanceToNow(new Date(article.created_at), { addSuffix: true, locale: tr })}
                             </time>
                         </div>

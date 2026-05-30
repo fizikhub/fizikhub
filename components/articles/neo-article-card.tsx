@@ -27,7 +27,6 @@ interface NeoArticleCardProps {
 export function NeoArticleCard({
     article,
     initialLikes = 0,
-    initialComments = 0,
     initialIsLiked = false,
     initialIsBookmarked = false,
     className,
@@ -115,7 +114,6 @@ export function NeoArticleCard({
 
     const authorName = article.author?.full_name || article.profiles?.full_name || "Anonim";
     const authorAvatar = article.author?.avatar_url || article.profiles?.avatar_url || "/images/default-avatar.png";
-    const imageSrc = article.cover_url || article.image_url || (article as Article & { image?: string | null }).image || "/images/placeholder-article.webp";
 
     return (
         <ViewTransitionLink href={`/makale/${article.slug}`} className="block group">
@@ -123,11 +121,11 @@ export function NeoArticleCard({
                 className={cn(
                     "flex flex-col relative overflow-hidden",
                     // COLOR PALETTE: Dark Mode = #27272a (Zinc 800) - Lighter than background
-                    "bg-white dark:bg-[#252529]",
+                    "bg-white dark:bg-[#27272a]",
                     // BORDER: Softer on mobile, full on desktop
-                    "border-2 border-black rounded-[8px]",
+                    "border-2 sm:border-[3px] border-black rounded-[10px] sm:rounded-[8px]",
                     // SHADOW: Lighter on mobile
-                    "shadow-[3px_3px_0px_0px_#000] sm:shadow-[4px_4px_0px_0px_#000] border-black",
+                    "shadow-[3px_3px_0px_0px_#000] sm:shadow-neo border-black",
                     // HOVER
                     "transition-all duration-200 hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_#000]",
                     className
@@ -139,9 +137,9 @@ export function NeoArticleCard({
                 />
 
                 {/* 1. IMAGE SECTION */}
-                <div className="relative aspect-[16/9] w-full border-b-2 border-black bg-[#EAB308] z-10 overflow-hidden">
+                <div className="relative aspect-[16/9] w-full border-b-2 sm:border-b-[3px] border-black bg-[#EAB308] z-10">
                     <OptimizedImage
-                        src={imageSrc}
+                        src={article.image_url || "/images/placeholder-article.webp"}
                         alt={article.title}
                         fill
                         sizes="(max-width: 640px) 85vw, (max-width: 1024px) 50vw, 350px"
@@ -151,17 +149,17 @@ export function NeoArticleCard({
 
                     {/* Category Label */}
                     <div className="absolute top-3 left-3 z-20 perspective-500">
-                        <span className="inline-block bg-[#EAB308] border-2 border-black text-black px-2.5 py-1 sm:px-3 font-black text-[10px] sm:text-xs uppercase shadow-[2px_2px_0px_0px_#000] rotate-[-2deg] group-hover:rotate-0 transition-transform origin-center">
+                        <span className="inline-block bg-[#EAB308] border-[2px] border-black text-black px-2 py-0.5 sm:px-3 sm:py-1 font-black text-[10px] sm:text-xs uppercase shadow-[2px_2px_0px_0px_#000] rotate-[-2deg] group-hover:rotate-0 transition-transform origin-center hover:scale-110">
                             {article.category || "GENEL"}
                         </span>
                     </div>
                 </div>
 
                 {/* 2. CONTENT SECTION */}
-                <div className="flex flex-col flex-1 p-4 sm:p-5 gap-3 z-10 relative">
+                <div className="flex flex-col flex-1 p-3 sm:p-5 gap-2 sm:gap-3 z-10 relative">
 
                     {/* Title - High Contrast White in Dark Mode */}
-                    <h3 className="font-sans text-[21px] sm:text-2xl font-black text-black dark:text-zinc-50 leading-[1.05] uppercase mb-0.5 sm:mb-1">
+                    <h3 className="font-[family-name:var(--font-outfit)] text-[17px] sm:text-2xl font-black text-black dark:text-zinc-50 leading-[1.1] uppercase tracking-tighter mb-0.5 sm:mb-1">
                         <span className="bg-gradient-to-r from-transparent to-transparent group-hover:from-[#EAB308]/30 group-hover:to-[#EAB308]/30 transition-all duration-300 rounded-sm">
                             {article.title}
                         </span>
@@ -170,7 +168,7 @@ export function NeoArticleCard({
                     {/* Preview Text - Lighter Grey for Contrast */}
                     <p
                         data-nosnippet
-                        className="font-sans text-sm sm:text-[15px] font-semibold text-neutral-600 dark:text-zinc-400 line-clamp-3 leading-relaxed"
+                        className="font-[family-name:var(--font-inter)] text-[13px] sm:text-sm font-medium text-neutral-600 dark:text-zinc-400 line-clamp-3 leading-relaxed tracking-normal"
                     >
                         {previewText}
                     </p>
@@ -179,7 +177,7 @@ export function NeoArticleCard({
                     <div className="mt-auto"></div>
 
                     {/* SEPARATOR - Black Line */}
-                    <div className="w-full h-px border-t-2 border-dashed border-black/10 dark:border-black/20 my-1 sm:my-2" />
+                    <div className="w-full h-px border-t-[2px] border-dashed border-black/10 dark:border-black/20 my-1 sm:my-2" />
 
                     {/* 3. AUTHOR & ACTIONS FOOTER */}
                     <div className="flex items-center justify-between pt-1.5 sm:pt-2">
@@ -196,10 +194,10 @@ export function NeoArticleCard({
                                 />
                             </div>
                             <div className="flex flex-col leading-none gap-0.5 min-w-0">
-                                <span className="text-[11px] sm:text-xs font-black uppercase text-black dark:text-zinc-100 truncate max-w-[112px] min-[390px]:max-w-[152px] sm:max-w-none">
+                                <span className="text-[11px] sm:text-xs font-black uppercase text-black dark:text-zinc-100 truncate tracking-wide max-w-[80px] sm:max-w-none">
                                     {authorName}
                                 </span>
-                                <span className="text-[9px] sm:text-[10px] font-bold text-neutral-500 dark:text-zinc-400 uppercase">
+                                <span className="text-[9px] sm:text-[10px] font-bold text-neutral-500 dark:text-zinc-400 uppercase tracking-wide">
                                     {formatDistanceToNow(new Date(article.created_at || new Date()), { addSuffix: true, locale: tr })}
                                 </span>
                             </div>
@@ -209,15 +207,11 @@ export function NeoArticleCard({
                         <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
                             {/* Like */}
                             <button
-                                type="button"
                                 onClick={handleLike}
-                                disabled={isLikeLoading}
-                                aria-label={isLiked ? "Beğeniyi kaldır" : "Makaleyi beğen"}
                                 className={cn(
-                                    "w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-[8px] border-2 border-black transition-all",
+                                    "w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-lg border-[1.5px] sm:border-2 border-black transition-all",
                                     "active:translate-x-[1px] active:translate-y-[1px] active:shadow-none",
-                                    "shadow-[2px_2px_0px_0px_#000] hover:shadow-[1px_1px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px]",
-                                    isLikeLoading && "opacity-70",
+                                    "shadow-[1.5px_1.5px_0px_0px_#000] sm:shadow-[2px_2px_0px_0px_#000] hover:shadow-[1px_1px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px]",
                                     isLiked ? "bg-[#EAB308] text-black" : "bg-white dark:bg-[#18181b] text-black dark:text-white hover:bg-neutral-50 dark:hover:bg-zinc-800"
                                 )}
                             >
@@ -226,8 +220,6 @@ export function NeoArticleCard({
 
                             {/* Comment */}
                             <button
-                                type="button"
-                                aria-label={initialComments > 0 ? `${initialComments} yorum` : "Yorumları aç"}
                                 onClick={(e) => {
                                     e.preventDefault();
                                     e.stopPropagation();
@@ -240,30 +232,26 @@ export function NeoArticleCard({
                                         window.location.href = url;
                                     }
                                 }}
-                                className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-[8px] border-2 border-black bg-white dark:bg-[#18181b] text-black dark:text-white hover:bg-[#23A9FA] transition-all active:translate-x-[1px] active:translate-y-[1px] active:shadow-none shadow-[2px_2px_0px_0px_#000] hover:shadow-[1px_1px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px]"
+                                className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-lg border-[1.5px] sm:border-2 border-black bg-white dark:bg-[#18181b] text-black dark:text-white hover:bg-[#23A9FA] transition-all active:translate-x-[1px] active:translate-y-[1px] active:shadow-none shadow-[1.5px_1.5px_0px_0px_#000] sm:shadow-[2px_2px_0px_0px_#000] hover:shadow-[1px_1px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px]"
                             >
                                 <MessageCircle className="w-[18px] h-[18px] sm:w-5 sm:h-5 stroke-[2.5px] stroke-current" />
                             </button>
 
                             {/* Share */}
                             <button
-                                type="button"
-                                aria-label="Makaleyi paylaş"
                                 onClick={handleShare}
-                                className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-[8px] border-2 border-black bg-white dark:bg-[#18181b] text-black dark:text-white hover:bg-[#00F050] transition-all active:translate-x-[1px] active:translate-y-[1px] active:shadow-none shadow-[2px_2px_0px_0px_#000] hover:shadow-[1px_1px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px]"
+                                className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-lg border-[1.5px] sm:border-2 border-black bg-white dark:bg-[#18181b] text-black dark:text-white hover:bg-[#00F050] transition-all active:translate-x-[1px] active:translate-y-[1px] active:shadow-none shadow-[1.5px_1.5px_0px_0px_#000] sm:shadow-[2px_2px_0px_0px_#000] hover:shadow-[1px_1px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px]"
                             >
                                 <Share2 className="w-[18px] h-[18px] sm:w-5 sm:h-5 stroke-[2.5px] stroke-current" />
                             </button>
 
                             {/* Bookmark */}
                             <button
-                                type="button"
-                                aria-label={isBookmarked ? "Kaydı kaldır" : "Makaleyi kaydet"}
                                 onClick={handleBookmark}
                                 className={cn(
-                                    "w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-[8px] border-2 border-black transition-all",
+                                    "w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-lg border-[1.5px] sm:border-2 border-black transition-all",
                                     "active:translate-x-[1px] active:translate-y-[1px] active:shadow-none",
-                                    "shadow-[2px_2px_0px_0px_#000] hover:shadow-[1px_1px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px]",
+                                    "shadow-[1.5px_1.5px_0px_0px_#000] sm:shadow-[2px_2px_0px_0px_#000] hover:shadow-[1px_1px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px]",
                                     isBookmarked ? "bg-black text-white" : "bg-white dark:bg-[#18181b] text-black dark:text-white hover:bg-[#FF90E8]"
                                 )}
                             >

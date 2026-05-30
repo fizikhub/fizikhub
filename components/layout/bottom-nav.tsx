@@ -68,17 +68,10 @@ export function BottomNav() {
     }, [isArticleDetail]);
 
     useEffect(() => {
-        let cancelled = false;
-        queueMicrotask(() => {
-            if (!cancelled) setOptimisticHref(null);
-        });
+        setOptimisticHref(null);
         navigatingHrefRef.current = null;
         navRef.current?.classList.toggle(HIDDEN_NAV_CLASS, isArticleDetail);
         hiddenRef.current = isArticleDetail;
-
-        return () => {
-            cancelled = true;
-        };
     }, [pathname, isArticleDetail]);
 
     const vibrate = () => {
@@ -143,9 +136,8 @@ export function BottomNav() {
             )}
         >
             <nav aria-label="Mobil navigasyon" className={cn(
-                "w-full h-[calc(64px+env(safe-area-inset-bottom))] bg-[#101013]/88 backdrop-blur-md border-t border-white/10 flex items-start justify-around px-2 pt-1.5 pb-[env(safe-area-inset-bottom)] relative shadow-[0_-10px_30px_rgba(0,0,0,0.38)]"
+                "w-full h-[calc(56px+env(safe-area-inset-bottom))] bg-white/92 dark:bg-[#121212]/92 backdrop-blur-sm border-t border-black/10 dark:border-white/10 flex items-start justify-around px-2 pt-1 pb-[env(safe-area-inset-bottom)] relative shadow-[0_-4px_16px_rgba(0,0,0,0.08)]"
             )}>
-                <div aria-hidden="true" className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/25 to-transparent" />
                 <div className="flex items-center justify-around w-full">
                     <NavItem
                         id="nav-item-home"
@@ -169,7 +161,7 @@ export function BottomNav() {
                         navigatingHrefRef={navigatingHrefRef}
                     />
 
-                    <div className="relative -top-4 z-20">
+                    <div className="relative -top-3.5 z-20">
                         <Link
                             id="nav-item-share"
                             href="/paylas"
@@ -182,12 +174,12 @@ export function BottomNav() {
                             <div
                                 className="
                                     flex items-center justify-center
-                                    w-14 h-14
+                                    w-12 h-12
                                     bg-[#EAB308]
-                                    border-2 border-black
+                                    border-2 border-black dark:border-white
                                     rounded-full
-                                    shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]
-                                    ring-2 ring-white/80
+                                    shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]
+                                    dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.5)]
                                     group
                                     relative
                                     overflow-hidden
@@ -195,7 +187,7 @@ export function BottomNav() {
                                     active:scale-90 active:rotate-[15deg]
                                 "
                             >
-                                <Plus className="w-6 h-6 text-black stroke-[3px] group-hover:rotate-90 group-hover:scale-110 transition-transform duration-300 relative z-10" />
+                                <Plus className="w-5 h-5 text-black stroke-[3px] group-hover:rotate-90 group-hover:scale-110 transition-transform duration-300 relative z-10" />
                             </div>
                         </Link>
                     </div>
@@ -280,8 +272,8 @@ function NavItem({
             aria-label={label}
             aria-current={isActive ? 'page' : undefined}
             className={cn(
-                "flex flex-col items-center justify-center min-w-[58px] min-h-[52px] relative group z-10 touch-manipulation",
-                isActive ? "text-white" : "text-zinc-500"
+                "flex flex-col items-center justify-center min-w-[56px] min-h-[48px] relative group z-10 touch-manipulation",
+                isActive ? "text-black dark:text-white" : "text-zinc-500 dark:text-zinc-500"
             )}
         >
             <div
@@ -291,17 +283,17 @@ function NavItem({
                     <div
                         className="
                             absolute inset-0 
-                            bg-white/10
-                            border border-white/10
-                            rounded-[8px]
-                            shadow-[inset_0_1px_6px_rgba(0,0,0,0.25)]
+                            bg-black/5 dark:bg-white/10 
+                            border border-black/5 dark:border-white/5 
+                            rounded-lg
+                            shadow-inner dark:shadow-[inset_0_1px_4px_rgba(0,0,0,0.2)]
                         "
                     />
                 )}
 
                 <div className={cn(
-                    "p-2 rounded-[8px] transition-all duration-200 relative z-10",
-                    !isActive && "group-hover:bg-white/5"
+                    "p-1.5 rounded-lg transition-all duration-200 relative z-10",
+                    !isActive && "group-hover:bg-black/5 dark:group-hover:bg-white/5"
                 )}>
                     <div
                         className={cn(
@@ -310,9 +302,9 @@ function NavItem({
                         )}
                     >
                         <Icon
-                            fill="none"
+                            fill={isActive ? "currentColor" : "none"}
                             className={cn(
-                                "w-[22px] h-[22px] transition-all duration-200",
+                                "w-5 h-5 transition-all duration-200",
                                 isActive ? "stroke-[2.75px]" : "stroke-[2px]"
                             )}
                         />

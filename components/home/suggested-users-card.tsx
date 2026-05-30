@@ -9,12 +9,12 @@ import { toast } from "sonner";
 
 interface SuggestedUser {
     id: string;
-    username?: string | null;
-    full_name?: string | null;
-    avatar_url?: string | null;
-    is_writer?: boolean | null;
-    is_verified?: boolean | null;
-    bio?: string | null;
+    username: string;
+    full_name: string;
+    avatar_url: string;
+    is_writer: boolean;
+    is_verified: boolean;
+    bio: string;
 }
 
 interface SuggestedUsersCardProps {
@@ -37,20 +37,20 @@ export function SuggestedUsersCard({ users }: SuggestedUsersCardProps) {
     if (!users || users.length === 0) return null;
 
     return (
-        <section className="rounded-[8px] border-2 border-black bg-[#222226] p-4 shadow-[3px_3px_0_0_#000] sm:p-5">
-            <div className="flex items-center gap-2 mb-4">
+        <div className="my-8">
+            <div className="flex items-center gap-2 mb-4 px-2">
                 <Star className="w-5 h-5 text-amber-500 fill-amber-500" />
-                <h3 className="font-black text-lg text-zinc-50">Takip Önerileri</h3>
+                <h3 className="font-black text-lg text-foreground tracking-tight">Takip Önerileri</h3>
             </div>
 
-            <div className="flex gap-3 overflow-x-auto pb-1 scrollbar-hide snap-x scroll-px-1">
+            <div className="flex gap-4 overflow-x-auto pb-4 px-2 scrollbar-hide snap-x">
                 {users.map((user, i) => (
                     <div
                         key={user.id}
-                        className="flex-shrink-0 w-44 sm:w-48 snap-start animate-in fade-in duration-500 fill-mode-both"
+                        className="flex-shrink-0 w-48 snap-center animate-in fade-in duration-500 fill-mode-both"
                         style={{ animationDelay: `${i * 100}ms` }}
                     >
-                        <div className="flex flex-col items-center p-4 bg-[#18181b] border-2 border-black rounded-[8px] text-center hover:border-amber-500 hover:shadow-[2px_2px_0_0_#000] transition-all duration-200 group">
+                        <div className="flex flex-col items-center p-5 bg-card border border-border rounded-2xl text-center hover:border-amber-500/30 hover:shadow-lg transition-all duration-300 group">
                             <div className="relative mb-3">
                                 <OptimizedAvatar
                                     src={user.avatar_url}
@@ -59,7 +59,7 @@ export function SuggestedUsersCard({ users }: SuggestedUsersCardProps) {
                                     className="ring-2 ring-transparent group-hover:ring-amber-500/20 transition-all font-bold text-lg"
                                 />
                                 {user.is_verified && (
-                                    <div className="absolute -bottom-1 -right-1 bg-blue-500 text-white p-0.5 rounded-full border-2 border-[#18181b]">
+                                    <div className="absolute -bottom-1 -right-1 bg-blue-500 text-white p-0.5 rounded-full border-2 border-card">
                                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                                             <polyline points="20 6 9 17 4 12"></polyline>
                                         </svg>
@@ -67,17 +67,17 @@ export function SuggestedUsersCard({ users }: SuggestedUsersCardProps) {
                                 )}
                             </div>
 
-                            <Link prefetch={false} href={`/kullanici/${user.username || user.id}`} className="font-black text-zinc-50 hover:text-[#EAB308] truncate w-full mb-0.5">
-                                {user.full_name || user.username || "Fizikhub üyesi"}
+                            <Link prefetch={false} href={`/kullanici/${user.username}`} className="font-bold text-foreground hover:text-primary truncate w-full mb-0.5">
+                                {user.full_name || user.username}
                             </Link>
-                            <div className="text-xs text-zinc-500 mb-4 truncate w-full">
+                            <div className="text-xs text-muted-foreground mb-4 truncate w-full">
                                 {user.is_writer ? "Bilim Yazarı" : `@${user.username}`}
                             </div>
 
                             <Button
                                 size="sm"
                                 variant={following.includes(user.id) ? "secondary" : "default"}
-                                className={`w-full rounded-[8px] h-9 text-xs font-black border-2 border-black shadow-[2px_2px_0_0_#000] ${following.includes(user.id) ? "bg-zinc-700 text-white hover:bg-zinc-600" : "bg-[#EAB308] text-black hover:bg-white"}`}
+                                className={`w-full rounded-full h-8 text-xs font-bold ${following.includes(user.id) ? "" : "bg-foreground text-background hover:bg-foreground/90"}`}
                                 onClick={() => handleFollow(user.id)}
                             >
                                 {following.includes(user.id) ? "Takip Ediliyor" : "Takip Et"}
@@ -86,6 +86,6 @@ export function SuggestedUsersCard({ users }: SuggestedUsersCardProps) {
                     </div>
                 ))}
             </div>
-        </section>
+        </div>
     );
 }

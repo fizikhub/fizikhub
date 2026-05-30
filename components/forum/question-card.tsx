@@ -35,30 +35,11 @@ function formatRelativeTime(dateLike: string, now: number) {
     return "";
 }
 
-interface QuestionAuthor {
-    username?: string | null;
-    full_name?: string | null;
-    avatar_url?: string | null;
-}
-
-interface QuestionCardData {
-    id: number;
-    title: string;
-    content?: string | null;
-    created_at: string;
-    category?: string | null;
-    votes?: number | null;
-    answer_count?: number | null;
-    answers?: Array<{ count?: number | null }> | null;
-    full_name?: string | null;
-    author?: QuestionAuthor | null;
-    profiles?: QuestionAuthor | null;
-}
-
 interface QuestionCardProps {
-    question: QuestionCardData;
+    question: any;
     userVote?: number;
     badgeLabel?: string;
+    badgeClassName?: string;
 }
 
 export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: QuestionCardProps) => {
@@ -109,7 +90,7 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
             } else {
                 // Haptic feedback could go here
             }
-        } catch {
+        } catch (error) {
             setVoteState(previousVote);
             setVotes(previousCount);
         } finally {
@@ -118,11 +99,7 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
     };
 
     const answerCount = question.answer_count ?? question.answers?.[0]?.count ?? question.answers?.length ?? 0;
-    const contentText = question.content || "";
-    const cleanContent = stripHtml(contentText).slice(0, 300);
-    const hasLongContent = contentText.length > 160;
-    const authorProfile = question.author || question.profiles || null;
-    const authorName = question.full_name || authorProfile?.full_name || authorProfile?.username || "Fizikhub";
+    const cleanContent = stripHtml(question.content || "").slice(0, 300);
 
     return (
         <article className="w-full h-full">
@@ -130,12 +107,12 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
                 prefetch={false}
                 href={`/forum/${question.id}`}
                 className={cn(
-                    "relative flex flex-col w-full h-full overflow-hidden transition-all duration-200 cursor-pointer group rounded-[8px]",
+                    "relative flex flex-col w-full h-full overflow-hidden transition-all duration-200 cursor-pointer group rounded-[10px]",
                     // CONTAINER STYLE
-                    "bg-white dark:bg-[#242428]",
-                    "border-2 border-black",
-                    "shadow-[3px_3px_0px_0px_#000] sm:shadow-[4px_4px_0px_0px_#000]",
-                    "hover:shadow-[2px_2px_0px_0px_#000] hover:translate-x-[2px] hover:translate-y-[2px]"
+                    "bg-white dark:bg-[#1e1e21]",
+                    "border-[3px] border-black dark:border-zinc-700",
+                    "shadow-[4px_4px_0px_0px_#000] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.15)]",
+                    "hover:shadow-[2px_2px_0px_0px_#000] dark:hover:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.1)] hover:translate-x-[2px] hover:translate-y-[2px]"
                 )}
             >
                 {/* NOISE TEXTURE */}
@@ -147,16 +124,16 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
                 <div className="absolute left-0 top-0 bottom-0 w-[4px] bg-[#EAB308] opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20 rounded-l-[10px]" />
 
                 {/* 1. Header Bar (Yellow Theme) */}
-                <div className="flex items-center justify-between px-4 py-2.5 border-b-2 border-black bg-gradient-to-r from-[#EAB308] to-[#EAB308] z-10 relative">
-                    <span className="font-black text-[11px] uppercase text-black">
+                <div className="flex items-center justify-between px-4 py-2.5 border-b-[3px] border-black dark:border-zinc-700 bg-gradient-to-r from-[#EAB308] to-[#EAB308] z-10 relative">
+                    <span className="font-black text-[11px] uppercase tracking-[0.15em] text-black">
                         {question.category || "GENEL"}
                     </span>
                     <div className="flex items-center gap-2">
-                        <time dateTime={question.created_at} className="text-[10px] font-bold text-black/60 uppercase">
+                        <time dateTime={question.created_at} className="text-[10px] font-bold text-black/50 uppercase tracking-widest">
                             {formatRelativeTime(question.created_at, renderedAt)}
                         </time>
                         {badgeLabel && (
-                            <div className="bg-black text-[#EAB308] px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase">
+                            <div className="bg-black text-[#EAB308] px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider">
                                 {badgeLabel}
                             </div>
                         )}
@@ -167,7 +144,7 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
                 <div className="flex-1 p-4 sm:p-5 flex flex-col gap-2.5 z-10 relative">
 
                     {/* Title */}
-                    <h2 className="font-sans text-[20px] sm:text-2xl font-black text-black dark:text-zinc-50 leading-tight uppercase group-hover:text-[#EAB308] transition-colors duration-200 line-clamp-2">
+                    <h2 className="font-[family-name:var(--font-outfit)] text-lg sm:text-2xl font-black text-black dark:text-zinc-50 leading-tight uppercase tracking-tight group-hover:text-[#EAB308] transition-colors duration-200 line-clamp-2">
                         {question.title}
                     </h2>
 
@@ -176,27 +153,27 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
                         <p
                             data-nosnippet
                             className={cn(
-                                "font-sans text-sm sm:text-[15px] font-semibold text-neutral-600 dark:text-zinc-400 leading-relaxed",
+                                "font-[family-name:var(--font-inter)] text-[13px] sm:text-sm font-medium text-neutral-600 dark:text-zinc-400 leading-relaxed",
                                 !isExpanded && "line-clamp-4"
                             )}
                         >
                             {cleanContent}
-                            {!isExpanded && hasLongContent && "..."}
-                            {isExpanded && contentText && (
+                            {!isExpanded && question.content?.length > 160 && "..."}
+                            {isExpanded && question.content && (
                                 <span className="block mt-2">
-                                    {stripHtml(contentText).slice(160)}
+                                    {stripHtml(question.content).slice(160)}
                                 </span>
                             )}
                         </p>
 
-                        {hasLongContent && !isExpanded && (
+                        {question.content?.length > 160 && !isExpanded && (
                             <button
                                 onClick={(e) => {
                                     e.preventDefault();
                                     e.stopPropagation();
                                     setIsExpanded(true);
                                 }}
-                                className="mt-3 text-[10px] font-black uppercase text-[#EAB308] bg-black hover:bg-zinc-800 px-3 py-1.5 rounded-[6px] transition-colors border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,0.3)]"
+                                className="mt-3 text-[10px] font-black uppercase tracking-widest text-[#EAB308] bg-black hover:bg-zinc-800 px-3 py-1.5 rounded-md transition-colors border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,0.3)]"
                             >
                                 Devamını Oku
                             </button>
@@ -209,7 +186,7 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
                                     e.stopPropagation();
                                     setIsExpanded(false);
                                 }}
-                                className="mt-3 text-[10px] font-black uppercase text-neutral-400 hover:text-black dark:hover:text-white transition-colors"
+                                className="mt-3 text-[10px] font-black uppercase tracking-widest text-neutral-400 hover:text-black dark:hover:text-white transition-colors"
                             >
                                 ▲ Küçült
                             </button>
@@ -218,7 +195,7 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
                 </div>
 
                 {/* 3. Footer */}
-                <div className="mt-auto px-4 sm:px-5 py-2.5 border-t-2 border-black bg-neutral-50 dark:bg-[#161618] flex items-center justify-between z-10 relative">
+                <div className="mt-auto px-4 sm:px-5 py-2.5 border-t-[3px] border-black dark:border-zinc-700 bg-neutral-50 dark:bg-[#161618] flex items-center justify-between z-10 relative">
 
                     {/* Author (Left) */}
                     <div className="flex items-center gap-2.5 z-20">
@@ -226,23 +203,20 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
                             onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
-                                if (authorProfile?.username) {
-                                    router.push(`/kullanici/${authorProfile.username}`);
-                                }
+                                router.push(`/kullanici/${question.profiles?.username}`);
                             }}
-                            className="flex items-center gap-2 group/author cursor-pointer disabled:cursor-default"
-                            disabled={!authorProfile?.username}
+                            className="flex items-center gap-2 group/author cursor-pointer"
                         >
                             <div className="w-7 h-7 rounded-full border-[2px] border-black dark:border-zinc-600 overflow-hidden bg-white shadow-[1px_1px_0px_0px_#000] dark:shadow-[1px_1px_0px_0px_rgba(255,255,255,0.1)]">
                                 <OptimizedAvatar
-                                    src={authorProfile?.avatar_url}
-                                    alt={authorName}
+                                    src={question.profiles?.avatar_url}
+                                    alt={question.profiles?.username || "?"}
                                     size={28}
                                     className="w-full h-full"
                                 />
                             </div>
-                            <span className="text-[11px] font-black uppercase text-neutral-500 dark:text-zinc-500 group-hover/author:text-[#EAB308] transition-colors">
-                                {authorName}
+                            <span className="text-[11px] font-black uppercase tracking-wider text-neutral-500 dark:text-zinc-500 group-hover/author:text-[#EAB308] transition-colors">
+                                {question.full_name || question.profiles?.username}
                             </span>
                         </button>
                     </div>
@@ -251,22 +225,18 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
                     <div className="flex items-center gap-3">
 
                         {/* Vote Pod */}
-                        <div className="flex items-center border-2 border-black bg-white dark:bg-[#1e1e21] rounded-[8px] overflow-hidden shadow-[2px_2px_0px_0px_#000]" onClick={(e) => e.stopPropagation()}>
+                        <div className="flex items-center border-[2px] border-black dark:border-zinc-600 bg-white dark:bg-[#1e1e21] rounded-lg overflow-hidden shadow-[2px_2px_0px_0px_#000] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.1)]" onClick={(e) => e.stopPropagation()}>
                             <button
-                                type="button"
-                                disabled={isVoting}
                                 onClick={(e) => handleVote(e, 1)}
-                                className={cn("px-2 py-1 hover:bg-green-50 dark:hover:bg-green-900/30 transition-colors border-r-2 border-black disabled:opacity-60", voteState === 1 && "bg-green-100 dark:bg-green-900/50")}>
+                                className={cn("px-2 py-1 hover:bg-green-50 dark:hover:bg-green-900/30 transition-colors border-r-[2px] border-black dark:border-zinc-600", voteState === 1 && "bg-green-100 dark:bg-green-900/50")}>
                                 <ChevronUp className={cn("w-3.5 h-3.5 stroke-[3px]", voteState === 1 ? "text-green-500" : "text-black dark:text-zinc-400")} />
                             </button>
                             <span className={cn("px-2 min-w-[20px] text-center text-[11px] font-black tabular-nums", votes > 0 ? "text-green-500" : (votes < 0 ? "text-red-500" : "text-neutral-400 dark:text-zinc-500"))}>
                                 {votes}
                             </span>
                             <button
-                                type="button"
-                                disabled={isVoting}
                                 onClick={(e) => handleVote(e, -1)}
-                                className={cn("px-2 py-1 hover:bg-red-50 dark:hover:bg-red-900/30 transition-colors border-l-2 border-black disabled:opacity-60", voteState === -1 && "bg-red-100 dark:bg-red-900/50")}>
+                                className={cn("px-2 py-1 hover:bg-red-50 dark:hover:bg-red-900/30 transition-colors border-l-[2px] border-black dark:border-zinc-600", voteState === -1 && "bg-red-100 dark:bg-red-900/50")}>
                                 <ChevronDown className={cn("w-3.5 h-3.5 stroke-[3px]", voteState === -1 ? "text-red-500" : "text-black dark:text-zinc-400")} />
                             </button>
                         </div>

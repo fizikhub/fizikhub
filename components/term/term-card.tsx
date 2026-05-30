@@ -24,14 +24,7 @@ interface TermCardProps {
 export function TermCard({ article, index }: TermCardProps) {
     // Extract metadata
     const metadataMatch = article.content?.match(/<!--meta (.*?) -->/);
-    let metadata: Record<string, string> = {};
-    if (metadataMatch?.[1]) {
-        try {
-            metadata = JSON.parse(metadataMatch[1]);
-        } catch {
-            metadata = {};
-        }
-    }
+    const metadata = metadataMatch ? JSON.parse(metadataMatch[1]) : {};
 
     // Fallback metadata
     const termName = metadata.termName || article.title;
@@ -77,7 +70,7 @@ export function TermCard({ article, index }: TermCardProps) {
 
                         {/* Term Name - Huge Type */}
                         <div>
-                            <h3 className="font-sans text-3xl font-black text-black dark:text-zinc-50 leading-none uppercase mb-1 select-all hover:bg-[#23A9FA] hover:text-black inline-block transition-colors">
+                            <h3 className="font-[family-name:var(--font-outfit)] text-3xl font-black text-black dark:text-zinc-50 leading-none uppercase tracking-tighter mb-1 select-all hover:bg-[#23A9FA] hover:text-black inline-block transition-colors">
                                 {termName}
                             </h3>
                             <div className="flex items-center gap-2 text-neutral-500 dark:text-zinc-500 text-xs font-mono font-bold mt-1">
@@ -88,7 +81,7 @@ export function TermCard({ article, index }: TermCardProps) {
                         </div>
 
                         {/* Definition Text */}
-                        <p className="font-sans text-sm font-semibold text-neutral-700 dark:text-zinc-300 leading-relaxed">
+                        <p className="font-[family-name:var(--font-inter)] text-sm font-semibold text-neutral-700 dark:text-zinc-300 leading-relaxed font-mono-accent">
                             {definition}
                         </p>
                     </div>

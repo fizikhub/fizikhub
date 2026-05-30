@@ -14,7 +14,7 @@ export function DankLogo() {
                     width="220"
                     height="80"
                     viewBox="0 0 220 80"
-                    className="w-[112px] h-[40px] min-[380px]:w-[120px] min-[380px]:h-[44px] sm:w-[160px] sm:h-[58px] overflow-visible drop-shadow-[0_4px_6px_rgba(0,0,0,0.3)]"
+                    className="w-[120px] h-[44px] sm:w-[160px] sm:h-[58px] overflow-visible drop-shadow-[0_4px_6px_rgba(0,0,0,0.3)]"
                     fill="none"
                     xmlns="http://www.w3.org/2000/svg"
                 >
@@ -24,12 +24,12 @@ export function DankLogo() {
                         y="55%"
                         textAnchor="middle"
                         dominantBaseline="middle"
-                        className="font-black italic"
+                        className="font-black italic tracking-tighter"
                         dx="4"
                         dy="4"
                         style={{
                             fill: "rgba(0,0,0,0.5)",
-                            fontFamily: "var(--font-sans), system-ui, sans-serif",
+                            fontFamily: "var(--font-outfit), sans-serif",
                             fontSize: "48px",
                             fontWeight: 900
                         }}
@@ -43,14 +43,14 @@ export function DankLogo() {
                         y="55%"
                         textAnchor="middle"
                         dominantBaseline="middle"
-                        className="font-black italic"
+                        className="font-black italic tracking-tighter"
                         style={{
                             fill: "black",
                             stroke: "black",
                             strokeWidth: "8px", // Matches thick sticker outline
                             strokeLinejoin: "round",
                             paintOrder: "stroke",
-                            fontFamily: "var(--font-sans), system-ui, sans-serif",
+                            fontFamily: "var(--font-outfit), sans-serif",
                             fontSize: "48px",
                             fontWeight: 900
                         }}
@@ -64,11 +64,11 @@ export function DankLogo() {
                         y="55%"
                         textAnchor="middle"
                         dominantBaseline="middle"
-                        className="font-black italic"
+                        className="font-black italic tracking-tighter"
                         style={{
                             fill: "#FFD700", // Slightly more premium gold-yellow
                             stroke: "none",
-                            fontFamily: "var(--font-sans), system-ui, sans-serif",
+                            fontFamily: "var(--font-outfit), sans-serif",
                             fontSize: "48px",
                             fontWeight: 900,
                             filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.2))"
@@ -81,7 +81,7 @@ export function DankLogo() {
                 {/* Subtitle Badge - Tucked tighter and ensured visibility */}
                 <div className="absolute bottom-1 right-2 sm:right-6 transform rotate-[-3deg] z-20">
                     <div className="bg-white border-[1.5px] sm:border-[2px] border-black px-1 py-[0.5px] shadow-[2px_2px_0px_0px_#000]">
-                        <span className="block text-[7px] sm:text-[9px] font-black text-black leading-none uppercase whitespace-nowrap" style={{ fontFamily: "var(--font-sans)" }}>
+                        <span className="block text-[7px] sm:text-[9px] font-black text-black leading-none uppercase tracking-widest whitespace-nowrap" style={{ fontFamily: "var(--font-outfit)" }}>
                             BİLİM PLATFORMU
                         </span>
                     </div>

@@ -311,7 +311,7 @@ export default async function Home() {
   };
 
   return (
-    <main className="min-h-screen bg-background relative overflow-x-hidden pb-[calc(92px+env(safe-area-inset-bottom))] md:pb-0">
+    <main className="min-h-screen bg-background relative">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -319,17 +319,12 @@ export default async function Home() {
       <ScrollProgress />
       <BackToTop />
 
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 opacity-80 bg-[radial-gradient(circle_at_16%_0%,rgba(234,179,8,0.07),transparent_28%),radial-gradient(circle_at_88%_18%,rgba(35,169,250,0.08),transparent_24%)]"
-      />
-
-      <div className="container max-w-[1250px] mx-auto px-3 sm:px-4 md:px-6 relative z-10 pt-3 lg:pt-8 xl:pt-10">
+      <div className="container max-w-[1250px] mx-auto px-2 sm:px-4 md:px-6 relative z-10 pt-0 lg:pt-8 xl:pt-10">
 
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-y-5 lg:gap-8 pt-0">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-0 lg:gap-8 pt-4 lg:pt-0">
 
-          <div className="lg:col-span-12 mt-0">
+          <div className="lg:col-span-12 mt-0 sm:px-0">
             <CompactHero />
             <div data-nosnippet>
               <NexusStories initialStories={stories} initialGroups={groups} />
@@ -337,7 +332,7 @@ export default async function Home() {
           </div>
 
           {/* Main Feed Column */}
-          <div className="lg:col-span-12 xl:col-span-7 space-y-5 sm:space-y-6 xl:min-h-screen md:pr-0 w-full md:max-w-[660px] md:mx-auto xl:mx-0">
+          <div className="lg:col-span-12 xl:col-span-7 space-y-0 sm:space-y-6 xl:min-h-screen border-r border-foreground/5 md:border-r-0 md:pr-0 w-full md:max-w-[650px] md:mx-auto xl:mx-0">
             <LatestArticlesSlider
               articles={formatSliderArticles(articles as unknown as FeedArticleData[])}
             />
