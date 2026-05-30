@@ -28,18 +28,18 @@ const QuestionOfTheWeek = dynamic(() => import("@/components/forum/question-of-t
 
 import { Article, Question } from "@/lib/api";
 
-// Dynamic Cursor Pagination Fetcher Skeleton
+// Dynamic Loader Skeleton for pagination
 const DynamicSkeleton = () => (
-    <div className="w-full h-64 bg-white dark:bg-[#1e1e21] border-[3px] border-black rounded-none shadow-[4px_4px_0px_0px_#000] p-6 space-y-4 animate-pulse noise-bg">
+    <div className="w-full h-64 bg-white dark:bg-[#1e1e21] border-[3px] border-black dark:border-zinc-700 rounded-[10px] shadow-[4px_4px_0px_0px_#000] p-6 space-y-4 animate-pulse">
         <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-none border-[3px] border-black bg-muted/30 shadow-[2px_2px_0px_0px_#000]" />
+            <div className="w-10 h-10 rounded-full bg-muted/30" />
             <div className="space-y-2 flex-1">
-                <div className="h-3 w-1/4 bg-muted/30 rounded-none border-[2px] border-black/20" />
-                <div className="h-2 w-1/6 bg-muted/30 rounded-none" />
+                <div className="h-3 w-1/4 bg-muted/30 rounded" />
+                <div className="h-2 w-1/6 bg-muted/30 rounded" />
             </div>
         </div>
-        <div className="h-4 w-3/4 bg-muted/30 rounded-none border-[2px] border-black/20" />
-        <div className="h-16 w-full bg-muted/20 rounded-none border-[2px] border-black/20" />
+        <div className="h-4 w-3/4 bg-muted/30 rounded" />
+        <div className="h-16 w-full bg-muted/20 rounded" />
     </div>
 );
 
@@ -251,14 +251,12 @@ export function UnifiedFeed({ items: initialItems, suggestedUsers = [], showExtr
             
             {/* FLOATING REAL-TIME BADGE (PILL) */}
             {pendingItems.length > 0 && (
-                <div className="sticky top-[18px] z-50 flex justify-center w-full pointer-events-none">
+                <div className="sticky top-20 z-50 flex justify-center w-full pointer-events-none">
                     <button
                         onClick={applyPendingItems}
-                        className="pointer-events-auto flex items-center gap-2.5 px-5 py-3 rounded-full bg-[#EAB308] text-black border-[2.5px] border-black font-black uppercase text-xs tracking-wider shadow-[3px_3px_0px_0px_#000] hover:scale-105 active:scale-95 hover:shadow-[2px_2px_0px_0px_#000] active:translate-y-[2px] active:shadow-none transition-all duration-300 ease-[var(--spring-easing)] animate-slide-down-spring cursor-pointer relative overflow-hidden"
+                        className="pointer-events-auto flex items-center gap-2 px-4 py-2.5 rounded-full bg-[#EAB308] text-black border-[3px] border-black font-black uppercase text-xs sm:text-sm tracking-wider shadow-[4px_4px_0px_0px_#000] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_#000] active:translate-y-[4px] active:shadow-none transition-all animate-bounce"
                     >
-                        {/* Double border dashed style element */}
-                        <span className="absolute inset-[3px] border border-dashed border-black/15 pointer-events-none rounded-full" />
-                        <RefreshCw className="w-3.5 h-3.5 animate-spin-slow text-black stroke-[3px]" />
+                        <RefreshCw className="w-4 h-4 animate-spin-slow" />
                         Yeni Paylaşımlar Var! ({pendingItems.length})
                     </button>
                 </div>
@@ -328,11 +326,11 @@ export function UnifiedFeed({ items: initialItems, suggestedUsers = [], showExtr
                         )}
 
                         {item.type === 'question' && (
-                            <div className="rounded-none bg-white dark:bg-[#18181b] hover:bg-neutral-50 dark:hover:bg-[#27272a] transition-colors p-1 sm:p-2 border-[3px] border-black shadow-[4px_4px_0px_0px_#000] noise-bg">
+                            <div className="rounded-[10px] bg-white dark:bg-[#1e1e21] hover:bg-neutral-50 dark:hover:bg-[#252529] transition-colors p-1 sm:p-2 border-[3px] border-black dark:border-zinc-700 shadow-[4px_4px_0px_0px_#000] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)]">
                                 <QuestionCard
                                     question={item.data}
                                     badgeLabel="SORU"
-                                    badgeClassName="bg-black text-[#EAB308] px-3 py-1 rounded-none border-[2px] border-black font-black uppercase text-[10px] tracking-widest shadow-[2px_2px_0px_0px_#000]"
+                                    badgeClassName="bg-black text-[#EAB308] px-2 py-0.5 rounded-md font-black uppercase text-xs tracking-wider"
                                 />
                             </div>
                         )}
@@ -343,7 +341,7 @@ export function UnifiedFeed({ items: initialItems, suggestedUsers = [], showExtr
                             </LazyMount>
                         )}
                         {showExtras && index === 8 && (
-                            <LazyMount className="mt-6 min-h-40 rounded-none bg-gradient-to-br from-[#EAB308] to-[#EAB308] p-6 border-[3px] border-black shadow-[4px_4px_0px_0px_#000] noise-bg">
+                            <LazyMount className="mt-6 min-h-40 rounded-[10px] bg-gradient-to-br from-[#EAB308] to-[#EAB308] p-6 border-[3px] border-black shadow-[4px_4px_0px_0px_#000]">
                                 <div>
                                     <h3 className="font-black text-sm uppercase tracking-widest text-black mb-4 text-center">
                                         Haftanın Sorusu
@@ -369,15 +367,15 @@ export function UnifiedFeed({ items: initialItems, suggestedUsers = [], showExtr
             {!loading && hasMore && (
                 <button
                     onClick={loadMoreItems}
-                    className="w-full min-h-[56px] mt-2 font-black text-sm uppercase tracking-widest bg-[#EAB308] text-black border-[3px] border-black rounded-none shadow-[4px_4px_0px_0px_#000] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_#000] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all flex items-center justify-center gap-2 cursor-pointer noise-bg"
+                    className="w-full py-4 mt-2 font-black text-sm uppercase tracking-widest bg-[#EAB308] text-black border-[3px] border-black rounded-[8px] sm:rounded-[10px] shadow-[4px_4px_0px_0px_#000] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_#000] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all flex items-center justify-center gap-2"
                 >
-                    <RefreshCw className="w-5 h-5 stroke-[3px]" />
+                    <RefreshCw className="w-4 h-4" />
                     Daha Fazla İçerik Göster
                 </button>
             )}
 
             {!hasMore && (
-                <div className="w-full text-center py-6 text-black dark:text-zinc-400 font-black uppercase text-[10px] sm:text-xs tracking-widest border-[3px] border-dashed border-black/30 dark:border-white/30 rounded-none noise-bg">
+                <div className="w-full text-center py-6 text-neutral-500 font-bold uppercase text-xs tracking-wider border-2 border-dashed border-neutral-300 dark:border-zinc-800 rounded-xl">
                     🚀 Harika! Akışın Sonuna Ulaştın. Yeni Bilgiler İçin Bizi Takip Etmeye Devam Et.
                 </div>
             )}

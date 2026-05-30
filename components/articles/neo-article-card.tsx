@@ -1,6 +1,6 @@
 "use client";
 
-import { ViewTransitionLink } from "@/components/ui/view-transition-link";
+import { ViewTransitionLink } from "@/components/ui/view-transition-link"; // [NEW]
 import { OptimizedImage, OptimizedAvatar } from "@/components/ui/optimized-image";
 import { formatDistanceToNow } from "date-fns";
 import { tr } from "date-fns/locale";
@@ -11,7 +11,8 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { toggleArticleLike, toggleArticleBookmark } from "@/app/makale/actions";
 import { useHaptic } from "@/hooks/use-haptic";
-import { motion } from "framer-motion";
+// Confetti and other heavy interactions will be loaded on demand to minimize TBT
+
 
 interface NeoArticleCardProps {
     article: Article;
@@ -116,52 +117,58 @@ export function NeoArticleCard({
 
     return (
         <ViewTransitionLink href={`/makale/${article.slug}`} className="block group">
-            <motion.article
-                whileHover={{ y: -4, x: -4, boxShadow: "8px 8px 0px 0px #000" }}
-                whileTap={{ y: 0, x: 0, boxShadow: "0px 0px 0px 0px #000", scale: 0.99 }}
-                transition={{ type: "spring", stiffness: 400, damping: 20 }}
+            <article
                 className={cn(
                     "flex flex-col relative overflow-hidden",
+                    // COLOR PALETTE: Dark Mode = #27272a (Zinc 800) - Lighter than background
                     "bg-white dark:bg-[#27272a]",
-                    "border-[3px] border-black rounded-none sm:rounded-none noise-bg", // Brutalist hard corners & texture
-                    "shadow-[4px_4px_0px_0px_#000]",
+                    // BORDER: Softer on mobile, full on desktop
+                    "border-2 sm:border-[3px] border-black rounded-[10px] sm:rounded-[8px]",
+                    // SHADOW: Lighter on mobile
+                    "shadow-[3px_3px_0px_0px_#000] sm:shadow-neo border-black",
+                    // HOVER
+                    "transition-all duration-200 hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_#000]",
                     className
                 )}
             >
+                {/* NOISE TEXTURE */}
+                <div className="absolute inset-0 opacity-[0.03] pointer-events-none mix-blend-multiply z-0"
+                    style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 250 250' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }}
+                />
+
                 {/* 1. IMAGE SECTION */}
-                <div className="relative aspect-[16/9] w-full border-b-[3px] border-black bg-[#EAB308] z-10">
+                <div className="relative aspect-[16/9] w-full border-b-2 sm:border-b-[3px] border-black bg-[#EAB308] z-10">
                     <OptimizedImage
                         src={article.image_url || "/images/placeholder-article.webp"}
                         alt={article.title}
                         fill
                         sizes="(max-width: 640px) 85vw, (max-width: 1024px) 50vw, 350px"
                         priority={priority}
-                        className="object-cover transition-transform duration-500 group-hover:scale-105 grayscale-[15%] group-hover:grayscale-0"
+                        className="object-cover transition-transform duration-500 group-hover:scale-105"
                     />
 
                     {/* Category Label */}
                     <div className="absolute top-3 left-3 z-20 perspective-500">
-                        <span className="inline-block bg-[#FFC700] border-[2px] border-black text-black px-3 py-1 font-black text-[10px] sm:text-xs uppercase shadow-[2px_2px_0px_0px_#000] rotate-[-2deg] group-hover:rotate-0 transition-transform origin-center hover:scale-110">
+                        <span className="inline-block bg-[#EAB308] border-[2px] border-black text-black px-2 py-0.5 sm:px-3 sm:py-1 font-black text-[10px] sm:text-xs uppercase shadow-[2px_2px_0px_0px_#000] rotate-[-2deg] group-hover:rotate-0 transition-transform origin-center hover:scale-110">
                             {article.category || "GENEL"}
                         </span>
                     </div>
                 </div>
 
                 {/* 2. CONTENT SECTION */}
-                <div className="flex flex-col flex-1 p-3.5 sm:p-5 gap-2 sm:gap-3.5 z-10 relative bg-white dark:bg-[#18181b]">
+                <div className="flex flex-col flex-1 p-3 sm:p-5 gap-2 sm:gap-3 z-10 relative">
 
-                    {/* Title - Draw Highlight Underline Effect on Hover */}
-                    <h3 className="font-[family-name:var(--font-outfit)] text-[16px] sm:text-2xl font-black text-black dark:text-zinc-50 leading-[1.15] uppercase tracking-tighter mb-0.5 sm:mb-1">
-                        <span className="relative inline-block">
-                            <span className="relative z-10">{article.title}</span>
-                            <span className="absolute bottom-0 left-0 w-0 h-[28%] bg-[#EAB308]/40 dark:bg-[#EAB308]/30 z-0 transition-all duration-300 ease-[var(--spring-easing)] group-hover:w-full rounded-none" />
+                    {/* Title - High Contrast White in Dark Mode */}
+                    <h3 className="font-[family-name:var(--font-outfit)] text-[17px] sm:text-2xl font-black text-black dark:text-zinc-50 leading-[1.1] uppercase tracking-tighter mb-0.5 sm:mb-1">
+                        <span className="bg-gradient-to-r from-transparent to-transparent group-hover:from-[#EAB308]/30 group-hover:to-[#EAB308]/30 transition-all duration-300 rounded-sm">
+                            {article.title}
                         </span>
                     </h3>
 
                     {/* Preview Text - Lighter Grey for Contrast */}
                     <p
                         data-nosnippet
-                        className="font-[family-name:var(--font-inter)] text-[12.5px] sm:text-sm font-medium text-neutral-600 dark:text-zinc-400 line-clamp-3 leading-relaxed tracking-normal"
+                        className="font-[family-name:var(--font-inter)] text-[13px] sm:text-sm font-medium text-neutral-600 dark:text-zinc-400 line-clamp-3 leading-relaxed tracking-normal"
                     >
                         {previewText}
                     </p>
@@ -170,51 +177,49 @@ export function NeoArticleCard({
                     <div className="mt-auto"></div>
 
                     {/* SEPARATOR - Black Line */}
-                    <div className="w-full h-px border-t-[3px] border-solid border-black/10 dark:border-white/10 my-1 sm:my-2" />
+                    <div className="w-full h-px border-t-[2px] border-dashed border-black/10 dark:border-black/20 my-1 sm:my-2" />
 
                     {/* 3. AUTHOR & ACTIONS FOOTER */}
-                    <div className="flex items-center justify-between pt-1 sm:pt-2">
+                    <div className="flex items-center justify-between pt-1.5 sm:pt-2">
 
                         {/* Author */}
                         <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-                            <div className="relative aspect-square w-10 flex-shrink-0 rounded-none border-[3px] border-black overflow-hidden bg-white shadow-[2px_2px_0px_0px_#000]">
+                            <div className="relative aspect-square w-7 sm:w-10 flex-shrink-0 rounded-full border-[1.5px] sm:border-2 border-black overflow-hidden bg-white shadow-[1px_1px_0px_0px_#000]">
                                 <OptimizedAvatar
                                     src={authorAvatar}
                                     alt={authorName}
                                     size={40}
                                     fillContainer
-                                    className="w-full h-full grayscale-[20%]"
+                                    className="w-full h-full"
                                 />
                             </div>
                             <div className="flex flex-col leading-none gap-0.5 min-w-0">
-                                <span className="text-[10px] sm:text-xs font-black uppercase text-black dark:text-zinc-100 truncate tracking-wide max-w-[70px] sm:max-w-none">
+                                <span className="text-[11px] sm:text-xs font-black uppercase text-black dark:text-zinc-100 truncate tracking-wide max-w-[80px] sm:max-w-none">
                                     {authorName}
                                 </span>
-                                <span className="text-[8px] sm:text-[10px] font-bold text-neutral-500 dark:text-zinc-400 uppercase tracking-wide">
+                                <span className="text-[9px] sm:text-[10px] font-bold text-neutral-500 dark:text-zinc-400 uppercase tracking-wide">
                                     {formatDistanceToNow(new Date(article.created_at || new Date()), { addSuffix: true, locale: tr })}
                                 </span>
                             </div>
                         </div>
 
-                        {/* Actions Code - Framer Motion Physics & 44px A11y Targets */}
-                        <div className="flex items-center gap-2 flex-shrink-0">
+                        {/* Actions Code - Pure Black Borders */}
+                        <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
                             {/* Like */}
-                            <motion.button
+                            <button
                                 onClick={handleLike}
-                                whileHover={{ scale: 1.08, y: -2, boxShadow: "3px 3px 0px 0px #000" }}
-                                whileTap={{ scale: 0.9, y: 2, boxShadow: "0px 0px 0px 0px #000" }}
-                                transition={{ type: "spring", stiffness: 500, damping: 15 }}
-                                aria-label={isLiked ? "Beğenmekten Vazgeç" : "Beğen"}
                                 className={cn(
-                                    "min-w-[44px] min-h-[44px] flex items-center justify-center rounded-none border-[3px] border-black relative shadow-[2px_2px_0px_0px_#000]",
-                                    isLiked ? "bg-[#FF90E8] text-black" : "bg-white dark:bg-[#27272a] text-black dark:text-white"
+                                    "w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-lg border-[1.5px] sm:border-2 border-black transition-all",
+                                    "active:translate-x-[1px] active:translate-y-[1px] active:shadow-none",
+                                    "shadow-[1.5px_1.5px_0px_0px_#000] sm:shadow-[2px_2px_0px_0px_#000] hover:shadow-[1px_1px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px]",
+                                    isLiked ? "bg-[#EAB308] text-black" : "bg-white dark:bg-[#18181b] text-black dark:text-white hover:bg-neutral-50 dark:hover:bg-zinc-800"
                                 )}
                             >
-                                <Heart className={cn("w-5 h-5 stroke-[3px]", isLiked ? "fill-black stroke-black" : "stroke-current")} />
-                            </motion.button>
+                                <Heart className={cn("w-[18px] h-[18px] sm:w-5 sm:h-5 stroke-[2.5px]", isLiked ? "fill-black stroke-black" : "stroke-current")} />
+                            </button>
 
                             {/* Comment */}
-                            <motion.button
+                            <button
                                 onClick={(e) => {
                                     e.preventDefault();
                                     e.stopPropagation();
@@ -227,45 +232,35 @@ export function NeoArticleCard({
                                         window.location.href = url;
                                     }
                                 }}
-                                whileHover={{ scale: 1.08, y: -2, boxShadow: "3px 3px 0px 0px #000" }}
-                                whileTap={{ scale: 0.9, y: 2, boxShadow: "0px 0px 0px 0px #000" }}
-                                transition={{ type: "spring", stiffness: 500, damping: 15 }}
-                                aria-label="Yorum Yap"
-                                className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-none border-[3px] border-black bg-white dark:bg-[#27272a] text-black dark:text-white hover:bg-[#23A9FA] shadow-[2px_2px_0px_0px_#000]"
+                                className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-lg border-[1.5px] sm:border-2 border-black bg-white dark:bg-[#18181b] text-black dark:text-white hover:bg-[#23A9FA] transition-all active:translate-x-[1px] active:translate-y-[1px] active:shadow-none shadow-[1.5px_1.5px_0px_0px_#000] sm:shadow-[2px_2px_0px_0px_#000] hover:shadow-[1px_1px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px]"
                             >
-                                <MessageCircle className="w-5 h-5 stroke-[3px] stroke-current" />
-                            </motion.button>
+                                <MessageCircle className="w-[18px] h-[18px] sm:w-5 sm:h-5 stroke-[2.5px] stroke-current" />
+                            </button>
 
                             {/* Share */}
-                            <motion.button
+                            <button
                                 onClick={handleShare}
-                                whileHover={{ scale: 1.08, y: -2, boxShadow: "3px 3px 0px 0px #000" }}
-                                whileTap={{ scale: 0.9, y: 2, boxShadow: "0px 0px 0px 0px #000" }}
-                                transition={{ type: "spring", stiffness: 500, damping: 15 }}
-                                aria-label="Paylaş"
-                                className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-none border-[3px] border-black bg-white dark:bg-[#27272a] text-black dark:text-white hover:bg-[#B8FF01] hover:text-black shadow-[2px_2px_0px_0px_#000]"
+                                className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-lg border-[1.5px] sm:border-2 border-black bg-white dark:bg-[#18181b] text-black dark:text-white hover:bg-[#00F050] transition-all active:translate-x-[1px] active:translate-y-[1px] active:shadow-none shadow-[1.5px_1.5px_0px_0px_#000] sm:shadow-[2px_2px_0px_0px_#000] hover:shadow-[1px_1px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px]"
                             >
-                                <Share2 className="w-5 h-5 stroke-[3px] stroke-current" />
-                            </motion.button>
+                                <Share2 className="w-[18px] h-[18px] sm:w-5 sm:h-5 stroke-[2.5px] stroke-current" />
+                            </button>
 
                             {/* Bookmark */}
-                            <motion.button
+                            <button
                                 onClick={handleBookmark}
-                                whileHover={{ scale: 1.08, y: -2, boxShadow: "3px 3px 0px 0px #000" }}
-                                whileTap={{ scale: 0.9, y: 2, boxShadow: "0px 0px 0px 0px #000" }}
-                                transition={{ type: "spring", stiffness: 500, damping: 15 }}
-                                aria-label={isBookmarked ? "Kaydedilenlerden Çıkar" : "Kaydet"}
                                 className={cn(
-                                    "min-w-[44px] min-h-[44px] flex items-center justify-center rounded-none border-[3px] border-black relative shadow-[2px_2px_0px_0px_#000]",
-                                    isBookmarked ? "bg-black text-white" : "bg-white dark:bg-[#27272a] text-black dark:text-white hover:bg-[#FFC700]"
+                                    "w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-lg border-[1.5px] sm:border-2 border-black transition-all",
+                                    "active:translate-x-[1px] active:translate-y-[1px] active:shadow-none",
+                                    "shadow-[1.5px_1.5px_0px_0px_#000] sm:shadow-[2px_2px_0px_0px_#000] hover:shadow-[1px_1px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px]",
+                                    isBookmarked ? "bg-black text-white" : "bg-white dark:bg-[#18181b] text-black dark:text-white hover:bg-[#FF90E8]"
                                 )}
                             >
-                                <Bookmark className={cn("w-5 h-5 stroke-[3px]", isBookmarked ? "fill-current" : "stroke-current")} />
-                            </motion.button>
+                                <Bookmark className={cn("w-[18px] h-[18px] sm:w-5 sm:h-5 stroke-[2.5px]", isBookmarked ? "fill-current" : "stroke-current")} />
+                            </button>
                         </div>
                     </div>
                 </div>
-            </motion.article>
+            </article>
         </ViewTransitionLink>
     );
 }

@@ -106,9 +106,6 @@ const config = {
                 'neo-hover': '2px 2px 0px 0px #000000',
                 'neo-active': '0px 0px 0px 0px #000000',
                 "neo-dark": "4px 4px 0px 0px #ffffff",
-                'neo-brutal': '6px 6px 0px 0px #000000',
-                'neo-brutal-hover': '8px 8px 0px 0px #000000',
-                'neo-inner': 'inset 4px 4px 0px 0px rgba(0,0,0,1)',
             },
             translate: {
                 boxShadowX: "4px",
