@@ -123,7 +123,7 @@ export function CommentItem({
                             variant="ghost"
                             size="sm"
                             onClick={() => onReply(comment.id)}
-                            className="h-auto p-1 px-2 -ml-2 text-[10px] sm:text-xs font-black uppercase tracking-widest text-muted-foreground hover:text-[#EAB308] hover:bg-[#EAB308]/10 transition-colors"
+                            className="min-h-[44px] min-w-[44px] p-2 px-3 -ml-2 text-[10px] sm:text-xs font-black uppercase tracking-widest text-muted-foreground hover:text-[#EAB308] hover:bg-[#EAB308]/10 transition-colors"
                         >
                             <Reply className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 stroke-[3px]" />
                             Yanıtla
@@ -135,7 +135,7 @@ export function CommentItem({
                                 size="sm"
                                 onClick={handleDelete}
                                 disabled={isDeleting}
-                                className="h-auto p-1 px-2 text-[10px] sm:text-xs font-black uppercase tracking-widest text-muted-foreground hover:bg-red-50 dark:hover:bg-red-950/20 hover:text-red-500 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-all rounded-md"
+                                className="min-h-[44px] min-w-[44px] p-2 px-3 text-[10px] sm:text-xs font-black uppercase tracking-widest text-muted-foreground hover:bg-red-50 dark:hover:bg-red-950/20 hover:text-red-500 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-all rounded-md"
                             >
                                 <Trash2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 stroke-[3px]" />
                                 {isDeleting ? "Siliniyor..." : "Sil"}

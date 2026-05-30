@@ -174,7 +174,7 @@ export function StoryViewer({ stories: initialStories, initialIndex, isOpen, onC
                 >
 
                     {/* Progress Bars */}
-                    <div className="absolute top-0 left-0 right-0 z-[100] pt-4 flex gap-1 px-2 sm:px-6 pointer-events-none">
+                    <div className="absolute top-0 left-0 right-0 z-[100] pt-[calc(max(0.75rem,env(safe-area-inset-top)))] flex gap-1 px-2 sm:px-6 pointer-events-none">
                         {stories.map((_, index) => (
                             <div key={index} className="h-0.5 flex-1 bg-white/30 rounded-full overflow-hidden">
                                 <motion.div
@@ -190,7 +190,7 @@ export function StoryViewer({ stories: initialStories, initialIndex, isOpen, onC
                     </div>
 
                     {/* Header */}
-                    <div className="absolute top-8 left-0 right-0 z-[100] px-4 sm:px-6 flex items-center justify-between pointer-events-none">
+                    <div className="absolute top-[calc(max(0.75rem,env(safe-area-inset-top))+1rem)] left-0 right-0 z-[100] px-4 sm:px-6 flex items-center justify-between pointer-events-none">
                         <div className="flex items-center gap-2 pointer-events-auto">
                             <div className="w-8 h-8 rounded-full p-[1.5px] bg-gradient-to-tr from-yellow-400 to-orange-500">
                                 <div className="w-full h-full rounded-full bg-zinc-800 overflow-hidden relative border border-black/50">
