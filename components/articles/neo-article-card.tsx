@@ -4,7 +4,7 @@ import { ViewTransitionLink } from "@/components/ui/view-transition-link"; // [N
 import { OptimizedImage, OptimizedAvatar } from "@/components/ui/optimized-image";
 import { formatDistanceToNow } from "date-fns";
 import { tr } from "date-fns/locale";
-import { Heart, Bookmark, Share2, MessageCircle } from "lucide-react";
+import { Heart, Bookmark, Share2, MessageCircle, MoreHorizontal } from "lucide-react";
 import { Article } from "@/lib/api";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
@@ -36,6 +36,7 @@ export function NeoArticleCard({
     const [likeCount, setLikeCount] = useState(initialLikes);
     const [isBookmarked, setIsBookmarked] = useState(initialIsBookmarked);
     const [isLikeLoading, setIsLikeLoading] = useState(false);
+    const [isActionMenuOpen, setIsActionMenuOpen] = useState(false);
     const { triggerHaptic } = useHaptic();
 
     const handleLike = async (e: React.MouseEvent) => {
@@ -204,7 +205,7 @@ export function NeoArticleCard({
                         </div>
 
                         {/* Actions Code - Pure Black Borders */}
-                        <div className="flex items-center justify-end gap-1.5 sm:gap-2 flex-shrink-0">
+                        <div className="relative flex items-center justify-end gap-1.5 sm:gap-2 flex-shrink-0">
                             {/* Like */}
                             <button
                                 onClick={handleLike}
@@ -239,11 +240,47 @@ export function NeoArticleCard({
                                 <MessageCircle className="w-[18px] h-[18px] sm:w-5 sm:h-5 stroke-[2.5px] stroke-current" />
                             </button>
 
+                            {/* Mobile More */}
+                            <button
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    setIsActionMenuOpen((open) => !open);
+                                }}
+                                aria-label="Diğer makale işlemleri"
+                                aria-expanded={isActionMenuOpen}
+                                className="w-11 h-11 min-[390px]:hidden flex items-center justify-center rounded-[8px] border-[1.5px] border-black bg-white dark:bg-[#18181b] text-black dark:text-white transition-all active:translate-x-[1px] active:translate-y-[1px] active:shadow-none shadow-[1.5px_1.5px_0px_0px_#000]"
+                            >
+                                <MoreHorizontal className="w-[18px] h-[18px] stroke-[2.5px] stroke-current" />
+                            </button>
+
+                            {isActionMenuOpen && (
+                                <div className="absolute bottom-[calc(100%+0.5rem)] right-0 z-30 flex gap-1.5 rounded-[10px] border-2 border-black bg-[#27272a] p-1.5 shadow-[3px_3px_0px_0px_#000] min-[390px]:hidden">
+                                    <button
+                                        onClick={handleShare}
+                                        aria-label="Makaleyi paylaş"
+                                        className="w-11 h-11 flex items-center justify-center rounded-[8px] border-[1.5px] border-black bg-white text-black transition-all active:translate-x-[1px] active:translate-y-[1px] active:shadow-none shadow-[1.5px_1.5px_0px_0px_#000]"
+                                    >
+                                        <Share2 className="w-[18px] h-[18px] stroke-[2.5px] stroke-current" />
+                                    </button>
+                                    <button
+                                        onClick={handleBookmark}
+                                        aria-label={isBookmarked ? "Kaydı kaldır" : "Makaleyi kaydet"}
+                                        className={cn(
+                                            "w-11 h-11 flex items-center justify-center rounded-[8px] border-[1.5px] border-black transition-all active:translate-x-[1px] active:translate-y-[1px] active:shadow-none shadow-[1.5px_1.5px_0px_0px_#000]",
+                                            isBookmarked ? "bg-black text-white" : "bg-white text-black"
+                                        )}
+                                    >
+                                        <Bookmark className={cn("w-[18px] h-[18px] stroke-[2.5px]", isBookmarked ? "fill-current" : "stroke-current")} />
+                                    </button>
+                                </div>
+                            )}
+
                             {/* Share */}
                             <button
                                 onClick={handleShare}
                                 aria-label="Makaleyi paylaş"
-                                className="w-11 h-11 sm:w-10 sm:h-10 flex items-center justify-center rounded-[8px] border-[1.5px] sm:border-2 border-black bg-white dark:bg-[#18181b] text-black dark:text-white hover:bg-[#00F050] transition-all active:translate-x-[1px] active:translate-y-[1px] active:shadow-none shadow-[1.5px_1.5px_0px_0px_#000] sm:shadow-[2px_2px_0px_0px_#000] hover:shadow-[1px_1px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px]"
+                                className="hidden min-[390px]:flex w-11 h-11 sm:w-10 sm:h-10 items-center justify-center rounded-[8px] border-[1.5px] sm:border-2 border-black bg-white dark:bg-[#18181b] text-black dark:text-white hover:bg-[#00F050] transition-all active:translate-x-[1px] active:translate-y-[1px] active:shadow-none shadow-[1.5px_1.5px_0px_0px_#000] sm:shadow-[2px_2px_0px_0px_#000] hover:shadow-[1px_1px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px]"
                             >
                                 <Share2 className="w-[18px] h-[18px] sm:w-5 sm:h-5 stroke-[2.5px] stroke-current" />
                             </button>
@@ -253,7 +290,7 @@ export function NeoArticleCard({
                                 onClick={handleBookmark}
                                 aria-label={isBookmarked ? "Kaydı kaldır" : "Makaleyi kaydet"}
                                 className={cn(
-                                    "w-11 h-11 sm:w-10 sm:h-10 flex items-center justify-center rounded-[8px] border-[1.5px] sm:border-2 border-black transition-all",
+                                    "hidden min-[390px]:flex w-11 h-11 sm:w-10 sm:h-10 items-center justify-center rounded-[8px] border-[1.5px] sm:border-2 border-black transition-all",
                                     "active:translate-x-[1px] active:translate-y-[1px] active:shadow-none",
                                     "shadow-[1.5px_1.5px_0px_0px_#000] sm:shadow-[2px_2px_0px_0px_#000] hover:shadow-[1px_1px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px]",
                                     isBookmarked ? "bg-black text-white" : "bg-white dark:bg-[#18181b] text-black dark:text-white hover:bg-[#FF90E8]"

@@ -222,10 +222,10 @@
     .prose.font-serif strong {
         font-weight: 850;
         color: inherit;
-        background: linear-gradient(120deg, rgba(250, 204, 21, 0.2) 0%, rgba(250, 204, 21, 0.2) 100%);
+        background: linear-gradient(120deg, rgba(250, 204, 21, 0.13) 0%, rgba(250, 204, 21, 0.13) 100%);
         background-repeat: no-repeat;
-        background-size: 100% 0.3em;
-        background-position: 0 90%;
+        background-size: 100% 0.22em;
+        background-position: 0 92%;
         padding: 0 0.1em;
     }
 
@@ -313,8 +313,8 @@
     /* Elegant Magazine-style Drop Cap */
     .article-content > p:first-of-type::first-letter {
         float: left;
-        font-size: 4.1rem;
-        line-height: 0.8;
+        font-size: 3.55rem;
+        line-height: 0.86;
         font-weight: 900;
         font-family: Georgia, "Times New Roman", serif;
         margin-right: 0.12em;
@@ -322,16 +322,16 @@
         margin-bottom: -0.1em;
         padding: 0;
         color: #EAB308; /* FizikHub Yellow — always */
-        text-shadow: 2px 2px 0px rgba(0,0,0,0.15);
+        text-shadow: 1px 1px 0px rgba(0,0,0,0.18);
         text-transform: uppercase;
     }
 
     @media (max-width: 640px) {
         .article-content > p:first-of-type::first-letter {
-            font-size: 3.2rem;
-            line-height: 0.86;
+            font-size: 2.65rem;
+            line-height: 0.92;
             margin-right: 0.1em;
-            margin-bottom: -0.08em;
+            margin-bottom: -0.04em;
         }
     }
 

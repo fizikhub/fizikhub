@@ -1,7 +1,7 @@
 "use client";
 
 import { ViewTransitionLink } from "@/components/ui/view-transition-link";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Search, Zap } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
@@ -25,7 +25,11 @@ const physicsTicker = [
 export function Navbar() {
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [isFactOpen, setIsFactOpen] = useState(false);
+    const [isHidden, setIsHidden] = useState(false);
     const pathname = usePathname();
+    const isArticleDetail = /^\/makale\/[^/]+/.test(pathname || "");
+    const lastScrollYRef = useRef(0);
+    const frameRef = useRef<number | null>(null);
 
     const [raindrops, setRaindrops] = useState<{ left: number; duration: number; delay: number; formula: string; scale: number; opacity?: number }[]>([]);
 
@@ -60,6 +64,42 @@ export function Navbar() {
         }
     }, []);
 
+    useEffect(() => {
+        if (!isArticleDetail) {
+            return;
+        }
+
+        const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+        if (motionQuery.matches) return;
+
+        const onScroll = () => {
+            if (frameRef.current !== null) return;
+
+            frameRef.current = window.requestAnimationFrame(() => {
+                frameRef.current = null;
+                const latest = window.scrollY;
+                const diff = latest - lastScrollYRef.current;
+                lastScrollYRef.current = latest;
+
+                if (latest < 80) {
+                    setIsHidden(false);
+                    return;
+                }
+
+                if (diff > 6) setIsHidden(true);
+                if (diff < -6) setIsHidden(false);
+            });
+        };
+
+        lastScrollYRef.current = window.scrollY;
+        window.addEventListener("scroll", onScroll, { passive: true });
+
+        return () => {
+            window.removeEventListener("scroll", onScroll);
+            if (frameRef.current !== null) window.cancelAnimationFrame(frameRef.current);
+        };
+    }, [isArticleDetail]);
+
     const navItems = [
         { href: "/", label: "Ana" },
         { href: "/makale", label: "Keşfet" },
@@ -74,18 +114,23 @@ export function Navbar() {
                 - Height: h-14 (56px) - Optimized for Mobile
                 - Style: Dark Glass Neo-Brutalist
             */}
-            <header className="fixed top-0 left-0 right-0 z-50 h-[60px] md:hidden" role="banner">
+            <header
+                className={cn(
+                    "fixed top-0 left-0 right-0 z-50 h-[60px] md:hidden transform-gpu transition-[transform,opacity,filter] duration-300 mobile-bottom-nav-transition",
+                    isArticleDetail && isHidden && "-translate-y-[calc(100%+0.5rem)] opacity-0 blur-[2px]"
+                )}
+                role="banner"
+            >
                 <div
                     className={cn(
                         "h-full",
                         "flex items-center justify-between px-3 min-[390px]:px-4 sm:px-6",
-                        "bg-[#09090b]/80 backdrop-blur-xl border-b border-white/10",
-                        "shadow-lg",
+                        isArticleDetail ? "bg-[#09090b]/68 backdrop-blur-md border-b border-white/[0.07] shadow-md" : "bg-[#09090b]/80 backdrop-blur-xl border-b border-white/10 shadow-lg",
                         "w-full relative"
                     )}
                 >
                     {/* PHYSICS RAIN BACKGROUND (FLOWING UP) - REDUCED OPACITY & CLIPPED */}
-                    <div className="absolute inset-0 overflow-hidden pointer-events-none select-none opacity-30 rounded-b-xl">
+                    <div className={cn("absolute inset-0 overflow-hidden pointer-events-none select-none rounded-b-xl", isArticleDetail ? "opacity-18" : "opacity-30")}>
                         {raindrops.map((drop, i) => (
                             <div
                                 key={i}
