@@ -45,7 +45,7 @@ export function LatestArticlesSlider({ articles }: LatestArticlesSliderProps) {
                     return (
                         <article
                             key={article.id}
-                            className="flex-shrink-0 w-[78vw] max-w-[280px] sm:w-[275px] snap-start"
+                            className="flex-shrink-0 w-[76vw] min-w-[248px] max-w-[300px] sm:w-[300px] snap-start"
                         >
                             <Link href={`/makale/${article.slug}`} prefetch={false} className="block rounded-[8px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#EAB308] focus-visible:ring-offset-2 focus-visible:ring-offset-background">
                                 <div className="group relative bg-zinc-950 border-2 border-zinc-800 hover:border-yellow-400/60 shadow-[3px_3px_0px_0px_rgba(39,39,42,0.8)] hover:shadow-[4px_4px_0px_0px_rgba(250,204,21,0.4)] active:shadow-none active:translate-x-[2px] active:translate-y-[2px] transition-all duration-150 rounded-[8px] overflow-hidden aspect-[16/10] flex flex-col">
@@ -56,7 +56,7 @@ export function LatestArticlesSlider({ articles }: LatestArticlesSliderProps) {
                                                 src={article.image}
                                                 alt={article.title}
                                                 fill
-                                                sizes="(max-width: 640px) 215px, 275px"
+                                                sizes="(max-width: 640px) 76vw, 300px"
                                                 className="object-cover group-hover:scale-[1.03] transition-transform duration-300 ease-out"
                                                 priority={isAboveFold}
                                                 loading={isAboveFold ? "eager" : "lazy"}
@@ -86,7 +86,7 @@ export function LatestArticlesSlider({ articles }: LatestArticlesSliderProps) {
                                         </div>
 
                                         {/* Title */}
-                                        <h3 className="text-sm sm:text-[15px] font-black text-white leading-snug mb-1.5 group-hover:text-yellow-300 transition-colors line-clamp-2">
+                                        <h3 className="text-[15px] sm:text-base font-black text-white leading-snug mb-1.5 group-hover:text-yellow-300 transition-colors line-clamp-2">
                                             {article.title}
                                         </h3>
 

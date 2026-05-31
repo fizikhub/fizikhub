@@ -159,7 +159,7 @@ export function NeoArticleCard({
                 <div className="flex flex-col flex-1 p-4 sm:p-5 gap-2.5 sm:gap-3 z-10 relative">
 
                     {/* Title - High Contrast White in Dark Mode */}
-                    <h3 className="font-[family-name:var(--font-outfit)] text-[20px] sm:text-2xl font-black text-black dark:text-zinc-50 leading-[1.06] uppercase tracking-normal mb-0.5 sm:mb-1">
+                    <h3 className="font-[family-name:var(--font-outfit)] text-[19px] min-[390px]:text-[20px] sm:text-2xl font-black text-black dark:text-zinc-50 leading-[1.08] uppercase tracking-normal mb-0.5 sm:mb-1">
                         <span className="bg-gradient-to-r from-transparent to-transparent group-hover:from-[#EAB308]/30 group-hover:to-[#EAB308]/30 transition-all duration-300 rounded-sm">
                             {article.title}
                         </span>
@@ -180,7 +180,7 @@ export function NeoArticleCard({
                     <div className="w-full h-px border-t-[2px] border-dashed border-black/10 dark:border-black/20 my-1 sm:my-2" />
 
                     {/* 3. AUTHOR & ACTIONS FOOTER */}
-                    <div className="flex flex-col gap-3 pt-1.5 sm:pt-2 min-[390px]:flex-row min-[390px]:items-center min-[390px]:justify-between">
+                    <div className="flex items-center justify-between gap-2 pt-1.5 sm:gap-3 sm:pt-2">
 
                         {/* Author */}
                         <div className="flex items-center gap-2 sm:gap-3 min-w-0">
@@ -194,7 +194,7 @@ export function NeoArticleCard({
                                 />
                             </div>
                             <div className="flex flex-col leading-none gap-0.5 min-w-0">
-                                <span className="text-[11px] sm:text-xs font-black uppercase text-black dark:text-zinc-100 truncate tracking-normal max-w-[160px] min-[390px]:max-w-[92px] sm:max-w-[180px]">
+                                <span className="text-[11px] sm:text-xs font-black uppercase text-black dark:text-zinc-100 truncate tracking-normal max-w-[86px] min-[390px]:max-w-[140px] sm:max-w-[180px]">
                                     {authorName}
                                 </span>
                                 <span className="text-[9px] sm:text-[10px] font-bold text-neutral-500 dark:text-zinc-400 uppercase tracking-wide">

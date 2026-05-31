@@ -28,8 +28,8 @@ export function NeoArticleHero({ article, readingTime, titleOverride, introOverr
 
                 {/* 1. TOP BAR: Back Button Only */}
                 <div className="flex items-center justify-between mb-4 sm:mb-8">
-                    <Link prefetch={false} href="/makale" className="group flex items-center gap-2 sm:gap-3 text-xs sm:text-sm font-black uppercase tracking-normal text-foreground hover:-translate-y-1 transition-transform active:translate-y-0">
-                        <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl border-[2.5px] border-black dark:border-zinc-600 bg-white dark:bg-zinc-800 shadow-[2px_2px_0px_0px_#000] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.08)] group-hover:shadow-[3px_3px_0px_0px_#000] group-hover:bg-[#EAB308] group-hover:text-black flex items-center justify-center transition-all">
+                    <Link prefetch={false} href="/makale" className="group flex min-h-11 items-center gap-2 sm:gap-3 text-xs sm:text-sm font-black uppercase tracking-normal text-foreground hover:-translate-y-1 transition-transform active:translate-y-0 rounded-[8px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#EAB308]">
+                        <div className="w-11 h-11 rounded-lg sm:rounded-xl border-[2.5px] border-black dark:border-zinc-600 bg-white dark:bg-zinc-800 shadow-[2px_2px_0px_0px_#000] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.08)] group-hover:shadow-[3px_3px_0px_0px_#000] group-hover:bg-[#EAB308] group-hover:text-black flex items-center justify-center transition-all">
                             <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 stroke-[3px]" />
                         </div>
                         <span className="hidden sm:inline group-hover:text-[#EAB308] transition-colors">Geri Dön</span>
@@ -65,7 +65,7 @@ export function NeoArticleHero({ article, readingTime, titleOverride, introOverr
                     )}
 
                     {/* Title */}
-                    <h1 className="w-[calc(100vw-2rem)] max-w-full sm:w-auto sm:max-w-3xl text-[2rem] sm:text-4xl lg:text-5xl font-black text-foreground leading-[1.08] tracking-normal break-words mb-4 sm:mb-6 selection:bg-[#EAB308] selection:text-black">
+                    <h1 className="w-[calc(100vw-2rem)] max-w-full sm:w-auto sm:max-w-3xl text-[clamp(2rem,8vw,2.625rem)] sm:text-4xl lg:text-5xl font-black text-foreground leading-[1.08] tracking-normal break-words mb-4 sm:mb-6 selection:bg-[#EAB308] selection:text-black">
                         {displayTitle}
                     </h1>
 

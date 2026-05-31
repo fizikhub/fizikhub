@@ -6,7 +6,7 @@ import { Home, BookOpen, MessageCircle, User, Plus, type LucideIcon } from "luci
 import { cn } from "@/lib/utils";
 import { useEffect, useRef, useState } from "react";
 
-const HIDDEN_NAV_CLASS = "translate-y-[calc(100%+1rem)]";
+const HIDDEN_NAV_CLASS = "mobile-bottom-nav--hidden";
 
 export function BottomNav() {
     const pathname = usePathname();
@@ -21,9 +21,8 @@ export function BottomNav() {
 
     useEffect(() => {
         const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-        const coarsePointerQuery = window.matchMedia("(hover: none), (pointer: coarse)");
 
-        if (motionQuery.matches || (coarsePointerQuery.matches && !isArticleDetail)) {
+        if (motionQuery.matches) {
             navRef.current?.classList.remove(HIDDEN_NAV_CLASS);
             return;
         }
@@ -43,18 +42,15 @@ export function BottomNav() {
                 const latest = window.scrollY;
                 const previous = lastScrollYRef.current;
                 const diff = latest - previous;
-                const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
-                const isNearBottom = maxScroll > 0 && latest / maxScroll > 0.95;
-
                 lastScrollYRef.current = latest;
 
-                if (latest < 48 || isNearBottom) {
+                if (latest < 64) {
                     setHidden(false);
                     return;
                 }
 
-                if (diff > 8) setHidden(true);
-                if (diff < -8) setHidden(false);
+                if (diff > 6) setHidden(true);
+                if (diff < -5) setHidden(false);
             });
         };
 
@@ -133,12 +129,12 @@ export function BottomNav() {
         <div
             ref={navRef}
             className={cn(
-                "fixed bottom-0 left-0 right-0 z-[50] md:hidden font-sans transition-transform duration-200 ease-out transform-gpu",
-                isArticleDetail ? "translate-y-[calc(100%+1rem)]" : "translate-y-0"
+                "fixed bottom-0 left-0 right-0 z-[50] md:hidden font-sans transform-gpu transition-[transform,opacity,filter] duration-300 mobile-bottom-nav-transition",
+                isArticleDetail ? HIDDEN_NAV_CLASS : "translate-y-0 opacity-100"
             )}
         >
             <nav aria-label="Mobil navigasyon" className={cn(
-                "w-full h-[calc(68px+env(safe-area-inset-bottom))] bg-white/94 dark:bg-[#121212]/94 backdrop-blur-md border-t border-black/10 dark:border-white/10 flex items-start justify-around px-2 pt-1.5 pb-[env(safe-area-inset-bottom)] relative shadow-[0_-6px_18px_rgba(0,0,0,0.12)]"
+                "w-full h-[calc(64px+env(safe-area-inset-bottom))] bg-white/94 dark:bg-[#121212]/94 backdrop-blur-md border-t border-black/10 dark:border-white/10 flex items-start justify-around px-2 pt-1 pb-[env(safe-area-inset-bottom)] relative shadow-[0_-6px_18px_rgba(0,0,0,0.12)]"
             )}>
                 <div className="flex items-center justify-around w-full">
                     <NavItem
@@ -281,7 +277,7 @@ function NavItem({
             aria-label={label}
             aria-current={isActive ? 'page' : undefined}
             className={cn(
-                "flex flex-col items-center justify-center min-w-[58px] min-h-[58px] relative group z-10 touch-manipulation rounded-[8px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#EAB308]",
+                "flex flex-col items-center justify-center min-w-[56px] min-h-[56px] relative group z-10 touch-manipulation rounded-[8px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#EAB308]",
                 isActive ? "text-black dark:text-white" : "text-zinc-500 dark:text-zinc-500"
             )}
         >
