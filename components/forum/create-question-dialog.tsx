@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -50,15 +50,9 @@ interface CreateQuestionDialogProps {
 }
 
 export function CreateQuestionDialog({ trigger, defaultOpen = false }: CreateQuestionDialogProps) {
-    const [open, setOpen] = useState(defaultOpen);
+    const [open, setOpen] = useState(() => defaultOpen);
     const [loading, setLoading] = useState(false);
     const [step, setStep] = useState(1);
-
-    useEffect(() => {
-        if (defaultOpen) {
-            setOpen(true);
-        }
-    }, [defaultOpen]);
 
     const [formData, setFormData] = useState({
         title: "",
@@ -86,7 +80,7 @@ export function CreateQuestionDialog({ trigger, defaultOpen = false }: CreateQue
             } else {
                 toast.error(result.error);
             }
-        } catch (error) {
+        } catch {
             toast.error("Bir hata oluştu.");
         } finally {
             setLoading(false);
@@ -182,7 +176,7 @@ export function CreateQuestionDialog({ trigger, defaultOpen = false }: CreateQue
                                                         key={cat.id}
                                                         onClick={() => handleCategorySelect(cat.id)}
                                                         className={cn(
-                                                            "group relative flex items-center gap-3 p-3 transition-all duration-200",
+                                                            "group relative flex min-h-14 items-center gap-3 p-3 transition-all duration-200",
                                                             "bg-white dark:bg-[#18181b] border-[3px] border-black rounded-[8px]",
                                                             "shadow-[2px_2px_0px_0px_#000]",
                                                             "hover:translate-y-[1px] hover:translate-x-[1px] hover:shadow-[1px_1px_0px_0px_#000]",
@@ -235,7 +229,7 @@ export function CreateQuestionDialog({ trigger, defaultOpen = false }: CreateQue
                                                 className={cn(
                                                     "font-[family-name:var(--font-outfit)] text-lg sm:text-xl font-black bg-white dark:bg-[#18181b] border-[3px] border-black text-black dark:text-zinc-50 rounded-[8px] px-3 py-6 h-auto",
                                                     "focus-visible:ring-0 focus-visible:border-black",
-                                                    "shadow-[2px_2px_0px_0px_#000] hover:shadow-[1px_1px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] transition-all placeholder:text-neutral-400 dark:placeholder:text-zinc-600 uppercase"
+                                                    "shadow-[2px_2px_0px_0px_#000] hover:shadow-[1px_1px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] transition-all placeholder:text-neutral-400 dark:placeholder:text-zinc-600"
                                                 )}
                                                 autoFocus
                                             />
@@ -267,7 +261,7 @@ export function CreateQuestionDialog({ trigger, defaultOpen = false }: CreateQue
                                             onClick={handleSubmit}
                                             disabled={loading}
                                             className={cn(
-                                                "h-10 px-8 font-[family-name:var(--font-inter)] font-black uppercase tracking-widest transition-all rounded-[8px]",
+                                                "min-h-11 px-8 font-[family-name:var(--font-inter)] font-black uppercase tracking-widest transition-all rounded-[8px]",
                                                 "bg-green-600 hover:bg-green-500 text-white border-[3px] border-black",
                                                 "shadow-[2px_2px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_0px_#000] active:translate-y-[2px] active:translate-x-[2px] active:shadow-none"
                                             )}

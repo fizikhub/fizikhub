@@ -127,7 +127,7 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
                     // CONTAINER STYLE
                     "bg-white dark:bg-[#1e1e21]",
                     "border-2 sm:border-[3px] border-black dark:border-zinc-700 rounded-[8px]",
-                    "shadow-[3px_3px_0px_0px_#000] sm:shadow-[4px_4px_0px_0px_#000] dark:shadow-[3px_3px_0px_0px_rgba(255,255,255,0.12)] sm:dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.15)]",
+                    "shadow-[2px_2px_0px_0px_#000] sm:shadow-[4px_4px_0px_0px_#000] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.12)] sm:dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.15)]",
                     "hover:shadow-[2px_2px_0px_0px_#000] dark:hover:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.1)] hover:translate-x-[2px] hover:translate-y-[2px]"
                 )}
             >
@@ -140,7 +140,7 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
                 <div className="absolute left-0 top-0 bottom-0 w-[4px] bg-[#EAB308] opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20 rounded-l-[8px]" />
 
                 {/* 1. Header Bar (Yellow Theme) */}
-                <div className="flex items-center justify-between gap-3 px-4 py-3 border-b-2 sm:border-b-[3px] border-black dark:border-zinc-700 bg-[#EAB308] z-10 relative">
+                <div className="flex items-center justify-between gap-3 px-3.5 sm:px-4 py-2.5 sm:py-3 border-b-2 sm:border-b-[3px] border-black dark:border-zinc-700 bg-[#EAB308] z-10 relative">
                     <span className="font-black text-[11px] uppercase tracking-[0.14em] text-black truncate">
                         {question.category || "GENEL"}
                     </span>
@@ -157,10 +157,10 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
                 </div>
 
                 {/* 2. Main Body */}
-                <div className="flex-1 p-4 sm:p-5 flex flex-col gap-3 z-10 relative">
+                <div className="flex-1 p-3.5 sm:p-5 flex flex-col gap-2.5 sm:gap-3 z-10 relative">
 
                     {/* Title */}
-                    <h2 className="font-[family-name:var(--font-outfit)] text-xl sm:text-2xl font-black text-black dark:text-zinc-50 leading-[1.08] uppercase tracking-normal group-hover:text-[#EAB308] transition-colors duration-200 line-clamp-2">
+                    <h2 className="font-[family-name:var(--font-outfit)] text-lg min-[390px]:text-xl sm:text-2xl font-black text-black dark:text-zinc-50 leading-[1.12] tracking-normal group-hover:text-[#EAB308] transition-colors duration-200 line-clamp-2">
                         {question.title}
                     </h2>
 
@@ -169,8 +169,8 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
                         <p
                             data-nosnippet
                             className={cn(
-                                "font-[family-name:var(--font-inter)] text-[13px] sm:text-sm font-medium text-neutral-600 dark:text-zinc-400 leading-relaxed",
-                                !isExpanded && "line-clamp-4"
+                                "font-[family-name:var(--font-inter)] text-sm sm:text-[15px] font-medium text-neutral-600 dark:text-zinc-400 leading-relaxed",
+                                !isExpanded && "line-clamp-3 sm:line-clamp-4"
                             )}
                         >
                             {cleanContent}
@@ -211,7 +211,7 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
                 </div>
 
                 {/* 3. Footer */}
-                <div className="mt-auto px-4 sm:px-5 py-3 border-t-2 sm:border-t-[3px] border-black dark:border-zinc-700 bg-neutral-50 dark:bg-[#161618] flex flex-col min-[390px]:flex-row min-[390px]:items-center justify-between gap-3 z-10 relative">
+                <div className="mt-auto px-3.5 sm:px-5 py-2.5 sm:py-3 border-t-2 sm:border-t-[3px] border-black dark:border-zinc-700 bg-neutral-50 dark:bg-[#161618] flex flex-col min-[390px]:flex-row min-[390px]:items-center justify-between gap-2.5 sm:gap-3 z-10 relative">
 
                     {/* Author (Left) */}
                     <div className="flex items-center gap-2.5 z-20">
@@ -231,7 +231,7 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
                                     className="w-full h-full"
                                 />
                             </div>
-                            <span className="text-[11px] font-black uppercase tracking-wider text-neutral-500 dark:text-zinc-500 group-hover/author:text-[#EAB308] transition-colors">
+                            <span className="max-w-[9rem] truncate text-[11px] font-black uppercase tracking-wider text-neutral-500 dark:text-zinc-500 group-hover/author:text-[#EAB308] transition-colors">
                                 {question.full_name || question.profiles?.username}
                             </span>
                         </button>
@@ -260,9 +260,10 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
                         </div>
 
                         {/* Comment count */}
-                        <div className="flex items-center gap-1.5 text-neutral-400 dark:text-zinc-500 group-hover:text-neutral-600 dark:group-hover:text-zinc-300 transition-colors">
+                        <div className="flex min-h-11 items-center gap-1.5 rounded-[8px] px-2 text-neutral-500 dark:text-zinc-500 group-hover:text-neutral-700 dark:group-hover:text-zinc-300 transition-colors">
                             <MessageCircle className="w-4 h-4" />
                             <span className="text-[11px] font-black tabular-nums">{answerCount}</span>
+                            <span className="hidden min-[430px]:inline text-[10px] font-black uppercase tracking-wider">Yanıt</span>
                         </div>
                     </div>
                 </div>

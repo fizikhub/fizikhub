@@ -5,24 +5,22 @@ import { useSearchParams } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { CheckCircle2, Clock, Flame, MessageSquare } from "lucide-react";
 import { useTheme } from "next-themes";
-import { useEffect, useState } from "react";
+import type { ComponentType } from "react";
 
-export function ForumSidebar() {
-    const searchParams = useSearchParams();
-    const currentSort = searchParams.get("sort") || "newest";
-    const currentFilter = searchParams.get("filter");
+type SidebarMenuItemProps = {
+    href: string;
+    active: boolean;
+    icon: ComponentType<{ className?: string }>;
+    label: string;
+    isCybernetic: boolean;
+    isPink: boolean;
+};
 
-    const { theme } = useTheme();
-    const [mounted, setMounted] = useState(false);
-    useEffect(() => setMounted(true), []);
-
-    const isCybernetic = mounted && theme === 'cybernetic';
-    const isPink = mounted && theme === 'pink';
-
-    const MenuItem = ({ href, active, icon: Icon, label }: { href: string; active: boolean; icon: any; label: string }) => (
+function SidebarMenuItem({ href, active, icon: Icon, label, isCybernetic, isPink }: SidebarMenuItemProps) {
+    return (
         <Link prefetch={false} href={href} className="block group">
             <div className={cn(
-                "flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 border-[2.5px]",
+                "flex min-h-12 items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 border-[2.5px]",
                 active
                     ? "bg-[#EAB308] text-black border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_0px_rgba(255,255,255,0.3)] translate-x-[-2px] translate-y-[-2px] font-bold"
                     : "text-muted-foreground border-transparent hover:text-foreground hover:border-black dark:hover:border-zinc-600 hover:bg-muted/50 hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[3px_3px_0px_0px_rgba(255,255,255,0.2)] hover:translate-x-[-2px] hover:translate-y-[-2px]",
@@ -35,6 +33,16 @@ export function ForumSidebar() {
             </div>
         </Link>
     );
+}
+
+export function ForumSidebar() {
+    const searchParams = useSearchParams();
+    const currentSort = searchParams.get("sort") || "newest";
+    const currentFilter = searchParams.get("filter");
+
+    const { theme } = useTheme();
+    const isCybernetic = theme === 'cybernetic';
+    const isPink = theme === 'pink';
 
     return (
         <div className={cn(
@@ -49,17 +57,21 @@ export function ForumSidebar() {
                     SIRALAMA
                 </h3>
                 <div className="space-y-2">
-                    <MenuItem
+                    <SidebarMenuItem
                         href="/forum?sort=newest"
                         active={currentSort === "newest" && !currentFilter}
                         icon={Clock}
                         label="En Yeniler"
+                        isCybernetic={isCybernetic}
+                        isPink={isPink}
                     />
-                    <MenuItem
+                    <SidebarMenuItem
                         href="/forum?sort=popular"
                         active={currentSort === "popular" && !currentFilter}
                         icon={Flame}
                         label="Popüler"
+                        isCybernetic={isCybernetic}
+                        isPink={isPink}
                     />
                 </div>
             </div>
@@ -74,17 +86,21 @@ export function ForumSidebar() {
                     DURUM
                 </h3>
                 <div className="space-y-2">
-                    <MenuItem
+                    <SidebarMenuItem
                         href="/forum?filter=solved"
                         active={currentFilter === "solved"}
                         icon={CheckCircle2}
                         label="Çözülenler"
+                        isCybernetic={isCybernetic}
+                        isPink={isPink}
                     />
-                    <MenuItem
+                    <SidebarMenuItem
                         href="/forum?filter=unanswered"
                         active={currentFilter === "unanswered"}
                         icon={MessageSquare}
                         label="Cevaplanmamış"
+                        isCybernetic={isCybernetic}
+                        isPink={isPink}
                     />
                 </div>
             </div>

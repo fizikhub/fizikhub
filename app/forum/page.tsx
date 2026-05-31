@@ -205,13 +205,13 @@ export default async function ForumPage({ searchParams }: ForumPageProps) {
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
             />
-            <div className="bg-background min-h-screen pb-20">
-                <div className="container py-4 md:py-8 px-4 md:px-8 max-w-[1600px] mx-auto">
+            <div className="bg-background min-h-screen pb-[calc(5.5rem+env(safe-area-inset-bottom))]">
+                <div className="container py-3 md:py-8 px-3 min-[390px]:px-4 md:px-8 max-w-[1600px] mx-auto">
                     {/* SEO-friendly heading — visible and descriptive */}
-                    <div className="mb-6 md:mb-8 border-[3px] border-black dark:border-zinc-700 bg-white dark:bg-[#1e1e21] p-5 rounded-[10px] shadow-[4px_4px_0px_0px_#000] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] relative overflow-hidden">
-                        <div className="absolute top-0 left-0 w-full h-1.5 bg-[#EAB308]"></div>
-                        <h1 className="text-xl sm:text-3xl font-black uppercase tracking-tight text-black dark:text-zinc-50 flex items-center gap-3">
-                            <span className="bg-[#EAB308] border-2 border-black text-black px-2.5 py-0.5 rounded-full text-xs sm:text-sm font-black tracking-widest uppercase">
+                    <div className="mb-4 md:mb-6 border-2 border-black/80 dark:border-zinc-700 bg-white dark:bg-[#1e1e21] p-3.5 sm:p-4 rounded-[8px] shadow-[2px_2px_0px_0px_#000] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.1)] relative overflow-hidden">
+                        <div className="absolute top-0 left-0 w-full h-1 bg-[#EAB308]"></div>
+                        <h1 className="text-lg sm:text-2xl font-black uppercase tracking-tight text-black dark:text-zinc-50 flex flex-wrap items-center gap-2 sm:gap-3">
+                            <span className="bg-[#EAB308] border-2 border-black text-black px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-black tracking-widest uppercase">
                                 {category && category !== 'Tümü' ? category : 'Genel'}
                             </span>
                             {category && category !== 'Tümü'
@@ -222,7 +222,7 @@ export default async function ForumPage({ searchParams }: ForumPageProps) {
                                 ? 'Fizikhub Cevaplanmamış Bilim Soruları'
                                 : 'Fizikhub Bilim Forumu'}
                         </h1>
-                        <p className="text-xs sm:text-sm font-medium text-muted-foreground mt-2 leading-relaxed">
+                        <p className="text-xs sm:text-sm font-medium text-muted-foreground mt-2 leading-relaxed max-w-3xl">
                             {category && category !== 'Tümü'
                                 ? `${category} alanı altındaki soru-cevap paylaşımları, topluluk çözümleri ve akademik tartışmalar.`
                                 : filter === 'solved'
