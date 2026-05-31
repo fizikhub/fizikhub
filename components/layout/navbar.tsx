@@ -74,11 +74,11 @@ export function Navbar() {
                 - Height: h-14 (56px) - Optimized for Mobile
                 - Style: Dark Glass Neo-Brutalist
             */}
-            <header className="fixed top-0 left-0 right-0 z-50 h-[53px] sm:h-16 md:hidden" role="banner">
+            <header className="fixed top-0 left-0 right-0 z-50 h-16 md:hidden" role="banner">
                 <div
                     className={cn(
                         "h-full",
-                        "flex items-center justify-between px-4 sm:px-6",
+                        "flex items-center justify-between px-3.5 sm:px-6",
                         "bg-[#09090b]/80 backdrop-blur-xl border-b border-white/10",
                         "shadow-lg",
                         "w-full relative"
@@ -121,7 +121,7 @@ export function Navbar() {
                     </div>
 
                     {/* RIGHT: COMPACT CONTROLS */}
-                    <div className="relative z-50 flex items-center gap-2">
+                    <div className="relative z-50 flex items-center gap-2.5">
 
                         {/* Desktop Links (Will be hidden anyway since parent is md:hidden, but kept for structural purity) */}
                         <nav className="hidden md:flex items-center gap-2 mr-6" aria-label="Ana navigasyon">
@@ -146,9 +146,9 @@ export function Navbar() {
                             id="desktop-search-trigger"
                             onClick={() => setIsSearchOpen(true)}
                             aria-label="Ara"
-                            className="no-min-size flex items-center justify-center w-8 h-8 box-border bg-white border-2 border-black rounded-lg shadow-[2px_2px_0px_0px_#000] cursor-pointer hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_0px_#000] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all p-0"
+                            className="flex items-center justify-center w-11 h-11 box-border bg-white border-2 border-black rounded-[8px] shadow-[2px_2px_0px_0px_#000] cursor-pointer hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_0px_#000] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all p-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#EAB308]"
                         >
-                            <Search className="w-4 h-4 text-black stroke-[3px]" />
+                            <Search className="w-5 h-5 text-black stroke-[3px]" />
                         </button>
 
                         {/* 2. ZAP - OPTIMIZED (32px) */}
@@ -156,9 +156,9 @@ export function Navbar() {
                             id="desktop-zap-trigger"
                             onClick={() => setIsFactOpen(true)}
                             aria-label="Günün Hap Bilgisi"
-                            className="no-min-size flex items-center justify-center w-8 h-8 box-border bg-[#EAB308] border-2 border-black rounded-lg shadow-[2px_2px_0px_0px_#000] cursor-pointer hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_0px_#000] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all mr-1 p-0"
+                            className="flex items-center justify-center w-11 h-11 box-border bg-[#EAB308] border-2 border-black rounded-[8px] shadow-[2px_2px_0px_0px_#000] cursor-pointer hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_0px_#000] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all p-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
                         >
-                            <Zap className="w-4 h-4 text-black fill-black stroke-[3px]" />
+                            <Zap className="w-5 h-5 text-black fill-black stroke-[3px]" />
                         </button>
 
                         {/* 3. MOBILE MENU (FULLSCREEN REBOOT) */}
@@ -169,7 +169,7 @@ export function Navbar() {
                 </div>
             </header >
 
-            <div className="h-[53px] sm:h-[64px] md:hidden" />
+            <div className="h-16 md:hidden" />
             <CommandPalette isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
             <PhysicsFactModal open={isFactOpen} onOpenChange={setIsFactOpen} />
         </>

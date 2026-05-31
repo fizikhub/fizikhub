@@ -5,7 +5,7 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import { NeoArticleCard } from "@/components/articles/neo-article-card";
 import { createClient } from "@/lib/supabase";
 import { processFeedData } from "@/lib/feed-helpers";
-import { ArrowUp, RefreshCw } from "lucide-react";
+import { RefreshCw } from "lucide-react";
 
 // Lazy load non-critical feed cards to minimize initial JS bundle size and TBT
 const QuestionCard = dynamic(() => import("@/components/forum/question-card").then(mod => mod.QuestionCard));
@@ -14,23 +14,23 @@ const BookReviewCard = dynamic(() => import("@/components/book-review/book-revie
 const TermCard = dynamic(() => import("@/components/term/term-card").then(mod => mod.TermCard));
 
 const SuggestedUsersCard = dynamic(() => import("@/components/home/suggested-users-card").then(mod => mod.SuggestedUsersCard), {
-    loading: () => <div className="h-40 bg-muted/20 animate-pulse rounded-2xl" />
+    loading: () => <div className="h-40 bg-muted/20 animate-pulse rounded-[8px]" />
 });
 
 // Lazy load heavy injected components
 const CommunityInviteBanner = dynamic(() => import("@/components/explore/community-invite-banner").then(mod => mod.CommunityInviteBanner), {
-    loading: () => <div className="h-40 bg-muted/20 animate-pulse rounded-2xl" />
+    loading: () => <div className="h-40 bg-muted/20 animate-pulse rounded-[8px]" />
 });
 
 const QuestionOfTheWeek = dynamic(() => import("@/components/forum/question-of-the-week").then(mod => mod.QuestionOfTheWeek), {
-    loading: () => <div className="h-40 bg-muted/20 animate-pulse rounded-2xl" />
+    loading: () => <div className="h-40 bg-muted/20 animate-pulse rounded-[8px]" />
 });
 
 import { Article, Question } from "@/lib/api";
 
 // Dynamic Loader Skeleton for pagination
 const DynamicSkeleton = () => (
-    <div className="w-full h-64 bg-white dark:bg-[#1e1e21] border-[3px] border-black dark:border-zinc-700 rounded-[10px] shadow-[4px_4px_0px_0px_#000] p-6 space-y-4 animate-pulse">
+    <div className="w-full h-64 bg-white dark:bg-[#1e1e21] border-2 sm:border-[3px] border-black dark:border-zinc-700 rounded-[8px] shadow-[3px_3px_0px_0px_#000] sm:shadow-[4px_4px_0px_0px_#000] p-6 space-y-4 animate-pulse">
         <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-muted/30" />
             <div className="space-y-2 flex-1">
@@ -72,8 +72,18 @@ export type FeedItem =
 
 interface UnifiedFeedProps {
     items: FeedItem[];
-    suggestedUsers?: any[];
+    suggestedUsers?: SuggestedUser[];
     showExtras?: boolean;
+}
+
+interface SuggestedUser {
+    id: string;
+    username: string;
+    full_name: string;
+    avatar_url: string;
+    is_writer: boolean;
+    is_verified: boolean;
+    bio: string;
 }
 
 export function UnifiedFeed({ items: initialItems, suggestedUsers = [], showExtras = true }: UnifiedFeedProps) {
@@ -251,10 +261,10 @@ export function UnifiedFeed({ items: initialItems, suggestedUsers = [], showExtr
             
             {/* FLOATING REAL-TIME BADGE (PILL) */}
             {pendingItems.length > 0 && (
-                <div className="sticky top-20 z-50 flex justify-center w-full pointer-events-none">
+                <div className="sticky top-20 z-50 flex justify-center w-full pointer-events-none px-2">
                     <button
                         onClick={applyPendingItems}
-                        className="pointer-events-auto flex items-center gap-2 px-4 py-2.5 rounded-full bg-[#EAB308] text-black border-[3px] border-black font-black uppercase text-xs sm:text-sm tracking-wider shadow-[4px_4px_0px_0px_#000] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_#000] active:translate-y-[4px] active:shadow-none transition-all animate-bounce"
+                        className="pointer-events-auto min-h-11 flex items-center gap-2 px-4 py-2.5 rounded-full bg-[#EAB308] text-black border-2 sm:border-[3px] border-black font-black uppercase text-xs sm:text-sm tracking-wider shadow-[3px_3px_0px_0px_#000] sm:shadow-[4px_4px_0px_0px_#000] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_#000] active:translate-y-[4px] active:shadow-none transition-all animate-bounce"
                     >
                         <RefreshCw className="w-4 h-4 animate-spin-slow" />
                         Yeni Paylaşımlar Var! ({pendingItems.length})
@@ -326,22 +336,20 @@ export function UnifiedFeed({ items: initialItems, suggestedUsers = [], showExtr
                         )}
 
                         {item.type === 'question' && (
-                            <div className="rounded-[10px] bg-white dark:bg-[#1e1e21] hover:bg-neutral-50 dark:hover:bg-[#252529] transition-colors p-1 sm:p-2 border-[3px] border-black dark:border-zinc-700 shadow-[4px_4px_0px_0px_#000] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)]">
-                                <QuestionCard
-                                    question={item.data}
-                                    badgeLabel="SORU"
-                                    badgeClassName="bg-black text-[#EAB308] px-2 py-0.5 rounded-md font-black uppercase text-xs tracking-wider"
-                                />
-                            </div>
+                            <QuestionCard
+                                question={item.data}
+                                badgeLabel="SORU"
+                                badgeClassName="bg-black text-[#EAB308] px-2 py-0.5 rounded-md font-black uppercase text-xs tracking-wider"
+                            />
                         )}
 
                         {showExtras && index === 2 && (
-                            <LazyMount className="mt-6 min-h-40">
+                            <LazyMount className="mt-2 sm:mt-4 min-h-40">
                                 <CommunityInviteBanner />
                             </LazyMount>
                         )}
                         {showExtras && index === 8 && (
-                            <LazyMount className="mt-6 min-h-40 rounded-[10px] bg-gradient-to-br from-[#EAB308] to-[#EAB308] p-6 border-[3px] border-black shadow-[4px_4px_0px_0px_#000]">
+                            <LazyMount className="mt-2 sm:mt-4 min-h-40 rounded-[8px] bg-[#EAB308] p-5 sm:p-6 border-2 sm:border-[3px] border-black shadow-[3px_3px_0px_0px_#000] sm:shadow-[4px_4px_0px_0px_#000]">
                                 <div>
                                     <h3 className="font-black text-sm uppercase tracking-widest text-black mb-4 text-center">
                                         Haftanın Sorusu
@@ -367,7 +375,7 @@ export function UnifiedFeed({ items: initialItems, suggestedUsers = [], showExtr
             {!loading && hasMore && (
                 <button
                     onClick={loadMoreItems}
-                    className="w-full py-4 mt-2 font-black text-sm uppercase tracking-widest bg-[#EAB308] text-black border-[3px] border-black rounded-[8px] sm:rounded-[10px] shadow-[4px_4px_0px_0px_#000] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_#000] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all flex items-center justify-center gap-2"
+                    className="w-full min-h-12 py-4 mt-2 font-black text-sm uppercase tracking-widest bg-[#EAB308] text-black border-2 sm:border-[3px] border-black rounded-[8px] shadow-[3px_3px_0px_0px_#000] sm:shadow-[4px_4px_0px_0px_#000] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_#000] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all flex items-center justify-center gap-2"
                 >
                     <RefreshCw className="w-4 h-4" />
                     Daha Fazla İçerik Göster
@@ -375,13 +383,13 @@ export function UnifiedFeed({ items: initialItems, suggestedUsers = [], showExtr
             )}
 
             {!hasMore && (
-                <div className="w-full text-center py-6 text-neutral-500 font-bold uppercase text-xs tracking-wider border-2 border-dashed border-neutral-300 dark:border-zinc-800 rounded-xl">
-                    🚀 Harika! Akışın Sonuna Ulaştın. Yeni Bilgiler İçin Bizi Takip Etmeye Devam Et.
+                <div className="w-full text-center py-6 px-4 text-neutral-500 font-bold uppercase text-xs tracking-wider border-2 border-dashed border-neutral-300 dark:border-zinc-800 rounded-[8px]">
+                    Harika, akışın sonuna ulaştın. Yeni bilgiler için bizi takip etmeye devam et.
                 </div>
             )}
 
             {showExtras && (
-                <LazyMount className="mt-6 rounded-[10px] bg-white dark:bg-[#1e1e21] border-[3px] border-black dark:border-zinc-700 shadow-[4px_4px_0px_0px_#000] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] p-6">
+                <LazyMount className="mt-2 sm:mt-4 rounded-[8px] bg-white dark:bg-[#1e1e21] border-2 sm:border-[3px] border-black dark:border-zinc-700 shadow-[3px_3px_0px_0px_#000] sm:shadow-[4px_4px_0px_0px_#000] dark:shadow-[3px_3px_0px_0px_rgba(255,255,255,0.1)] sm:dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] p-4 sm:p-5">
                     <h3 className="font-black text-xs uppercase tracking-widest text-neutral-500 dark:text-zinc-400 mb-4 text-center">
                         Önerilen Araştırmacılar
                     </h3>
@@ -427,7 +435,7 @@ function LazyMount({
 
     return (
         <div ref={ref} className={className}>
-            {isVisible ? children : <div className="h-40 rounded-[10px] bg-muted/20 animate-pulse" />}
+            {isVisible ? children : <div className="h-40 rounded-[8px] bg-muted/20 animate-pulse" />}
         </div>
     );
 }

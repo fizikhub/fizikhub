@@ -36,10 +36,26 @@ function formatRelativeTime(dateLike: string, now: number) {
 }
 
 interface QuestionCardProps {
-    question: any;
+    question: QuestionCardData;
     userVote?: number;
     badgeLabel?: string;
     badgeClassName?: string;
+}
+
+interface QuestionCardData {
+    id: number;
+    title: string;
+    content?: string | null;
+    created_at: string;
+    category?: string | null;
+    votes?: number | null;
+    answer_count?: number | null;
+    answers?: { count?: number | null }[] | null;
+    full_name?: string | null;
+    profiles?: {
+        username?: string | null;
+        avatar_url?: string | null;
+    } | null;
 }
 
 export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: QuestionCardProps) => {
@@ -90,7 +106,7 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
             } else {
                 // Haptic feedback could go here
             }
-        } catch (error) {
+        } catch {
             setVoteState(previousVote);
             setVotes(previousCount);
         } finally {
@@ -107,11 +123,11 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
                 prefetch={false}
                 href={`/forum/${question.id}`}
                 className={cn(
-                    "relative flex flex-col w-full h-full overflow-hidden transition-all duration-200 cursor-pointer group rounded-[10px]",
+                    "relative flex flex-col w-full h-full overflow-hidden transition-all duration-200 cursor-pointer group",
                     // CONTAINER STYLE
                     "bg-white dark:bg-[#1e1e21]",
-                    "border-[3px] border-black dark:border-zinc-700",
-                    "shadow-[4px_4px_0px_0px_#000] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.15)]",
+                    "border-2 sm:border-[3px] border-black dark:border-zinc-700 rounded-[8px]",
+                    "shadow-[3px_3px_0px_0px_#000] sm:shadow-[4px_4px_0px_0px_#000] dark:shadow-[3px_3px_0px_0px_rgba(255,255,255,0.12)] sm:dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.15)]",
                     "hover:shadow-[2px_2px_0px_0px_#000] dark:hover:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.1)] hover:translate-x-[2px] hover:translate-y-[2px]"
                 )}
             >
@@ -121,19 +137,19 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
                 />
 
                 {/* Hover accent line on left */}
-                <div className="absolute left-0 top-0 bottom-0 w-[4px] bg-[#EAB308] opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20 rounded-l-[10px]" />
+                <div className="absolute left-0 top-0 bottom-0 w-[4px] bg-[#EAB308] opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20 rounded-l-[8px]" />
 
                 {/* 1. Header Bar (Yellow Theme) */}
-                <div className="flex items-center justify-between px-4 py-2.5 border-b-[3px] border-black dark:border-zinc-700 bg-gradient-to-r from-[#EAB308] to-[#EAB308] z-10 relative">
-                    <span className="font-black text-[11px] uppercase tracking-[0.15em] text-black">
+                <div className="flex items-center justify-between gap-3 px-4 py-3 border-b-2 sm:border-b-[3px] border-black dark:border-zinc-700 bg-[#EAB308] z-10 relative">
+                    <span className="font-black text-[11px] uppercase tracking-[0.14em] text-black truncate">
                         {question.category || "GENEL"}
                     </span>
-                    <div className="flex items-center gap-2">
-                        <time dateTime={question.created_at} className="text-[10px] font-bold text-black/50 uppercase tracking-widest">
+                    <div className="flex items-center gap-2 shrink-0">
+                        <time dateTime={question.created_at} className="text-[10px] font-black text-black/55 uppercase tracking-widest">
                             {formatRelativeTime(question.created_at, renderedAt)}
                         </time>
                         {badgeLabel && (
-                            <div className="bg-black text-[#EAB308] px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider">
+                            <div className="bg-black text-[#EAB308] px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-wider">
                                 {badgeLabel}
                             </div>
                         )}
@@ -141,10 +157,10 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
                 </div>
 
                 {/* 2. Main Body */}
-                <div className="flex-1 p-4 sm:p-5 flex flex-col gap-2.5 z-10 relative">
+                <div className="flex-1 p-4 sm:p-5 flex flex-col gap-3 z-10 relative">
 
                     {/* Title */}
-                    <h2 className="font-[family-name:var(--font-outfit)] text-lg sm:text-2xl font-black text-black dark:text-zinc-50 leading-tight uppercase tracking-tight group-hover:text-[#EAB308] transition-colors duration-200 line-clamp-2">
+                    <h2 className="font-[family-name:var(--font-outfit)] text-xl sm:text-2xl font-black text-black dark:text-zinc-50 leading-[1.08] uppercase tracking-normal group-hover:text-[#EAB308] transition-colors duration-200 line-clamp-2">
                         {question.title}
                     </h2>
 
@@ -158,7 +174,7 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
                             )}
                         >
                             {cleanContent}
-                            {!isExpanded && question.content?.length > 160 && "..."}
+                            {!isExpanded && (question.content?.length ?? 0) > 160 && "..."}
                             {isExpanded && question.content && (
                                 <span className="block mt-2">
                                     {stripHtml(question.content).slice(160)}
@@ -166,14 +182,14 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
                             )}
                         </p>
 
-                        {question.content?.length > 160 && !isExpanded && (
+                        {(question.content?.length ?? 0) > 160 && !isExpanded && (
                             <button
                                 onClick={(e) => {
                                     e.preventDefault();
                                     e.stopPropagation();
                                     setIsExpanded(true);
                                 }}
-                                className="mt-3 text-[10px] font-black uppercase tracking-widest text-[#EAB308] bg-black hover:bg-zinc-800 px-3 py-1.5 rounded-md transition-colors border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,0.3)]"
+                                className="mt-3 min-h-11 text-[10px] font-black uppercase tracking-widest text-[#EAB308] bg-black hover:bg-zinc-800 px-3 py-2 rounded-[8px] transition-colors border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,0.3)]"
                             >
                                 Devamını Oku
                             </button>
@@ -186,7 +202,7 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
                                     e.stopPropagation();
                                     setIsExpanded(false);
                                 }}
-                                className="mt-3 text-[10px] font-black uppercase tracking-widest text-neutral-400 hover:text-black dark:hover:text-white transition-colors"
+                                className="mt-3 min-h-11 text-[10px] font-black uppercase tracking-widest text-neutral-400 hover:text-black dark:hover:text-white transition-colors"
                             >
                                 ▲ Küçült
                             </button>
@@ -195,7 +211,7 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
                 </div>
 
                 {/* 3. Footer */}
-                <div className="mt-auto px-4 sm:px-5 py-2.5 border-t-[3px] border-black dark:border-zinc-700 bg-neutral-50 dark:bg-[#161618] flex items-center justify-between z-10 relative">
+                <div className="mt-auto px-4 sm:px-5 py-3 border-t-2 sm:border-t-[3px] border-black dark:border-zinc-700 bg-neutral-50 dark:bg-[#161618] flex flex-col min-[390px]:flex-row min-[390px]:items-center justify-between gap-3 z-10 relative">
 
                     {/* Author (Left) */}
                     <div className="flex items-center gap-2.5 z-20">
@@ -205,7 +221,7 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
                                 e.stopPropagation();
                                 router.push(`/kullanici/${question.profiles?.username}`);
                             }}
-                            className="flex items-center gap-2 group/author cursor-pointer"
+                            className="flex min-h-11 items-center gap-2 group/author cursor-pointer rounded-[8px] pr-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#EAB308]"
                         >
                             <div className="w-7 h-7 rounded-full border-[2px] border-black dark:border-zinc-600 overflow-hidden bg-white shadow-[1px_1px_0px_0px_#000] dark:shadow-[1px_1px_0px_0px_rgba(255,255,255,0.1)]">
                                 <OptimizedAvatar
@@ -222,13 +238,14 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
                     </div>
 
                     {/* Actions (Right) */}
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center justify-end gap-3">
 
                         {/* Vote Pod */}
                         <div className="flex items-center border-[2px] border-black dark:border-zinc-600 bg-white dark:bg-[#1e1e21] rounded-lg overflow-hidden shadow-[2px_2px_0px_0px_#000] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.1)]" onClick={(e) => e.stopPropagation()}>
                             <button
                                 onClick={(e) => handleVote(e, 1)}
-                                className={cn("px-2 py-1 hover:bg-green-50 dark:hover:bg-green-900/30 transition-colors border-r-[2px] border-black dark:border-zinc-600", voteState === 1 && "bg-green-100 dark:bg-green-900/50")}>
+                                aria-label="Soruyu yükselt"
+                                className={cn("min-w-11 min-h-11 px-2 py-1 hover:bg-green-50 dark:hover:bg-green-900/30 transition-colors border-r-[2px] border-black dark:border-zinc-600", voteState === 1 && "bg-green-100 dark:bg-green-900/50")}>
                                 <ChevronUp className={cn("w-3.5 h-3.5 stroke-[3px]", voteState === 1 ? "text-green-500" : "text-black dark:text-zinc-400")} />
                             </button>
                             <span className={cn("px-2 min-w-[20px] text-center text-[11px] font-black tabular-nums", votes > 0 ? "text-green-500" : (votes < 0 ? "text-red-500" : "text-neutral-400 dark:text-zinc-500"))}>
@@ -236,7 +253,8 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
                             </span>
                             <button
                                 onClick={(e) => handleVote(e, -1)}
-                                className={cn("px-2 py-1 hover:bg-red-50 dark:hover:bg-red-900/30 transition-colors border-l-[2px] border-black dark:border-zinc-600", voteState === -1 && "bg-red-100 dark:bg-red-900/50")}>
+                                aria-label="Soruyu düşür"
+                                className={cn("min-w-11 min-h-11 px-2 py-1 hover:bg-red-50 dark:hover:bg-red-900/30 transition-colors border-l-[2px] border-black dark:border-zinc-600", voteState === -1 && "bg-red-100 dark:bg-red-900/50")}>
                                 <ChevronDown className={cn("w-3.5 h-3.5 stroke-[3px]", voteState === -1 ? "text-red-500" : "text-black dark:text-zinc-400")} />
                             </button>
                         </div>

@@ -4,7 +4,7 @@ import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription } from 
 import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
-import { Menu, X, Home, BookOpen, Trophy, User, Zap, ChevronRight, Github, Twitter, Instagram, Atom, Compass, Book, Mail } from "lucide-react";
+import { Menu, X, Home, Trophy, User, Zap, ChevronRight, Github, Twitter, Instagram, Atom, Compass, Book, Mail } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { m as motion } from "framer-motion";
@@ -41,9 +41,10 @@ export function MobileMenu() {
                 <SheetTrigger asChild>
                     <button
                         id="mobile-menu-trigger"
-                        className="no-min-size w-8 h-8 box-border p-0 flex items-center justify-center bg-white border-2 border-black shadow-[2px_2px_0px_0px_#000] hover:shadow-[1px_1px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] active:shadow-none active:translate-x-[2px] active:translate-y-[2px] transition-all rounded-lg group"
+                        aria-label="Menüyü aç"
+                        className="w-11 h-11 box-border p-0 flex items-center justify-center bg-white border-2 border-black shadow-[2px_2px_0px_0px_#000] hover:shadow-[1px_1px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] active:shadow-none active:translate-x-[2px] active:translate-y-[2px] transition-all rounded-[8px] group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#EAB308]"
                     >
-                        <Menu className="w-4 h-4 text-black stroke-[3] group-hover:scale-110 transition-transform" />
+                        <Menu className="w-5 h-5 text-black stroke-[3] group-hover:scale-110 transition-transform" />
                     </button>
                 </SheetTrigger>
 
@@ -56,7 +57,7 @@ export function MobileMenu() {
                 <SheetContent
                     side="right"
                     className={cn(
-                        "w-[85%] max-w-[350px] p-0 border-l-[3px] border-black bg-[#27272a] shadow-none flex flex-col h-full",
+                        "w-[86%] max-w-[380px] p-0 border-l-[3px] border-black bg-[#27272a] shadow-none flex flex-col h-full",
                         // Massive shadow for depth
                         "shadow-[-15px_0px_40px_-10px_rgba(0,0,0,0.8)]"
                     )}
@@ -79,14 +80,15 @@ export function MobileMenu() {
                         {/* Close Button */}
                         <button
                             onClick={() => setOpen(false)}
-                            className="w-8 h-8 bg-white border-2 border-black flex items-center justify-center shadow-[2px_2px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none transition-all rounded-lg active:translate-y-[2px]"
+                            aria-label="Menüyü kapat"
+                            className="w-11 h-11 bg-white border-2 border-black flex items-center justify-center shadow-[2px_2px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none transition-all rounded-[8px] active:translate-y-[2px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#EAB308]"
                         >
                             <X className="w-5 h-5 stroke-[3] text-black" />
                         </button>
                     </div>
 
                     {/* 2. BODY SECTION */}
-                    <div className="flex-1 overflow-y-auto bg-[#202023] p-4 space-y-2.5">
+                    <div className="flex-1 overflow-y-auto bg-[#202023] p-4 space-y-3">
                         {menuItems.map((item, i) => (
                             <motion.div
                                 key={item.label}
@@ -100,16 +102,16 @@ export function MobileMenu() {
                                             setOpen(false);
                                             setTimeout(() => setFactOpen(true), 300);
                                         }}
-                                        className="block w-full text-left"
+                                        className="block w-full text-left rounded-[8px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#EAB308]"
                                     >
                                         <div className={cn(
-                                            "flex items-center justify-between p-2.5 bg-[#27272a] border-[1.5px] border-black/60 shadow-[3px_3px_0px_0px_#000] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all rounded-xl group hover:bg-[#3f3f46]/50"
+                                            "flex min-h-[58px] items-center justify-between p-3 bg-[#27272a] border-[1.5px] border-black/60 shadow-[3px_3px_0px_0px_#000] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all rounded-[8px] group hover:bg-[#3f3f46]/50"
                                         )}>
                                             <div className="flex items-center gap-3">
                                                 <div className={cn(
-                                                    "w-8 h-8 flex items-center justify-center border-[1.5px] border-black/60 rounded-lg bg-[#18181b]"
+                                                    "w-10 h-10 flex items-center justify-center border-[1.5px] border-black/60 rounded-[8px] bg-[#18181b]"
                                                 )}>
-                                                    <item.icon className={cn("w-4 h-4 stroke-[2.5px]", item.iconColor)} />
+                                                    <item.icon className={cn("w-5 h-5 stroke-[2.5px]", item.iconColor)} />
                                                 </div>
                                                 <div className="flex flex-col">
                                                     <span className={cn("font-black text-[15px] uppercase tracking-tight text-zinc-100 transition-colors", item.color)}>
@@ -128,16 +130,16 @@ export function MobileMenu() {
                                 ) : (
                                     <Link prefetch={false} href={item.href!}
                                         onClick={() => setOpen(false)}
-                                        className="block"
+                                        className="block rounded-[8px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#EAB308]"
                                     >
                                         <div className={cn(
-                                            "flex items-center justify-between p-2.5 bg-[#27272a] border-[1.5px] border-black/60 shadow-[3px_3px_0px_0px_#000] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all rounded-xl group hover:bg-[#3f3f46]/50"
+                                            "flex min-h-[58px] items-center justify-between p-3 bg-[#27272a] border-[1.5px] border-black/60 shadow-[3px_3px_0px_0px_#000] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all rounded-[8px] group hover:bg-[#3f3f46]/50"
                                         )}>
                                             <div className="flex items-center gap-3">
                                                 <div className={cn(
-                                                    "w-8 h-8 flex items-center justify-center border-[1.5px] border-black/60 rounded-lg bg-[#18181b]"
+                                                    "w-10 h-10 flex items-center justify-center border-[1.5px] border-black/60 rounded-[8px] bg-[#18181b]"
                                                 )}>
-                                                    <item.icon className={cn("w-4 h-4 stroke-[2.5px]", item.iconColor)} />
+                                                    <item.icon className={cn("w-5 h-5 stroke-[2.5px]", item.iconColor)} />
                                                 </div>
                                                 <div className="flex flex-col">
                                                     <span className={cn("font-black text-[15px] uppercase tracking-tight text-zinc-100 transition-colors", item.color)}>
@@ -160,14 +162,14 @@ export function MobileMenu() {
                         <div className="pt-4 mt-4 border-t-2 border-zinc-800">
                             {user ? (
                                 <Link prefetch={false} href="/profil" onClick={() => setOpen(false)}>
-                                    <button className="w-full py-3 font-black text-base border-[2px] border-black bg-[#EAB308] text-black shadow-[3px_3px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none active:translate-y-[3px] transition-all rounded-xl uppercase flex items-center justify-center gap-2 group">
+                                    <button className="w-full min-h-12 py-3 font-black text-base border-[2px] border-black bg-[#EAB308] text-black shadow-[3px_3px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none active:translate-y-[3px] transition-all rounded-[8px] uppercase flex items-center justify-center gap-2 group">
                                         <User className="w-5 h-5 stroke-[3px]" />
                                         Profil
                                     </button>
                                 </Link>
                             ) : (
                                 <Link prefetch={false} href="/login" onClick={() => setOpen(false)}>
-                                    <button className="w-full py-3 font-black text-base border-[2px] border-black bg-white text-black shadow-[3px_3px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none active:translate-y-[3px] transition-all rounded-xl uppercase flex items-center justify-center gap-2 group">
+                                    <button className="w-full min-h-12 py-3 font-black text-base border-[2px] border-black bg-white text-black shadow-[3px_3px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none active:translate-y-[3px] transition-all rounded-[8px] uppercase flex items-center justify-center gap-2 group">
                                         <User className="w-5 h-5 stroke-[3px]" />
                                         Giriş Yap
                                     </button>
@@ -183,7 +185,8 @@ export function MobileMenu() {
                                 <a
                                     key={i}
                                     href="#"
-                                    className="w-10 h-10 flex items-center justify-center bg-white border-2 border-black shadow-[3px_3px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none transition-all rounded-lg active:translate-y-[2px]"
+                                    aria-label={i === 0 ? "Twitter" : i === 1 ? "Instagram" : "GitHub"}
+                                    className="w-11 h-11 flex items-center justify-center bg-white border-2 border-black shadow-[3px_3px_0px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none transition-all rounded-[8px] active:translate-y-[2px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#EAB308]"
                                 >
                                     <Icon className="w-5 h-5 text-black stroke-[2.5px]" />
                                 </a>

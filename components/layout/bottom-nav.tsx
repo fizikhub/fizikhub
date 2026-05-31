@@ -68,10 +68,12 @@ export function BottomNav() {
     }, [isArticleDetail]);
 
     useEffect(() => {
-        setOptimisticHref(null);
         navigatingHrefRef.current = null;
         navRef.current?.classList.toggle(HIDDEN_NAV_CLASS, isArticleDetail);
         hiddenRef.current = isArticleDetail;
+
+        const resetId = window.setTimeout(() => setOptimisticHref(null), 0);
+        return () => window.clearTimeout(resetId);
     }, [pathname, isArticleDetail]);
 
     const vibrate = () => {
@@ -136,7 +138,7 @@ export function BottomNav() {
             )}
         >
             <nav aria-label="Mobil navigasyon" className={cn(
-                "w-full h-[calc(56px+env(safe-area-inset-bottom))] bg-white/92 dark:bg-[#121212]/92 backdrop-blur-sm border-t border-black/10 dark:border-white/10 flex items-start justify-around px-2 pt-1 pb-[env(safe-area-inset-bottom)] relative shadow-[0_-4px_16px_rgba(0,0,0,0.08)]"
+                "w-full h-[calc(68px+env(safe-area-inset-bottom))] bg-white/94 dark:bg-[#121212]/94 backdrop-blur-md border-t border-black/10 dark:border-white/10 flex items-start justify-around px-2 pt-1.5 pb-[env(safe-area-inset-bottom)] relative shadow-[0_-6px_18px_rgba(0,0,0,0.12)]"
             )}>
                 <div className="flex items-center justify-around w-full">
                     <NavItem
@@ -144,6 +146,7 @@ export function BottomNav() {
                         href="/"
                         icon={Home}
                         label="Ana Sayfa"
+                        shortLabel="Ana"
                         isActive={(optimisticHref ?? pathname) === "/"}
                         onActivate={activateRoute}
                         onNavigateImmediately={navigateImmediately}
@@ -155,6 +158,7 @@ export function BottomNav() {
                         href="/makale"
                         icon={BookOpen}
                         label="Keşfet"
+                        shortLabel="Keşfet"
                         isActive={(optimisticHref ?? pathname).startsWith("/makale")}
                         onActivate={activateRoute}
                         onNavigateImmediately={navigateImmediately}
@@ -166,6 +170,7 @@ export function BottomNav() {
                             id="nav-item-share"
                             href="/paylas"
                             className="relative block touch-manipulation"
+                            aria-label="Paylaş"
                             onPointerDown={handleSharePointerDown}
                             onClick={handleShareClick}
                             onTouchStart={() => warmRoute("/paylas")}
@@ -174,7 +179,7 @@ export function BottomNav() {
                             <div
                                 className="
                                     flex items-center justify-center
-                                    w-12 h-12
+                                    w-14 h-14
                                     bg-[#EAB308]
                                     border-2 border-black dark:border-white
                                     rounded-full
@@ -197,6 +202,7 @@ export function BottomNav() {
                         href="/forum"
                         icon={MessageCircle}
                         label="Forum"
+                        shortLabel="Forum"
                         isActive={(optimisticHref ?? pathname).startsWith("/forum")}
                         onActivate={activateRoute}
                         onNavigateImmediately={navigateImmediately}
@@ -208,6 +214,7 @@ export function BottomNav() {
                         href="/profil"
                         icon={User}
                         label="Profil"
+                        shortLabel="Profil"
                         isActive={(optimisticHref ?? pathname).startsWith("/profil")}
                         onActivate={activateRoute}
                         onNavigateImmediately={navigateImmediately}
@@ -224,6 +231,7 @@ function NavItem({
     href,
     icon: Icon,
     label,
+    shortLabel,
     isActive,
     onActivate,
     onNavigateImmediately,
@@ -233,6 +241,7 @@ function NavItem({
     href: string;
     icon: LucideIcon;
     label: string;
+    shortLabel?: string;
     isActive: boolean;
     onActivate: (href: string) => void;
     onNavigateImmediately: (href: string) => void;
@@ -272,12 +281,12 @@ function NavItem({
             aria-label={label}
             aria-current={isActive ? 'page' : undefined}
             className={cn(
-                "flex flex-col items-center justify-center min-w-[56px] min-h-[48px] relative group z-10 touch-manipulation",
+                "flex flex-col items-center justify-center min-w-[58px] min-h-[58px] relative group z-10 touch-manipulation rounded-[8px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#EAB308]",
                 isActive ? "text-black dark:text-white" : "text-zinc-500 dark:text-zinc-500"
             )}
         >
             <div
-                className="flex flex-col items-center gap-0.5 relative transition-transform duration-150 active:scale-x-110 active:scale-y-90"
+                className="flex flex-col items-center gap-0.5 relative transition-transform duration-150 active:scale-x-105 active:scale-y-95"
             >
                 {isActive && (
                     <div
@@ -285,14 +294,14 @@ function NavItem({
                             absolute inset-0 
                             bg-black/5 dark:bg-white/10 
                             border border-black/5 dark:border-white/5 
-                            rounded-lg
+                            rounded-[8px]
                             shadow-inner dark:shadow-[inset_0_1px_4px_rgba(0,0,0,0.2)]
                         "
                     />
                 )}
 
                 <div className={cn(
-                    "p-1.5 rounded-lg transition-all duration-200 relative z-10",
+                    "p-1 rounded-[8px] transition-all duration-200 relative z-10",
                     !isActive && "group-hover:bg-black/5 dark:group-hover:bg-white/5"
                 )}>
                     <div
@@ -302,14 +311,20 @@ function NavItem({
                         )}
                     >
                         <Icon
-                            fill={isActive ? "currentColor" : "none"}
+                            fill="none"
                             className={cn(
                                 "w-5 h-5 transition-all duration-200",
-                                isActive ? "stroke-[2.75px]" : "stroke-[2px]"
+                                isActive ? "stroke-[3px]" : "stroke-[2px]"
                             )}
                         />
                     </div>
                 </div>
+                <span className={cn(
+                    "relative z-10 text-[10px] font-black leading-none tracking-normal",
+                    isActive ? "opacity-100" : "opacity-70"
+                )}>
+                    {shortLabel || label}
+                </span>
             </div>
         </Link>
     );
