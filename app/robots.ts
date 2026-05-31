@@ -30,13 +30,6 @@ export default function robots(): MetadataRoute.Robots {
         '/abs/',
         '/storage/',
         '/cdn-cgi/',
-        '/mesajlar/',       // Dynamic messages block
-        '/basvuru/yazar',   // Blocks yazar application but keeps test happy
-        '/profil/',         // Private profile settings block
-        '/admin/',
-        '/yazar-paneli/',
-        '/yonetim/',
-        '/*?*kategori=',    // Block parameterized categories to prevent duplication
     ];
 
     const aiRules = AI_CRAWLER_USER_AGENTS.map(bot => ({

@@ -3,6 +3,7 @@
 export function DankLogo() {
     return (
         <div className="relative group cursor-pointer select-none flex items-center justify-center">
+            <span className="sr-only">FizikHub ana sayfa</span>
             {/* 
                 FIXED LOGO IMPLEMENTATION
                 - viewBox increased to prevent clipping of 'F' and 'b' (220x80)
@@ -17,6 +18,7 @@ export function DankLogo() {
                     className="w-[120px] h-[44px] sm:w-[160px] sm:h-[58px] overflow-visible drop-shadow-[0_4px_6px_rgba(0,0,0,0.3)]"
                     fill="none"
                     xmlns="http://www.w3.org/2000/svg"
+                    aria-hidden="true"
                 >
                     {/* 1. SHADOW LAYER (Offset) */}
                     <text
@@ -79,7 +81,7 @@ export function DankLogo() {
                 </svg>
 
                 {/* Subtitle Badge - Tucked tighter and ensured visibility */}
-                <div className="absolute bottom-1 right-2 sm:right-6 transform rotate-[-3deg] z-20">
+                <div className="absolute bottom-1 right-2 sm:right-6 transform rotate-[-3deg] z-20" aria-hidden="true">
                     <div className="bg-white border-[1.5px] sm:border-[2px] border-black px-1 py-[0.5px] shadow-[2px_2px_0px_0px_#000]">
                         <span className="block text-[7px] sm:text-[9px] font-black text-black leading-none uppercase tracking-widest whitespace-nowrap" style={{ fontFamily: "var(--font-outfit)" }}>
                             BİLİM PLATFORMU

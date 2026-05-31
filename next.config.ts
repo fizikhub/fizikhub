@@ -1,6 +1,7 @@
 import type { NextConfig } from "next";
 
 const isProduction = process.env.NODE_ENV === "production";
+const isVercelRuntime = process.env.VERCEL === "1" || Boolean(process.env.NEXT_PUBLIC_VERCEL_ENV);
 
 const noindexHeader = [
   {
@@ -78,13 +79,12 @@ const contentSecurityPolicy = [
   "frame-src 'self' https://challenges.cloudflare.com https://www.youtube.com https://youtube.com https://phet.colorado.edu",
   "media-src 'self' blob:",
   "manifest-src 'self'",
-  "prefetch-src 'self'",
   "worker-src 'self' blob:",
   "object-src 'none'",
   "base-uri 'self'",
   "form-action 'self'",
   "frame-ancestors 'self' https://*.instagram.com https://*.facebook.com",
-  "upgrade-insecure-requests",
+  ...(isProduction && isVercelRuntime ? ["upgrade-insecure-requests"] : []),
 ];
 
 const reportOnlyContentSecurityPolicy = [
@@ -179,21 +179,6 @@ const nextConfig: NextConfig = {
   // single hop without Next.js preserving legacy query parameters.
   async redirects() {
     return [
-      {
-        source: '/index',
-        destination: '/',
-        permanent: true,
-      },
-      {
-        source: '/blog',
-        destination: '/makale',
-        permanent: true,
-      },
-      {
-        source: '/blog/:slug*',
-        destination: '/makale/:slug*',
-        permanent: true,
-      },
       {
         source: '/kesfet',
         destination: '/makale',

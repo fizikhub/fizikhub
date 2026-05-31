@@ -1,5 +1,3 @@
-'use client';
-
 export function SpeculationRules() {
     // Unsupported browsers ignore unknown script types, so this can be emitted
     // without a client-only mounted state.

@@ -4,8 +4,8 @@ import type { Metadata } from "next";
 import dynamic from "next/dynamic";
 
 import { FeedSkeleton } from "@/components/home/performance-skeletons";
-import { processFeedData, formatSliderArticles } from "@/lib/feed-helpers";
-import { FeedArticleData, FeedQuestionData } from "@/components/home/unified-feed";
+import { HOME_FEED_ARTICLE_SELECT, processFeedData, formatSliderArticles } from "@/lib/feed-helpers";
+import type { FeedArticleData, FeedQuestionData } from "@/components/home/unified-feed";
 import { SEO_PRIORITY_SLUGS } from "@/lib/seo-priority";
 import { LazyDesktopSidebar } from "@/components/home/lazy-desktop-sidebar";
 import { getSiteUrl, isLikelyIndexableArticle, toAbsoluteUrl } from "@/lib/seo-utils";
@@ -110,7 +110,7 @@ const getCachedFeedData = unstable_cache(
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!.trim()
     );
 
-    const articleSelect = '*, author:profiles!articles_author_id_fkey(full_name, username, avatar_url, is_writer)';
+    const articleSelect = HOME_FEED_ARTICLE_SELECT;
 
     const [articlesResult, priorityArticlesResult, questionsResult, profilesResult, storiesResult, groupsResult] = await Promise.all([
       // Fetch Articles & Blogs (using same table)
@@ -159,8 +159,8 @@ const getCachedFeedData = unstable_cache(
         .limit(12)
     ]);
 
-    const latestArticles = ((articlesResult.data || []) as FeedArticleRow[]).filter((article) => isLikelyIndexableArticle(article));
-    const priorityArticles = ((priorityArticlesResult.data || []) as FeedArticleRow[]).filter((article) => isLikelyIndexableArticle(article));
+    const latestArticles = ((articlesResult.data || []) as unknown as FeedArticleRow[]).filter((article) => isLikelyIndexableArticle(article));
+    const priorityArticles = ((priorityArticlesResult.data || []) as unknown as FeedArticleRow[]).filter((article) => isLikelyIndexableArticle(article));
     const seenSlugs = new Set(priorityArticles.map((article) => article.slug));
 
     return {

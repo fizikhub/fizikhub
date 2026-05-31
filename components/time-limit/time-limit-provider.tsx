@@ -2,7 +2,11 @@
 
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
 import { getTimeLimitStatus, updateTimeUsed, TimeLimitStatus } from "@/app/time-limit/actions";
-import { TimeExpired } from "./time-expired";
+import dynamic from "next/dynamic";
+
+const TimeExpired = dynamic(() => import("./time-expired").then((mod) => mod.TimeExpired), {
+    ssr: false,
+});
 
 interface TimeLimitContextType {
     isTimeLimited: boolean;

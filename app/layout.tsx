@@ -9,6 +9,7 @@ import Image from "next/image";
 
 const googleSiteVerification = process.env.NEXT_PUBLIC_GSC_TOKEN?.trim();
 const supabasePublicUrl = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
+const isVercelRuntime = process.env.VERCEL === "1" || Boolean(process.env.NEXT_PUBLIC_VERCEL_ENV);
 
 // Single font only — eliminates 2 render-blocking CSS files
 const inter = Inter({
@@ -223,7 +224,6 @@ const jsonLdGraph = {
 import { Toaster } from "sonner";
 import { NavigationWrapper } from "@/components/layout/navigation-wrapper";
 import { TimeLimitProvider } from "@/components/time-limit/time-limit-provider";
-import { MaintenanceAudioPlayer } from "@/components/maintenance/audio-player";
 import { RealtimeProvider } from "@/components/realtime-provider";
 
 import { Analytics } from "@vercel/analytics/react";
@@ -286,9 +286,6 @@ export default async function RootLayout({
                   <p className="text-slate-500">Bu sorunu ya çözmeye çalışıyoruz ya da hiç farkında bile değiliz.</p>
                 </div>
               </div>
-
-              {/* Audio */}
-              <MaintenanceAudioPlayer />
 
               {/* 500 Background Text */}
               <div className="absolute bottom-[-100px] font-black text-[200px] text-white/5 pointer-events-none select-none">
@@ -370,7 +367,7 @@ export default async function RootLayout({
               },
             }}
           />
-          <Analytics />
+          {isVercelRuntime ? <Analytics /> : null}
           <SpeculationRules />
         </ThemeProvider>
       </body>

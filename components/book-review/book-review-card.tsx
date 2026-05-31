@@ -1,13 +1,16 @@
 "use client";
 
-import Link from "next/link";
 import { ViewTransitionLink } from "@/components/ui/view-transition-link"; // [NEW]
 import Image from "next/image";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
-import { formatDistanceToNow } from "date-fns";
-import { tr } from "date-fns/locale";
 import { Star, BookOpen } from "lucide-react";
+
+const reviewDateFormatter = new Intl.DateTimeFormat("tr-TR", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    timeZone: "Europe/Istanbul",
+});
 
 interface BookReviewCardProps {
     article: {
@@ -46,6 +49,7 @@ export function BookReviewCard({ article, index = 0 }: BookReviewCardProps) {
     const rating = metadata.rating || 0;
     const displayExcerpt = article.excerpt || "";
     const authorName = article.author?.full_name || article.author?.username || "Anonim";
+    const publishedDate = reviewDateFormatter.format(new Date(article.created_at));
 
     return (
         <ViewTransitionLink href={`/makale/${article.slug}`} className="block group font-sans h-full">
@@ -125,7 +129,7 @@ export function BookReviewCard({ article, index = 0 }: BookReviewCardProps) {
                             </span>
                             <span className="text-[10px] opacity-50">•</span>
                             <time className="text-[10px] font-bold uppercase tracking-wide opacity-75">
-                                {formatDistanceToNow(new Date(article.created_at), { addSuffix: true, locale: tr })}
+                                {publishedDate}
                             </time>
                         </div>
                     </div>

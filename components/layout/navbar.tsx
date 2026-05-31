@@ -100,6 +100,19 @@ export function Navbar() {
         };
     }, [isArticleDetail]);
 
+    useEffect(() => {
+        const onKeyDown = (event: KeyboardEvent) => {
+            if (event.key.toLocaleLowerCase("en-US") !== "k") return;
+            if (!event.metaKey && !event.ctrlKey) return;
+
+            event.preventDefault();
+            setIsSearchOpen(true);
+        };
+
+        document.addEventListener("keydown", onKeyDown);
+        return () => document.removeEventListener("keydown", onKeyDown);
+    }, []);
+
     const navItems = [
         { href: "/", label: "Ana" },
         { href: "/makale", label: "Keşfet" },
@@ -160,7 +173,7 @@ export function Navbar() {
 
                     {/* LEFT: BRAND */}
                     <div className="relative z-50 flex-shrink-0 pt-0.5 hover:scale-105 transition-transform duration-300">
-                        <ViewTransitionLink href="/" aria-label="Ana Sayfa">
+                        <ViewTransitionLink href="/" aria-label="FizikHub ana sayfa">
                             <DankLogo />
                         </ViewTransitionLink>
                     </div>
@@ -215,8 +228,8 @@ export function Navbar() {
             </header >
 
             <div className="h-[60px] md:hidden" />
-            <CommandPalette isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
-            <PhysicsFactModal open={isFactOpen} onOpenChange={setIsFactOpen} />
+            {isSearchOpen && <CommandPalette isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />}
+            {isFactOpen && <PhysicsFactModal open={isFactOpen} onOpenChange={setIsFactOpen} />}
         </>
     );
 }

@@ -3,8 +3,7 @@
 import dynamic from "next/dynamic";
 import { useEffect, useRef, useState, useCallback } from "react";
 import { NeoArticleCard } from "@/components/articles/neo-article-card";
-import { createClient } from "@/lib/supabase";
-import { processFeedData } from "@/lib/feed-helpers";
+import { HOME_FEED_ARTICLE_SELECT, processFeedData } from "@/lib/feed-helpers";
 import { RefreshCw } from "lucide-react";
 
 // Lazy load non-critical feed cards to minimize initial JS bundle size and TBT
@@ -95,8 +94,17 @@ export function UnifiedFeed({ items: initialItems, suggestedUsers = [], showExtr
         initialItems.length > 0 ? initialItems[initialItems.length - 1].sortDate : new Date().toISOString()
     );
 
-    const [supabase] = useState(() => createClient());
+    const supabaseRef = useRef<any>(null);
     const observerRef = useRef<HTMLDivElement>(null);
+
+    const getSupabase = useCallback(async () => {
+        if (!supabaseRef.current) {
+            const { createClient } = await import("@/lib/supabase");
+            supabaseRef.current = createClient();
+        }
+
+        return supabaseRef.current;
+    }, []);
 
     // Dynamic Cursor Pagination Fetcher
     const loadMoreItems = useCallback(async () => {
@@ -104,7 +112,8 @@ export function UnifiedFeed({ items: initialItems, suggestedUsers = [], showExtr
 
         setLoading(true);
         try {
-            const articleSelect = '*, author:profiles!articles_author_id_fkey(full_name, username, avatar_url, is_writer)';
+            const supabase = await getSupabase();
+            const articleSelect = HOME_FEED_ARTICLE_SELECT;
             
             // Keyset Pagination: Fetch items older than the current cursor date (beforeDate)
             const [articlesResult, questionsResult] = await Promise.all([
@@ -152,7 +161,7 @@ export function UnifiedFeed({ items: initialItems, suggestedUsers = [], showExtr
         } finally {
             setLoading(false);
         }
-    }, [beforeDate, hasMore, loading, supabase]);
+    }, [beforeDate, getSupabase, hasMore, loading]);
 
     // Intersection Observer setup for automatic loading on scroll
     useEffect(() => {
@@ -176,67 +185,89 @@ export function UnifiedFeed({ items: initialItems, suggestedUsers = [], showExtr
 
     // Supabase Real-time Listener (Twitter/Instagram style "New Posts" notification)
     useEffect(() => {
-        const articleSelect = '*, author:profiles!articles_author_id_fkey(full_name, username, avatar_url, is_writer)';
+        let cancelled = false;
+        let cleanup: (() => void) | undefined;
+        let idleId: number | undefined;
+        let timeoutId: ReturnType<typeof setTimeout> | undefined;
 
-        const channel = supabase
-            .channel("realtime-feed-updates")
-            // 1. Listen for new articles
-            .on(
-                "postgres_changes",
-                { event: "INSERT", schema: "public", table: "articles" },
-                async (payload) => {
-                    const newArticleRow = payload.new;
-                    if (newArticleRow && newArticleRow.status === 'published') {
-                        // Fetch relation data (author details) which is not sent in raw real-time inserts
-                        const { data: fullArticle } = await supabase
-                            .from('articles')
-                            .select(articleSelect)
-                            .eq('id', newArticleRow.id)
-                            .single();
+        const setupRealtime = async () => {
+            const supabase = await getSupabase();
+            if (cancelled) return;
 
-                        if (fullArticle) {
-                            const processed = processFeedData([fullArticle as unknown as FeedArticleData], []);
-                            if (processed.length > 0) {
-                                setPendingItems(prev => {
-                                    const exists = prev.some(item => `${item.type}-${item.data.id}` === `${processed[0].type}-${processed[0].data.id}`);
-                                    return exists ? prev : [processed[0], ...prev];
-                                });
+            const articleSelect = HOME_FEED_ARTICLE_SELECT;
+            const channel = supabase
+                .channel("realtime-feed-updates")
+                // 1. Listen for new articles
+                .on(
+                    "postgres_changes",
+                    { event: "INSERT", schema: "public", table: "articles" },
+                    async (payload: any) => {
+                        const newArticleRow = payload.new;
+                        if (newArticleRow && newArticleRow.status === 'published') {
+                            // Fetch relation data (author details) which is not sent in raw real-time inserts
+                            const { data: fullArticle } = await supabase
+                                .from('articles')
+                                .select(articleSelect)
+                                .eq('id', newArticleRow.id)
+                                .single();
+
+                            if (fullArticle) {
+                                const processed = processFeedData([fullArticle as unknown as FeedArticleData], []);
+                                if (processed.length > 0) {
+                                    setPendingItems(prev => {
+                                        const exists = prev.some(item => `${item.type}-${item.data.id}` === `${processed[0].type}-${processed[0].data.id}`);
+                                        return exists ? prev : [processed[0], ...prev];
+                                    });
+                                }
                             }
                         }
                     }
-                }
-            )
-            // 2. Listen for new forum questions
-            .on(
-                "postgres_changes",
-                { event: "INSERT", schema: "public", table: "questions" },
-                async (payload) => {
-                    const newQuestionRow = payload.new;
-                    if (newQuestionRow) {
-                        const { data: fullQuestion } = await supabase
-                            .from('questions')
-                            .select('id, title, content, created_at, category, votes, tags, author:profiles(username, full_name, avatar_url, is_verified), answers(count)')
-                            .eq('id', newQuestionRow.id)
-                            .single();
+                )
+                // 2. Listen for new forum questions
+                .on(
+                    "postgres_changes",
+                    { event: "INSERT", schema: "public", table: "questions" },
+                    async (payload: any) => {
+                        const newQuestionRow = payload.new;
+                        if (newQuestionRow) {
+                            const { data: fullQuestion } = await supabase
+                                .from('questions')
+                                .select('id, title, content, created_at, category, votes, tags, author:profiles(username, full_name, avatar_url, is_verified), answers(count)')
+                                .eq('id', newQuestionRow.id)
+                                .single();
 
-                        if (fullQuestion) {
-                            const processed = processFeedData([], [fullQuestion as unknown as FeedQuestionData]);
-                            if (processed.length > 0) {
-                                setPendingItems(prev => {
-                                    const exists = prev.some(item => `${item.type}-${item.data.id}` === `${processed[0].type}-${processed[0].data.id}`);
-                                    return exists ? prev : [processed[0], ...prev];
-                                });
+                            if (fullQuestion) {
+                                const processed = processFeedData([], [fullQuestion as unknown as FeedQuestionData]);
+                                if (processed.length > 0) {
+                                    setPendingItems(prev => {
+                                        const exists = prev.some(item => `${item.type}-${item.data.id}` === `${processed[0].type}-${processed[0].data.id}`);
+                                        return exists ? prev : [processed[0], ...prev];
+                                    });
+                                }
                             }
                         }
                     }
-                }
-            )
-            .subscribe();
+                )
+                .subscribe();
+
+            cleanup = () => {
+                supabase.removeChannel(channel);
+            };
+        };
+
+        if ("requestIdleCallback" in window) {
+            idleId = window.requestIdleCallback(setupRealtime, { timeout: 5000 });
+        } else {
+            timeoutId = setTimeout(setupRealtime, 3000);
+        }
 
         return () => {
-            supabase.removeChannel(channel);
+            cancelled = true;
+            cleanup?.();
+            if (idleId !== undefined) window.cancelIdleCallback(idleId);
+            if (timeoutId) clearTimeout(timeoutId);
         };
-    }, [supabase]);
+    }, [getSupabase]);
 
     // Prepend pending realtime posts to the feed and scroll to top smoothly
     const applyPendingItems = () => {

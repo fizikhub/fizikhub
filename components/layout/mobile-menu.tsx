@@ -2,15 +2,14 @@
 
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { useState, useEffect } from "react";
-import { createClient } from "@/lib/supabase";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
 import { Menu, X, Home, Trophy, User, Zap, ChevronRight, Github, Twitter, Instagram, Atom, Compass, Book, Mail, BookOpen } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { m as motion } from "framer-motion";
+import dynamic from "next/dynamic";
 
-import { PhysicsFactModal } from "@/components/ui/physics-fact-modal";
+const PhysicsFactModal = dynamic(() => import("@/components/ui/physics-fact-modal").then(mod => mod.PhysicsFactModal), { ssr: false });
 
 const menuItems = [
     { href: '/', label: 'Ana Sayfa', icon: Home, color: 'group-hover:text-[#EAB308]', iconColor: 'text-[#EAB308]' },
@@ -27,16 +26,36 @@ export function MobileMenu() {
     const [open, setOpen] = useState(false);
     const [factOpen, setFactOpen] = useState(false);
     const [user, setUser] = useState<SupabaseUser | null>(null);
-    const [supabase] = useState(() => createClient());
     const pathname = usePathname();
 
     useEffect(() => {
-        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-            setUser(session?.user ?? null);
-        });
+        if (!open) return;
 
-        return () => subscription.unsubscribe();
-    }, [supabase]);
+        let isMounted = true;
+        let cleanup: (() => void) | undefined;
+
+        const setupAuth = async () => {
+            const { createClient } = await import("@/lib/supabase");
+            if (!isMounted) return;
+
+            const supabase = createClient();
+            const { data: { session } } = await supabase.auth.getSession();
+            if (isMounted) setUser(session?.user ?? null);
+
+            const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+                if (isMounted) setUser(session?.user ?? null);
+            });
+
+            cleanup = () => subscription.unsubscribe();
+        };
+
+        setupAuth();
+
+        return () => {
+            isMounted = false;
+            cleanup?.();
+        };
+    }, [open]);
 
     return (
         <>
@@ -96,11 +115,10 @@ export function MobileMenu() {
                             const isActive = !item.isAction && (item.href === "/" ? pathname === "/" : pathname?.startsWith(item.href!));
 
                             return (
-                            <motion.div
+                            <div
                                 key={item.label}
-                                initial={{ opacity: 0, x: 20 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                transition={{ delay: i * 0.05 }}
+                                className="animate-in fade-in-0 slide-in-from-right-2 duration-200"
+                                style={{ animationDelay: `${i * 35}ms` }}
                             >
                                 {item.isAction ? (
                                     <button
@@ -164,7 +182,7 @@ export function MobileMenu() {
                                         </div>
                                     </Link>
                                 )}
-                            </motion.div>
+                            </div>
                         )})}
 
                         <div className="pt-4 mt-4 border-t-2 border-zinc-800">
@@ -207,7 +225,7 @@ export function MobileMenu() {
 
                 </SheetContent>
             </Sheet>
-            <PhysicsFactModal open={factOpen} onOpenChange={setFactOpen} />
+            {factOpen && <PhysicsFactModal open={factOpen} onOpenChange={setFactOpen} />}
         </>
     );
 }

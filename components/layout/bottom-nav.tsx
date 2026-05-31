@@ -278,7 +278,7 @@ function NavItem({
             aria-current={isActive ? 'page' : undefined}
             className={cn(
                 "flex flex-col items-center justify-center min-w-[56px] min-h-[56px] relative group z-10 touch-manipulation rounded-[8px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#EAB308]",
-                isActive ? "text-black dark:text-white" : "text-zinc-500 dark:text-zinc-500"
+                isActive ? "text-black dark:text-white" : "text-zinc-700 dark:text-zinc-300"
             )}
         >
             <div
@@ -317,7 +317,7 @@ function NavItem({
                 </div>
                 <span className={cn(
                     "relative z-10 text-[10px] font-black leading-none tracking-normal",
-                    isActive ? "opacity-100" : "opacity-70"
+                    isActive ? "opacity-100" : "opacity-90"
                 )}>
                     {shortLabel || label}
                 </span>

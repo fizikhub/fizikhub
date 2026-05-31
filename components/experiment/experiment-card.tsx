@@ -2,11 +2,16 @@
 
 import { ViewTransitionLink } from "@/components/ui/view-transition-link"; // [NEW]
 import Image from "next/image";
-import { formatDistanceToNow } from "date-fns";
-import { tr } from "date-fns/locale";
 import { FlaskConical, Beaker, Atom } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+
+const experimentDateFormatter = new Intl.DateTimeFormat("tr-TR", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    timeZone: "Europe/Istanbul",
+});
 
 interface ExperimentCardProps {
     article: any;
@@ -14,7 +19,7 @@ interface ExperimentCardProps {
 }
 
 export function ExperimentCard({ article, index = 0 }: ExperimentCardProps) {
-    const timeAgo = formatDistanceToNow(new Date(article.created_at), { addSuffix: true, locale: tr });
+    const publishedDate = experimentDateFormatter.format(new Date(article.created_at));
     const href = `/deney/${article.slug}`;
 
     return (
@@ -76,7 +81,7 @@ export function ExperimentCard({ article, index = 0 }: ExperimentCardProps) {
                                 </span>
                             </div>
                             <time className="text-[10px] font-bold text-muted-foreground/50 whitespace-nowrap hidden min-[350px]:block">
-                                {timeAgo}
+                                {publishedDate}
                             </time>
                         </div>
 

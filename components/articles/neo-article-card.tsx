@@ -2,8 +2,6 @@
 
 import { ViewTransitionLink } from "@/components/ui/view-transition-link"; // [NEW]
 import { OptimizedImage, OptimizedAvatar } from "@/components/ui/optimized-image";
-import { formatDistanceToNow } from "date-fns";
-import { tr } from "date-fns/locale";
 import { Heart, Bookmark, Share2, MessageCircle, MoreHorizontal } from "lucide-react";
 import { Article } from "@/lib/api";
 import { cn } from "@/lib/utils";
@@ -12,6 +10,13 @@ import { toast } from "sonner";
 import { toggleArticleLike, toggleArticleBookmark } from "@/app/makale/actions";
 import { useHaptic } from "@/hooks/use-haptic";
 // Confetti and other heavy interactions will be loaded on demand to minimize TBT
+
+const articleDateFormatter = new Intl.DateTimeFormat("tr-TR", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    timeZone: "Europe/Istanbul",
+});
 
 
 interface NeoArticleCardProps {
@@ -115,6 +120,7 @@ export function NeoArticleCard({
 
     const authorName = article.author?.full_name || article.profiles?.full_name || "Anonim";
     const authorAvatar = article.author?.avatar_url || article.profiles?.avatar_url || "/images/default-avatar.png";
+    const publishedDate = article.created_at ? articleDateFormatter.format(new Date(article.created_at)) : "";
 
     return (
         <ViewTransitionLink href={`/makale/${article.slug}`} className="block group rounded-[8px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#EAB308] focus-visible:ring-offset-2 focus-visible:ring-offset-background">
@@ -199,7 +205,7 @@ export function NeoArticleCard({
                                     {authorName}
                                 </span>
                                 <span className="text-[9px] sm:text-[10px] font-bold text-neutral-500 dark:text-zinc-400 uppercase tracking-wide">
-                                    {formatDistanceToNow(new Date(article.created_at || new Date()), { addSuffix: true, locale: tr })}
+                                    {publishedDate}
                                 </span>
                             </div>
                         </div>

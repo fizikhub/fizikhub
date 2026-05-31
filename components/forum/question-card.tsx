@@ -11,6 +11,12 @@ import { ViewTransitionLink } from "@/components/ui/view-transition-link"; // [N
 
 const stripHtml = (html: string) => html.replace(/<[^>]*>?/g, '');
 const relativeTimeFormatter = new Intl.RelativeTimeFormat("tr", { numeric: "auto" });
+const absoluteDateFormatter = new Intl.DateTimeFormat("tr-TR", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    timeZone: "Europe/Istanbul",
+});
 
 function formatRelativeTime(dateLike: string, now: number) {
     const diffSeconds = Math.round((new Date(dateLike).getTime() - now) / 1000);
@@ -64,11 +70,15 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
     const [votes, setVotes] = useState(question.votes || 0);
     const [isVoting, setIsVoting] = useState(false);
     const [isExpanded, setIsExpanded] = useState(false);
-    const [renderedAt] = useState(() => Date.now());
+    const [renderedAt, setRenderedAt] = useState<number | null>(null);
 
     useEffect(() => {
         setVoteState(userVote);
     }, [userVote]);
+
+    useEffect(() => {
+        setRenderedAt(Date.now());
+    }, []);
 
     const handleVote = async (e: React.MouseEvent, type: 1 | -1) => {
         e.preventDefault();
@@ -145,8 +155,8 @@ export const QuestionCard = React.memo(({ question, userVote = 0, badgeLabel }: 
                         {question.category || "GENEL"}
                     </span>
                     <div className="flex items-center gap-2 shrink-0">
-                        <time dateTime={question.created_at} className="text-[10px] font-black text-black/55 uppercase tracking-widest">
-                            {formatRelativeTime(question.created_at, renderedAt)}
+                        <time dateTime={question.created_at} className="text-[10px] font-black text-black/80 uppercase tracking-widest">
+                            {renderedAt ? formatRelativeTime(question.created_at, renderedAt) : absoluteDateFormatter.format(new Date(question.created_at))}
                         </time>
                         {badgeLabel && (
                             <div className="bg-black text-[#EAB308] px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-wider">

@@ -6,7 +6,6 @@ import { cn } from "@/lib/utils";
 import { DankLogo } from "@/components/brand/dank-logo";
 import { ViewTransitionLink } from "@/components/ui/view-transition-link";
 import { useState, useEffect } from "react";
-import { createClient } from "@/lib/supabase";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
 import dynamic from "next/dynamic";
 import { OptimizedAvatar } from "@/components/ui/optimized-image";
@@ -32,38 +31,68 @@ export function DesktopSidebar() {
     const [searchOpen, setSearchOpen] = useState(false);
     const [user, setUser] = useState<SupabaseUser | null>(null);
     const [userProfile, setUserProfile] = useState<{ full_name?: string, username?: string, avatar_url?: string } | null>(null);
-    const [supabase] = useState(() => createClient());
 
     useEffect(() => {
+        let cleanup: (() => void) | undefined;
         let isMounted = true;
+        let idleId: number | undefined;
+        let timeoutId: ReturnType<typeof setTimeout> | undefined;
         
-        const fetchProfile = async (userId: string) => {
+        const setupAuth = async () => {
+            const { createClient } = await import("@/lib/supabase");
+            if (!isMounted) return;
+
+            const supabase = createClient();
+
+            const fetchProfile = async (userId: string) => {
+                try {
+                    const { data } = await supabase.from('profiles').select('full_name, username, avatar_url').eq('id', userId).maybeSingle();
+                    if (isMounted && data) {
+                        setUserProfile(data);
+                    }
+                } catch {
+                    // Silently fail in restricted environments
+                }
+            };
+
             try {
-                const { data } = await supabase.from('profiles').select('full_name, username, avatar_url').eq('id', userId).maybeSingle();
-                if (isMounted && data) {
-                    setUserProfile(data);
+                const { data: { session } } = await supabase.auth.getSession();
+                const currentUser = session?.user ?? null;
+                if (isMounted) setUser(currentUser);
+                if (currentUser) {
+                    fetchProfile(currentUser.id);
                 }
             } catch {
                 // Silently fail in restricted environments
             }
+
+            const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+                const currentUser = session?.user ?? null;
+                if (isMounted) setUser(currentUser);
+
+                if (currentUser) {
+                    fetchProfile(currentUser.id);
+                } else {
+                    if (isMounted) setUserProfile(null);
+                }
+            });
+
+            cleanup = () => subscription.unsubscribe();
         };
 
-        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-            const currentUser = session?.user ?? null;
-            if (isMounted) setUser(currentUser);
-            
-            if (currentUser) {
-                fetchProfile(currentUser.id);
-            } else {
-                if (isMounted) setUserProfile(null);
-            }
-        });
+        if ("requestIdleCallback" in window) {
+            idleId = window.requestIdleCallback(setupAuth, { timeout: 3000 });
+        } else {
+            timeoutId = setTimeout(setupAuth, 1000);
+        }
         
         return () => {
             isMounted = false;
-            subscription.unsubscribe();
+            cleanup?.();
+            if (idleId !== undefined) window.cancelIdleCallback(idleId);
+            if (timeoutId) clearTimeout(timeoutId);
         };
-    }, [supabase]);
+    }, []);
 
     return (
         <>
@@ -187,8 +216,8 @@ export function DesktopSidebar() {
                 </div>
             </aside>
 
-            <PhysicsFactModal open={factOpen} onOpenChange={setFactOpen} />
-            <CommandPalette isOpen={searchOpen} onClose={() => setSearchOpen(false)} />
+            {factOpen && <PhysicsFactModal open={factOpen} onOpenChange={setFactOpen} />}
+            {searchOpen && <CommandPalette isOpen={searchOpen} onClose={() => setSearchOpen(false)} />}
         </>
     );
 }
