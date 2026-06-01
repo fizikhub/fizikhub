@@ -180,16 +180,6 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       {
-        source: '/kesfet',
-        destination: '/makale',
-        permanent: true,
-      },
-      {
-        source: '/test-mkn0gnnsixw',
-        destination: '/makale/test-mkn0gnnsixw',
-        permanent: true,
-      },
-      {
         source: '/serway-1-kitap-i-ncelemesi-mkkynylwexp',
         destination: '/makale/serway-1-kitap-i-ncelemesi-mkkynylwexp',
         permanent: true,

@@ -24,12 +24,11 @@ export default function robots(): MetadataRoute.Robots {
         ...AI_DISCOVERY_ROUTES.map((route) => route.path), // Add AI discovery routes like /simulation-learning.json
     ];
 
-    // Standard list of private/dynamic/low-value routes to protect crawl budget
+    // Keep legacy cleanup paths crawlable so Google can see their 301/410
+    // responses and retire old Search Console rows instead of reporting a
+    // robots.txt block.
     const commonDisallow = [
         '/api/',
-        '/abs/',
-        '/storage/',
-        '/cdn-cgi/',
     ];
 
     const aiRules = AI_CRAWLER_USER_AGENTS.map(bot => ({

@@ -15,6 +15,10 @@ function toLastModified(value?: string | null) {
     return value ? new Date(value) : STATIC_LAST_MODIFIED;
 }
 
+function categoryPathSegment(category: string) {
+    return category.trim().replace(/\s+/g, " ").toLocaleLowerCase('tr-TR');
+}
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const supabase = createStaticClient();
     const baseUrl = getSiteUrl();
@@ -206,7 +210,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ));
 
     const categoryPages: MetadataRoute.Sitemap = uniqueCategories.map((category) => ({
-        url: `${baseUrl}/makale/kategori/${category.toLocaleLowerCase('tr-TR')}`,
+        url: `${baseUrl}/makale/kategori/${categoryPathSegment(category)}`,
         lastModified: STATIC_LAST_MODIFIED,
         changeFrequency: 'weekly' as const,
         priority: 0.8,

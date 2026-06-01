@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
+import { execFileSync } from "node:child_process";
 
 const canonicalBaseUrl = "https://www.fizikhub.com";
 const baseUrl = (process.env.SITE_URL || process.env.NEXT_PUBLIC_APP_URL || canonicalBaseUrl).replace(/\/+$/, "");
@@ -24,15 +25,21 @@ const privateDisallowPatterns = [
   "Disallow: /paylas",
   "Disallow: /time-limit/",
   "Disallow: /yonetim/",
+  "Disallow: /abs/",
+  "Disallow: /storage/",
+  "Disallow: /cdn-cgi/",
   "Disallow: /*?q=*",
 ];
 
 const forbiddenUrlPatterns = [
   /https?:\/\/fizikhub\.com/i,
+  /\/search(?:\?|$)/i,
   /\/blog(?:\/|\?|$)/i,
   /\/index(?:\?|$)/i,
+  /\*/i,
   /[?&]kategori=/i,
   /[?&]sort=latest/i,
+  /\/makale\/kategori\/[^?#]+[?&]/i,
   /\/(?:login|forgot-password|reset-password|profil|admin|yazar|yazar-paneli|mesajlar|notifications|kurulum|time-limit|yonetim|paylas|basvuru)(?:\/|\?|$)/i,
   /\/(?:makale\/yeni|makale\/duzenle|kitap-inceleme\/yeni)(?:\/|\?|$)/i,
   /[?&]q=/i,
@@ -99,6 +106,7 @@ function forbiddenReason(url) {
 function readGscExportUrls() {
   if (!fs.existsSync(gscExportDir)) return [];
 
+  const seen = new Set();
   const entries = fs.readdirSync(gscExportDir, { withFileTypes: true })
     .filter((entry) => entry.name.startsWith("fizikhub.com-Coverage"))
     .flatMap((entry) => {
@@ -108,13 +116,28 @@ function readGscExportUrls() {
           .filter((file) => file.endsWith(".csv"))
           .map((file) => path.join(entryPath, file));
       }
+      if (entry.name.endsWith(".zip")) {
+        try {
+          const table = execFileSync("unzip", ["-p", entryPath, "Tablo.csv"], {
+            encoding: "utf8",
+            stdio: ["ignore", "pipe", "ignore"],
+          });
+          return [{ file: `${entryPath}:Tablo.csv`, text: table }];
+        } catch {
+          return [];
+        }
+      }
       return entry.name.endsWith(".csv") ? [entryPath] : [];
     });
 
   const urls = [];
-  for (const file of entries) {
-    const text = fs.readFileSync(file, "utf8");
+  for (const entry of entries) {
+    const file = typeof entry === "string" ? entry : entry.file;
+    const text = typeof entry === "string" ? fs.readFileSync(entry, "utf8") : entry.text;
     for (const match of text.matchAll(/https?:\/\/(?:www\.)?fizikhub\.com[^,\r\n"]*/g)) {
+      const key = match[0];
+      if (seen.has(key)) continue;
+      seen.add(key);
       urls.push({ file, url: match[0] });
     }
   }
@@ -230,8 +253,15 @@ for (const match of feedText.matchAll(/<link>([^<]+)<\/link>/g)) {
 
 const redirects = [
   ["/index", `${expectedRedirectBaseUrl}/`],
-  ["/blog?kategori=Kuantum&sort=latest", `${expectedRedirectBaseUrl}/makale?category=Kuantum`],
+  ["/blog?kategori=Kuantum&sort=latest", `${expectedRedirectBaseUrl}/makale/kategori/kuantum`],
   ["/blog/entropi-nedir-evrenin-sonu-nasil-gelecek-1767534266662", `${expectedRedirectBaseUrl}/makale/entropi-nedir-evrenin-sonu-nasil-gelecek-1767534266662`],
+  ["/kesfet?category=Astrofizik", `${expectedRedirectBaseUrl}/makale/kategori/astrofizik`],
+  ["/makale?sort=popular&category=Bilim%20Tarihi", `${expectedRedirectBaseUrl}/makale/kategori/bilim%20tarihi`],
+  ["/makale?sort=popular&category=Terim", `${expectedRedirectBaseUrl}/sozluk`],
+  ["/forum?sort=newest", `${expectedRedirectBaseUrl}/forum`],
+  ["/sartlar", `${expectedRedirectBaseUrl}/kullanim-sartlari`],
+  ["/kurallar", `${expectedRedirectBaseUrl}/kullanim-sartlari`],
+  ["/search?q=%7Bsearch_term_string%7D", `${expectedRedirectBaseUrl}/ara?q=%7Bsearch_term_string%7D`],
 ];
 
 for (const [source, expected] of redirects) {
@@ -257,6 +287,14 @@ assert(!publicSample.xRobotsTag?.includes("noindex"), "/makale should not have X
 const lowValueQuerySample = await fetchText("/forum?q=isik+hizi");
 assert(lowValueQuerySample.xRobotsTag?.includes("noindex"), "/forum?q=... is missing X-Robots-Tag noindex");
 assert(lowValueQuerySample.xRobotsTag?.includes("follow"), "/forum?q=... should keep follow");
+
+const wildcardSample = await fetchText("/konular/*");
+assert(wildcardSample.status === 410, "/konular/* should return 410");
+assert(wildcardSample.xRobotsTag?.includes("noindex"), "/konular/* should include X-Robots-Tag noindex");
+
+const rootTestSample = await fetchText("/test-mkn0gnnsixw");
+assert(rootTestSample.status === 410, "/test-mkn0gnnsixw should return 410");
+assert(rootTestSample.xRobotsTag?.includes("noindex"), "/test-mkn0gnnsixw should include X-Robots-Tag noindex");
 
 const samplePaths = [
   locs(byPath.get("/topic-sitemap.xml").text)[0],

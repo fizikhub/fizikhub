@@ -177,6 +177,21 @@ function canonicalRedirectUrl(request: NextRequest, pathname?: string) {
     return url;
 }
 
+function normalizeCategoryValue(category: string) {
+    return category.trim().replace(/\s+/g, ' ');
+}
+
+function categoryPathSegment(category: string) {
+    return normalizeCategoryValue(category).toLocaleLowerCase('tr-TR');
+}
+
+function categoryArchivePath(category: string) {
+    const segment = categoryPathSegment(category);
+    if (segment === 'terim') return '/sozluk';
+    if (segment === 'deney' || segment === 'kitap incelemesi') return '/makale';
+    return `/makale/kategori/${segment}`;
+}
+
 function normalizeSeoUrl(request: NextRequest) {
     const url = canonicalRedirectUrl(request);
     const original = request.nextUrl;
@@ -190,13 +205,45 @@ function normalizeSeoUrl(request: NextRequest) {
         changed = true;
     }
 
+    if (url.pathname === '/sartlar' || url.pathname === '/kurallar') {
+        url.pathname = '/kullanim-sartlari';
+        url.search = '';
+        changed = true;
+    }
+
+    if (url.pathname === '/search') {
+        url.pathname = '/ara';
+        changed = true;
+    }
+
+    if (url.pathname === '/kesfet') {
+        const category = url.searchParams.get('category') || url.searchParams.get('kategori');
+        url.pathname = category ? categoryArchivePath(category) : '/makale';
+        url.search = '';
+        changed = true;
+    }
+
     if (url.pathname === '/blog' || url.pathname.startsWith('/blog/')) {
+        const category = url.searchParams.get('category') || url.searchParams.get('kategori');
         url.pathname = url.pathname.replace(/^\/blog/, '/makale');
+        if (url.pathname === '/makale' && category) {
+            url.pathname = categoryArchivePath(category);
+            url.search = '';
+        } else {
+            url.searchParams.delete('category');
+            url.searchParams.delete('kategori');
+            url.searchParams.delete('sort');
+        }
         changed = true;
     }
 
     const kategori = url.searchParams.get('kategori');
-    if ((url.pathname === '/makale' || url.pathname.startsWith('/makale/')) && kategori) {
+    const category = url.searchParams.get('category') || kategori;
+    if (url.pathname === '/makale' && category) {
+        url.pathname = categoryArchivePath(category);
+        url.search = '';
+        changed = true;
+    } else if ((url.pathname === '/makale' || url.pathname.startsWith('/makale/')) && kategori) {
         url.searchParams.delete('kategori');
         url.searchParams.set('category', kategori);
         changed = true;
@@ -207,8 +254,13 @@ function normalizeSeoUrl(request: NextRequest) {
         changed = true;
     }
 
-    if (url.pathname === '/kesfet') {
-        url.pathname = '/makale';
+    if (url.pathname === '/forum' && url.searchParams.get('sort') === 'newest') {
+        url.searchParams.delete('sort');
+        changed = true;
+    }
+
+    if (url.pathname.startsWith('/makale/kategori/') && url.search) {
+        url.search = '';
         changed = true;
     }
 
@@ -232,10 +284,13 @@ export function isLowValueSeoQuery(pathname: string, searchParams: URLSearchPara
     return false;
 }
 
-function decodeCategorySlug(slug: string): string {
-    const decoded = decodeURIComponent(slug);
+export function decodeCategorySlug(slug: string): string {
+    const decoded = normalizeCategoryValue(decodeURIComponent(slug).replace(/[-_]+/g, ' '));
     if (!decoded) return '';
-    return decoded.charAt(0).toLocaleUpperCase('tr-TR') + decoded.slice(1);
+    return decoded
+        .split(' ')
+        .map((part) => part.charAt(0).toLocaleUpperCase('tr-TR') + part.slice(1).toLocaleLowerCase('tr-TR'))
+        .join(' ');
 }
 
 export function shouldBypassSession(pathname: string, userAgent: string) {
@@ -253,6 +308,10 @@ export async function proxy(request: NextRequest) {
     const normalizedUrl = normalizeSeoUrl(request);
     if (normalizedUrl) return NextResponse.redirect(normalizedUrl, 301);
 
+    if (pathname.includes('*')) {
+        return goneNoindexResponse();
+    }
+
     // 301 Redirect for /index to /
     if (pathname === '/index') {
         return NextResponse.redirect(`${CANONICAL_ORIGIN}/`, 301);
@@ -262,7 +321,8 @@ export async function proxy(request: NextRequest) {
     if (pathname.startsWith('/blog/kategori/')) {
         const categorySlug = pathname.replace(/^\/blog\/kategori\//, '');
         const url = canonicalRedirectUrl(request);
-        url.pathname = `/makale/kategori/${categorySlug}`;
+        url.pathname = categoryArchivePath(decodeCategorySlug(categorySlug));
+        url.search = '';
         return NextResponse.redirect(url, 301);
     }
 
@@ -282,17 +342,8 @@ export async function proxy(request: NextRequest) {
         const kategori = request.nextUrl.searchParams.get('kategori') || request.nextUrl.searchParams.get('category');
         if (kategori) {
             const url = canonicalRedirectUrl(request);
-            url.pathname = `/makale/kategori/${kategori.toLowerCase()}`;
-            url.searchParams.delete('kategori');
-            url.searchParams.delete('category');
-            
-            // Preserve other query parameters if they exist
-            request.nextUrl.searchParams.forEach((value, key) => {
-                if (key !== 'kategori' && key !== 'category') {
-                    url.searchParams.set(key, value);
-                }
-            });
-            
+            url.pathname = categoryArchivePath(kategori);
+            url.search = '';
             return NextResponse.redirect(url, 301);
         }
     }
@@ -304,15 +355,15 @@ export async function proxy(request: NextRequest) {
         url.pathname = pathname.replace(/^\/blog/, '/makale');
 
         const kategori = url.searchParams.get('kategori');
-        if (kategori) {
+        const category = url.searchParams.get('category') || kategori;
+        if (url.pathname === '/makale' && category) {
+            url.pathname = categoryArchivePath(category);
+            url.search = '';
+        } else {
+            url.searchParams.delete('category');
             url.searchParams.delete('kategori');
-            url.searchParams.set('category', kategori);
-        }
-
-        if (url.searchParams.get('sort') === 'latest') {
             url.searchParams.delete('sort');
         }
-
         return NextResponse.redirect(url, 301);
     }
 
@@ -334,13 +385,16 @@ export async function proxy(request: NextRequest) {
     }
 
     const rootArticleRedirects: Record<string, string> = {
-        '/test-mkn0gnnsixw': '/makale/test-mkn0gnnsixw',
         '/serway-1-kitap-i-ncelemesi-mkkynylwexp': '/makale/serway-1-kitap-i-ncelemesi-mkkynylwexp',
         '/azteklerden-gunumuze-tutun-tarihcesi-kimyasi-ve-etkileri-1769018062247':
             '/makale/azteklerden-gunumuze-tutun-tarihcesi-kimyasi-ve-etkileri-1769018062247',
         '/matematik-ile-her-seyi-kusursuzca-kanitlayabilir-miyiz-1768299779741':
             '/makale/matematik-ile-her-seyi-kusursuzca-kanitlayabilir-miyiz-1768299779741',
     };
+
+    if (pathname === '/test-mkn0gnnsixw') {
+        return goneNoindexResponse();
+    }
 
     if (rootArticleRedirects[pathname]) {
         const url = canonicalRedirectUrl(request);
@@ -379,7 +433,7 @@ export async function proxy(request: NextRequest) {
     }
 
     if (pathname === '/cdn-cgi/l/email-protection') {
-        return new NextResponse(null, { status: 410 });
+        return goneNoindexResponse();
     }
 
     if (/^\/(?:makale|deney)\/(?:test|tesr|deneme)(?:[-_]|$)/i.test(pathname)) {

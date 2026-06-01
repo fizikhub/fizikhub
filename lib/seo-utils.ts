@@ -210,10 +210,13 @@ export function isForbiddenSitemapUrl(url: string) {
     try {
         const parsed = new URL(url);
         return parsed.origin !== DEFAULT_SITE_URL ||
+            parsed.pathname === "/search" ||
             parsed.pathname.startsWith("/blog") ||
             parsed.pathname === "/index" ||
+            parsed.pathname.includes("*") ||
             parsed.searchParams.has("kategori") ||
             parsed.searchParams.get("sort") === "latest" ||
+            (parsed.pathname.startsWith("/makale/kategori/") && parsed.searchParams.toString().length > 0) ||
             isPrivateSeoPath(parsed.pathname) ||
             isTechnicalAssetPath(parsed.pathname) ||
             isTestLikeSlugOrTitle(parsed.pathname, null);

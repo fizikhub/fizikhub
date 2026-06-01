@@ -10,7 +10,7 @@ import { isKnownAiCrawlerUserAgent } from "@/lib/ai-discovery";
 import { getVectorUrl } from "@/lib/search-results";
 import { getClusterResourceLinks, getPrimaryClusterHref, getTopicClusterBySlug, getTopicClusterHref, getTopicClustersForText, normalizeTopicSearchText, SEO_TOPIC_CLUSTERS } from "@/lib/seo-topic-clusters";
 import { isPrivateSeoPath } from "@/lib/seo-utils";
-import { isLowValueSeoQuery, shouldBypassSession } from "@/proxy";
+import { decodeCategorySlug, isLowValueSeoQuery, shouldBypassSession } from "@/proxy";
 
 function xmlLocs(xml: string) {
     return Array.from(xml.matchAll(/<loc>([^<]+)<\/loc>/g)).map((match) => match[1]);
@@ -152,6 +152,9 @@ describe("SEO robots and canonical boundaries", () => {
             "/reset-password",
             "/basvuru/",
             "/paylas",
+            "/abs/",
+            "/storage/",
+            "/cdn-cgi/",
             "/*?q=*",
         ]));
     });
@@ -173,6 +176,12 @@ describe("SEO robots and canonical boundaries", () => {
         expect(isLowValueSeoQuery("/forum", new URLSearchParams("sort=popular"))).toBe(true);
         expect(isLowValueSeoQuery("/forum", new URLSearchParams("category=Kuantum&page=2"))).toBe(false);
         expect(isLowValueSeoQuery("/makale", new URLSearchParams("category=Astrofizik"))).toBe(false);
+    });
+
+    it("decodes clean article category paths back to canonical Turkish category names", () => {
+        expect(decodeCategorySlug("bilim%20tarihi")).toBe("Bilim Tarihi");
+        expect(decodeCategorySlug("par%C3%A7ac%C4%B1k%20fizi%C4%9Fi")).toBe("Parçacık Fiziği");
+        expect(decodeCategorySlug("pop%C3%BCler%20bilim")).toBe("Popüler Bilim");
     });
 });
 
