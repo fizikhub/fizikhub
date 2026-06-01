@@ -22,7 +22,6 @@ const privateDisallowPatterns = [
   "Disallow: /forgot-password",
   "Disallow: /reset-password",
   "Disallow: /basvuru/",
-  "Disallow: /paylas",
   "Disallow: /time-limit/",
   "Disallow: /yonetim/",
   "Disallow: /abs/",
@@ -40,7 +39,8 @@ const forbiddenUrlPatterns = [
   /[?&]kategori=/i,
   /[?&]sort=latest/i,
   /\/makale\/kategori\/[^?#]+[?&]/i,
-  /\/(?:login|forgot-password|reset-password|profil|admin|yazar|yazar-paneli|mesajlar|notifications|kurulum|time-limit|yonetim|paylas|basvuru)(?:\/|\?|$)/i,
+  /\/(?:login|forgot-password|reset-password|profil|admin|yazar-paneli|mesajlar|notifications|kurulum|time-limit|yonetim|basvuru)(?:\/|\?|$)/i,
+  /\/yazar(?:$|\?|\/(?!rehber(?:\/|\?|$)))/i,
   /\/(?:makale\/yeni|makale\/duzenle|kitap-inceleme\/yeni)(?:\/|\?|$)/i,
   /[?&]q=/i,
   /\/(?:makale|deney)\/(?:test|tesr|deneme)(?:[-_]|$)/i,
@@ -327,13 +327,16 @@ if (baseUrl === canonicalBaseUrl) {
   assert(new URL(nonCanonical.location).toString() === `${canonicalBaseUrl}/sozluk`, `non-www target is ${nonCanonical.location}`);
 }
 
-for (const privatePath of ["/login", "/mesajlar", "/makale/yeni", "/paylas"]) {
+for (const privatePath of ["/login", "/mesajlar", "/makale/yeni", "/yazar"]) {
   const response = await fetchText(privatePath);
   assert(response.xRobotsTag?.includes("noindex"), `${privatePath} is missing X-Robots-Tag noindex`);
 }
 
-const publicSample = await fetchText("/makale");
-assert(!publicSample.xRobotsTag?.includes("noindex"), "/makale should not have X-Robots-Tag noindex");
+for (const publicPath of ["/makale", "/paylas", "/yazar/rehber"]) {
+  const response = await fetchText(publicPath);
+  assert(response.status === 200, `${publicPath} returned ${response.status}`);
+  assert(!response.xRobotsTag?.includes("noindex"), `${publicPath} should not have X-Robots-Tag noindex`);
+}
 
 const lowValueQuerySample = await fetchText("/forum?q=isik+hizi");
 assert(lowValueQuerySample.xRobotsTag?.includes("noindex"), "/forum?q=... is missing X-Robots-Tag noindex");

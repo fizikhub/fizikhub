@@ -17,9 +17,11 @@ export default function robots(): MetadataRoute.Robots {
         '/testler/',
         '/hakkimizda',
         '/iletisim',
+        '/paylas',
         '/rozetler',
         '/siralamalar',
         '/puanlar-nedir',
+        '/yazar/rehber',
         '/kullanici/', // Ensure public profile route is allowed
         ...AI_DISCOVERY_ROUTES.map((route) => route.path), // Add AI discovery routes like /simulation-learning.json
     ];

@@ -44,7 +44,7 @@ const privateNoindexRoutes = [
   '/reset-password',
   '/profil/:path*',
   '/admin/:path*',
-  '/yazar/:path*',
+  '/yazar',
   '/yazar-paneli/:path*',
   '/makale/yeni',
   '/makale/duzenle/:path*',
@@ -55,7 +55,6 @@ const privateNoindexRoutes = [
   '/yonetim/:path*',
   '/basvuru/yazar',
   '/kitap-inceleme/yeni',
-  '/paylas',
 ];
 
 const scriptSrc = [

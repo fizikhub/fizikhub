@@ -6,6 +6,19 @@ import { Plus, FileText, Clock, CheckCircle, XCircle, Edit } from "lucide-react"
 import { Badge } from "@/components/ui/badge";
 import { formatDistanceToNow } from "date-fns";
 import { tr } from "date-fns/locale";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+    title: "Yazar Paneli | Fizikhub",
+    robots: {
+        index: false,
+        follow: false,
+        googleBot: {
+            index: false,
+            follow: false,
+        },
+    },
+};
 
 export default async function WriterDashboard() {
     const supabase = await createClient();

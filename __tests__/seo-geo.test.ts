@@ -10,7 +10,7 @@ import { isKnownAiCrawlerUserAgent } from "@/lib/ai-discovery";
 import { buildForumDiscussionPostingItem } from "@/lib/forum-structured-data";
 import { getVectorUrl } from "@/lib/search-results";
 import { getClusterResourceLinks, getPrimaryClusterHref, getTopicClusterBySlug, getTopicClusterHref, getTopicClustersForText, normalizeTopicSearchText, SEO_TOPIC_CLUSTERS } from "@/lib/seo-topic-clusters";
-import { isPrivateSeoPath } from "@/lib/seo-utils";
+import { isForbiddenSitemapUrl, isPrivateSeoPath } from "@/lib/seo-utils";
 import { decodeCategorySlug, isLowValueSeoQuery, shouldBypassSession } from "@/proxy";
 
 function xmlLocs(xml: string) {
@@ -175,6 +175,11 @@ describe("SEO robots and canonical boundaries", () => {
         expect(isPrivateSeoPath("/profil")).toBe(true);
         expect(isPrivateSeoPath("/profil/duzenle")).toBe(true);
         expect(isPrivateSeoPath("/kullanici/baran")).toBe(false);
+        expect(isPrivateSeoPath("/paylas")).toBe(false);
+        expect(isPrivateSeoPath("/yazar/rehber")).toBe(false);
+        expect(isPrivateSeoPath("/yazar/yeni")).toBe(true);
+        expect(isForbiddenSitemapUrl("https://www.fizikhub.com/paylas")).toBe(false);
+        expect(isForbiddenSitemapUrl("https://www.fizikhub.com/yazar/rehber")).toBe(false);
 
         const generated = robots();
         const rules = Array.isArray(generated.rules) ? generated.rules : [generated.rules];
@@ -196,6 +201,8 @@ describe("SEO robots and canonical boundaries", () => {
         expect(AI_CRAWLER_USER_AGENTS).toContain("ChatGPT-User");
         expect(AI_DISCOVERY_ROUTES.map((route) => route.path)).toContain("/simulation-learning.json");
         expect(allowValues).toContain("/simulation-learning.json");
+        expect(allowValues).toContain("/paylas");
+        expect(allowValues).toContain("/yazar/rehber");
         expect(disallowValues).not.toContain("/kullanici/");
         expect(disallowValues).not.toEqual(expect.arrayContaining([
             "/login",
@@ -217,7 +224,10 @@ describe("SEO robots and canonical boundaries", () => {
 
         expect(shouldBypassSession("/makale/kuantum", "Mozilla/5.0 compatible; OAI-SearchBot/1.3")).toBe(true);
         expect(shouldBypassSession("/konular/kuantum-fizigi", "Claude-SearchBot")).toBe(true);
+        expect(shouldBypassSession("/paylas", "Googlebot")).toBe(true);
+        expect(shouldBypassSession("/yazar/rehber", "OAI-SearchBot")).toBe(true);
         expect(shouldBypassSession("/admin", "OAI-SearchBot")).toBe(false);
+        expect(shouldBypassSession("/yazar/yeni", "Googlebot")).toBe(false);
         expect(shouldBypassSession("/profil/duzenle", "Googlebot")).toBe(false);
     });
 

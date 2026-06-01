@@ -12,7 +12,6 @@ const PRIVATE_SEO_PATH_PREFIXES = [
     "/makale/yeni",
     "/mesajlar",
     "/notifications",
-    "/paylas",
     "/profil",
     "/reset-password",
     "/time-limit",
