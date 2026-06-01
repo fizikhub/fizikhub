@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { m as motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, Play, Search, Zap, Beaker, BookOpen, Clock3, Compass, ListChecks } from "lucide-react";
+import { ArrowLeft, Play, Search, Zap, Beaker, BookOpen, Clock3, Compass, ListChecks, Sparkles } from "lucide-react";
 import { ViewTransitionLink } from "@/components/ui/view-transition-link";
 import { cn } from "@/lib/utils";
 import { simulations } from "@/components/simulations/data";
@@ -15,6 +15,33 @@ export function SimulationsClient() {
     const [filter, setFilter] = useState("Tümü");
     const [search, setSearch] = useState("");
     const [showTutorial, setShowTutorial] = useState(false);
+    const [showSpinnerModal, setShowSpinnerModal] = useState(false);
+    const [spinning, setSpinning] = useState(false);
+    const [selectedSim, setSelectedSim] = useState<(typeof simulations)[number] | null>(null);
+    const [spinIndex, setSpinIndex] = useState(0);
+
+    const handleSurpriseExperiment = () => {
+        setSelectedSim(null);
+        setShowSpinnerModal(true);
+        setSpinning(true);
+        
+        let counter = 0;
+        const totalSpins = 12;
+        const intervalTime = 120; // ms
+
+        const interval = setInterval(() => {
+            const randomIndex = Math.floor(Math.random() * simulations.length);
+            setSpinIndex(randomIndex);
+            counter++;
+
+            if (counter >= totalSpins) {
+                clearInterval(interval);
+                const finalSim = simulations[Math.floor(Math.random() * simulations.length)];
+                setSelectedSim(finalSim);
+                setSpinning(false);
+            }
+        }, intervalTime);
+    };
     const { store } = useSimulationProgress();
     const summary = getSimulationLearningSummary(simulations);
     const recommendedPath = getRecommendedSimulationPath(simulations).slice(0, 4);
@@ -104,16 +131,27 @@ export function SimulationsClient() {
                         </div>
                     </div>
 
-                    {/* Minimal Stats Widget */}
-                    <div id="sims-stats" className="hidden md:flex items-center gap-3 bg-white dark:bg-[#27272a] px-4 py-2 rounded-lg border-[3px] border-black shadow-[3px_3px_0px_0px_#000]">
-                        <div className="w-8 h-8 bg-[#EAB308] border-2 border-black rounded-md flex items-center justify-center">
-                            <Beaker className="w-4 h-4 text-black stroke-[3px]" />
-                        </div>
-                        <div className="flex flex-col">
-                            <span className="text-[10px] text-neutral-500 dark:text-zinc-400 font-black uppercase tracking-widest leading-none">AKTİF LABORATUVAR</span>
-                            <span className="text-black dark:text-white font-black text-sm tracking-tight flex items-baseline gap-1 mt-0.5 leading-none">
-                                {simulations.length} <span className="text-[#EAB308] font-bold text-xs">DENEY</span>
-                            </span>
+                    <div className="flex items-center gap-3">
+                        {/* Surprise Experiment Button */}
+                        <button
+                            onClick={handleSurpriseExperiment}
+                            className="flex items-center gap-2 bg-[#A26FE3] hover:bg-[#8B5CF6] text-white px-4 py-2.5 rounded-lg border-[3px] border-black shadow-[3px_3px_0px_0px_#000] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0px_0px_#000] transition-all font-black text-xs uppercase tracking-wider cursor-pointer"
+                        >
+                            <Sparkles className="w-4 h-4 fill-white stroke-[2.5px] animate-pulse" />
+                            Sürpriz Deney
+                        </button>
+                        
+                        {/* Minimal Stats Widget */}
+                        <div id="sims-stats" className="hidden md:flex items-center gap-3 bg-white dark:bg-[#27272a] px-4 py-2.5 rounded-lg border-[3px] border-black shadow-[3px_3px_0px_0px_#000]">
+                            <div className="w-8 h-8 bg-[#EAB308] border-2 border-black rounded-md flex items-center justify-center">
+                                <Beaker className="w-4 h-4 text-black stroke-[3px]" />
+                            </div>
+                            <div className="flex flex-col">
+                                <span className="text-[10px] text-neutral-500 dark:text-zinc-400 font-black uppercase tracking-widest leading-none">AKTİF LABORATUVAR</span>
+                                <span className="text-black dark:text-white font-black text-sm tracking-tight flex items-baseline gap-1 mt-0.5 leading-none">
+                                    {simulations.length} <span className="text-[#EAB308] font-bold text-xs">DENEY</span>
+                                </span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -402,6 +440,100 @@ export function SimulationsClient() {
                     </AnimatePresence>
                 </div>
             </main>
+            {/* Surprise Experiment Modal */}
+            <AnimatePresence>
+                {showSpinnerModal && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm">
+                        <motion.div
+                            initial={{ scale: 0.9, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            exit={{ scale: 0.9, opacity: 0 }}
+                            className="w-full max-w-md bg-white dark:bg-[#27272a] border-[4px] border-black rounded-xl shadow-[8px_8px_0px_0px_#000] overflow-hidden flex flex-col"
+                        >
+                            {/* Modal Header */}
+                            <div className="px-5 py-4 bg-[#A26FE3] border-b-[3px] border-black flex justify-between items-center text-white">
+                                <div className="flex items-center gap-2">
+                                    <Sparkles className="w-5 h-5 fill-white stroke-[2.5px] animate-pulse" />
+                                    <span className="font-black text-sm uppercase tracking-wider">LABORATUVAR SEÇİCİ</span>
+                                </div>
+                                {!spinning && (
+                                    <button 
+                                        onClick={() => setShowSpinnerModal(false)}
+                                        className="w-8 h-8 rounded-md bg-black border-2 border-black flex items-center justify-center text-white font-black text-sm hover:bg-neutral-800 cursor-pointer"
+                                    >
+                                        ✕
+                                    </button>
+                                )}
+                            </div>
+
+                            {/* Modal Body */}
+                            <div className="p-6 flex-1 flex flex-col items-center justify-center min-h-[250px]">
+                                {spinning ? (
+                                    <div className="text-center space-y-4">
+                                        <div className="inline-flex p-4 rounded-xl border-[3px] border-black bg-[#EAB308] text-black shadow-[4px_4px_0px_#000] animate-bounce">
+                                            <Beaker className="w-10 h-10 animate-spin" />
+                                        </div>
+                                        <p className="text-xs text-neutral-500 dark:text-zinc-400 font-black uppercase tracking-widest animate-pulse">DENEY KUTULARI DÖNÜYOR...</p>
+                                        <h3 className="text-2xl font-black text-black dark:text-white uppercase tracking-tight line-clamp-1">
+                                            {simulations[spinIndex]?.title}
+                                        </h3>
+                                    </div>
+                                ) : (
+                                    selectedSim && (
+                                        <div className="w-full space-y-5 text-left">
+                                            <div className="flex items-start gap-4">
+                                                <div className="w-14 h-14 bg-neutral-100 dark:bg-black/40 border-[3px] border-black rounded-lg flex items-center justify-center shadow-[3px_3px_0px_#000] shrink-0">
+                                                    <selectedSim.icon className="w-7 h-7" style={{ color: selectedSim.color }} />
+                                                </div>
+                                                <div className="min-w-0">
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="text-[10px] font-black uppercase bg-[#EAB308] border-2 border-black text-black px-2 py-0.5 rounded shadow-[1px_1px_0px_#000]">
+                                                            {selectedSim.difficulty}
+                                                        </span>
+                                                        <span className="text-xs font-mono font-bold text-neutral-500">
+                                                            {selectedSim.formula}
+                                                        </span>
+                                                    </div>
+                                                    <h3 className="text-xl sm:text-2xl font-black text-black dark:text-white uppercase tracking-tight mt-1 line-clamp-1">
+                                                        {selectedSim.title}
+                                                    </h3>
+                                                </div>
+                                            </div>
+
+                                            <p className="text-sm font-semibold leading-relaxed text-neutral-600 dark:text-zinc-300">
+                                                {selectedSim.description}
+                                            </p>
+
+                                            <div className="p-4 rounded-lg border-2 border-black/10 dark:border-white/10 bg-neutral-50 dark:bg-black/30">
+                                                <div className="text-[10px] font-black uppercase tracking-widest text-[#A26FE3] mb-1">BÜYÜK MERAK SORUSU</div>
+                                                <p className="text-xs font-black text-black dark:text-zinc-100 leading-snug">
+                                                    "{selectedSim.learning.bigQuestion}"
+                                                </p>
+                                            </div>
+
+                                            <div className="flex gap-3">
+                                                <button
+                                                    onClick={handleSurpriseExperiment}
+                                                    className="flex-1 py-3 border-[3px] border-black bg-white dark:bg-zinc-800 text-black dark:text-white hover:bg-neutral-100 dark:hover:bg-zinc-700 rounded-lg shadow-[3px_3px_0px_#000] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all font-black text-xs uppercase tracking-wider cursor-pointer"
+                                                >
+                                                    YENİDEN DÖNDÜR
+                                                </button>
+                                                <ViewTransitionLink href={`/simulasyonlar/${selectedSim.slug}`} className="flex-1">
+                                                    <button
+                                                        className="w-full py-3 border-[3px] border-black bg-[#EAB308] text-black hover:bg-yellow-500 rounded-lg shadow-[3px_3px_0px_#000] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all font-black text-xs uppercase tracking-wider cursor-pointer"
+                                                    >
+                                                        LABORATUVARA GİR!
+                                                    </button>
+                                                </ViewTransitionLink>
+                                            </div>
+                                        </div>
+                                    )
+                                )}
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
         </div>
     );
 }
