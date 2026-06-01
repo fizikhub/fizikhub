@@ -7,6 +7,7 @@ import { GET as sitemapIndex } from "@/app/sitemap-index.xml/route";
 import { GET as topicSitemap } from "@/app/topic-sitemap.xml/route";
 import { AI_CITATION_POLICY, AI_CRAWLER_USER_AGENTS, AI_DISCOVERY_ROUTES, buildAiCitationText } from "@/lib/ai-discovery";
 import { isKnownAiCrawlerUserAgent } from "@/lib/ai-discovery";
+import { buildForumDiscussionPostingItem } from "@/lib/forum-structured-data";
 import { getVectorUrl } from "@/lib/search-results";
 import { getClusterResourceLinks, getPrimaryClusterHref, getTopicClusterBySlug, getTopicClusterHref, getTopicClustersForText, normalizeTopicSearchText, SEO_TOPIC_CLUSTERS } from "@/lib/seo-topic-clusters";
 import { isPrivateSeoPath } from "@/lib/seo-utils";
@@ -100,6 +101,56 @@ describe("SEO topic sitemap", () => {
 });
 
 describe("SEO robots and canonical boundaries", () => {
+    it("includes author identity on forum DiscussionForumPosting list items", () => {
+        const item = buildForumDiscussionPostingItem({
+            id: 42,
+            title: "Kuantum dolanıklık nedir?",
+            content: "Dolanıklık ölçümle nasıl ilişkilidir?",
+            category: "Kuantum",
+            created_at: "2026-05-24T12:00:00+03:00",
+            updated_at: "2026-05-25T13:00:00+03:00",
+            votes: 7,
+            profiles: {
+                username: "fizikci",
+                full_name: "Fizikçi Yazar",
+            },
+            answers: [{ count: 3 }],
+        }, 0, "https://www.fizikhub.com");
+
+        expect(item).toEqual(expect.objectContaining({
+            "@type": "ListItem",
+            url: "https://www.fizikhub.com/forum/42",
+        }));
+        expect(item.item).toEqual(expect.objectContaining({
+            "@type": "DiscussionForumPosting",
+            mainEntityOfPage: "https://www.fizikhub.com/forum/42",
+            dateModified: "2026-05-25T13:00:00+03:00",
+            commentCount: 3,
+            author: {
+                "@type": "Person",
+                name: "Fizikçi Yazar",
+                url: "https://www.fizikhub.com/kullanici/fizikci",
+            },
+        }));
+    });
+
+    it("falls back to a public forum author when a profile is missing", () => {
+        const item = buildForumDiscussionPostingItem({
+            id: 43,
+            title: "Yerçekimi alanı",
+            content: "",
+            created_at: "2026-05-24T12:00:00+03:00",
+            answers: [],
+        }, 1, "https://www.fizikhub.com");
+
+        expect(item.item.author).toEqual({
+            "@type": "Person",
+            name: "Fizikhub Üyesi",
+            url: "https://www.fizikhub.com/forum",
+        });
+        expect(item.item.text).toBe("Yerçekimi alanı");
+    });
+
     it("keeps AI citation guidance explicit and canonical", () => {
         expect(AI_CITATION_POLICY.citation).toBe("required");
         expect(AI_CITATION_POLICY.answerGuidance.length).toBeGreaterThan(0);

@@ -79,6 +79,57 @@ function countJsonLd(html) {
   return (html.match(/application\/ld\+json/g) || []).length;
 }
 
+function extractJsonLd(html) {
+  return Array.from(html.matchAll(/<script[^>]+type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi))
+    .map((match) => match[1].trim())
+    .filter(Boolean)
+    .flatMap((raw) => {
+      const decoded = raw
+        .replace(/&quot;/g, '"')
+        .replace(/&amp;/g, "&")
+        .replace(/&lt;/g, "<")
+        .replace(/&gt;/g, ">");
+
+      try {
+        return [JSON.parse(decoded)];
+      } catch {
+        return [];
+      }
+    });
+}
+
+function walkJson(value, visitor) {
+  if (!value || typeof value !== "object") return;
+  visitor(value);
+
+  if (Array.isArray(value)) {
+    value.forEach((item) => walkJson(item, visitor));
+    return;
+  }
+
+  Object.values(value).forEach((item) => walkJson(item, visitor));
+}
+
+function hasType(node, type) {
+  const nodeType = node?.["@type"];
+  return Array.isArray(nodeType) ? nodeType.includes(type) : nodeType === type;
+}
+
+function typedJsonLdNodes(html, type) {
+  const nodes = [];
+  for (const graph of extractJsonLd(html)) {
+    walkJson(graph, (node) => {
+      if (hasType(node, type)) nodes.push(node);
+    });
+  }
+  return nodes;
+}
+
+function authorHasName(author) {
+  if (Array.isArray(author)) return author.some(authorHasName);
+  return Boolean(author?.name);
+}
+
 function visibleTextLength(html) {
   return html
     .replace(/<script[\s\S]*?<\/script>/gi, " ")
@@ -288,6 +339,21 @@ const lowValueQuerySample = await fetchText("/forum?q=isik+hizi");
 assert(lowValueQuerySample.xRobotsTag?.includes("noindex"), "/forum?q=... is missing X-Robots-Tag noindex");
 assert(lowValueQuerySample.xRobotsTag?.includes("follow"), "/forum?q=... should keep follow");
 
+const forumPageSample = await fetchText("/forum");
+assert(forumPageSample.status === 200, `/forum returned ${forumPageSample.status}`);
+const forumPostings = typedJsonLdNodes(forumPageSample.text, "DiscussionForumPosting");
+assert(forumPostings.length > 0, "/forum has no DiscussionForumPosting JSON-LD items");
+const forumPostingsWithoutAuthor = forumPostings.filter((posting) => !authorHasName(posting.author));
+assert(
+  forumPostingsWithoutAuthor.length === 0,
+  `/forum has DiscussionForumPosting items without author.name: ${JSON.stringify(forumPostingsWithoutAuthor.slice(0, 3))}`,
+);
+const weakForumPostings = forumPostings.filter((posting) => !posting.url || !posting.mainEntityOfPage || !posting.datePublished);
+assert(
+  weakForumPostings.length === 0,
+  `/forum has weak DiscussionForumPosting items: ${JSON.stringify(weakForumPostings.slice(0, 3))}`,
+);
+
 const wildcardSample = await fetchText("/konular/*");
 assert(wildcardSample.status === 410, "/konular/* should return 410");
 assert(wildcardSample.xRobotsTag?.includes("noindex"), "/konular/* should include X-Robots-Tag noindex");
@@ -324,6 +390,7 @@ console.log(JSON.stringify({
   sitemapCounts: Object.fromEntries(["/sitemap.xml", "/topic-sitemap.xml", "/article-sitemap.xml", "/forum-sitemap.xml", "/dictionary-sitemap.xml", "/news-sitemap.xml", "/ai-sitemap.xml", "/author-sitemap.xml"]
     .map((sitemap) => [sitemap, locs(byPath.get(sitemap).text).length])),
   aiIndexItemCount: aiIndex.items.length,
+  forumPostingsChecked: forumPostings.length,
   samplePaths,
   gscExportUrlCount: gscUrls.length,
   gscSummary,

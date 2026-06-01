@@ -6,7 +6,9 @@ import { QuestionOfTheWeek } from "@/components/forum/question-of-the-week";
 import { Ghost } from "lucide-react";
 import { BreadcrumbJsonLd } from "@/lib/breadcrumbs";
 import { buildSafeIlikePattern } from "@/lib/security";
-import { getSiteUrl, stripMarkdownForMeta } from "@/lib/seo-utils";
+import { buildForumDiscussionPostingItem } from "@/lib/forum-structured-data";
+import type { ForumStructuredDataProfile } from "@/lib/forum-structured-data";
+import { getSiteUrl } from "@/lib/seo-utils";
 import type { Metadata } from "next";
 
 // Revalidate every 2 minutes for active active forum
@@ -21,11 +23,12 @@ type ForumQuestionRow = {
     title: string;
     content?: string | null;
     created_at: string;
+    updated_at?: string | null;
     category?: string | null;
     votes?: number | null;
     tags?: string[] | null;
-    profiles?: unknown;
-    answers?: any[] | null;
+    profiles?: ForumStructuredDataProfile | ForumStructuredDataProfile[] | null;
+    answers?: Array<{ count?: number | null } | Record<string, unknown>> | null;
     all_answers?: Array<{ count?: number | null }> | null;
 };
 
@@ -174,27 +177,9 @@ export default async function ForumPage({ searchParams }: ForumPageProps) {
         url: canonicalUrl,
         mainEntity: {
             '@type': 'ItemList',
-            itemListElement: questions?.map((q: any, i: number) => ({
-                '@type': 'ListItem',
-                position: i + 1,
-                url: `${baseUrl}/forum/${q.id}`,
-                name: q.title,
-                item: {
-                    '@type': 'DiscussionForumPosting',
-                    '@id': `${baseUrl}/forum/${q.id}#discussion`,
-                    url: `${baseUrl}/forum/${q.id}`,
-                    headline: q.title,
-                    text: stripMarkdownForMeta(q.content).slice(0, 500),
-                    articleSection: q.category || 'Fizik',
-                    datePublished: q.created_at,
-                    commentCount: q.answers?.[0]?.count || 0,
-                    interactionStatistic: {
-                        '@type': 'InteractionCounter',
-                        interactionType: 'https://schema.org/LikeAction',
-                        userInteractionCount: q.votes || 0,
-                    },
-                },
-            })) || []
+            itemListElement: ((questions || []) as ForumQuestionRow[]).map((q, i) => (
+                buildForumDiscussionPostingItem(q, i, baseUrl)
+            ))
         }
     };
 
