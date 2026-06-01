@@ -7,14 +7,54 @@ import { cn } from "@/lib/utils";
 import { UnifiedFeed, FeedItem } from "@/components/home/unified-feed";
 import { useUiSounds } from "@/hooks/use-ui-sounds";
 import { getDeferredProfileFeed } from "@/app/profil/actions";
+import React from "react";
+
+interface ProfileData {
+    full_name?: string;
+    avatar_url?: string;
+    username?: string;
+    [key: string]: unknown;
+}
+
+interface ArticleItem {
+    id: string | number;
+    title?: string;
+    category?: string;
+    summary?: string;
+    excerpt?: string;
+    content?: string;
+    created_at: string;
+    author?: ProfileData;
+    profiles?: ProfileData | ProfileData[];
+    [key: string]: unknown;
+}
+
+interface QuestionItem {
+    id: string | number;
+    title?: string;
+    content?: string;
+    created_at: string;
+    author?: ProfileData;
+    profiles?: ProfileData | ProfileData[];
+    questions?: { title?: string } | Array<{ title?: string }>;
+    is_accepted?: boolean;
+    [key: string]: unknown;
+}
+
+interface BookmarkItem {
+    articles?: ArticleItem | ArticleItem[];
+    questions?: QuestionItem | QuestionItem[];
+    created_at: string;
+    [key: string]: unknown;
+}
 
 interface DarkNeoFeedProps {
-    articles: any[];
-    questions: any[];
-    answers: any[];
-    drafts: any[];
-    bookmarkedArticles: any[];
-    bookmarkedQuestions: any[];
+    articles: ArticleItem[];
+    questions: QuestionItem[];
+    answers: QuestionItem[];
+    drafts: ArticleItem[];
+    bookmarkedArticles: BookmarkItem[];
+    bookmarkedQuestions: BookmarkItem[];
     deferredCounts?: {
         saved: number;
         drafts: number;
@@ -73,7 +113,7 @@ export function DarkNeoFeed({
 
         const timeout = setTimeout(() => loadDeferredFeed(), 2500);
         return () => clearTimeout(timeout);
-    }, [hasLoadedDeferredFeed, isOwnProfile]);
+    }, [hasLoadedDeferredFeed, isOwnProfile, loadDeferredFeed]);
 
     const counts = {
         posts: articles.length + questions.length,
@@ -160,7 +200,7 @@ export function DarkNeoFeed({
                 });
             items = [...savedArticles, ...savedQuestions];
         } else if (activeTab === 'replies') {
-            items = answers.map(a => ({ type: 'answer', data: a, sortDate: a.created_at } as any));
+            items = answers.map(a => ({ type: 'answer', data: a, sortDate: a.created_at } as unknown as FeedItem));
         } else if (activeTab === 'drafts') {
             items = deferredFeed.drafts.map(d => ({
                 type: 'article',
@@ -251,10 +291,10 @@ export function DarkNeoFeed({
                                                 )}
                                             </div>
                                             <h4 className="font-black text-base text-foreground mb-2 group-hover:text-[#EAB308] transition-colors leading-snug relative z-10">
-                                                {Array.isArray(answer.questions) ? answer.questions[0]?.title : answer.questions?.title || "Soru Başlığı Bulunamadı"}
+                                            {(answer.questions as { title?: string } | null)?.title || (Array.isArray(answer.questions) ? (answer.questions[0] as { title?: string })?.title : undefined) || "Soru Başlığı Bulunamadı"}
                                             </h4>
                                             <div className="text-zinc-400 text-sm leading-relaxed pl-3 border-l-2 border-zinc-700 group-hover:border-[#EAB308] transition-colors relative z-10">
-                                                {answer.content.replace(/<[^>]*>?/gm, "").slice(0, 150)}...
+                                                {typeof answer.content === 'string' ? answer.content.replace(/<[^>]*>?/gm, "").slice(0, 150) : ""}...
                                             </div>
                                         </div>
                                     ))
@@ -310,7 +350,7 @@ export function DarkNeoFeed({
     );
 }
 
-function EmptyState({ icon: Icon, label, description }: { icon: any; label: string; description: string }) {
+function EmptyState({ icon: Icon, label, description }: { icon: React.ComponentType<{ className?: string }>; label: string; description: string }) {
     return (
         <div className="group relative flex flex-col items-center justify-center overflow-hidden rounded-xl border-[3px] border-black bg-[#27272a] px-5 py-16 text-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] sm:py-24">
             <div className="relative z-10 mb-5 flex h-14 w-14 items-center justify-center rounded-[14px] border-4 border-black bg-[#FF3366] shadow-[4px_4px_0px_0px_#000] transition-transform duration-300 group-hover:rotate-[5deg] sm:mb-6 sm:h-16 sm:w-16">

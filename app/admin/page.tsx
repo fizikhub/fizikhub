@@ -7,6 +7,34 @@ import { tr } from "date-fns/locale";
 import Link from "next/link";
 import Image from "next/image";
 
+interface SeoContentItem {
+    source_type?: string;
+    source_id?: string | number;
+    title?: string;
+    visible_text_length?: number;
+    canonical_path?: string;
+    expected_path?: string;
+    [key: string]: unknown;
+}
+
+interface WebVitalsStat {
+    pathname: string;
+    lcp: number | null;
+    cls: number | null;
+    inp: number | null;
+    ttfb: number | null;
+    rating: string;
+    totalEvents: number;
+}
+
+interface WebVitalsSummary {
+    lcp: number | null;
+    cls: number | null;
+    inp: number | null;
+    ttfb: number | null;
+    count: number;
+}
+
 export default async function AdminDashboard() {
     const supabase = await createClient();
 
@@ -44,9 +72,9 @@ export default async function AdminDashboard() {
 
     // Fetch SEO & GEO Health gracefully
     const adminClient = createAdminClient();
-    let seoLowValueContent: any[] = [];
-    let seoUnsyncedContent: any[] = [];
-    let seoPanelError: any = null;
+    let seoLowValueContent: SeoContentItem[] = [];
+    let seoUnsyncedContent: SeoContentItem[] = [];
+    let seoPanelError: string | null = null;
 
     try {
         const [lowValueRes, syncStatusRes] = await Promise.all([
@@ -65,15 +93,15 @@ export default async function AdminDashboard() {
 
         seoLowValueContent = lowValueRes.data || [];
         seoUnsyncedContent = syncStatusRes.data || [];
-    } catch (err: any) {
+    } catch (err: unknown) {
         console.error("SEO/GEO RPC Fetch Error:", err);
-        seoPanelError = err.message || String(err);
+        seoPanelError = err instanceof Error ? err.message : String(err);
     }
 
     // Fetch Web Vitals data gracefully
-    let webVitalsStats: any[] = [];
-    let webVitalsSummary: any = null;
-    let webVitalsError: any = null;
+    let webVitalsStats: WebVitalsStat[] = [];
+    let webVitalsSummary: WebVitalsSummary | null = null;
+    let webVitalsError: string | null = null;
 
     try {
         // Get overall averages from the daily summary
@@ -182,9 +210,9 @@ export default async function AdminDashboard() {
                 count: dailySummary.reduce((acc, curr) => acc + (curr.total_events || 0), 0)
             };
         }
-    } catch (err: any) {
+    } catch (err: unknown) {
         console.error("Web Vitals Fetch Error:", err);
-        webVitalsError = err.message || String(err);
+        webVitalsError = err instanceof Error ? err.message : String(err);
     }
 
     return (
@@ -347,7 +375,7 @@ export default async function AdminDashboard() {
                                         </div>
                                     ) : (
                                         <div className="space-y-3 max-h-[300px] overflow-y-auto pr-1">
-                                            {seoLowValueContent.map((item: any) => (
+                                            {seoLowValueContent.map((item) => (
                                                 <div key={`${item.source_type}-${item.source_id}`} className="border-2 border-black bg-white dark:bg-zinc-900 p-3 flex flex-col justify-between gap-2 shadow-[2px_2px_0px_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[3px_3px_0px_#000] transition-all">
                                                     <div className="flex items-start justify-between gap-2">
                                                         <span className="font-bold text-xs hover:underline truncate max-w-[200px] text-zinc-900 dark:text-zinc-100">
@@ -360,7 +388,7 @@ export default async function AdminDashboard() {
                                                     <div className="flex justify-between items-center text-[10px] text-muted-foreground">
                                                         <span className="font-mono text-[9px] truncate max-w-[220px]">{item.canonical_path}</span>
                                                         <Link 
-                                                            href={item.canonical_path} 
+                                                            href={item.canonical_path || "#"} 
                                                             target="_blank"
                                                             className="flex items-center gap-1 font-black text-black dark:text-[#FFE500] uppercase hover:underline"
                                                         >
@@ -397,7 +425,7 @@ export default async function AdminDashboard() {
                                         </div>
                                     ) : (
                                         <div className="space-y-3 max-h-[300px] overflow-y-auto pr-1">
-                                            {seoUnsyncedContent.map((item: any) => (
+                                            {seoUnsyncedContent.map((item) => (
                                                 <div key={`${item.source_type}-${item.source_id}`} className="border-2 border-black bg-white dark:bg-zinc-900 p-3 flex flex-col justify-between gap-2 shadow-[2px_2px_0px_#000] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[3px_3px_0px_#000] transition-all">
                                                     <div className="flex items-start justify-between gap-2">
                                                         <span className="font-bold text-xs truncate max-w-[200px] text-zinc-900 dark:text-zinc-100">
@@ -582,21 +610,21 @@ export default async function AdminDashboard() {
                                                 </tr>
                                             </thead>
                                             <tbody className="divide-y divide-zinc-200 dark:divide-zinc-800 font-medium">
-                                                {webVitalsStats.map((row: any) => (
+                                                {webVitalsStats.map((row) => (
                                                     <tr key={row.pathname} className="hover:bg-zinc-100 dark:hover:bg-zinc-900/30 transition-colors">
                                                         <td className="py-3 font-bold text-foreground font-mono text-[11px] truncate max-w-[250px]">{row.pathname}</td>
                                                         <td className="py-3 text-center">
-                                                            <span className={row.lcp > 4000 ? 'text-red-500 font-black' : row.lcp > 2500 ? 'text-amber-500 font-bold' : 'text-green-500 font-bold'}>
+                                                            <span className={row.lcp === null ? 'text-muted-foreground' : row.lcp > 4000 ? 'text-red-500 font-black' : row.lcp > 2500 ? 'text-amber-500 font-bold' : 'text-green-500 font-bold'}>
                                                                 {row.lcp ? `${(row.lcp / 1000).toFixed(2)}s` : '---'}
                                                             </span>
                                                         </td>
                                                         <td className="py-3 text-center">
-                                                            <span className={row.cls > 0.25 ? 'text-red-500 font-black' : row.cls > 0.1 ? 'text-amber-500 font-bold' : 'text-green-500 font-bold'}>
+                                                            <span className={row.cls === null ? 'text-muted-foreground' : row.cls > 0.25 ? 'text-red-500 font-black' : row.cls > 0.1 ? 'text-amber-500 font-bold' : 'text-green-500 font-bold'}>
                                                                 {row.cls ? row.cls.toFixed(3) : '---'}
                                                             </span>
                                                         </td>
                                                         <td className="py-3 text-center">
-                                                            <span className={row.inp > 500 ? 'text-red-500 font-black' : row.inp > 200 ? 'text-amber-500 font-bold' : 'text-green-500 font-bold'}>
+                                                            <span className={row.inp === null ? 'text-muted-foreground' : row.inp > 500 ? 'text-red-500 font-black' : row.inp > 200 ? 'text-amber-500 font-bold' : 'text-green-500 font-bold'}>
                                                                 {row.inp ? `${row.inp.toFixed(0)}ms` : '---'}
                                                             </span>
                                                         </td>

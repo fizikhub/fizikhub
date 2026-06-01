@@ -4,16 +4,15 @@ import { useState, useRef, useEffect } from "react";
 import { ArticleEditor } from "@/components/article/article-editor";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Loader2, Image as ImageIcon, Trash2, Send, FlaskConical, List, FileText, Plus, X, Upload } from "lucide-react";
+import { Loader2, Image as ImageIcon, Trash2, FlaskConical, List, FileText, Plus, X } from "lucide-react";
 import { toast } from "sonner";
 import { createClient } from "@/lib/supabase";
 import { createArticle } from "@/app/profil/article-actions";
 import { cn } from "@/lib/utils";
 import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
 import Image from "next/image";
 import { ExperimentGuide } from "@/components/experiment/experiment-guide";
-import { Star, GripHorizontal } from "lucide-react";
+import { Star } from "lucide-react";
 import { ImageCropDialog } from "@/components/shared/image-crop-dialog";
 interface ExperimentEditorProps {
     userId: string;
@@ -115,7 +114,7 @@ export function ExperimentEditor({ userId }: ExperimentEditorProps) {
         const fileExt = file.name.split('.').pop();
         const fileName = `${userId}/experiment-${Date.now()}-${Math.floor(Math.random() * 1000)}.${fileExt}`;
 
-        const { data: uploadData, error: uploadError } = await supabase.storage
+        const { error: uploadError } = await supabase.storage
             .from("article-images")
             .upload(fileName, file, { cacheControl: '3600', upsert: false, contentType: file.type });
 
@@ -147,8 +146,8 @@ export function ExperimentEditor({ userId }: ExperimentEditorProps) {
             const url = await uploadToSupabase(croppedFile);
             setCoverUrl(url);
             toast.success("Kapak resmi yüklendi!");
-        } catch (error: any) {
-            toast.error(error.message || "Görsel yüklenirken hata oluştu.");
+        } catch (error: unknown) {
+            toast.error(error instanceof Error ? error.message : "Görsel yüklenirken hata oluştu.");
         } finally {
             setUploadingImage(false);
         }
@@ -193,8 +192,8 @@ export function ExperimentEditor({ userId }: ExperimentEditorProps) {
             setHasUnsavedChanges(false);
             window.location.href = "/profil";
 
-        } catch (error: any) {
-            toast.error(error?.message || "Bir hata oluştu.");
+        } catch (error: unknown) {
+            toast.error(error instanceof Error ? error.message : "Bir hata oluştu.");
             setIsSubmitting(false);
         }
     };
