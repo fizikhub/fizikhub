@@ -8,7 +8,6 @@ export const HOME_FEED_ARTICLE_SELECT = [
     "title",
     "slug",
     "excerpt",
-    "summary",
     "category",
     "cover_url",
     "image_url",
