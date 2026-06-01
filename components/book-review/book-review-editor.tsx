@@ -4,13 +4,12 @@ import { useState, useRef, useEffect } from "react";
 import { ArticleEditor } from "@/components/article/article-editor";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Loader2, Image as ImageIcon, Trash2, Send, Star, User, BookOpen, Bookmark, X, Upload } from "lucide-react";
+import { Loader2, Image as ImageIcon, Trash2, Star, User, Upload } from "lucide-react";
 import { toast } from "sonner";
 import { createClient } from "@/lib/supabase";
 import { createArticle } from "@/app/profil/article-actions";
 import { cn } from "@/lib/utils";
 import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
 import Image from "next/image";
 import { BookReviewGuide } from "@/components/book-review/book-review-guide";
 import { ImageCropDialog } from "@/components/shared/image-crop-dialog";
@@ -102,7 +101,7 @@ export function BookReviewEditor({ userId }: BookReviewEditorProps) {
         const fileExt = file.name.split('.').pop();
         const fileName = `${userId}/book-${Date.now()}-${Math.floor(Math.random() * 1000)}.${fileExt}`;
 
-        const { data: uploadData, error: uploadError } = await supabase.storage
+        const { error: uploadError } = await supabase.storage
             .from("article-images")
             .upload(fileName, file, { cacheControl: '3600', upsert: false, contentType: file.type });
 
@@ -134,8 +133,9 @@ export function BookReviewEditor({ userId }: BookReviewEditorProps) {
             const url = await uploadToSupabase(croppedFile);
             setCoverUrl(url);
             toast.success("Kapak resmi yüklendi hocam.");
-        } catch (error: any) {
-            toast.error(error.message || "Görsel yüklenirken hata oluştu. Aptal site.");
+        } catch (error: unknown) {
+            const msg = error instanceof Error ? error.message : "Görsel yüklenirken hata oluştu.";
+            toast.error(msg);
         } finally {
             setUploadingImage(false);
         }
@@ -181,8 +181,9 @@ export function BookReviewEditor({ userId }: BookReviewEditorProps) {
             setHasUnsavedChanges(false);
             window.location.href = "/profil";
 
-        } catch (error: any) {
-            toast.error(error?.message || "Bir hata oluştu.");
+        } catch (error: unknown) {
+            const msg = error instanceof Error ? error.message : "Bir hata oluştu.";
+            toast.error(msg);
             setIsSubmitting(false);
         }
     };

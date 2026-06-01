@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useMemo } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
@@ -175,7 +175,7 @@ export function MarkdownRenderer({
                     rehypeHighlight,
                 ]}
                 components={{
-                    blockquote: ({ node, children, ...props }: any) => (
+                    blockquote: ({ children, ...props }: React.ComponentPropsWithoutRef<'blockquote'>) => (
                         <blockquote 
                             data-geo="quotation" 
                             className="border-l-4 border-zinc-800 dark:border-zinc-200 bg-zinc-100 dark:bg-zinc-900/50 p-4 rounded-r-lg my-6 font-medium italic text-zinc-800 dark:text-zinc-200 shadow-sm" 
@@ -192,8 +192,8 @@ export function MarkdownRenderer({
                         return <h1 {...props} />;
                     },
                     // Only override p to handle block elements (img/video/iframe inside <p>)
-                    p: ({ node, children, ...props }) => {
-                        const hasBlockElement = node?.children?.some((child: unknown) => {
+                    p: ({ node: _node, children, ...props }) => {
+                        const hasBlockElement = _node?.children?.some((child: unknown) => {
                             const c = child as { tagName?: string };
                             return ['img', 'video', 'iframe'].includes(c.tagName || '');
                         });
@@ -210,7 +210,7 @@ export function MarkdownRenderer({
 
                         return <p {...props}>{processedChildren}</p>;
                     },
-                    li: ({ node, children, ...props }) => {
+                    li: ({ node: _node, children, ...props }) => {
                         const processedChildren = React.Children.map(children, (child) => {
                             if (typeof child === "string") {
                                 return highlightDictionaryTerms(child);
@@ -221,7 +221,7 @@ export function MarkdownRenderer({
                         return <li {...props}>{processedChildren}</li>;
                     },
                     // External links open in new tab, internal links use Next.js routing
-                    a: ({ node, ...props }) => {
+                    a: ({ node: _node, ...props }) => {
                         const href = props.href || '';
                         const isExternal = href.startsWith('http') && !href.includes('fizikhub.com');
                         
@@ -240,7 +240,7 @@ export function MarkdownRenderer({
                         );
                     },
                     // Wrap KaTeX block math in overflow-x-auto container for mobile
-                    div: ({ node, children, className: divClassName, ...props }: any) => {
+                    div: ({ node: _node, children, className: divClassName, ...props }: React.ComponentPropsWithoutRef<'div'> & { node?: unknown }) => {
                         if (divClassName?.includes('math-display')) {
                             return (
                                 <div className="overflow-x-auto my-6 sm:my-8 py-4 px-3 sm:px-5 bg-zinc-50 dark:bg-zinc-900/60 border-2 border-black dark:border-zinc-700 rounded-xl shadow-[4px_4px_0px_0px_#000] dark:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.4)]" style={{ maxWidth: '100%' }} {...props}>
@@ -251,11 +251,11 @@ export function MarkdownRenderer({
                         return <div className={divClassName} {...props}>{children}</div>;
                     },
                     // Image with Dialog zoom
-                    img: ({ node, ...props }: any) => {
+                    img: ({ node: _node, ...props }: React.ComponentPropsWithoutRef<'img'> & { node?: unknown }) => {
                         const src = props.src as string;
                         if (src?.endsWith(".mp4") || src?.endsWith(".webm")) {
                             return (
-                                <video controls className="rounded-xl w-full my-6 border-4 border-black dark:border-zinc-800 shadow-[6px_6px_0px_0px_#000] dark:shadow-[6px_6px_0px_0px_rgba(0,0,0,0.5)]" {...props}>
+                                <video controls className="rounded-xl w-full my-6 border-4 border-black dark:border-zinc-800 shadow-[6px_6px_0px_0px_#000] dark:shadow-[6px_6px_0px_0px_rgba(0,0,0,0.5)]">
                                     <source src={src} type={`video/${src.split('.').pop()}`} />
                                     Tarayıcınız video etiketini desteklemiyor.
                                 </video>
@@ -302,7 +302,7 @@ export function MarkdownRenderer({
                         );
                     },
                     // Iframe responsive embed
-                    iframe: ({ node, ...props }: any) => (
+                    iframe: ({ node: _node, ...props }: React.ComponentPropsWithoutRef<'iframe'> & { node?: unknown }) => (
                         <div className="aspect-video w-full my-8 sm:my-12 rounded-xl overflow-hidden border-4 border-black dark:border-zinc-800 shadow-[6px_6px_0px_0px_#000] dark:shadow-[6px_6px_0px_0px_rgba(0,0,0,0.5)] bg-black/50">
                             <iframe
                                 className="w-full h-full"

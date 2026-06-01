@@ -41,7 +41,6 @@ export function ProfileSettingsDialog({
     currentCoverUrl,
     currentWebsite,
     currentSocialLinks,
-    userEmail,
     trigger
 }: ProfileSettingsDialogProps) {
     const [open, setOpen] = useState(false);
@@ -103,7 +102,7 @@ export function ProfileSettingsDialog({
                     toast.error(res.error || "Hata oluştu");
                 }
             }
-        } catch (error) {
+        } catch {
             toast.error("Yükleme sırasında hata oluştu");
         } finally {
             setIsLoading(false);
@@ -141,7 +140,7 @@ export function ProfileSettingsDialog({
             } else {
                 toast.error(res.error);
             }
-        } catch (error) {
+        } catch {
             toast.error("Bir hata oluştu");
         } finally {
             setIsLoading(false);

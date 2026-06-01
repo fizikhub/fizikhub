@@ -31,13 +31,121 @@ import {
 } from "lucide-react";
 import { addArticleNote, resolveNote, triggerManualAIReview, approveArticle, revokeApproval } from "@/app/yazar-paneli/actions";
 
+interface ArticleData {
+    id: number;
+    title: string;
+    content: string;
+    excerpt?: string;
+    category: string;
+    created_at: string;
+    author?: {
+        full_name?: string;
+        username?: string;
+        avatar_url?: string;
+    };
+    [key: string]: unknown;
+}
+
+interface Reference {
+    id: number;
+    title: string;
+    authors?: string;
+    publisher?: string;
+    year?: string | number;
+    doi?: string;
+    url?: string;
+    [key: string]: unknown;
+}
+
+interface AIReviewSource {
+    url: string;
+    reliability: string;
+    reason: string;
+}
+
+interface AIReviewIssue {
+    text: string;
+    severity: string;
+    explanation: string;
+}
+
+interface AIReviewError {
+    original: string;
+    suggestion: string;
+    type: string;
+}
+
+interface AIReviewMismatch {
+    claim: string;
+    source: string;
+    issue: string;
+}
+
+interface AIReview {
+    overall_score: number;
+    reviewed_at: string;
+    readability_score?: number;
+    suggestions?: string[];
+    content_accuracy?: {
+        score?: number;
+        issues?: AIReviewIssue[];
+    };
+    grammar_check?: {
+        score?: number;
+        errors?: AIReviewError[];
+    };
+    source_reliability?: {
+        score?: number;
+        sources?: AIReviewSource[];
+    };
+    source_content_match?: {
+        score?: number;
+        mismatches?: AIReviewMismatch[];
+    };
+    deep_analysis?: {
+        source_claim_agreement?: string;
+        fizikhub_tone_and_readability?: string;
+        structure_and_depth?: string;
+        google_eeat?: string;
+    };
+    ai_originality_analysis?: {
+        originality_score?: number;
+        detailed_verdict?: string;
+        human_touch_points?: string;
+        robotic_language_issues?: string;
+    };
+    final_verdict?: {
+        publishability?: string;
+        final_notes?: string;
+    };
+}
+
+interface ReviewNote {
+    id: string;
+    content: string;
+    type: string;
+    resolved: boolean;
+    created_at: string;
+    user?: {
+        full_name?: string;
+        username?: string;
+        avatar_url?: string | null;
+    };
+}
+
+interface Approval {
+    id: string;
+    user_id: string;
+    [key: string]: unknown;
+}
+
 interface ReviewDetailClientProps {
     data: {
-        article: any;
-        references: any[];
-        aiReview: any;
-        notes: any[];
-        approvals: any[];
+        article: ArticleData;
+        references: Reference[];
+        aiReview: AIReview | null;
+        notes: ReviewNote[];
+        approvals: Approval[];
         hasApproved: boolean;
         currentUserId: string;
         isAdmin?: boolean;
@@ -277,9 +385,9 @@ export function ReviewDetailClient({ data, articleId }: ReviewDetailClientProps)
                                             )}
                                         </div>
                                         {/* Show reliability from AI review if available */}
-                                        {localAiReview?.source_reliability?.sources?.find((s: any) => s.url === ref.url) && (
+                                        {localAiReview?.source_reliability?.sources?.find(s => s.url === ref.url) && (
                                             reliabilityBadge(
-                                                localAiReview.source_reliability.sources.find((s: any) => s.url === ref.url)?.reliability
+                                                localAiReview.source_reliability?.sources?.find(s => s.url === ref.url)?.reliability ?? ""
                                             )
                                         )}
                                     </div>
@@ -337,12 +445,12 @@ export function ReviewDetailClient({ data, articleId }: ReviewDetailClientProps)
                                 </div>
 
                                 {/* Content Issues */}
-                                {localAiReview.content_accuracy?.issues?.length > 0 && (
+                                {((localAiReview.content_accuracy?.issues?.length ?? 0) > 0) && (
                                     <div className="space-y-2">
                                         <h3 className="text-xs font-bold flex items-center gap-1.5">
                                             <AlertTriangle className="w-3.5 h-3.5 text-amber-500" /> İçerik Sorunları
                                         </h3>
-                                        {localAiReview.content_accuracy.issues.map((issue: any, i: number) => (
+                                        {localAiReview?.content_accuracy?.issues?.map((issue, i) => (
                                             <div key={i} className="p-2 rounded-lg border border-zinc-200 dark:border-zinc-800 text-xs space-y-1">
                                                 <div className="flex items-start justify-between gap-2">
                                                     <span className="font-medium">{issue.text}</span>
@@ -355,12 +463,12 @@ export function ReviewDetailClient({ data, articleId }: ReviewDetailClientProps)
                                 )}
 
                                 {/* Grammar Errors */}
-                                {localAiReview.grammar_check?.errors?.length > 0 && (
+                                {((localAiReview.grammar_check?.errors?.length ?? 0) > 0) && (
                                     <div className="space-y-2">
                                         <h3 className="text-xs font-bold flex items-center gap-1.5">
                                             <PenTool className="w-3.5 h-3.5 text-blue-500" /> Yazım Hataları
                                         </h3>
-                                        {localAiReview.grammar_check.errors.slice(0, 5).map((err: any, i: number) => (
+                                        {localAiReview?.grammar_check?.errors?.slice(0, 5).map((err, i) => (
                                             <div key={i} className="p-2 rounded-lg border border-zinc-200 dark:border-zinc-800 text-xs">
                                                 <div className="flex items-center gap-2">
                                                     <span className="line-through text-red-400">{err.original}</span>
@@ -374,12 +482,12 @@ export function ReviewDetailClient({ data, articleId }: ReviewDetailClientProps)
                                 )}
 
                                 {/* Source Reliability */}
-                                {localAiReview.source_reliability?.sources?.length > 0 && (
+                                {((localAiReview.source_reliability?.sources?.length ?? 0) > 0) && (
                                     <div className="space-y-2">
                                         <h3 className="text-xs font-bold flex items-center gap-1.5">
                                             <Shield className="w-3.5 h-3.5 text-violet-500" /> Kaynak Güvenilirliği
                                         </h3>
-                                        {localAiReview.source_reliability.sources.map((src: any, i: number) => (
+                                        {localAiReview?.source_reliability?.sources?.map((src, i) => (
                                             <div key={i} className="p-2 rounded-lg border border-zinc-200 dark:border-zinc-800 text-xs space-y-1">
                                                 <div className="flex items-center justify-between gap-2">
                                                     <span className="font-medium truncate flex-1">{src.url?.substring(0, 40)}...</span>
@@ -392,12 +500,12 @@ export function ReviewDetailClient({ data, articleId }: ReviewDetailClientProps)
                                 )}
 
                                 {/* Source-Content Mismatches */}
-                                {localAiReview.source_content_match?.mismatches?.length > 0 && (
+                                {((localAiReview.source_content_match?.mismatches?.length ?? 0) > 0) && (
                                     <div className="space-y-2">
                                         <h3 className="text-xs font-bold flex items-center gap-1.5">
                                             <XCircle className="w-3.5 h-3.5 text-red-500" /> Kaynak-İçerik Uyumsuzlukları
                                         </h3>
-                                        {localAiReview.source_content_match.mismatches.map((m: any, i: number) => (
+                                        {localAiReview?.source_content_match?.mismatches?.map((m, i) => (
                                             <div key={i} className="p-2 rounded-lg border border-red-200 dark:border-red-900/30 bg-red-50 dark:bg-red-900/10 text-xs space-y-1">
                                                 <p className="font-medium">İddia: {m.claim}</p>
                                                 <p className="text-muted-foreground">Kaynak: {m.source}</p>
@@ -408,13 +516,13 @@ export function ReviewDetailClient({ data, articleId }: ReviewDetailClientProps)
                                 )}
 
                                 {/* Suggestions */}
-                                {localAiReview.suggestions?.length > 0 && (
+                                {((localAiReview.suggestions?.length ?? 0) > 0) && (
                                     <div className="space-y-2">
                                         <h3 className="text-xs font-bold flex items-center gap-1.5">
                                             <Lightbulb className="w-3.5 h-3.5 text-amber-500" /> Öneriler
                                         </h3>
                                         <ul className="space-y-1">
-                                            {localAiReview.suggestions.map((s: string, i: number) => (
+                                            {localAiReview?.suggestions?.map((s, i) => (
                                                 <li key={i} className="text-xs text-muted-foreground flex gap-2 p-2 rounded-lg bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-900/30">
                                                     <span className="text-amber-500 font-bold">•</span>
                                                     {s}
@@ -461,8 +569,8 @@ export function ReviewDetailClient({ data, articleId }: ReviewDetailClientProps)
                                                 </div>
                                                 <h3 className="text-sm font-black text-blue-700 dark:text-blue-400">Aşama 2: AI Tespiti (Gemma 27B)</h3>
                                             </div>
-                                            <Badge variant={localAiReview.ai_originality_analysis.originality_score > 70 ? "default" : "destructive"}>
-                                                Özgünlük: %{localAiReview.ai_originality_analysis.originality_score || 0}
+                                            <Badge variant={(localAiReview.ai_originality_analysis?.originality_score ?? 0) > 70 ? "default" : "destructive"}>
+                                                Özgünlük: %{localAiReview.ai_originality_analysis?.originality_score ?? 0}
                                             </Badge>
                                         </div>
                                         <div className="space-y-3">
@@ -572,7 +680,7 @@ export function ReviewDetailClient({ data, articleId }: ReviewDetailClientProps)
                                         <div key={note.id} className={`p-3 rounded-lg border ${note.resolved ? 'opacity-50 border-zinc-200 dark:border-zinc-800' : 'border-zinc-300 dark:border-zinc-700'}`}>
                                             <div className="flex items-start gap-2">
                                                 <Avatar className="w-6 h-6">
-                                                    <AvatarImage src={note.user?.avatar_url} />
+                                                    <AvatarImage src={note.user?.avatar_url ?? undefined} />
                                                     <AvatarFallback className="text-[9px]">{note.user?.full_name?.[0]}</AvatarFallback>
                                                 </Avatar>
                                                 <div className="flex-1 min-w-0">

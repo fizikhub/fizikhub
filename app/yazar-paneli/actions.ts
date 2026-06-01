@@ -59,7 +59,8 @@ export async function getPendingArticles() {
             const approvalCount = approvalsList.length;
             const hasApproved = approvalsList.some(a => a.user_id === user.id);
             const approvers = approvalsList.map(a => a.approver);
-            const aiReview = (article as any).article_ai_reviews?.[0] || null;
+            const aiReviews = article.article_ai_reviews as Array<{ overall_score: number | null }> | null;
+            const aiReview = aiReviews?.[0] || null;
 
             return {
                 ...article,
@@ -72,8 +73,9 @@ export async function getPendingArticles() {
 
         return { articles: formattedArticles };
 
-    } catch (err: any) {
-        return { error: err.message };
+    } catch (err: unknown) {
+        const msg = err instanceof Error ? err.message : String(err);
+        return { error: msg };
     }
 }
 
@@ -129,8 +131,9 @@ export async function approveArticle(articleId: number) {
         revalidateArticleFeeds();
         return { success: true, count, published: isStrictAdmin || (count && count >= 4) };
 
-    } catch (err: any) {
-        return { success: false, error: err.message };
+    } catch (err: unknown) {
+        const msg = err instanceof Error ? err.message : String(err);
+        return { success: false, error: msg };
     }
 }
 
@@ -155,8 +158,9 @@ export async function revokeApproval(articleId: number) {
         revalidatePath("/yazar-paneli");
         return { success: true };
 
-    } catch (err: any) {
-        return { success: false, error: err.message };
+    } catch (err: unknown) {
+        const msg = err instanceof Error ? err.message : String(err);
+        return { success: false, error: msg };
     }
 }
 
@@ -228,8 +232,9 @@ export async function getArticleDetail(articleId: number) {
             isAdmin: isAdminUser,
         };
 
-    } catch (err: any) {
-        return { error: err.message };
+    } catch (err: unknown) {
+        const msg = err instanceof Error ? err.message : String(err);
+        return { error: msg };
     }
 }
 
@@ -253,8 +258,9 @@ export async function addArticleNote(articleId: number, content: string, type: "
         revalidatePath(`/yazar-paneli/makale/${articleId}`);
         return { success: true };
 
-    } catch (err: any) {
-        return { success: false, error: err.message };
+    } catch (err: unknown) {
+        const msg = err instanceof Error ? err.message : String(err);
+        return { success: false, error: msg };
     }
 }
 
@@ -274,8 +280,9 @@ export async function resolveNote(noteId: string) {
         if (error) return { success: false, error: error.message };
         return { success: true };
 
-    } catch (err: any) {
-        return { success: false, error: err.message };
+    } catch (err: unknown) {
+        const msg = err instanceof Error ? err.message : String(err);
+        return { success: false, error: msg };
     }
 }
 
@@ -324,8 +331,9 @@ export async function triggerManualAIReview(articleId: number) {
         revalidatePath("/yazar-paneli");
         return { success: true };
 
-    } catch (err: any) {
-        return { success: false, error: err.message };
+    } catch (err: unknown) {
+        const msg = err instanceof Error ? err.message : String(err);
+        return { success: false, error: msg };
     }
 }
 
@@ -375,12 +383,13 @@ export async function checkLinkHealth(url: string) {
             status: response.status,
             statusText: response.statusText
         };
-    } catch (err: any) {
-        console.error(`Link check failed for ${url}:`, err.message);
-        return { 
-            ok: false, 
-            error: err.name === 'AbortError' ? "Zaman aşımı (Timeout)" : "Erişim hatası",
-            errorCode: err.name
+    } catch (err: unknown) {
+        console.error(`Link check failed for ${url}:`, err instanceof Error ? err.message : err);
+        const errName = err instanceof Error ? err.name : 'Error';
+        return {
+            ok: false,
+            error: errName === 'AbortError' ? "Zaman aşımı (Timeout)" : "Erişim hatası",
+            errorCode: errName
         };
     }
 }
@@ -424,7 +433,8 @@ export async function getMyArticles() {
             const approvalsList = article.article_approvals || [];
             const approvalCount = approvalsList.length;
             const approvers = approvalsList.map(a => a.approver);
-            const aiReview = (article as any).article_ai_reviews?.[0] || null;
+            const aiReviews = article.article_ai_reviews as Array<{ overall_score: number | null }> | null;
+            const aiReview = aiReviews?.[0] || null;
 
             return {
                 ...article,
@@ -436,7 +446,8 @@ export async function getMyArticles() {
 
         return { articles: formattedArticles };
 
-    } catch (err: any) {
-        return { error: err.message };
+    } catch (err: unknown) {
+        const msg = err instanceof Error ? err.message : String(err);
+        return { error: msg };
     }
 }

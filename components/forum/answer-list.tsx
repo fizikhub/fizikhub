@@ -6,7 +6,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 const MarkdownEditor = lazy(() => import("@/components/markdown-editor").then(mod => ({ default: mod.MarkdownEditor })));
-import dynamic from "next/dynamic";
+import { User as SupabaseUser } from "@supabase/supabase-js";
 import { MarkdownRenderer } from "@/components/markdown-renderer";
 import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
@@ -39,25 +39,34 @@ type RawAnswer = Database['public']['Tables']['answers']['Row'] & {
     profiles: PublicProfile | PublicProfile[] | null;
     likeCount?: number;
     isLiked?: boolean;
-    comments?: any[];
+    comments?: AnswerComment[];
 };
+
+interface AnswerComment {
+    id: number;
+    content: string;
+    created_at: string;
+    user_id?: string;
+    [key: string]: unknown;
+}
 
 type Answer = Omit<RawAnswer, "author_id" | "profiles"> & {
     profiles: PublicProfile | null;
     canDelete?: boolean;
+    comments?: AnswerComment[];
 };
 
 interface AnswerListProps {
     questionId: number;
     initialAnswers: Answer[];
-    currentUser: any;
+    currentUser: SupabaseUser | null;
 }
 
 function getPublicProfile(profile: PublicProfile | PublicProfile[] | null | undefined): PublicProfile | null {
     return Array.isArray(profile) ? profile[0] || null : profile || null;
 }
 
-function toClientAnswer(answer: RawAnswer | (Omit<RawAnswer, "author_id"> & { author_id?: string; canDelete?: boolean }), user: any): Answer {
+function toClientAnswer(answer: RawAnswer | (Omit<RawAnswer, "author_id"> & { author_id?: string; canDelete?: boolean }), user: SupabaseUser | null): Answer {
     const { author_id, profiles, canDelete, ...clientAnswer } = answer as RawAnswer & { canDelete?: boolean };
 
     return {
@@ -73,7 +82,7 @@ export function AnswerList({ questionId, initialAnswers, currentUser }: AnswerLi
     const [answers, setAnswers] = useState<Answer[]>(initialAnswers);
     const [newAnswer, setNewAnswer] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [user, setUser] = useState<any>(currentUser);
+    const [user, setUser] = useState<SupabaseUser | null>(currentUser);
     const [expandedComments, setExpandedComments] = useState<Record<number, boolean>>({});
     const [expandedAnswers, setExpandedAnswers] = useState<Record<number, boolean>>({});
     const [supabase] = useState(() => createClient());
@@ -104,7 +113,7 @@ export function AnswerList({ questionId, initialAnswers, currentUser }: AnswerLi
         }));
     };
 
-    const handleCommentAdded = (answerId: number, comment: any) => {
+    const handleCommentAdded = (answerId: number, comment: AnswerComment) => {
         setAnswers(prev => prev.map(a => {
             if (a.id === answerId) {
                 return {
@@ -242,8 +251,9 @@ export function AnswerList({ questionId, initialAnswers, currentUser }: AnswerLi
             }
             setNewAnswer("");
             toast.success("Cevabınız gönderildi!");
-        } catch (error: any) {
-            toast.error("Hata: " + error.message);
+        } catch (error: unknown) {
+            const msg = error instanceof Error ? error.message : "Bilinmeyen hata";
+            toast.error("Hata: " + msg);
         } finally {
             setIsSubmitting(false);
         }

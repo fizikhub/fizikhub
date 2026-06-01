@@ -1,18 +1,17 @@
 "use client";
 
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import { ArticleEditor } from "@/components/article/article-editor";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Loader2, Image as ImageIcon, X, Trash2, Hash, AlignLeft, Send, Sparkles, HelpCircle, BookOpen, Fingerprint, Lightbulb, Link as LinkIcon, AlertTriangle, Save, CloudOff } from "lucide-react";
+import { Loader2, Image as ImageIcon, Trash2, Hash, AlignLeft, Send, HelpCircle } from "lucide-react";
 import { toast } from "sonner";
 import { createClient } from "@/lib/supabase";
 import { createArticle, updateArticle } from "@/app/profil/article-actions";
 import { cn } from "@/lib/utils";
-import { Label } from "@/components/ui/label";
 import { BlogEditor101 } from "@/components/article/blog-editor-101";
 import { WriterManifesto } from "@/components/article/writer-manifesto";
 
@@ -117,7 +116,7 @@ export function NewArticleForm({ userId, isFirstArticle, hasSeenGuide, initialDa
         const fileExt = file.name.split('.').pop();
         const fileName = `${userId}/${Date.now()}-${Math.floor(Math.random() * 1000)}.${fileExt}`;
 
-        const { data: uploadData, error: uploadError } = await supabase.storage
+        const { error: uploadError } = await supabase.storage
             .from("article-images")
             .upload(fileName, file, { cacheControl: '3600', upsert: false, contentType: file.type });
 
@@ -342,9 +341,4 @@ export function NewArticleForm({ userId, isFirstArticle, hasSeenGuide, initialDa
             </div>
         </div>
     );
-}
-
-// Helper component for icon
-function ImageImageIcon(props: React.ComponentProps<typeof ImageIcon>) {
-    return <ImageIcon {...props} />
 }

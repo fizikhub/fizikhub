@@ -14,18 +14,64 @@ import { ReputationDisplay } from "@/components/reputation-display";
 import { format } from "date-fns";
 import { tr } from "date-fns/locale";
 import { Variants } from "framer-motion";
+import { User } from "@supabase/supabase-js";
+
+interface ProfileData {
+    id: string;
+    username: string | null;
+    full_name: string | null;
+    bio: string | null;
+    avatar_url: string | null;
+    cover_url?: string | null;
+    website?: string | null;
+    reputation?: number;
+    created_at: string;
+    social_links?: {
+        twitter?: string | null;
+        github?: string | null;
+        linkedin?: string | null;
+        instagram?: string | null;
+    } | null;
+}
+
+interface UserBadge {
+    awarded_at: string;
+    badges: {
+        id: number;
+        name: string;
+        description: string;
+        icon: string;
+        category: string;
+    };
+}
+
+interface ArticleItem {
+    id: number;
+    title: string;
+    slug: string;
+    created_at: string;
+    [key: string]: unknown;
+}
+
+interface QuestionItem {
+    id: number;
+    title: string;
+    created_at: string;
+    answers?: { id: number }[];
+    [key: string]: unknown;
+}
 
 interface PublicProfileViewProps {
-    profile: any;
+    profile: ProfileData;
     isOwnProfile: boolean;
     isFollowing: boolean;
     followersCount: number;
     followingCount: number;
-    userBadges: any[];
-    articles: any[];
-    questions: any[];
+    userBadges: UserBadge[];
+    articles: ArticleItem[];
+    questions: QuestionItem[];
     answersCount: number;
-    user: any;
+    user: User | null;
 }
 
 export function PublicProfileView({
@@ -130,7 +176,7 @@ export function PublicProfileView({
                                             currentAvatarUrl={profile.avatar_url}
                                             currentWebsite={profile.website}
                                             currentSocialLinks={profile.social_links}
-                                            currentUsername={profile.username}
+                                            currentUsername={profile.username ?? ""}
                                             userEmail={user?.email}
                                         />
                                     ) : (

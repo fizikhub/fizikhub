@@ -9,8 +9,8 @@ import { BookReviewCard } from "@/components/book-review/book-review-card";
 import { ExperimentCard } from "@/components/experiment/experiment-card";
 import { SearchInput } from "@/components/blog/search-input";
 import { TermCard } from "@/components/term/term-card";
-import { m as motion, useScroll, useTransform } from "framer-motion";
-import { useRouter, useSearchParams } from "next/navigation";
+import { m as motion } from "framer-motion";
+import { useRouter } from "next/navigation";
 import { useTransition, useState, useEffect } from "react";
 
 interface Article {
@@ -37,10 +37,15 @@ interface ModernExploreViewProps {
     categories: string[];
     currentQuery?: string;
     currentCategory?: string;
-    user?: any;
+    user?: {
+        username: string | null;
+        full_name: string | null;
+        avatar_url: string | null;
+        [key: string]: unknown;
+    } | null;
     totalPages?: number;
     currentPage?: number;
-    searchQuery?: string; // Add this prop
+    searchQuery?: string;
 }
 
 // Simple internal component for background animations
