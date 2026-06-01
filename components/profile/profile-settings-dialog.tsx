@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import Image from "next/image";
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
@@ -8,15 +8,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Camera, Twitter, Github, Linkedin, Instagram, Settings2, Save, X, Loader2 } from "lucide-react";
+import { Camera, Twitter, Github, Linkedin, Instagram, Settings2, Save, Loader2 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { updateProfile, updateUsername, uploadAvatar, uploadCover } from "@/app/profil/actions";
 import { SignOutButton } from "@/components/auth/sign-out-button";
 import { ImageCropperDialog } from "@/components/profile/image-cropper-dialog";
 import { toast } from "sonner";
-import { cn } from "@/lib/utils";
 import { useMediaQuery } from "@/hooks/use-media-query";
-
 
 interface ProfileSettingsDialogProps {
     currentUsername: string | null;
@@ -25,7 +23,12 @@ interface ProfileSettingsDialogProps {
     currentAvatarUrl: string | null;
     currentCoverUrl: string | null;
     currentWebsite: string | null;
-    currentSocialLinks: any | null;
+    currentSocialLinks: {
+        twitter?: string | null;
+        github?: string | null;
+        instagram?: string | null;
+        linkedin?: string | null;
+    } | null;
     userEmail: string | null;
     trigger?: React.ReactNode;
 }
@@ -124,7 +127,12 @@ export function ProfileSettingsDialog({
                 full_name: fullName,
                 bio: bio,
                 website: website,
-                social_links: socialLinks
+                social_links: {
+                    twitter: socialLinks?.twitter || undefined,
+                    github: socialLinks?.github || undefined,
+                    instagram: socialLinks?.instagram || undefined,
+                    linkedin: socialLinks?.linkedin || undefined,
+                }
             });
 
             if (res.success) {
@@ -218,19 +226,19 @@ export function ProfileSettingsDialog({
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="relative">
                         <Twitter className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
-                        <Input className="pl-9" value={socialLinks.twitter} onChange={(e) => setSocialLinks({ ...socialLinks, twitter: e.target.value })} placeholder="Twitter" />
+                        <Input className="pl-9" value={socialLinks?.twitter || ""} onChange={(e) => setSocialLinks({ ...socialLinks, twitter: e.target.value })} placeholder="Twitter" />
                     </div>
                     <div className="relative">
                         <Github className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
-                        <Input className="pl-9" value={socialLinks.github} onChange={(e) => setSocialLinks({ ...socialLinks, github: e.target.value })} placeholder="GitHub" />
+                        <Input className="pl-9" value={socialLinks?.github || ""} onChange={(e) => setSocialLinks({ ...socialLinks, github: e.target.value })} placeholder="GitHub" />
                     </div>
                     <div className="relative">
                         <Instagram className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
-                        <Input className="pl-9" value={socialLinks.instagram} onChange={(e) => setSocialLinks({ ...socialLinks, instagram: e.target.value })} placeholder="Instagram" />
+                        <Input className="pl-9" value={socialLinks?.instagram || ""} onChange={(e) => setSocialLinks({ ...socialLinks, instagram: e.target.value })} placeholder="Instagram" />
                     </div>
                     <div className="relative">
                         <Linkedin className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
-                        <Input className="pl-9" value={socialLinks.linkedin} onChange={(e) => setSocialLinks({ ...socialLinks, linkedin: e.target.value })} placeholder="LinkedIn" />
+                        <Input className="pl-9" value={socialLinks?.linkedin || ""} onChange={(e) => setSocialLinks({ ...socialLinks, linkedin: e.target.value })} placeholder="LinkedIn" />
                     </div>
                 </div>
             </div>

@@ -80,7 +80,7 @@ export function FeedSidebar({ suggestedUsers = [] }: { suggestedUsers?: SidebarU
                                     </div>
                                 </Link>
                                 <div className="shrink-0 relative z-20">
-                                    <FollowButton targetUserId={user.id} initialIsFollowing={false} variant="outline" className="min-h-11 rounded-[8px] text-xs font-bold px-3" />
+                                    <FollowButton targetUserId={user.id} initialIsFollowing={false} className="min-h-11 rounded-[8px] text-xs font-bold px-3" />
                                 </div>
                             </div>
                         ))

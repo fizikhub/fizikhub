@@ -11,11 +11,10 @@ interface FollowButtonProps {
     targetUserId: string;
     initialIsFollowing: boolean;
     targetUsername?: string;
-    variant?: string;
     className?: string;
 }
 
-export function FollowButton({ targetUserId, initialIsFollowing, targetUsername, variant, className }: FollowButtonProps) {
+export function FollowButton({ targetUserId, initialIsFollowing, targetUsername, className }: FollowButtonProps) {
     const [isFollowing, setIsFollowing] = useState(initialIsFollowing);
     const [isPending, startTransition] = useTransition();
 
@@ -49,7 +48,7 @@ export function FollowButton({ targetUserId, initialIsFollowing, targetUsername,
                         toast.success("Takipten çıkıldı.");
                     }
                 }
-            } catch (error) {
+            } catch {
                 setIsFollowing(previousState);
                 toast.error("Bir hata oluştu.");
             }

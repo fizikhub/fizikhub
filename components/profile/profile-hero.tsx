@@ -4,22 +4,36 @@ import Image from "next/image";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { BadgeCheck, PenSquare, Twitter, Github, LinkIcon, Settings, Calendar } from "lucide-react";
+import { BadgeCheck, PenSquare, Twitter, Github, LinkIcon } from "lucide-react";
 import Link from "next/link";
-import { cn } from "@/lib/utils";
 import { ProfileSettingsButton } from "@/components/profile/profile-settings-button";
 import { StartChatButton } from "@/components/messaging/start-chat-button";
 import { FollowButton } from "@/components/profile/follow-button";
 
 interface ProfileHeroProps {
-    profile: any;
-    user: any;
+    profile: {
+        avatar_url?: string | null;
+        cover_url?: string | null;
+        full_name?: string | null;
+        username?: string | null;
+        is_verified?: boolean | null;
+        role?: string | null;
+        bio?: string | null;
+        website?: string | null;
+        username_changes_count?: number | null;
+        social_links?: {
+            twitter?: string | null;
+            github?: string | null;
+            instagram?: string | null;
+            linkedin?: string | null;
+        } | null;
+    } | null;
+    user: {
+        email?: string | null;
+    } | null;
     isOwnProfile: boolean;
     isFollowing?: boolean;
     targetUserId?: string;
-    stats?: any;
-    badges?: any[];
-    createdAt?: string;
 }
 
 export function ProfileHero({
@@ -57,7 +71,7 @@ export function ProfileHero({
                 <div className="absolute -top-12 left-6 md:-top-16 md:left-8">
                     <div className="w-24 h-24 md:w-32 md:h-32 rounded-full border-[3px] border-black bg-white p-1 shadow-[2px_2px_0px_rgba(0,0,0,0.2)]">
                         <Avatar className="w-full h-full rounded-full border border-zinc-200">
-                            <AvatarImage src={profile?.avatar_url} className="object-cover" />
+                            <AvatarImage src={profile?.avatar_url || undefined} className="object-cover" />
                             <AvatarFallback className="text-3xl font-bold bg-zinc-100 text-zinc-500">
                                 {profile?.full_name?.charAt(0) || "U"}
                             </AvatarFallback>

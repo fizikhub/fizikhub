@@ -4,7 +4,6 @@ import Link from "next/link";
 import { format } from "date-fns";
 import { tr } from "date-fns/locale";
 import { MessageSquare, ThumbsUp, Eye, ArrowUpRight, Edit2 } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
 interface FeedItemProps {

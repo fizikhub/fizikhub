@@ -1,8 +1,7 @@
 "use client";
 
 import { AvatarUpload } from "@/components/profile/avatar-upload";
-import { Badge } from "@/components/ui/badge";
-import { BadgeCheck, Calendar, Link as LinkIcon, FileText, Twitter, Github, Instagram, Linkedin, Shield } from "lucide-react";
+import { BadgeCheck, Calendar, Link as LinkIcon, FileText, Twitter, Github, Instagram, Linkedin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { m as motion } from "framer-motion";
@@ -18,8 +17,29 @@ import { CreateArticleDialog } from "@/components/profile/create-article-dialog"
 import { RapidScienceButton } from "@/components/profile/rapid-science-button";
 
 interface ProfileHeaderProps {
-    profile: any;
-    user: any;
+    profile: {
+        id?: string | null;
+        avatar_url?: string | null;
+        full_name?: string | null;
+        username?: string | null;
+        is_verified?: boolean | null;
+        reputation?: number | null;
+        is_writer?: boolean | null;
+        bio?: string | null;
+        website?: string | null;
+        cover_url?: string | null;
+        social_links?: {
+            twitter?: string | null;
+            github?: string | null;
+            linkedin?: string | null;
+            instagram?: string | null;
+        } | null;
+    } | null;
+    user: {
+        id?: string | null;
+        email?: string | null;
+        created_at: string;
+    };
 }
 
 export function ProfileHeader({ profile, user }: ProfileHeaderProps) {
@@ -97,7 +117,7 @@ export function ProfileHeader({ profile, user }: ProfileHeaderProps) {
                                 <NotificationBell />
                             </div>
                             <EditProfileButton
-                                currentUsername={profile?.username || null}
+                                currentUsername={profile?.username || ""}
                                 currentFullName={profile?.full_name || null}
                                 currentBio={profile?.bio || null}
                                 currentAvatarUrl={profile?.avatar_url || null}

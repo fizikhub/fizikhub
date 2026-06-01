@@ -14,7 +14,6 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog";
-import { Edit } from "lucide-react";
 import { toast } from "sonner";
 import { updateProfile } from "@/app/profil/actions";
 import { CoverUpload } from "@/components/profile/cover-upload";

@@ -39,7 +39,6 @@ import { updateProfile } from "@/app/profil/actions";
 import { CoverUpload } from "@/components/profile/cover-upload";
 import { AvatarUpload } from "@/components/profile/avatar-upload";
 import { ThemeSelector } from "@/components/profile/theme-selector";
-import { createClient } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
 import { signOut } from "@/app/auth/actions";
 import { isAdminEmail } from "@/lib/admin-shared";
@@ -50,7 +49,12 @@ interface ProfileSettingsButtonProps {
     currentAvatarUrl: string | null;
     currentCoverUrl?: string | null;
     currentWebsite?: string | null;
-    currentSocialLinks?: any;
+    currentSocialLinks?: {
+        twitter?: string | null;
+        github?: string | null;
+        instagram?: string | null;
+        linkedin?: string | null;
+    } | null;
     currentUsername: string;
     userEmail?: string | null;
     usernameChangeCount?: number;
@@ -112,10 +116,10 @@ export function ProfileSettingsButton({
 
         // 2. Update Profile Info
         const socialLinks = {
-            twitter: twitter || null,
-            github: github || null,
-            instagram: instagram || null,
-            linkedin: linkedin || null
+            twitter: twitter || undefined,
+            github: github || undefined,
+            instagram: instagram || undefined,
+            linkedin: linkedin || undefined
         };
 
         const result = await updateProfile({

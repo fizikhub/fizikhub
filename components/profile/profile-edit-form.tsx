@@ -2,22 +2,31 @@
 
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { uploadAvatar, uploadCover, updateProfile, updateUsername, saveProfileChanges } from "@/app/profil/actions";
+import { uploadAvatar, uploadCover, saveProfileChanges } from "@/app/profil/actions";
 import { signOut } from "@/app/auth/actions";
-import { Camera, Loader2, X, MapPin, Link as LinkIcon, AtSign, User as UserIcon, ArrowLeft, Save, LogOut, Upload, Mail } from "lucide-react";
+import { Camera, Loader2, MapPin, Link as LinkIcon, AtSign, User as UserIcon, ArrowLeft, Save, LogOut, Upload, Mail } from "lucide-react";
 import { toast } from "sonner";
-import { m as motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Image from "next/image";
 import { ThemeSelector } from "./theme-selector";
+import type { User } from "@supabase/supabase-js";
 
 interface ProfileEditFormProps {
-    user: any;
-    profile: any;
+    user: User | null;
+    profile: {
+        full_name?: string | null;
+        username?: string | null;
+        bio?: string | null;
+        website?: string | null;
+        location?: string | null;
+        wants_email_notifications?: boolean | null;
+        avatar_url?: string | null;
+        cover_url?: string | null;
+    } | null;
 }
 
-export function ProfileEditForm({ user, profile }: ProfileEditFormProps) {
+export function ProfileEditForm({ profile }: ProfileEditFormProps) {
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(false);
 
@@ -105,8 +114,8 @@ export function ProfileEditForm({ user, profile }: ProfileEditFormProps) {
             router.refresh();
             router.push('/profil');
 
-        } catch (error: any) {
-            toast.error(error.message || "Bir hata oluştu Rick.");
+        } catch (error: unknown) {
+            toast.error(error instanceof Error ? error.message : "Bir hata oluştu Rick.");
         } finally {
             setIsLoading(false);
         }
