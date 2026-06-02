@@ -15,6 +15,7 @@ export type ForumStructuredDataQuestion = {
     created_at?: string | null;
     updated_at?: string | null;
     votes?: number | null;
+    tags?: string[] | null;
     profiles?: ForumStructuredDataProfile | ForumStructuredDataProfile[] | null;
     answers?: Array<{ count?: number | null } | Record<string, unknown>> | null;
     all_answers?: Array<{ count?: number | null }> | null;
@@ -57,6 +58,9 @@ export function buildForumDiscussionPostingItem(
 ) {
     const discussionUrl = `${baseUrl}/forum/${question.id}`;
     const title = question.title?.trim() || `Fizikhub forum sorusu ${question.id}`;
+    const keywords = [question.category, ...(question.tags || [])]
+        .filter((value): value is string => Boolean(value?.trim()))
+        .slice(0, 8);
 
     return {
         "@type": "ListItem",
@@ -71,6 +75,9 @@ export function buildForumDiscussionPostingItem(
             headline: title,
             text: stripMarkdownForMeta(question.content).slice(0, 500) || title,
             articleSection: question.category || "Fizik",
+            genre: "Bilim forumu",
+            inLanguage: "tr-TR",
+            ...(keywords.length > 0 ? { keywords: keywords.join(", ") } : {}),
             datePublished: question.created_at,
             ...(question.updated_at ? { dateModified: question.updated_at } : {}),
             author: getForumStructuredDataAuthor(question, baseUrl),

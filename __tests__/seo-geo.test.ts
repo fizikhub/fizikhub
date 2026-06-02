@@ -126,6 +126,9 @@ describe("SEO robots and canonical boundaries", () => {
             mainEntityOfPage: "https://www.fizikhub.com/forum/42",
             dateModified: "2026-05-25T13:00:00+03:00",
             commentCount: 3,
+            genre: "Bilim forumu",
+            inLanguage: "tr-TR",
+            keywords: "Kuantum",
             author: {
                 "@type": "Person",
                 name: "Fizikçi Yazar",

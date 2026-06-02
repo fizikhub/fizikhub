@@ -9,7 +9,7 @@ import { getArticleCanonicalPath, getSiteUrl, hasUsefulIndexableText, isIndexabl
 
 export const revalidate = 3600; // Revalidate sitemap every hour
 
-const STATIC_LAST_MODIFIED = new Date('2026-05-25T00:00:00.000+03:00');
+const STATIC_LAST_MODIFIED = new Date('2026-06-02T00:00:00.000+03:00');
 
 function toLastModified(value?: string | null) {
     return value ? new Date(value) : STATIC_LAST_MODIFIED;
@@ -134,7 +134,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const [questionsResult, articlesResult, quizzesResult, terms] = await Promise.all([
         supabase
             .from('questions')
-            .select('id, title, content, created_at, updated_at, votes, status, answers(count)')
+            .select('id, title, content, created_at, votes, status, answers(count)')
             .eq('status', 'published')
             .order('created_at', { ascending: false })
             .limit(250),
@@ -159,7 +159,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         .filter(isIndexableForumQuestion)
         .map((question) => ({
             url: `${baseUrl}/forum/${question.id}`,
-            lastModified: toLastModified(question.updated_at || question.created_at),
+            lastModified: toLastModified(question.created_at),
             changeFrequency: Number(question.answers?.[0]?.count || 0) > 0 ? 'weekly' as const : 'monthly' as const,
             priority: Number(question.answers?.[0]?.count || 0) > 0 || (question.votes || 0) > 2 ? 0.75 : 0.55,
         }));

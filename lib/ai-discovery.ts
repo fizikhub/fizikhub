@@ -13,7 +13,7 @@ export type AiCoreRoute = {
     priority: string;
 };
 
-export const AI_DISCOVERY_LAST_MODIFIED = "2026-05-26T00:00:00.000+03:00";
+export const AI_DISCOVERY_LAST_MODIFIED = "2026-06-02T00:00:00.000+03:00";
 
 export const AI_CITATION_POLICY = {
     summarization: "allowed",
@@ -135,10 +135,10 @@ export const AI_CORE_ROUTES: AiCoreRoute[] = [
     },
     {
         path: "/forum",
-        title: "Bilim forumu",
-        description: "Fizik soru-cevap ve topluluk tartismalari.",
+        title: "Bilim ve fizik forumu",
+        description: "TYT, AYT ve YKS fizik sorusu sorma, aciklamali cevaplar ve bilim toplulugu tartismalari.",
         changeFrequency: "hourly",
-        priority: "0.86",
+        priority: "0.90",
     },
     {
         path: "/sozluk",

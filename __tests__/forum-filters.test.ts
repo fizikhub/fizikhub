@@ -104,7 +104,39 @@ describe('Forum Page Filters and SEO', () => {
         const searchParams = Promise.resolve({ category: 'Quantum' });
         const metadata = await generateMetadata({ searchParams });
 
-        expect(metadata.title).toBe('Quantum Soruları ve Bilim Forumu');
+        expect(metadata.title).toBe('Quantum Forumu ve Soru Cevap');
+        expect(metadata.description).toContain('Quantum forumunda soru sor');
         expect(metadata.alternates?.canonical).toContain('category=Quantum');
+    });
+
+    it('should generate intent-rich metadata for the main forum page', async () => {
+        const metadata = await generateMetadata({ searchParams: Promise.resolve({}) });
+
+        expect(metadata.title).toBe('Bilim ve Fizik Forumu: TYT AYT Fizik Soru Sor');
+        expect(metadata.description).toContain('Fizik forumu ve bilim forumu');
+        expect(metadata.description).toContain('TYT/AYT/YKS');
+        expect(metadata.robots).toEqual(expect.objectContaining({
+            index: true,
+            follow: true,
+            googleBot: expect.objectContaining({
+                index: true,
+                'max-snippet': -1,
+                'max-image-preview': 'large',
+            }),
+        }));
+    });
+
+    it('should noindex low-value forum query variants without blocking links', async () => {
+        const metadata = await generateMetadata({ searchParams: Promise.resolve({ filter: 'unanswered' }) });
+
+        expect(metadata.alternates?.canonical).toBe('https://www.fizikhub.com/forum');
+        expect(metadata.robots).toEqual(expect.objectContaining({
+            index: false,
+            follow: true,
+            googleBot: expect.objectContaining({
+                index: false,
+                follow: true,
+            }),
+        }));
     });
 });

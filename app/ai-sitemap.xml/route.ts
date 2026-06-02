@@ -51,7 +51,7 @@ async function getDynamicEntries(baseUrl: string): Promise<SitemapEntry[]> {
                 .limit(240),
             supabase
                 .from("questions")
-                .select("id, title, content, created_at, updated_at, votes, status, answers(count)")
+                .select("id, title, content, created_at, votes, status, answers(count)")
                 .eq("status", "published")
                 .order("created_at", { ascending: false })
                 .limit(180),
@@ -84,7 +84,7 @@ async function getDynamicEntries(baseUrl: string): Promise<SitemapEntry[]> {
         const questionEntries = (questionsResult.data || [])
             .filter(isIndexableForumQuestion)
             .map((question) => entry(baseUrl, `/forum/${question.id}`, {
-                lastmod: toIsoDate(question.updated_at || question.created_at),
+                lastmod: toIsoDate(question.created_at),
                 changefreq: Number(question.answers?.[0]?.count || 0) > 0 ? "weekly" : "monthly",
                 priority: Number(question.answers?.[0]?.count || 0) > 0 || Number(question.votes || 0) > 2 ? "0.72" : "0.58",
             }));

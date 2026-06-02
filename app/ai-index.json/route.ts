@@ -3,7 +3,7 @@ import { AI_CITATION_POLICY, AI_CRAWLER_USER_AGENTS, AI_DISCOVERY_LAST_MODIFIED,
 import { getDictionaryTerms } from "@/lib/api";
 import { createStaticClient } from "@/lib/supabase-server";
 import { slugify } from "@/lib/slug";
-import { getRelatedUrlsForCluster, getTopicClusterHref, SEO_TOPIC_CLUSTERS } from "@/lib/seo-topic-clusters";
+import { getRelatedUrlsForCluster, getTopicClusterHref, getTopicClustersForText, SEO_TOPIC_CLUSTERS } from "@/lib/seo-topic-clusters";
 import { getArticleCanonicalPath, getSiteUrl, hasUsefulIndexableText, isIndexableForumQuestion, isIndexableProfile, isLikelyIndexableArticle, isLikelyIndexableTitle, truncateForMeta } from "@/lib/seo-utils";
 
 export const revalidate = 3600;
@@ -112,7 +112,7 @@ export async function GET() {
             .limit(500),
         supabase
             .from("questions")
-            .select("id, title, content, category, tags, created_at, updated_at, votes, status, answers(count)")
+            .select("id, title, content, category, tags, created_at, votes, status, answers(count)")
             .eq("status", "published")
             .order("created_at", { ascending: false })
             .limit(300),
@@ -177,6 +177,20 @@ export async function GET() {
         .flatMap((question) => {
             const answerCount = getAnswerCount(question);
             if (!isIndexableForumQuestion(question)) return [];
+            const questionTags = Array.isArray(question.tags) ? question.tags : [];
+            const forumClusters = getTopicClustersForText([
+                question.title,
+                question.content,
+                question.category,
+                ...questionTags,
+            ].filter(Boolean).join(" "), { limit: 4 });
+            const forumRelatedUrls = unique([
+                `${baseUrl}/forum`,
+                ...forumClusters.map((cluster) => `${baseUrl}${getTopicClusterHref(cluster)}`),
+                ...forumClusters.flatMap(getRelatedUrlsForCluster).map((link) => `${baseUrl}${link.href}`),
+                `${baseUrl}/makale`,
+                `${baseUrl}/sozluk`,
+            ]).slice(0, 12);
 
             return [{
                 type: "forum",
@@ -184,17 +198,21 @@ export async function GET() {
                 canonicalPath: `/forum/${question.id}`,
                 title: question.title || `Fizikhub forum sorusu ${question.id}`,
                 description: truncateForMeta(question.content || `${question.title} hakkında Fizikhub forum tartışması.`, 220),
-                topics: unique([question.category, ...(Array.isArray(question.tags) ? question.tags : [])]).slice(0, 10),
-                intentQuestions: [],
+                topics: unique([
+                    ...forumClusters.map((cluster) => cluster.title),
+                    question.category,
+                    ...questionTags,
+                ]).slice(0, 10),
+                intentQuestions: unique(forumClusters.flatMap((cluster) => cluster.intentQuestions)).slice(0, 8),
                 entityType: answerCount > 0 ? "answered-question" : "forum-question",
-                contentFreshness: contentFreshnessFor(question.updated_at || question.created_at),
-                updatedAt: new Date(question.updated_at || question.created_at || Date.now()).toISOString(),
+                contentFreshness: contentFreshnessFor(question.created_at),
+                updatedAt: new Date(question.created_at || Date.now()).toISOString(),
                 language: "tr-TR",
                 schemaTypes: answerCount > 0 ? ["QAPage", "Question", "Answer"] : ["WebPage"],
-                clusterSlugs: [],
-                relatedUrls: [`${baseUrl}/forum`, `${baseUrl}/makale`, `${baseUrl}/sozluk`],
+                clusterSlugs: forumClusters.map((cluster) => cluster.slug),
+                relatedUrls: forumRelatedUrls,
                 citationText: buildAiCitationText(question.title || `Fizikhub forum sorusu ${question.id}`, `${baseUrl}/forum/${question.id}`),
-                answerPriority: answerCount > 0 ? "high" : "standard",
+                answerPriority: answerCount > 0 || forumClusters.length > 0 ? "high" : "standard",
                 answerFormatHints: answerHintsFor("forum"),
             }];
         });

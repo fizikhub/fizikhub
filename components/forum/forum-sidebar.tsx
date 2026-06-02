@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { CheckCircle2, Clock, Flame, MessageSquare } from "lucide-react";
+import { Clock, Flame } from "lucide-react";
 import { useTheme } from "next-themes";
 import type { ComponentType } from "react";
 
@@ -38,7 +38,6 @@ function SidebarMenuItem({ href, active, icon: Icon, label, isCybernetic, isPink
 export function ForumSidebar() {
     const searchParams = useSearchParams();
     const currentSort = searchParams.get("sort") || "newest";
-    const currentFilter = searchParams.get("filter");
 
     const { theme } = useTheme();
     const isCybernetic = theme === 'cybernetic';
@@ -59,7 +58,7 @@ export function ForumSidebar() {
                 <div className="space-y-2">
                     <SidebarMenuItem
                         href="/forum?sort=newest"
-                        active={currentSort === "newest" && !currentFilter}
+                        active={currentSort === "newest"}
                         icon={Clock}
                         label="En Yeniler"
                         isCybernetic={isCybernetic}
@@ -67,38 +66,9 @@ export function ForumSidebar() {
                     />
                     <SidebarMenuItem
                         href="/forum?sort=popular"
-                        active={currentSort === "popular" && !currentFilter}
+                        active={currentSort === "popular"}
                         icon={Flame}
                         label="Popüler"
-                        isCybernetic={isCybernetic}
-                        isPink={isPink}
-                    />
-                </div>
-            </div>
-
-            <div className="h-0.5 bg-border/50 mx-2" />
-
-            <div>
-                <h3 className={cn(
-                    "text-xs font-black uppercase tracking-wider text-muted-foreground mb-4 px-2",
-                    isCybernetic && "text-cyan-600"
-                )}>
-                    DURUM
-                </h3>
-                <div className="space-y-2">
-                    <SidebarMenuItem
-                        href="/forum?filter=solved"
-                        active={currentFilter === "solved"}
-                        icon={CheckCircle2}
-                        label="Çözülenler"
-                        isCybernetic={isCybernetic}
-                        isPink={isPink}
-                    />
-                    <SidebarMenuItem
-                        href="/forum?filter=unanswered"
-                        active={currentFilter === "unanswered"}
-                        icon={MessageSquare}
-                        label="Cevaplanmamış"
                         isCybernetic={isCybernetic}
                         isPink={isPink}
                     />

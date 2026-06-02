@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { Sparkles, ArrowRight, Search, X, CheckCircle2, MessageSquare } from "lucide-react";
+import { Sparkles, ArrowRight, Search, X } from "lucide-react";
 import dynamic from "next/dynamic";
 import { m as motion } from "framer-motion";
 import { createClient } from "@/lib/supabase";
@@ -44,7 +44,6 @@ export function ModernForumHeader() {
     const [showResults, setShowResults] = useState(false);
     const currentCategory = searchParams.get("category") || "Tümü";
     const currentSort = searchParams.get("sort") || "newest";
-    const currentFilter = searchParams.get("filter");
     const searchRef = useRef<HTMLDivElement>(null);
     const [supabase] = useState(() => createClient());
 
@@ -90,16 +89,30 @@ export function ModernForumHeader() {
     const categories = [
         "Tümü",
         "Fizik",
+        "Genel-Fizik",
         "Kuantum",
         "Astrofizik",
         "Mekanik",
         "Termodinamik",
+        "Elektromanyetizma",
         "Biyoloji",
         "Kimya",
         "Matematik",
         "Edebiyat",
         "Felsefe",
+        "Diğer",
     ];
+
+    const categoryLabels: Record<string, string> = {
+        "Genel-Fizik": "Genel Fizik",
+    };
+
+    const formatCategoryLabel = (category: string) => categoryLabels[category] || category;
+
+    const pushForumParams = (params: URLSearchParams) => {
+        const qs = params.toString();
+        router.push(qs ? `/forum?${qs}` : "/forum");
+    };
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
@@ -107,6 +120,7 @@ export function ModernForumHeader() {
         const params = new URLSearchParams(searchParams.toString());
 
         params.delete("page");
+        params.delete("filter");
 
         if (searchQuery.trim()) {
             params.set("q", searchQuery);
@@ -114,7 +128,7 @@ export function ModernForumHeader() {
             params.delete("q");
         }
 
-        router.push(`/forum?${params.toString()}`);
+        pushForumParams(params);
     };
 
     const handleCategoryChange = (category: string) => {
@@ -125,25 +139,20 @@ export function ModernForumHeader() {
             params.set("category", category);
         }
         params.delete("page");
-        router.push(`/forum?${params.toString()}`);
+        params.delete("filter");
+        pushForumParams(params);
     };
 
     const handleSortChange = (sort: string) => {
         const params = new URLSearchParams(searchParams.toString());
-        params.set("sort", sort);
-        params.delete("page");
-        router.push(`/forum?${params.toString()}`);
-    };
-
-    const handleFilterChange = (filter: "solved" | "unanswered" | null) => {
-        const params = new URLSearchParams(searchParams.toString());
-        if (filter) {
-            params.set("filter", filter);
+        if (sort === "newest") {
+            params.delete("sort");
         } else {
-            params.delete("filter");
+            params.set("sort", sort);
         }
         params.delete("page");
-        router.push(`/forum?${params.toString()}`);
+        params.delete("filter");
+        pushForumParams(params);
     };
 
     const clearSearch = () => {
@@ -152,8 +161,17 @@ export function ModernForumHeader() {
         const params = new URLSearchParams(searchParams.toString());
         params.delete("q");
         params.delete("page");
-        router.push(`/forum?${params.toString()}`);
+        params.delete("filter");
+        pushForumParams(params);
     };
+
+    const heroTitle = currentCategory !== "Tümü"
+        ? `${formatCategoryLabel(currentCategory)} Forumu`
+        : "Fizikhub Bilim ve Fizik Forumu";
+
+    const heroDescription = currentCategory !== "Tümü"
+        ? `${formatCategoryLabel(currentCategory)} sorularını paylaş, açıklamalı cevapları incele ve topluluk tartışmalarına katıl.`
+        : "TYT, AYT ve YKS fizik sorularını sor; kuantum, mekanik, astrofizik ve genel bilim konularında topluluktan açıklamalı cevaplar al.";
 
     return (
         <div className="flex flex-col gap-4 sm:gap-6 mb-6 sm:mb-8">
@@ -161,7 +179,7 @@ export function ModernForumHeader() {
             <div className={cn(
                 "relative rounded-xl overflow-hidden w-full",
                 "bg-[#15201b] border-[3px] sm:border-[4px] border-[#d4b483] shadow-[3px_3px_0_0_#1a1a1a] sm:shadow-[4px_4px_0_0_#1a1a1a]", // Dark Green Chalkboard + Wood Frame Border
-                "min-h-[118px] sm:min-h-[150px] flex flex-col items-center justify-center p-4 sm:p-7 gap-4 transition-all",
+                "min-h-[136px] sm:min-h-[178px] flex flex-col items-center justify-center p-4 sm:p-7 gap-4 transition-all",
                 "hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0_0_#1a1a1a]"
             )}>
                 {/* Custom SVG Chalkboard Background */}
@@ -242,6 +260,14 @@ export function ModernForumHeader() {
 
                 {/* Content Container */}
                 <div className="relative z-10 w-full max-w-4xl flex flex-col items-center justify-between gap-4 sm:gap-5">
+                    <div className="max-w-3xl text-center">
+                        <h1 className="text-sm min-[390px]:text-base sm:text-xl font-black uppercase tracking-wider text-[#f4c20d] drop-shadow-[1px_1px_0_rgba(0,0,0,0.75)]">
+                            {heroTitle}
+                        </h1>
+                        <p className="mt-1 hidden min-[390px]:block text-[11px] sm:text-sm font-semibold leading-relaxed text-white/72">
+                            {heroDescription}
+                        </p>
+                    </div>
 
                     {/* Animated Chalk Text */}
                     <div className="text-center relative">
@@ -254,7 +280,7 @@ export function ModernForumHeader() {
                         </svg>
 
                         <motion.div
-                            className="text-[2rem] min-[390px]:text-4xl sm:text-6xl font-black tracking-tighter text-white/90 uppercase leading-none font-mono relative"
+                            className="text-[1.9rem] min-[390px]:text-4xl sm:text-6xl font-black tracking-tighter text-white/90 uppercase leading-none font-mono relative"
                             initial="hidden"
                             whileInView="visible"
                             viewport={{ once: true }}
@@ -391,8 +417,8 @@ export function ModernForumHeader() {
             </div>
 
             {/* FILTERS BAR - REFINED & CLEAN */}
-            <div className="flex flex-col gap-3 sticky top-[58px] z-30 py-3 sm:py-4 bg-background/95 backdrop-blur-md transition-all border-y border-black/5 dark:border-white/5">
-                <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-3 items-start">
+            <div className="flex flex-col gap-3 sticky top-[60px] md:top-3 z-30 py-3 sm:py-4 bg-background/95 backdrop-blur-md transition-all border-y border-black/5 dark:border-white/5">
+                <div className="grid grid-cols-1 gap-3 items-start">
                     <div ref={searchRef} className="relative w-full">
                         <form onSubmit={handleSearch} className="relative">
                             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
@@ -451,32 +477,6 @@ export function ModernForumHeader() {
                         )}
                     </div>
 
-                    <div className="grid grid-cols-2 gap-2 lg:flex">
-                        <button
-                            onClick={() => handleFilterChange(currentFilter === "solved" ? null : "solved")}
-                            className={cn(
-                                "flex min-h-12 items-center justify-center gap-2 rounded-[10px] border-[2.5px] px-3 text-[11px] font-black uppercase tracking-wider transition-all",
-                                currentFilter === "solved"
-                                    ? "border-black bg-[#EAB308] text-black shadow-[2px_2px_0px_0px_#000]"
-                                    : "border-black bg-card text-muted-foreground hover:bg-muted dark:border-zinc-600"
-                            )}
-                        >
-                            <CheckCircle2 className="h-4 w-4" />
-                            Çözülen
-                        </button>
-                        <button
-                            onClick={() => handleFilterChange(currentFilter === "unanswered" ? null : "unanswered")}
-                            className={cn(
-                                "flex min-h-12 items-center justify-center gap-2 rounded-[10px] border-[2.5px] px-3 text-[11px] font-black uppercase tracking-wider transition-all",
-                                currentFilter === "unanswered"
-                                    ? "border-black bg-[#EAB308] text-black shadow-[2px_2px_0px_0px_#000]"
-                                    : "border-black bg-card text-muted-foreground hover:bg-muted dark:border-zinc-600"
-                            )}
-                        >
-                            <MessageSquare className="h-4 w-4" />
-                            Cevapsız
-                        </button>
-                    </div>
                 </div>
 
                 <div className="flex flex-col md:flex-row gap-3 sm:gap-4 items-center justify-between">
@@ -496,7 +496,7 @@ export function ModernForumHeader() {
                                             : "bg-card text-foreground border-black dark:border-zinc-600 hover:border-black hover:bg-[#EAB308]/10 hover:shadow-[2px_2px_0px_0px_#000] dark:hover:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.3)] hover:translate-x-[-1px] hover:translate-y-[-1px]"
                                     )}
                                 >
-                                    {category}
+                                    {formatCategoryLabel(category)}
                                 </button>
                             );
                         })}
