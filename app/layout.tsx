@@ -6,8 +6,10 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { FramerMotionProvider } from "@/components/providers/framer-motion-provider";
 import Image from "next/image";
+import Script from "next/script";
 
 const googleSiteVerification = process.env.NEXT_PUBLIC_GSC_TOKEN?.trim();
+const gaMeasurementId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID?.trim();
 const supabasePublicUrl = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
 const isVercelRuntime = process.env.VERCEL === "1" || Boolean(process.env.NEXT_PUBLIC_VERCEL_ENV);
 
@@ -317,6 +319,25 @@ export default async function RootLayout({
             <link rel="dns-prefetch" href={supabasePublicUrl} />
           </>
         ) : null}
+        {gaMeasurementId && (
+          <>
+            <Script
+              src={`https://www.googletagmanager.com/gtag/js?id=${gaMeasurementId}`}
+              strategy="afterInteractive"
+            />
+            <Script id="google-analytics" strategy="afterInteractive">
+              {`
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+
+                gtag('config', '${gaMeasurementId}', {
+                  page_path: window.location.pathname,
+                });
+              `}
+            </Script>
+          </>
+        )}
       </head>
       <body suppressHydrationWarning className={`${inter.variable} ${lora.variable} font-sans min-h-[100dvh] flex flex-col pb-16 md:pb-0 bg-background text-foreground`}>
         {/* GLOBAL PROGRESS BAR (Neo-Brutalist) */}
