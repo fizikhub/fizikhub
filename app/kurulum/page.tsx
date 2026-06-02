@@ -5,7 +5,7 @@ import { OnboardingProfileSetup } from "@/components/onboarding/onboarding-profi
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: "Profilini Tamamla | Fizikhub",
+    title: "Profilini Tamamla",
     description: "Fizikhub hesabını tamamla ve bilimin eğlenceli dünyasına giriş yap.",
     robots: {
         index: false,

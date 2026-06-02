@@ -5,8 +5,15 @@ import { Receiver } from "@upstash/qstash";
 
 export const dynamic = "force-dynamic";
 
+const MAX_QSTASH_PAYLOAD_CHARS = 128 * 1024;
+
 export async function POST(req: Request) {
     try {
+        const body = await req.text();
+        if (body.length > MAX_QSTASH_PAYLOAD_CHARS) {
+            return NextResponse.json({ error: "Payload too large" }, { status: 413 });
+        }
+
         // --- Lazy QStash signature verification ---
         const signingKey = process.env.QSTASH_CURRENT_SIGNING_KEY;
         const nextSigningKey = process.env.QSTASH_NEXT_SIGNING_KEY;
@@ -17,7 +24,6 @@ export async function POST(req: Request) {
                 nextSigningKey: nextSigningKey,
             });
 
-            const body = await req.clone().text();
             const signature = req.headers.get("upstash-signature") ?? "";
 
             const isValid = await receiver
@@ -33,10 +39,29 @@ export async function POST(req: Request) {
         }
 
         // --- Process embedding ---
-        const payload = await req.json();
+        let payload: {
+            textContent?: unknown;
+            tableSingular?: unknown;
+            recordId?: unknown;
+            metadata?: unknown;
+        };
+
+        try {
+            payload = JSON.parse(body);
+        } catch {
+            return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
+        }
+
         const { textContent, tableSingular, recordId, metadata } = payload;
 
-        if (!textContent || !tableSingular || !recordId || !metadata) {
+        if (
+            typeof textContent !== "string" ||
+            typeof tableSingular !== "string" ||
+            (typeof recordId !== "string" && typeof recordId !== "number") ||
+            !metadata ||
+            typeof metadata !== "object" ||
+            Array.isArray(metadata)
+        ) {
             return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
         }
 
@@ -95,4 +120,3 @@ export async function POST(req: Request) {
         return NextResponse.json({ error: "Internal server error" }, { status: 500 });
     }
 }
-

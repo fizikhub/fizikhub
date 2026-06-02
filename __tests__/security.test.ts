@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { validatePasswordStrength, sanitizeSearchQuery, validateImageFile, buildSafeIlikePattern } from '../lib/security';
+import { validatePasswordStrength, sanitizeSearchQuery, validateImageFile, buildSafeIlikePattern, isValidBearerToken } from '../lib/security';
 
 describe('validatePasswordStrength', () => {
     it('should reject empty password', () => {
@@ -82,6 +82,20 @@ describe('buildSafeIlikePattern', () => {
 
     it('does not turn punctuation-only searches into match-all patterns', () => {
         expect(buildSafeIlikePattern(',,,((()))')).toBe('%__fizikhub_no_match__%');
+    });
+});
+
+describe('isValidBearerToken', () => {
+    it('accepts an exact bearer token match', () => {
+        expect(isValidBearerToken('Bearer secret-token', 'secret-token')).toBe(true);
+    });
+
+    it('rejects missing, malformed, wrong length, and wrong token values', () => {
+        expect(isValidBearerToken(null, 'secret-token')).toBe(false);
+        expect(isValidBearerToken('Basic secret-token', 'secret-token')).toBe(false);
+        expect(isValidBearerToken('Bearer secret', 'secret-token')).toBe(false);
+        expect(isValidBearerToken('Bearer wrong-token', 'secret-token')).toBe(false);
+        expect(isValidBearerToken('Bearer secret-token', '')).toBe(false);
     });
 });
 

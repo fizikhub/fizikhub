@@ -183,6 +183,7 @@ describe("SEO robots and canonical boundaries", () => {
         expect(isPrivateSeoPath("/yazar/yeni")).toBe(true);
         expect(isForbiddenSitemapUrl("https://www.fizikhub.com/paylas")).toBe(false);
         expect(isForbiddenSitemapUrl("https://www.fizikhub.com/yazar/rehber")).toBe(false);
+        expect(isForbiddenSitemapUrl("https://www.fizikhub.com/nevbara")).toBe(true);
 
         const generated = robots();
         const rules = Array.isArray(generated.rules) ? generated.rules : [generated.rules];

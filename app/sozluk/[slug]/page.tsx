@@ -111,7 +111,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
     if (!term) {
         return {
-            title: "Terim Bulunamadı | Fizikhub",
+            title: "Terim Bulunamadı",
         };
     }
 

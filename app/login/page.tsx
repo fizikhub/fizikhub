@@ -2,7 +2,7 @@ import { ModernLogin } from "@/components/auth/modern-login";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: "Giriş Yap | Fizikhub",
+    title: "Giriş Yap",
     description: "Fizikhub hesabına giriş yap.",
     robots: {
         index: false,

@@ -30,6 +30,21 @@ export function buildSafeIlikePattern(query: string): string {
     return `%${safeQuery}%`;
 }
 
+export function isValidBearerToken(authHeader: string | null | undefined, expectedToken: string | null | undefined): boolean {
+    if (!authHeader || !expectedToken) return false;
+    if (!authHeader.startsWith("Bearer ")) return false;
+
+    const token = authHeader.slice("Bearer ".length);
+    if (token.length !== expectedToken.length) return false;
+
+    let mismatch = 0;
+    for (let index = 0; index < expectedToken.length; index++) {
+        mismatch |= token.charCodeAt(index) ^ expectedToken.charCodeAt(index);
+    }
+
+    return mismatch === 0;
+}
+
 /**
  * Allowed image MIME types for file uploads
  */

@@ -6,7 +6,7 @@ import { CustomBadgeIcon } from "@/components/profile/custom-badge-icon";
 import { DEFAULT_BADGES, getBadgeCategoryTitle, getBadgeRequirementLabel } from "@/lib/badges";
 
 export const metadata: Metadata = {
-    title: "Rozetler | FizikHub",
+    title: "Rozetler",
     description: "FizikHub'daki tüm rozetleri keşfet. Bilim kahramanlarından ilham alan rozetleri nasıl kazanabileceğini öğren.",
     openGraph: {
         title: "Rozetler — FizikHub",

@@ -2,8 +2,19 @@ import { Metadata } from "next";
 import { SpaceBomberGameLazy } from "@/components/nevbara/space-bomber-game-lazy";
 
 export const metadata: Metadata = {
-    title: "Gravity Warrior | Fizikhub",
+    title: "Gravity Warrior",
     description: "Fizik tabanlı uzay savaş simülasyonu. Yerçekimine karşı savaş, düşmanları yok et.",
+    alternates: {
+        canonical: "https://www.fizikhub.com/nevbara",
+    },
+    robots: {
+        index: false,
+        follow: true,
+        googleBot: {
+            index: false,
+            follow: true,
+        },
+    },
 };
 
 export default function NevbaraPage() {

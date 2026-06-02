@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: "Yeni İçerik | Fizikhub",
+    title: "Yeni İçerik",
     robots: {
         index: false,
         follow: false,

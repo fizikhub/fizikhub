@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import type { ReactNode } from "react";
 
 export const metadata: Metadata = {
-    title: "Profilim | Fizikhub",
+    title: "Profilim",
     robots: {
         index: false,
         follow: false,

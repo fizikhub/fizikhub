@@ -5,7 +5,7 @@ import { getSiteUrl } from "@/lib/seo-utils";
 import { BreadcrumbJsonLd } from "@/lib/breadcrumbs";
 
 export const metadata: Metadata = {
-    title: "Fizik Simülasyonları ve İnteraktif Deneyler | Fizikhub",
+    title: "Fizik Simülasyonları ve İnteraktif Deneyler",
     description: "İnteraktif fizik simülasyonları ile dalga mekaniği, projektil hareketi, optik, sarkaç ve elektrostatik konularını deneyerek öğrenin.",
     keywords: [
         "fizik simülasyonu",

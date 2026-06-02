@@ -3,7 +3,7 @@ import { BreadcrumbJsonLd } from "@/lib/breadcrumbs";
 import { ContactPageClient } from "./contact-client";
 
 export const metadata: Metadata = {
-    title: "İletişim | Fizikhub",
+    title: "İletişim",
     description: "Fizikhub ekibiyle iletişime geçin. Soru, görüş ve önerileriniz için bize ulaşın.",
     openGraph: {
         title: "İletişim — Fizikhub",

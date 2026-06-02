@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase-admin";
 import { slugify } from "@/lib/slug";
+import { isValidBearerToken } from "@/lib/security";
 import { rateLimiter } from "@/lib/upstash";
 
 type SearchSyncRecord = {
@@ -26,6 +27,8 @@ type SearchSyncPayload = {
     record?: SearchSyncRecord | null;
     old_record?: SearchSyncRecord | null;
 };
+
+const MAX_SYNC_PAYLOAD_CHARS = 128 * 1024;
 
 // Helper to determine singular resource name
 function getTableSingular(table: string): string {
@@ -100,11 +103,22 @@ export async function POST(req: Request) {
         const authHeader = req.headers.get("Authorization");
         const webhookSecret = process.env.SUPABASE_WEBHOOK_SECRET;
 
-        if (!webhookSecret || authHeader !== `Bearer ${webhookSecret}`) {
-            return NextResponse.json({ error: "Unauthorized", detail: "Secret mismatch" }, { status: 401 });
+        if (!isValidBearerToken(authHeader, webhookSecret)) {
+            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 
-        const payload = await req.json() as SearchSyncPayload;
+        const rawPayload = await req.text();
+        if (rawPayload.length > MAX_SYNC_PAYLOAD_CHARS) {
+            return NextResponse.json({ error: "Payload too large" }, { status: 413 });
+        }
+
+        let payload: SearchSyncPayload;
+        try {
+            payload = JSON.parse(rawPayload) as SearchSyncPayload;
+        } catch {
+            return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
+        }
+
         const { type, table, record, old_record } = payload;
 
         if (!table) {

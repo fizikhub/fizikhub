@@ -308,6 +308,15 @@ export default async function RootLayout({
           title="Fizikhub"
           href="/opensearch.xml"
         />
+        <link rel="alternate" type="text/plain" href="/llms.txt" title="Fizikhub LLM manifest" />
+        <link rel="alternate" type="application/json" href="/ai-index.json" title="Fizikhub AI index" />
+        <link rel="sitemap" type="application/xml" href="/ai-sitemap.xml" title="Fizikhub AI sitemap" />
+        {supabasePublicUrl ? (
+          <>
+            <link rel="preconnect" href={supabasePublicUrl} />
+            <link rel="dns-prefetch" href={supabasePublicUrl} />
+          </>
+        ) : null}
       </head>
       <body suppressHydrationWarning className={`${inter.variable} ${lora.variable} font-sans min-h-[100dvh] flex flex-col pb-16 md:pb-0 bg-background text-foreground`}>
         {/* GLOBAL PROGRESS BAR (Neo-Brutalist) */}

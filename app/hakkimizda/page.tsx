@@ -4,7 +4,7 @@ import { BreadcrumbJsonLd } from "@/lib/breadcrumbs";
 const ABOUT_DESCRIPTION = "Fizikhub, fiziği sevdirmek ve anlaşılır kılmak amacıyla kurulmuş bir bilim platformudur. Güncel bilim haberleri, detaylı fizik makaleleri ve interaktif araçlar.";
 
 export const metadata: Metadata = {
-    title: "Hakkımızda | Fizikhub",
+    title: "Hakkımızda",
     description: ABOUT_DESCRIPTION,
     openGraph: {
         title: "Hakkımızda — Fizikhub",

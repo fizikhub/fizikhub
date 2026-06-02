@@ -9,7 +9,7 @@ import { tr } from "date-fns/locale";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: "Yazar Paneli | Fizikhub",
+    title: "Yazar Paneli",
     robots: {
         index: false,
         follow: false,

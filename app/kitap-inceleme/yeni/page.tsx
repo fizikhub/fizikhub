@@ -4,7 +4,7 @@ import { BookReviewEditor } from "@/components/book-review/book-review-editor";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: "Yeni Kitap İncelemesi | Fizikhub",
+    title: "Yeni Kitap İncelemesi",
     description: "Okuduğun bir kitabı incele ve toplulukla paylaş.",
     robots: { index: false, follow: true },
     alternates: {

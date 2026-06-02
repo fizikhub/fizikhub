@@ -10,6 +10,13 @@ const noindexHeader = [
   },
 ];
 
+const noindexFollowHeader = [
+  {
+    key: 'X-Robots-Tag',
+    value: 'noindex, follow',
+  },
+];
+
 const privateNoindexHeaders = [
   ...noindexHeader,
   {
@@ -57,6 +64,10 @@ const privateNoindexRoutes = [
   '/kitap-inceleme/yeni',
 ];
 
+const publicNoindexRoutes = [
+  '/nevbara',
+];
+
 const scriptSrc = [
   "'self'",
   "'unsafe-inline'",
@@ -78,6 +89,7 @@ const contentSecurityPolicy = [
   "frame-src 'self' https://challenges.cloudflare.com https://www.youtube.com https://youtube.com https://phet.colorado.edu",
   "media-src 'self' blob:",
   "manifest-src 'self'",
+  "prefetch-src 'self'",
   "worker-src 'self' blob:",
   "object-src 'none'",
   "base-uri 'self'",
@@ -208,6 +220,10 @@ const nextConfig: NextConfig = {
         source,
         headers: privateNoindexHeaders,
       })),
+      ...publicNoindexRoutes.map((source) => ({
+        source,
+        headers: noindexFollowHeader,
+      })),
       {
         source: '/api/health',
         headers: apiNoindexHeaders,
@@ -295,7 +311,7 @@ const nextConfig: NextConfig = {
           // HSTS - Force HTTPS for 1 year
           {
             key: 'Strict-Transport-Security',
-            value: 'max-age=31536000; includeSubDomains; preload',
+            value: 'max-age=63072000; includeSubDomains; preload',
           },
           // CSP - Content Security Policy (Google bots, analytics, and Supabase allowed)
           {

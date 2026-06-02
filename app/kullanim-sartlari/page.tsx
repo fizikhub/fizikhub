@@ -1,20 +1,38 @@
-import { Metadata } from "next";
 import { ShieldCheck, ScrollText, Users, AlertTriangle, Gavel } from "lucide-react";
 import { PolicyPageLayout, PolicySection } from "@/components/layout/policy-page-layout";
+import { StaticPageJsonLd, buildStaticPageMetadata } from "@/lib/static-page-seo";
 
-export const metadata: Metadata = {
-    title: "Kullanım Şartları (Veya: Birbirimizi Kırmayalım) | Fizikhub",
-    description: "Kurallar sıkıcı olabilir ama kaos daha kötüdür.",
-};
+const description = "Fizikhub kullanım şartları: içerik ve telif, topluluk kuralları, sorumluluk reddi ve hesap güvenliği ilkeleri.";
+
+export const metadata = buildStaticPageMetadata({
+    path: "/kullanim-sartlari",
+    title: "Kullanım Şartları",
+    description,
+    keywords: ["Fizikhub kullanım şartları", "topluluk kuralları", "telif hakkı", "hesap güvenliği", "sorumluluk reddi"],
+});
 
 export default function TermsOfUsePage() {
     return (
-        <PolicyPageLayout
-            title="Kullanım Anayasası"
-            subtitle="Fizikhub'a hoş geldiniz. Burası bir bilim arenasıdır, gladyatör dövüş alanı değil. Lütfen kılıçlarınızı kapıda bırakınız."
-            icon={<Gavel />}
-            themeColor="purple"
-        >
+        <>
+            <StaticPageJsonLd
+                path="/kullanim-sartlari"
+                name="Fizikhub Kullanım Şartları"
+                description={description}
+                breadcrumbName="Kullanım Şartları"
+                type="WebPage"
+                mainEntity={{
+                    "@type": "CreativeWork",
+                    name: "Fizikhub topluluk ve kullanım kuralları",
+                    about: ["topluluk kuralları", "telif hakkı", "hesap güvenliği", "sorumluluk reddi"],
+                    inLanguage: "tr-TR",
+                }}
+            />
+            <PolicyPageLayout
+                title="Kullanım Anayasası"
+                subtitle="Fizikhub'a hoş geldiniz. Burası bir bilim arenasıdır, gladyatör dövüş alanı değil. Lütfen kılıçlarınızı kapıda bırakınız."
+                icon={<Gavel />}
+                themeColor="purple"
+            >
             {/* 1. Telif Hakları */}
             <PolicySection
                 number="01"
@@ -103,6 +121,7 @@ export default function TermsOfUsePage() {
                     * Bu kuralları kabul ederek Fizikhub evrenine giriş yapmış sayılırsınız. İyi eğlenceler!
                 </p>
             </div>
-        </PolicyPageLayout>
+            </PolicyPageLayout>
+        </>
     );
 }

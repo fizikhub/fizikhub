@@ -149,7 +149,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
     if (!cluster) {
         return {
-            title: "Konu Bulunamadı | Fizikhub",
+            title: "Konu Bulunamadı",
             robots: { index: false, follow: true },
         };
     }

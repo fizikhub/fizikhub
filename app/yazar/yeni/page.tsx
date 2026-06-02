@@ -4,7 +4,7 @@ import { ArticleEditor } from "@/components/writer/article-editor";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: "Yeni Makale | Fizikhub",
+    title: "Yeni Makale",
     robots: {
         index: false,
         follow: false,

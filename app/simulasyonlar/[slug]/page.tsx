@@ -157,7 +157,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
     if (!sim) {
         return {
-            title: "Simülasyon Bulunamadı | FizikHub",
+            title: "Simülasyon Bulunamadı",
             robots: { index: false, follow: true },
         };
     }

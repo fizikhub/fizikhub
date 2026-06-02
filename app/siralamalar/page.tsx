@@ -6,7 +6,7 @@ import { BreadcrumbJsonLd } from "@/lib/breadcrumbs";
 import { BackgroundWrapper } from "@/components/home/background-wrapper";
 
 export const metadata = {
-    title: "Liderlik Tablosu | Fizikhub",
+    title: "Liderlik Tablosu",
     description: "Fizikhub topluluğunun en aktif ve başarılı üyeleri. Soru sorarak, cevap vererek ve test çözerek sıralamada yüksel!",
     openGraph: {
         title: "Liderlik Tablosu — Fizikhub",

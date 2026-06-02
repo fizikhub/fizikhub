@@ -4,7 +4,7 @@ import { BreadcrumbJsonLd } from "@/lib/breadcrumbs";
 const POINTS_DESCRIPTION = "FizikHub puan sistemi ve rütbeler hakkında her şey. Soru sorarak, cevap vererek ve makale yazarak puan kazanın, liderlik tablosunda yükselin.";
 
 export const metadata: Metadata = {
-    title: "Hub Puan Sistemi | Fizikhub",
+    title: "Hub Puan Sistemi",
     description: POINTS_DESCRIPTION,
     openGraph: {
         title: "Hub Puan Sistemi — Fizikhub",

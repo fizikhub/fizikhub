@@ -8,6 +8,7 @@ import { HOME_FEED_ARTICLE_SELECT, processFeedData, formatSliderArticles } from 
 import type { FeedArticleData, FeedQuestionData } from "@/components/home/unified-feed";
 import { SEO_PRIORITY_SLUGS } from "@/lib/seo-priority";
 import { LazyDesktopSidebar } from "@/components/home/lazy-desktop-sidebar";
+import { DeferredHomeControls } from "@/components/home/deferred-home-controls";
 import { getSiteUrl, isLikelyIndexableArticle, toAbsoluteUrl } from "@/lib/seo-utils";
 
 // ─── Supabase Query Result Types ─────────────────────────────────
@@ -57,8 +58,6 @@ interface FeedGroupRow {
 }
 
 // Dynamic Imports (Client boundaries lazy loaded automatically)
-const ScrollProgress = dynamic(() => import("@/components/ui/scroll-progress").then(mod => mod.ScrollProgress));
-const BackToTop = dynamic(() => import("@/components/ui/back-to-top").then(mod => mod.BackToTop));
 const NexusStories = dynamic(() => import("@/components/home/nexus-stories").then(mod => mod.NexusStories));
 // CompactHero is statically imported — its text is the LCP element and must be server-rendered.
 import { CompactHero } from "@/components/home/compact-hero";
@@ -205,6 +204,9 @@ export default async function Home() {
 
   // Process and Merge Data
   const feedItems = processFeedData(articles as unknown as FeedArticleData[], questions as unknown as FeedQuestionData[]);
+  const hasStoryRail = groups.some((group) =>
+    stories.some((story) => String(story.group_id) === String(group.id))
+  );
   const latestArticleDate = articles
     .map((article) => article.created_at)
     .filter(Boolean)
@@ -316,8 +318,7 @@ export default async function Home() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <ScrollProgress />
-      <BackToTop />
+      <DeferredHomeControls />
 
       <div className="mx-auto w-full max-w-[1250px] px-3 sm:px-4 md:px-6 relative z-10 pt-0 lg:pt-8 xl:pt-10">
 
@@ -326,9 +327,11 @@ export default async function Home() {
 
           <div className="lg:col-span-12 mt-0 min-w-0 sm:px-0">
             <CompactHero />
-            <div data-nosnippet>
-              <NexusStories initialStories={stories} initialGroups={groups} />
-            </div>
+            {hasStoryRail ? (
+              <div data-nosnippet>
+                <NexusStories initialStories={stories} initialGroups={groups} />
+              </div>
+            ) : null}
           </div>
 
           {/* Main Feed Column */}

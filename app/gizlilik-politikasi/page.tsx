@@ -1,20 +1,38 @@
-import { Metadata } from "next";
 import { ShieldCheck, Lock, Eye, Cookie, Server } from "lucide-react";
 import { PolicyPageLayout, PolicySection } from "@/components/layout/policy-page-layout";
+import { StaticPageJsonLd, buildStaticPageMetadata } from "@/lib/static-page-seo";
 
-export const metadata: Metadata = {
-    title: "Gizlilik Politikası (Ciddili) | Fizikhub",
-    description: "Verileriniz bizimle güvende. Cidden.",
-};
+const description = "Fizikhub gizlilik politikası: toplanan veriler, çerezler, Supabase altyapısı, RLS, şifreleme ve kullanıcı güvenliği hakkında açıklama.";
+
+export const metadata = buildStaticPageMetadata({
+    path: "/gizlilik-politikasi",
+    title: "Gizlilik Politikası",
+    description,
+    keywords: ["Fizikhub gizlilik politikası", "çerezler", "veri güvenliği", "Supabase RLS", "kişisel veri"],
+});
 
 export default function PrivacyPolicyPage() {
     return (
-        <PolicyPageLayout
-            title="Gizlilik Manifestosu"
-            subtitle="Verileriniz bizim için Schrödinger'in kedisi gibidir: Kutuyu açıp bakmayız, orada olduklarını biliriz ama onları rahatsız etmeyiz."
-            icon={<ShieldCheck />}
-            themeColor="emerald"
-        >
+        <>
+            <StaticPageJsonLd
+                path="/gizlilik-politikasi"
+                name="Fizikhub Gizlilik Politikası"
+                description={description}
+                breadcrumbName="Gizlilik Politikası"
+                type="WebPage"
+                mainEntity={{
+                    "@type": "CreativeWork",
+                    name: "Fizikhub gizlilik politikası",
+                    about: ["gizlilik", "çerezler", "veri güvenliği", "hesap güvenliği"],
+                    inLanguage: "tr-TR",
+                }}
+            />
+            <PolicyPageLayout
+                title="Gizlilik Manifestosu"
+                subtitle="Verileriniz bizim için Schrödinger'in kedisi gibidir: Kutuyu açıp bakmayız, orada olduklarını biliriz ama onları rahatsız etmeyiz."
+                icon={<ShieldCheck />}
+                themeColor="emerald"
+            >
             {/* 1. Veri Toplama */}
             <PolicySection
                 number="01"
@@ -115,6 +133,7 @@ export default function PrivacyPolicyPage() {
                     Not: Bu metin bilgilendirme amaçlıdır, hukuki tavsiye niteliği taşımaz. Ama elimizden gelenin en iyisini yaptık.
                 </p>
             </div>
-        </PolicyPageLayout>
+            </PolicyPageLayout>
+        </>
     );
 }

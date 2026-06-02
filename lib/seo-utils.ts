@@ -19,6 +19,9 @@ const PRIVATE_SEO_PATH_PREFIXES = [
     "/yazar-paneli",
     "/yonetim",
 ];
+const PUBLIC_NOINDEX_PATHS = new Set([
+    "/nevbara",
+]);
 
 function normalizeProductionSiteUrl(url: string) {
     const cleanUrl = url.replace(/\/+$/, "");
@@ -213,6 +216,7 @@ export function isForbiddenSitemapUrl(url: string) {
             parsed.pathname.startsWith("/blog") ||
             parsed.pathname === "/index" ||
             parsed.pathname.includes("*") ||
+            PUBLIC_NOINDEX_PATHS.has(parsed.pathname) ||
             parsed.searchParams.has("kategori") ||
             parsed.searchParams.get("sort") === "latest" ||
             (parsed.pathname.startsWith("/makale/kategori/") && parsed.searchParams.toString().length > 0) ||
