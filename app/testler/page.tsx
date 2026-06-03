@@ -26,7 +26,13 @@ export const metadata: Metadata = {
         description: "Ücretsiz fizik testleri çöz, eksiklerini gör ve puan kazan.",
         images: [`${SITE_URL}/og-image.jpg`],
     },
-    alternates: { canonical: `${SITE_URL}/testler` },
+    alternates: {
+        canonical: `${SITE_URL}/testler`,
+        languages: {
+            "tr-TR": `${SITE_URL}/testler`,
+            "x-default": `${SITE_URL}/testler`,
+        },
+    },
 };
 
 export const revalidate = 1800;

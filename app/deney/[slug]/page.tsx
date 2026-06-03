@@ -55,6 +55,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
         },
         alternates: {
             canonical: `${baseUrl}${canonicalPath}`,
+            languages: {
+                "tr-TR": `${baseUrl}${canonicalPath}`,
+                "x-default": `${baseUrl}${canonicalPath}`,
+            },
         },
     };
 }

@@ -13,7 +13,29 @@ export type AiCoreRoute = {
     priority: string;
 };
 
-export const AI_DISCOVERY_LAST_MODIFIED = "2026-06-02T00:00:00.000+03:00";
+export const AI_DISCOVERY_LAST_MODIFIED = "2026-06-03T00:00:00.000+03:00";
+
+export const AI_CONTENT_PROVENANCE = {
+    publisherName: "Fizikhub",
+    publisherUrl: "https://www.fizikhub.com",
+    editorialOwner: "Fizikhub Ekibi",
+    contactEmail: "iletisim@fizikhub.com",
+    lastReviewed: "2026-06-03",
+    language: "tr-TR",
+    geographicFocus: "TR",
+    primaryAudience: [
+        "Türkçe fizik öğrenen öğrenciler",
+        "TYT, AYT ve YKS fizik çalışan kullanıcılar",
+        "Bilim ve uzay konularını Türkçe kaynaklarla takip eden okuyucular",
+    ],
+    trustSignals: [
+        "kanonik URL",
+        "yayıncı ve yazar bilgisi",
+        "güncellenme tarihi",
+        "konu hub bağlantıları",
+        "görünür metinle eşleşen structured data",
+    ],
+} as const;
 
 export const AI_CITATION_POLICY = {
     summarization: "allowed",

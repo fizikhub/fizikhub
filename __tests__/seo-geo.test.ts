@@ -5,7 +5,8 @@ import { GET as authorSitemap } from "@/app/author-sitemap.xml/route";
 import { GET as openSearchDescriptor } from "@/app/opensearch.xml/route";
 import { GET as sitemapIndex } from "@/app/sitemap-index.xml/route";
 import { GET as topicSitemap } from "@/app/topic-sitemap.xml/route";
-import { AI_CITATION_POLICY, AI_CRAWLER_USER_AGENTS, AI_DISCOVERY_ROUTES, buildAiCitationText } from "@/lib/ai-discovery";
+import { AI_CITATION_POLICY, AI_CONTENT_PROVENANCE, AI_CRAWLER_USER_AGENTS, AI_DISCOVERY_ROUTES, buildAiCitationText } from "@/lib/ai-discovery";
+import { buildSimulationCourseJsonLd, buildSimulationCourseListJsonLd, type SimulationCourseSource } from "@/lib/educational-schema";
 import { isKnownAiCrawlerUserAgent } from "@/lib/ai-discovery";
 import { buildForumDiscussionPostingItem } from "@/lib/forum-structured-data";
 import { getVectorUrl } from "@/lib/search-results";
@@ -157,9 +158,52 @@ describe("SEO robots and canonical boundaries", () => {
     it("keeps AI citation guidance explicit and canonical", () => {
         expect(AI_CITATION_POLICY.citation).toBe("required");
         expect(AI_CITATION_POLICY.answerGuidance.length).toBeGreaterThan(0);
+        expect(AI_CONTENT_PROVENANCE.publisherName).toBe("Fizikhub");
+        expect(AI_CONTENT_PROVENANCE.language).toBe("tr-TR");
+        expect(AI_CONTENT_PROVENANCE.geographicFocus).toBe("TR");
+        expect(AI_CONTENT_PROVENANCE.trustSignals).toContain("görünür metinle eşleşen structured data");
         expect(buildAiCitationText("Entropi Nedir?", "https://www.fizikhub.com/makale/entropi")).toBe(
             "Entropi Nedir? - Fizikhub (https://www.fizikhub.com/makale/entropi)",
         );
+    });
+
+    it("builds course structured data for interactive simulation learning modules", () => {
+        const simulation: SimulationCourseSource = {
+            slug: "atis-hareketi",
+            title: "Atış Hareketi",
+            description: "Bir cismin yerçekimi altındaki hareketini inceleyin.",
+            difficulty: "Kolay",
+            tags: ["Mekanik", "Kinematik"],
+            formula: "R = v²sin(2θ)/g",
+            learning: {
+                estimatedMinutes: 9,
+                outcome: "Yatay ve düşey hareketi açıklayabilir.",
+                prerequisite: "Hız vektörleri",
+                bigQuestion: "Aynı ilk hızla en uzağa gitmek için neden 45 derece özel bir açı olur?",
+            },
+        };
+        const course = buildSimulationCourseJsonLd(simulation, "https://www.fizikhub.com");
+        const courseList = buildSimulationCourseListJsonLd([simulation], "https://www.fizikhub.com");
+
+        expect(course).toEqual(expect.objectContaining({
+            "@type": "Course",
+            "@id": "https://www.fizikhub.com/simulasyonlar/atis-hareketi#course",
+            name: "Atış Hareketi",
+            provider: expect.objectContaining({
+                "@id": "https://www.fizikhub.com/#organization",
+                name: "Fizikhub",
+            }),
+            hasCourseInstance: expect.objectContaining({
+                "@type": "CourseInstance",
+                courseMode: ["online", "self-paced"],
+                courseWorkload: "PT9M",
+            }),
+        }));
+        expect(courseList).toEqual(expect.objectContaining({
+            "@type": "ItemList",
+            "@id": "https://www.fizikhub.com/simulasyonlar#course-list",
+        }));
+        expect(courseList.itemListElement[0].item).toEqual(course);
     });
 
     it("publishes an OpenSearch descriptor for browser and answer-engine search discovery", async () => {

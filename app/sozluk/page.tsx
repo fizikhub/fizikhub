@@ -53,7 +53,13 @@ export const metadata: Metadata = {
             "max-video-preview": -1,
         },
     },
-    alternates: { canonical: `${SITE_URL}/sozluk` },
+    alternates: {
+        canonical: `${SITE_URL}/sozluk`,
+        languages: {
+            "tr-TR": `${SITE_URL}/sozluk`,
+            "x-default": `${SITE_URL}/sozluk`,
+        },
+    },
 };
 
 export const revalidate = 3600;

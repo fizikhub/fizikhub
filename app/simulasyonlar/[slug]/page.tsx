@@ -7,6 +7,7 @@ import { simulations } from "@/components/simulations/data";
 import { BreadcrumbJsonLd } from "@/lib/breadcrumbs";
 import { getSiteUrl } from "@/lib/seo-utils";
 import { SimulationLearningTracker } from "@/components/simulations/simulation-learning-tracker";
+import { buildSimulationCourseJsonLd } from "@/lib/educational-schema";
 
 // Import simulation components
 import { ProjectileSim } from "@/components/simulations/ProjectileSim";
@@ -180,7 +181,13 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
                 description: sim.seo.description,
                 images: [image],
             },
-            alternates: { canonical },
+            alternates: {
+                canonical,
+                languages: {
+                    "tr-TR": canonical,
+                    "x-default": canonical,
+                },
+            },
             robots: {
                 index: true,
                 follow: true,
@@ -213,7 +220,13 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
             description,
             images: [image],
         },
-        alternates: { canonical },
+        alternates: {
+            canonical,
+            languages: {
+                "tr-TR": canonical,
+                "x-default": canonical,
+            },
+        },
         robots: {
             index: true,
             follow: true,
@@ -302,6 +315,10 @@ export default async function SimulationPage({ params }: { params: Promise<{ slu
                 name: "Fizikhub",
                 url: baseUrl,
             },
+        },
+        {
+            "@context": "https://schema.org",
+            ...buildSimulationCourseJsonLd(sim, baseUrl),
         },
         {
             "@context": "https://schema.org",

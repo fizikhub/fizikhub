@@ -195,6 +195,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
             canonical: canonicalUrl,
             languages: {
                 "tr-TR": canonicalUrl,
+                "x-default": canonicalUrl,
             },
         },
         robots: {
@@ -213,6 +214,14 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
             "article:modified_time": (article as any).updated_at || article.created_at,
             "article:section": article.category || "Fizik",
             "article:author": authorName,
+            "citation_title": intentOverride?.metadataTitle || article.title,
+            "citation_author": authorName,
+            "citation_publication_date": article.created_at,
+            "citation_online_date": article.created_at,
+            "citation_language": "tr",
+            "citation_public_url": canonicalUrl,
+            "dc.publisher": "Fizikhub",
+            "dc.language": "tr-TR",
         },
     };
 }

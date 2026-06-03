@@ -12,7 +12,13 @@ export const metadata: Metadata = {
         type: "website",
         url: "https://www.fizikhub.com/hakkimizda",
     },
-    alternates: { canonical: "https://www.fizikhub.com/hakkimizda" },
+    alternates: {
+        canonical: "https://www.fizikhub.com/hakkimizda",
+        languages: {
+            "tr-TR": "https://www.fizikhub.com/hakkimizda",
+            "x-default": "https://www.fizikhub.com/hakkimizda",
+        },
+    },
 };
 
 export default function AboutPage() {

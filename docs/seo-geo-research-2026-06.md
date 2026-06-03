@@ -34,6 +34,16 @@ Bu calisma Fizikhub'in teknik SEO, GEO (Generative Engine Optimization), mobil p
 - Normal root head'e AI discovery linkleri ve Supabase preconnect/dns-prefetch eklendi.
 - Next, React, React DOM, eslint-config-next, bundle analyzer ve Supabase JS patch seviyelerine guncellendi.
 
+## 2026-06-03 derin arastirma ve uygulama notu
+
+- Google'in 2026 AI features dokumani GEO/AEO icin ayri teknik gereksinim olmadigini, sayfanin Google Search'te indexlenebilir ve snippet'a uygun olmasinin temel sart oldugunu tekrar dogruluyor. Bu nedenle Fizikhub'da `max-snippet:-1`, text-first icerik, public robots erisimi, canonical URL ve dahili link agi korunuyor.
+- Ayni dokuman onemli icerigin metinsel olarak bulunmasini ve structured data'nin gorunur metinle eslesmesini oneriyor. Bu calismada simülasyonlar icin Course schema yalnizca sayfada zaten gorunen sure, hedef, formul, konu ve ucretsiz erisim bilgileriyle uretildi.
+- Google Course list rehberi Course item'lari icin ad, aciklama, provider ve liste sayfasi baglamina vurgu yapiyor. `/simulasyonlar` artik ItemList + Course graph'i yayinliyor; tekil simülasyonlar ayni `#course` dugumunu detay sayfasinda da veriyor.
+- Dinamik ve cekirdek public sayfalarda `alternates.languages` icine `tr-TR` ve `x-default` eklendi. Fizikhub su an tek dilli oldugu icin ikisi de ayni kanonik URL'yi isaret ediyor; ileride cok dilli yapiya gecilirse bu alanlar route bazinda genisletilebilir.
+- `/ai-index.json` ve `/llms.txt` AI provenance bilgisiyle genisletildi: yayinlayan, editoryal sorumlu, dil/bolge, hedef kitle, guven sinyalleri ve son gozden gecirme tarihi artik makine okunabilir sekilde duruyor.
+- Makale ve sozluk metadata'larina citation/DC alanlari eklendi. Bu, sayfada gorunen atif ve kaynak bloklarini metadata tarafinda da destekliyor.
+- `__tests__/seo-geo.test.ts` Course schema ve AI provenance icin regresyon testi kazandi.
+
 ## Sonraki izleme onerileri
 
 - Search Console'da `/blog`, non-www/http, wildcard ve static asset aileleri icin live inspection tekrar istenmeli; kod bu URL'leri temizliyor ama GSC satirlari recrawl zamanina bagli silinir.
@@ -47,6 +57,9 @@ Bu calisma Fizikhub'in teknik SEO, GEO (Generative Engine Optimization), mobil p
 - Google Search Central - Helpful, reliable, people-first content: https://developers.google.com/search/docs/fundamentals/creating-helpful-content
 - Google Search Central - Robots meta tag and X-Robots-Tag: https://developers.google.com/search/docs/crawling-indexing/robots-meta-tag
 - Google Search Central - Structured data general guidelines: https://developers.google.com/search/docs/appearance/structured-data/sd-policies
+- Google Search Central - Course list structured data: https://developers.google.com/search/docs/appearance/structured-data/course
+- Google Search Central - Breadcrumb structured data: https://developers.google.com/search/docs/appearance/structured-data/breadcrumb
+- Google Search Central - Developer's guide to Search: https://developers.google.com/search/docs/fundamentals/get-started-developers
 - Google Search Central - Canonicalization: https://developers.google.com/search/docs/crawling-indexing/canonicalization
 - Google Search Central - Sitemaps: https://developers.google.com/search/docs/crawling-indexing/sitemaps/build-sitemap
 - web.dev - Web performance/Core Web Vitals: https://web.dev/performance

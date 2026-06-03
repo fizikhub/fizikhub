@@ -19,7 +19,13 @@ export const metadata = {
         title: "Liderlik Tablosu — Fizikhub",
         description: "Topluluğun en aktif ve başarılı üyeleri.",
     },
-    alternates: { canonical: "https://www.fizikhub.com/siralamalar" },
+    alternates: {
+        canonical: "https://www.fizikhub.com/siralamalar",
+        languages: {
+            "tr-TR": "https://www.fizikhub.com/siralamalar",
+            "x-default": "https://www.fizikhub.com/siralamalar",
+        },
+    },
 };
 
 export default async function LeaderboardPage() {

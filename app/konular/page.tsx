@@ -27,7 +27,13 @@ export const metadata: Metadata = {
         description: "Kuantum, uzay, termodinamik ve mekanik için Türkçe konu rehberleri.",
         images: [`${SITE_URL}/og-image.jpg`],
     },
-    alternates: { canonical: `${SITE_URL}/konular` },
+    alternates: {
+        canonical: `${SITE_URL}/konular`,
+        languages: {
+            "tr-TR": `${SITE_URL}/konular`,
+            "x-default": `${SITE_URL}/konular`,
+        },
+    },
     robots: {
         index: true,
         follow: true,

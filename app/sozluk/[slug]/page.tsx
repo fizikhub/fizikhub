@@ -159,7 +159,23 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
                 "max-video-preview": -1,
             },
         },
-        alternates: { canonical },
+        alternates: {
+            canonical,
+            languages: {
+                "tr-TR": canonical,
+                "x-default": canonical,
+            },
+        },
+        other: {
+            "citation_title": `${term.term} Nedir? Bilim Sözlüğü`,
+            "citation_author": "Fizikhub",
+            "citation_publication_date": term.created_at,
+            "citation_online_date": term.created_at,
+            "citation_language": "tr",
+            "citation_public_url": canonical,
+            "dc.publisher": "Fizikhub",
+            "dc.language": "tr-TR",
+        },
     };
 }
 

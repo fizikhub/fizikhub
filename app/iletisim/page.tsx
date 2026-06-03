@@ -11,7 +11,13 @@ export const metadata: Metadata = {
         type: "website",
         url: "https://www.fizikhub.com/iletisim",
     },
-    alternates: { canonical: "https://www.fizikhub.com/iletisim" },
+    alternates: {
+        canonical: "https://www.fizikhub.com/iletisim",
+        languages: {
+            "tr-TR": "https://www.fizikhub.com/iletisim",
+            "x-default": "https://www.fizikhub.com/iletisim",
+        },
+    },
 };
 
 export default function ContactPage() {

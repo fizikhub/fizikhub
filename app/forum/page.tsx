@@ -114,7 +114,13 @@ export async function generateMetadata({ searchParams }: ForumPageProps): Promis
             description,
             images: ["/og-image.jpg"],
         },
-        alternates: { canonical: canonicalUrl },
+        alternates: {
+            canonical: canonicalUrl,
+            languages: {
+                "tr-TR": canonicalUrl,
+                "x-default": canonicalUrl,
+            },
+        },
     };
 }
 

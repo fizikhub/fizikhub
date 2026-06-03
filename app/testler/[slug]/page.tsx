@@ -95,7 +95,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
                 "max-video-preview": -1,
             },
         },
-        alternates: { canonical },
+        alternates: {
+            canonical,
+            languages: {
+                "tr-TR": canonical,
+                "x-default": canonical,
+            },
+        },
     };
 }
 

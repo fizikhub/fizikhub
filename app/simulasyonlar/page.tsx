@@ -3,6 +3,7 @@ import { simulations } from "@/components/simulations/data";
 import { SimulationsClient } from "@/components/simulations/simulations-client";
 import { getSiteUrl } from "@/lib/seo-utils";
 import { BreadcrumbJsonLd } from "@/lib/breadcrumbs";
+import { buildSimulationCourseListJsonLd } from "@/lib/educational-schema";
 
 export const metadata: Metadata = {
     title: "Fizik Simülasyonları ve İnteraktif Deneyler",
@@ -36,7 +37,11 @@ export const metadata: Metadata = {
         creator: "@fizikhub"
     },
     alternates: {
-        canonical: "https://www.fizikhub.com/simulasyonlar"
+        canonical: "https://www.fizikhub.com/simulasyonlar",
+        languages: {
+            "tr-TR": "https://www.fizikhub.com/simulasyonlar",
+            "x-default": "https://www.fizikhub.com/simulasyonlar"
+        }
     },
     robots: {
         index: true,
@@ -100,7 +105,8 @@ export default async function SimulasyonlarPage() {
                         isAccessibleForFree: true
                     }
                 }))
-            }
+            },
+            buildSimulationCourseListJsonLd(simulations, baseUrl)
         ]
     };
 

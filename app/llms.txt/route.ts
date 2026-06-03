@@ -1,6 +1,6 @@
 import { createStaticClient } from "@/lib/supabase-server";
 import { simulations } from "@/components/simulations/data";
-import { AI_DISCOVERY_ROUTES } from "@/lib/ai-discovery";
+import { AI_CONTENT_PROVENANCE, AI_DISCOVERY_LAST_MODIFIED, AI_DISCOVERY_ROUTES } from "@/lib/ai-discovery";
 import { SEO_PRIORITY_ARTICLES } from "@/lib/seo-priority";
 import { getTopicClusterHref, SEO_TOPIC_CLUSTERS } from "@/lib/seo-topic-clusters";
 import { getArticleCanonicalPath, getSiteUrl, isIndexableForumQuestion, isLikelyIndexableArticle } from "@/lib/seo-utils";
@@ -34,6 +34,15 @@ export async function GET() {
 
     text += `## Proje Hakkında (Context)\n`;
     text += `Fizikhub; Türkçe fizik, uzay, astronomi, kuantum fiziği, matematik ve mühendislik içerikleri üreten modern ve etkileşimli bir bilim platformudur. Platformda makaleler, soru-cevap forumu, bilim sözlüğü, TYT/AYT/YKS testleri, konu kümeleri ve interaktif simülasyonlar yer alır.\n\n`;
+
+    text += `## Yayıncı ve Provenance\n`;
+    text += `- Yayıncı: ${AI_CONTENT_PROVENANCE.publisherName} (${AI_CONTENT_PROVENANCE.publisherUrl})\n`;
+    text += `- Editoryal sorumlu: ${AI_CONTENT_PROVENANCE.editorialOwner}\n`;
+    text += `- Dil ve bölge: ${AI_CONTENT_PROVENANCE.language}, ${AI_CONTENT_PROVENANCE.geographicFocus}\n`;
+    text += `- Hedef kitle: ${AI_CONTENT_PROVENANCE.primaryAudience.join("; ")}\n`;
+    text += `- Güven sinyalleri: ${AI_CONTENT_PROVENANCE.trustSignals.join(", ")}\n`;
+    text += `- Son GEO/SEO gözden geçirme: ${AI_CONTENT_PROVENANCE.lastReviewed}\n`;
+    text += `- AI keşif yüzeyleri son teknik güncelleme: ${AI_DISCOVERY_LAST_MODIFIED}\n\n`;
 
     text += `## Önemli Kaynaklar (Core Pages)\n`;
     text += `- **Anasayfa**: ${baseUrl}\n`;

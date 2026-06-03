@@ -1,5 +1,5 @@
 import { simulations } from "@/components/simulations/data";
-import { AI_CITATION_POLICY, AI_CRAWLER_USER_AGENTS, AI_DISCOVERY_LAST_MODIFIED, AI_DISCOVERY_ROUTES, AI_PUBLIC_CONTENT_PREFIXES, buildAiCitationText } from "@/lib/ai-discovery";
+import { AI_CITATION_POLICY, AI_CONTENT_PROVENANCE, AI_CRAWLER_USER_AGENTS, AI_DISCOVERY_LAST_MODIFIED, AI_DISCOVERY_ROUTES, AI_PUBLIC_CONTENT_PREFIXES, buildAiCitationText } from "@/lib/ai-discovery";
 import { getDictionaryTerms } from "@/lib/api";
 import { createStaticClient } from "@/lib/supabase-server";
 import { slugify } from "@/lib/slug";
@@ -280,7 +280,7 @@ export async function GET() {
         contentFreshness: "evergreen" as const,
         updatedAt: AI_DISCOVERY_LAST_MODIFIED,
         language: "tr-TR",
-        schemaTypes: ["LearningResource", "SoftwareApplication", "BreadcrumbList"],
+        schemaTypes: ["Course", "LearningResource", "SoftwareApplication", "BreadcrumbList"],
         clusterSlugs: clusterSlugsForResource("simulation", sim.slug),
         relatedUrls: relatedUrlsFor("simulation", sim.slug, baseUrl),
         citationText: buildAiCitationText(sim.title, `${baseUrl}/simulasyonlar/${sim.slug}`),
@@ -357,6 +357,7 @@ export async function GET() {
         },
         discovery: {
             canonicalHost: baseUrl,
+            provenance: AI_CONTENT_PROVENANCE,
             entryPoints: AI_DISCOVERY_ROUTES.map((route) => ({
                 url: `${baseUrl}${route.path}`,
                 label: route.label,

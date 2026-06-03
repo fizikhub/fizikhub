@@ -14,7 +14,13 @@ export const metadata: Metadata = {
         type: "website",
         url: "https://www.fizikhub.com/rozetler",
     },
-    alternates: { canonical: "https://www.fizikhub.com/rozetler" },
+    alternates: {
+        canonical: "https://www.fizikhub.com/rozetler",
+        languages: {
+            "tr-TR": "https://www.fizikhub.com/rozetler",
+            "x-default": "https://www.fizikhub.com/rozetler",
+        },
+    },
 };
 
 type BadgeRow = {

@@ -12,7 +12,13 @@ export const metadata: Metadata = {
         type: "website",
         url: "https://www.fizikhub.com/puanlar-nedir",
     },
-    alternates: { canonical: "https://www.fizikhub.com/puanlar-nedir" },
+    alternates: {
+        canonical: "https://www.fizikhub.com/puanlar-nedir",
+        languages: {
+            "tr-TR": "https://www.fizikhub.com/puanlar-nedir",
+            "x-default": "https://www.fizikhub.com/puanlar-nedir",
+        },
+    },
 };
 import {
     Trophy,

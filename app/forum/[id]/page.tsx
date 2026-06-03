@@ -147,6 +147,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
         },
         alternates: {
             canonical: canonicalUrl,
+            languages: {
+                "tr-TR": canonicalUrl,
+                "x-default": canonicalUrl,
+            },
         },
     };
 }

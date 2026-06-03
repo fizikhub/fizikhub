@@ -181,6 +181,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
             canonical,
             languages: {
                 "tr-TR": canonical,
+                "x-default": canonical,
             },
         },
         robots: {
