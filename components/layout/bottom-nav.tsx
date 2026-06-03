@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import { useEffect, useRef, useState } from "react";
 
 const HIDDEN_NAV_CLASS = "mobile-bottom-nav--hidden";
+const PRIMARY_MOBILE_ROUTES = ["/", "/makale", "/paylas", "/forum", "/profil", "/konular", "/sozluk", "/simulasyonlar", "/testler"];
 
 export function BottomNav() {
     const pathname = usePathname();
@@ -16,7 +17,6 @@ export function BottomNav() {
     const lastScrollYRef = useRef(0);
     const hiddenRef = useRef(false);
     const frameRef = useRef<number | null>(null);
-    const navigatingHrefRef = useRef<string | null>(null);
     const [optimisticHref, setOptimisticHref] = useState<string | null>(null);
 
     useEffect(() => {
@@ -64,7 +64,6 @@ export function BottomNav() {
     }, [isArticleDetail]);
 
     useEffect(() => {
-        navigatingHrefRef.current = null;
         navRef.current?.classList.toggle(HIDDEN_NAV_CLASS, isArticleDetail);
         hiddenRef.current = isArticleDetail;
 
@@ -83,46 +82,41 @@ export function BottomNav() {
         return pathname.startsWith(href);
     };
 
-    const warmRoute = (href: string) => {
-        if (href.startsWith("/")) router.prefetch(href);
-    };
+    useEffect(() => {
+        const prefetchPrimaryRoutes = () => {
+            for (const href of PRIMARY_MOBILE_ROUTES) {
+                if (href !== pathname) router.prefetch(href);
+            }
+        };
+
+        if ("requestIdleCallback" in window) {
+            const idleId = window.requestIdleCallback(prefetchPrimaryRoutes, { timeout: 1200 });
+            return () => window.cancelIdleCallback(idleId);
+        }
+
+        const timeoutId = setTimeout(prefetchPrimaryRoutes, 350);
+        return () => clearTimeout(timeoutId);
+    }, [pathname, router]);
 
     const activateRoute = (href: string) => {
         navRef.current?.classList.remove(HIDDEN_NAV_CLASS);
         hiddenRef.current = false;
         setOptimisticHref(href);
         vibrate();
-        warmRoute(href);
-    };
-
-    const navigateImmediately = (href: string) => {
-        activateRoute(href);
-
-        if (isHrefActive(href)) {
-            window.scrollTo({ top: 0, behavior: "smooth" });
-            return;
-        }
-
-        navigatingHrefRef.current = href;
-        router.push(href);
     };
 
     const handleSharePointerDown = (event: React.PointerEvent<HTMLAnchorElement>) => {
-        if (event.pointerType === "mouse") {
-            activateRoute("/paylas");
-            return;
-        }
-
-        navigateImmediately("/paylas");
+        if (event.pointerType !== "mouse") activateRoute("/paylas");
     };
 
     const handleShareClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
-        if (navigatingHrefRef.current === "/paylas") {
+        activateRoute("/paylas");
+
+        if (isHrefActive("/paylas")) {
             event.preventDefault();
+            window.scrollTo({ top: 0, behavior: "smooth" });
             return;
         }
-
-        activateRoute("/paylas");
     };
 
     return (
@@ -145,8 +139,6 @@ export function BottomNav() {
                         shortLabel="Ana"
                         isActive={(optimisticHref ?? pathname) === "/"}
                         onActivate={activateRoute}
-                        onNavigateImmediately={navigateImmediately}
-                        navigatingHrefRef={navigatingHrefRef}
                     />
 
                     <NavItem
@@ -157,20 +149,19 @@ export function BottomNav() {
                         shortLabel="Keşfet"
                         isActive={(optimisticHref ?? pathname).startsWith("/makale")}
                         onActivate={activateRoute}
-                        onNavigateImmediately={navigateImmediately}
-                        navigatingHrefRef={navigatingHrefRef}
                     />
 
                     <div className="relative -top-3.5 z-20">
                         <Link
                             id="nav-item-share"
                             href="/paylas"
+                            prefetch
                             className="relative block touch-manipulation"
                             aria-label="Paylaş"
                             onPointerDown={handleSharePointerDown}
                             onClick={handleShareClick}
-                            onTouchStart={() => warmRoute("/paylas")}
-                            onFocus={() => warmRoute("/paylas")}
+                            onTouchStart={() => activateRoute("/paylas")}
+                            onFocus={() => activateRoute("/paylas")}
                         >
                             <div
                                 className="
@@ -201,8 +192,6 @@ export function BottomNav() {
                         shortLabel="Forum"
                         isActive={(optimisticHref ?? pathname).startsWith("/forum")}
                         onActivate={activateRoute}
-                        onNavigateImmediately={navigateImmediately}
-                        navigatingHrefRef={navigatingHrefRef}
                     />
 
                     <NavItem
@@ -213,8 +202,6 @@ export function BottomNav() {
                         shortLabel="Profil"
                         isActive={(optimisticHref ?? pathname).startsWith("/profil")}
                         onActivate={activateRoute}
-                        onNavigateImmediately={navigateImmediately}
-                        navigatingHrefRef={navigatingHrefRef}
                     />
                 </div>
             </nav>
@@ -230,8 +217,6 @@ function NavItem({
     shortLabel,
     isActive,
     onActivate,
-    onNavigateImmediately,
-    navigatingHrefRef
 }: {
     id?: string;
     href: string;
@@ -240,24 +225,12 @@ function NavItem({
     shortLabel?: string;
     isActive: boolean;
     onActivate: (href: string) => void;
-    onNavigateImmediately: (href: string) => void;
-    navigatingHrefRef: React.MutableRefObject<string | null>;
 }) {
     const handlePointerDown = (event: React.PointerEvent<HTMLAnchorElement>) => {
-        if (event.pointerType === "mouse") {
-            onActivate(href);
-            return;
-        }
-
-        onNavigateImmediately(href);
+        if (event.pointerType !== "mouse") onActivate(href);
     };
 
     const handleNavItemClick = (e: React.MouseEvent) => {
-        if (navigatingHrefRef.current === href) {
-            e.preventDefault();
-            return;
-        }
-
         onActivate(href);
 
         if (isActive) {
@@ -270,6 +243,7 @@ function NavItem({
         <Link
             id={id}
             href={href}
+            prefetch
             onClick={handleNavItemClick}
             onPointerDown={handlePointerDown}
             onTouchStart={() => onActivate(href)}
