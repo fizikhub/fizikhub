@@ -44,6 +44,15 @@ Bu calisma Fizikhub'in teknik SEO, GEO (Generative Engine Optimization), mobil p
 - Makale ve sozluk metadata'larina citation/DC alanlari eklendi. Bu, sayfada gorunen atif ve kaynak bloklarini metadata tarafinda da destekliyor.
 - `__tests__/seo-geo.test.ts` Course schema ve AI provenance icin regresyon testi kazandi.
 
+## 2026-06-03 takip uygulamalari: GSC, konu hub'lari ve Web Vitals
+
+- Search Console tarafinda programatik "request indexing" kullanilmadi; Google URL Inspection API veriyi okumaya yarar, genel sayfalar icin request indexing arayuz uzerinden yapilir. Google Indexing API ise genel Fizikhub sayfalari icin uygun degil; resmi kapsam JobPosting ve canli yayin VideoObject sayfalariyla sinirlidir.
+- `npm run seo:gsc-recrawl` komutu eklendi. Komut GSC Coverage export'unu okuyup `docs/gsc-recrawl-plan.md` dosyasina sitemap yeniden gonderim listesi, gunluk request-indexing adaylari ve cleanup live-inspection aileleri uretir.
+- Son export'tan uretilen planda 350 URL okundu; 8 sitemap yeniden gonderim hedefi, 25 request-indexing adayi ve 10 cleanup ailesi cikti. En buyuk cleanup aileleri legacy `/blog`, wildcard/bozuk URL, non-www/http, private/noindex ve static asset URL'leri.
+- Article baglantisi olmayan 17 topic hub icin ozel konu calisma rehberi eklendi: ozet, temel fikirler, calisma rotasi, sik hata ve formul/kavram odagi. Bu metinler `/konular/[slug]` sayfasinda gorunur hale geldi ve AI index topic aciklamalarina yansitildi.
+- Web Vitals izleme LCP, INP, CLS, FCP ve TTFB esikleriyle ortak yardimciya alindi. Browser rating gondermezse API route rating'i sunucu tarafinda turetir.
+- Page Experience dashboard artik LCP/INP/CLS basligini, metrik esiklerini, P75 degerini ve SEO oncelik skorunu gosterir. Supabase view icin P75, son gorulme zamani ve issue score ekleyen migration eklendi.
+
 ## Sonraki izleme onerileri
 
 - Search Console'da `/blog`, non-www/http, wildcard ve static asset aileleri icin live inspection tekrar istenmeli; kod bu URL'leri temizliyor ama GSC satirlari recrawl zamanina bagli silinir.

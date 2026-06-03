@@ -1,10 +1,10 @@
--- Create an index to speed up grouping by pathname and name
-CREATE INDEX IF NOT EXISTS idx_web_vitals_pathname_name 
-ON public.web_vitals_events (pathname, name);
+-- Adds P75 and issue-priority fields to the page experience view.
+-- Core Web Vitals should be evaluated at the 75th percentile, segmented by route/metric.
 
--- Create a view to aggregate page experience metrics
+BEGIN;
+
 CREATE OR REPLACE VIEW public.view_page_experience_metrics AS
-SELECT 
+SELECT
     pathname,
     name as metric_name,
     COUNT(*) as event_count,
@@ -18,15 +18,16 @@ SELECT
         SUM(CASE WHEN rating = 'poor' THEN 1 ELSE 0 END) * 3 +
         SUM(CASE WHEN rating = 'needs-improvement' THEN 1 ELSE 0 END)
     ) as issue_score
-FROM 
+FROM
     public.web_vitals_events
-WHERE 
+WHERE
     pathname IS NOT NULL
-GROUP BY 
+GROUP BY
     pathname, name
-ORDER BY 
-    poor_count DESC, event_count DESC;
+ORDER BY
+    issue_score DESC, poor_count DESC, event_count DESC;
 
--- Grant access to the view
 GRANT SELECT ON public.view_page_experience_metrics TO authenticated;
 GRANT SELECT ON public.view_page_experience_metrics TO service_role;
+
+COMMIT;

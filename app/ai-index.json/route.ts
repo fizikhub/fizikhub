@@ -5,6 +5,7 @@ import { createStaticClient } from "@/lib/supabase-server";
 import { slugify } from "@/lib/slug";
 import { getRelatedUrlsForCluster, getTopicClusterHref, getTopicClustersForText, SEO_TOPIC_CLUSTERS } from "@/lib/seo-topic-clusters";
 import { getArticleCanonicalPath, getSiteUrl, hasUsefulIndexableText, isIndexableForumQuestion, isIndexableProfile, isLikelyIndexableArticle, isLikelyIndexableTitle, truncateForMeta } from "@/lib/seo-utils";
+import { getTopicStudyGuide } from "@/lib/topic-study-guides";
 
 export const revalidate = 3600;
 
@@ -288,25 +289,29 @@ export async function GET() {
         answerFormatHints: answerHintsFor("simulation"),
     }));
 
-    const topicItems: AiIndexItem[] = SEO_TOPIC_CLUSTERS.map((cluster) => ({
-        type: "topic",
-        url: `${baseUrl}${getTopicClusterHref(cluster)}`,
-        canonicalPath: getTopicClusterHref(cluster),
-        title: cluster.title,
-        description: truncateForMeta(`${cluster.title}: ${cluster.intentQuestions.join(" ")} ${cluster.aliases.join(", ")} kaynakları.`, 220),
-        topics: unique([cluster.title, ...cluster.aliases]).slice(0, 10),
-        intentQuestions: cluster.intentQuestions,
-        entityType: "topic-cluster",
-        contentFreshness: "evergreen",
-        updatedAt: AI_DISCOVERY_LAST_MODIFIED,
-        language: "tr-TR",
-        schemaTypes: ["CollectionPage", "ItemList", "LearningResource", "FAQPage", "BreadcrumbList"],
-        clusterSlugs: [cluster.slug],
-        relatedUrls: unique(getRelatedUrlsForCluster(cluster).map((link) => `${baseUrl}${link.href}`)).slice(0, 12),
-        citationText: buildAiCitationText(`${cluster.title} konu rehberi`, `${baseUrl}${getTopicClusterHref(cluster)}`),
-        answerPriority: "high",
-        answerFormatHints: answerHintsFor("topic"),
-    }));
+    const topicItems: AiIndexItem[] = SEO_TOPIC_CLUSTERS.map((cluster) => {
+        const studyGuide = getTopicStudyGuide(cluster);
+
+        return {
+            type: "topic",
+            url: `${baseUrl}${getTopicClusterHref(cluster)}`,
+            canonicalPath: getTopicClusterHref(cluster),
+            title: cluster.title,
+            description: truncateForMeta(`${studyGuide.summary} ${cluster.intentQuestions.join(" ")}`, 220),
+            topics: unique([cluster.title, ...cluster.aliases, ...studyGuide.formulaFocus]).slice(0, 10),
+            intentQuestions: cluster.intentQuestions,
+            entityType: "topic-cluster",
+            contentFreshness: "evergreen",
+            updatedAt: AI_DISCOVERY_LAST_MODIFIED,
+            language: "tr-TR",
+            schemaTypes: ["CollectionPage", "ItemList", "LearningResource", "FAQPage", "BreadcrumbList"],
+            clusterSlugs: [cluster.slug],
+            relatedUrls: unique(getRelatedUrlsForCluster(cluster).map((link) => `${baseUrl}${link.href}`)).slice(0, 12),
+            citationText: buildAiCitationText(`${cluster.title} konu rehberi`, `${baseUrl}${getTopicClusterHref(cluster)}`),
+            answerPriority: "high",
+            answerFormatHints: [...answerHintsFor("topic"), "kavram iskeletini ve sık hatayı koru"],
+        };
+    });
 
     const profileItems: AiIndexItem[] = (profilesResult.data || [])
         .filter((profile) => isIndexableProfile(profile))

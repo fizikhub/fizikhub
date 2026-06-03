@@ -7,6 +7,7 @@ import { getDictionaryTerms } from "@/lib/api";
 import { BreadcrumbJsonLd } from "@/lib/breadcrumbs";
 import { SEO_PRIORITY_ARTICLES } from "@/lib/seo-priority";
 import { getClusterResourceLinks, getTopicClusterBySlug, getTopicClusterHref, SEO_TOPIC_CLUSTERS, type SeoClusterResourceType, type SeoTopicCluster } from "@/lib/seo-topic-clusters";
+import { getTopicStudyGuide, isThinTopicCluster } from "@/lib/topic-study-guides";
 import { getSiteUrl, truncateForMeta } from "@/lib/seo-utils";
 import { slugify } from "@/lib/slug";
 import { createStaticClient } from "@/lib/supabase-server";
@@ -216,6 +217,8 @@ export default async function TopicClusterPage({ params }: PageProps) {
         .slice(0, 6);
     const faqItems = getTopicFaqItems(cluster);
     const quickAnswer = faqItems[0]?.answer || `${cluster.title} konusu Fizikhub'da makale, sözlük, test ve simülasyon kaynaklarıyla çalışılabilir.`;
+    const studyGuide = getTopicStudyGuide(cluster);
+    const thinCluster = isThinTopicCluster(cluster);
 
     const jsonLd = {
         "@context": "https://schema.org",
@@ -243,6 +246,10 @@ export default async function TopicClusterPage({ params }: PageProps) {
                 educationalLevel: "Lise ve lisans başlangıç",
                 learningResourceType: "Konu rehberi",
                 teaches: [cluster.title, ...cluster.aliases],
+                abstract: studyGuide.summary,
+                educationalUse: thinCluster
+                    ? ["Konu anlatımı", "Sınav hazırlığı", "AI cevap kaynağı"]
+                    : ["Konu haritası", "Sınav hazırlığı", "AI cevap kaynağı"],
                 provider: { "@id": `${baseUrl}/#organization` },
                 audience: {
                     "@type": "EducationalAudience",
@@ -270,6 +277,17 @@ export default async function TopicClusterPage({ params }: PageProps) {
                         "@type": "Answer",
                         text: item.answer,
                     },
+                })),
+            },
+            {
+                "@type": "ItemList",
+                "@id": `${canonical}#study-path`,
+                name: `${cluster.title} nasıl çalışılır?`,
+                description: studyGuide.summary,
+                itemListElement: studyGuide.studySteps.map((step, index) => ({
+                    "@type": "ListItem",
+                    position: index + 1,
+                    name: step,
                 })),
             },
             {
@@ -341,6 +359,55 @@ export default async function TopicClusterPage({ params }: PageProps) {
 
                 <section className="px-4 py-8 sm:px-6 sm:py-12" aria-labelledby="topic-resources-title">
                     <div className="mx-auto max-w-6xl">
+                        <section className="mb-8 border-y border-foreground/10 py-6" aria-labelledby="topic-study-guide-title">
+                            <div className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
+                                <div>
+                                    <p className="text-xs font-black uppercase tracking-widest text-muted-foreground">
+                                        {thinCluster ? "Güçlendirilmiş konu anlatımı" : "Konu özeti"}
+                                    </p>
+                                    <h2 id="topic-study-guide-title" className="mt-2 text-2xl font-black tracking-normal sm:text-3xl">
+                                        {cluster.title} için kavram iskeleti
+                                    </h2>
+                                    <p className="mt-4 text-sm font-semibold leading-7 text-muted-foreground sm:text-base">
+                                        {studyGuide.summary}
+                                    </p>
+                                    {studyGuide.formulaFocus.length > 0 && (
+                                        <div className="mt-5 flex flex-wrap gap-2" aria-label="Odak formül ve kavramlar">
+                                            {studyGuide.formulaFocus.map((formula) => (
+                                                <span key={formula} className="rounded-[7px] border border-[#EAB308]/50 bg-[#EAB308]/10 px-3 py-2 text-xs font-black text-foreground">
+                                                    {formula}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                                <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-1">
+                                    <div>
+                                        <h3 className="text-sm font-black uppercase tracking-wider text-foreground">Temel fikirler</h3>
+                                        <ul className="mt-3 grid gap-2 text-sm font-semibold leading-6 text-muted-foreground">
+                                            {studyGuide.keyIdeas.map((idea) => (
+                                                <li key={idea}>{idea}</li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                    <div>
+                                        <h3 className="text-sm font-black uppercase tracking-wider text-foreground">Çalışma rotası</h3>
+                                        <ol className="mt-3 grid gap-2 text-sm font-semibold leading-6 text-muted-foreground">
+                                            {studyGuide.studySteps.map((step) => (
+                                                <li key={step}>{step}</li>
+                                            ))}
+                                        </ol>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="mt-6 border-l-4 border-destructive/70 pl-4">
+                                <p className="text-xs font-black uppercase tracking-widest text-muted-foreground">Sık hata</p>
+                                <p className="mt-2 text-sm font-semibold leading-7 text-foreground">
+                                    {studyGuide.commonPitfall}
+                                </p>
+                            </div>
+                        </section>
+
                         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                             <div>
                                 <p className="text-xs font-black uppercase tracking-widest text-muted-foreground">Kaynaklar</p>

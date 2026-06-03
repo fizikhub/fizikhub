@@ -11,6 +11,7 @@ import { isKnownAiCrawlerUserAgent } from "@/lib/ai-discovery";
 import { buildForumDiscussionPostingItem } from "@/lib/forum-structured-data";
 import { getVectorUrl } from "@/lib/search-results";
 import { getClusterResourceLinks, getPrimaryClusterHref, getTopicClusterBySlug, getTopicClusterHref, getTopicClustersForText, normalizeTopicSearchText, SEO_TOPIC_CLUSTERS } from "@/lib/seo-topic-clusters";
+import { getTopicStudyGuide, isThinTopicCluster, weakTopicGuideCoverage } from "@/lib/topic-study-guides";
 import { isForbiddenSitemapUrl, isPrivateSeoPath } from "@/lib/seo-utils";
 import { decodeCategorySlug, isLowValueSeoQuery, shouldBypassSession } from "@/proxy";
 
@@ -48,6 +49,22 @@ describe("SEO/GEO topic cluster helpers", () => {
         expect(harmonicClusters[0]?.slug).toBe("basit-harmonik-hareket");
         expect(tytClusters.some((cluster) => cluster.slug === "tyt-ayt-yks-fizik")).toBe(true);
         expect(collisionClusters.some((cluster) => cluster.slug === "momentum-carpisma")).toBe(true);
+    });
+
+    it("keeps thin topic hubs enriched with visible study-guide copy", () => {
+        const thinClusters = SEO_TOPIC_CLUSTERS.filter(isThinTopicCluster);
+        const coveredSlugs = new Set(weakTopicGuideCoverage());
+
+        expect(thinClusters.length).toBeGreaterThan(0);
+        expect(thinClusters.every((cluster) => coveredSlugs.has(cluster.slug))).toBe(true);
+
+        for (const cluster of thinClusters) {
+            const guide = getTopicStudyGuide(cluster);
+            expect(guide.summary.length).toBeGreaterThan(120);
+            expect(guide.keyIdeas).toHaveLength(3);
+            expect(guide.studySteps).toHaveLength(3);
+            expect(guide.commonPitfall.length).toBeGreaterThan(60);
+        }
     });
 });
 

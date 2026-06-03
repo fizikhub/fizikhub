@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase-admin";
+import { isWebVitalName, rateWebVital } from "@/lib/web-vitals-thresholds";
 
 type RawWebVitalPayload = {
     id?: unknown;
@@ -19,7 +20,6 @@ type SupabaseMutationError = {
     code?: string;
 };
 
-const ALLOWED_NAMES = new Set(["CLS", "FCP", "INP", "LCP", "TTFB"]);
 const ALLOWED_RATINGS = new Set(["good", "needs-improvement", "poor"]);
 const MAX_PAYLOAD_CHARS = 64 * 1024;
 const MAX_JSON_FIELD_CHARS = 4096;
@@ -101,11 +101,14 @@ export async function POST(request: NextRequest) {
     const name = asOptionalString(payload.name, 12);
     const value = asOptionalNumber(payload.value);
 
-    if (!name || !ALLOWED_NAMES.has(name) || value === null) {
+    if (!isWebVitalName(name) || value === null) {
         return NextResponse.json({ error: "Invalid metric" }, { status: 400 });
     }
 
     const rating = asOptionalString(payload.rating, 32);
+    const normalizedRating = rating && ALLOWED_RATINGS.has(rating)
+        ? rating
+        : rateWebVital(name, value);
 
     if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
         return new NextResponse(null, {
@@ -121,7 +124,7 @@ export async function POST(request: NextRequest) {
             name,
             value,
             delta: asOptionalNumber(payload.delta),
-            rating: rating && ALLOWED_RATINGS.has(rating) ? rating : null,
+            rating: normalizedRating,
             navigation_type: asOptionalString(payload.navigationType, 64),
             pathname: asSanitizedPathname(payload.pathname),
             href: asSanitizedUrl(payload.href),

@@ -106,8 +106,27 @@ describe("web vitals route", () => {
         expect(supabaseMocks.insert).toHaveBeenCalledWith(expect.objectContaining({
             pathname: "/reset-password",
             href: "https://www.fizikhub.com/reset-password",
+            rating: "good",
             connection: { effectiveType: "4g" },
             attribution: null,
+        }));
+    });
+
+    it("derives metric ratings on the server when the browser omits them", async () => {
+        const { POST } = await import("@/app/api/metrics/web-vitals/route");
+
+        const response = await POST(makeRequest({
+            name: "LCP",
+            value: 4300,
+            pathname: "/",
+        }));
+
+        expect(response.status).toBe(204);
+        expect(supabaseMocks.insert).toHaveBeenCalledWith(expect.objectContaining({
+            name: "LCP",
+            value: 4300,
+            rating: "poor",
+            pathname: "/",
         }));
     });
 

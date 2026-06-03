@@ -9,8 +9,32 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { formatWebVitalValue, isWebVitalName, WEB_VITAL_THRESHOLDS, webVitalPriorityScore } from "@/lib/web-vitals-thresholds";
 
 export const revalidate = 0; // Disable cache to always get fresh data for admin
+
+type PageExperienceMetric = {
+    pathname: string | null;
+    metric_name: string | null;
+    average_value: number | string | null;
+    p75_value?: number | string | null;
+    event_count: number | null;
+    poor_count: number | null;
+    needs_improvement_count: number | null;
+    good_count: number | null;
+};
+
+const metricOrder = ["LCP", "INP", "CLS", "FCP", "TTFB"] as const;
+
+function metricPriority(row: PageExperienceMetric) {
+    const metricName = row.metric_name || "";
+    if (!isWebVitalName(metricName)) return 0;
+    return webVitalPriorityScore(
+        metricName,
+        Number(row.poor_count || 0),
+        Number(row.needs_improvement_count || 0),
+    );
+}
 
 export default async function PageExperienceDashboard() {
     const supabase = await createClient();
@@ -21,6 +45,13 @@ export default async function PageExperienceDashboard() {
         .select("*")
         .order("poor_count", { ascending: false })
         .order("event_count", { ascending: false });
+
+    const typedMetrics = (metrics || []) as PageExperienceMetric[];
+    const sortedMetrics = [...typedMetrics].sort((a, b) =>
+        metricPriority(b) - metricPriority(a) ||
+        Number(b.poor_count || 0) - Number(a.poor_count || 0) ||
+        Number(b.event_count || 0) - Number(a.event_count || 0)
+    );
 
     if (error) {
         return (
@@ -40,25 +71,49 @@ export default async function PageExperienceDashboard() {
     return (
         <div className="space-y-6">
             <div>
-                <h1 className="text-3xl font-bold tracking-tight">Sayfa Deneyimi (LCP/CLS)</h1>
+                <h1 className="text-3xl font-bold tracking-tight">Sayfa Deneyimi (LCP/INP/CLS)</h1>
                 <p className="text-muted-foreground mt-2">
-                    Kullanıcılardan toplanan Core Web Vitals verilerinin rota bazında ortalamaları ve sorunlu istek (poor/needs-improvement) sayıları.
+                    Kullanıcılardan toplanan Core Web Vitals verilerinin rota bazında ortalamaları, eşik durumu ve SEO öncelik sırası.
                 </p>
+            </div>
+
+            <div className="grid gap-4 md:grid-cols-3 xl:grid-cols-5">
+                {metricOrder.map((name) => {
+                    const threshold = WEB_VITAL_THRESHOLDS[name];
+                    return (
+                        <Card key={name}>
+                            <CardHeader className="pb-2">
+                                <CardTitle className="text-base">{name}</CardTitle>
+                                <CardDescription>{threshold.seoImpact}</CardDescription>
+                            </CardHeader>
+                            <CardContent className="text-sm text-muted-foreground">
+                                <p>
+                                    İyi: {formatWebVitalValue(name, threshold.good)}
+                                </p>
+                                <p>
+                                    Kötü: {formatWebVitalValue(name, threshold.poor)} ve üzeri
+                                </p>
+                            </CardContent>
+                        </Card>
+                    );
+                })}
             </div>
 
             <Card>
                 <CardHeader>
                     <CardTitle>Rota Bazlı Performans</CardTitle>
-                    <CardDescription>Kötü deneyim sayısına (poor_count) göre sıralanmıştır.</CardDescription>
+                    <CardDescription>LCP ve INP sorunları daha yüksek ağırlıkla önceliklendirilir.</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    {metrics && metrics.length > 0 ? (
+                    {sortedMetrics.length > 0 ? (
                         <div className="rounded-md border">
                             <Table>
                                 <TableHeader>
                                     <TableRow>
                                         <TableHead>Rota (Pathname)</TableHead>
                                         <TableHead>Metrik</TableHead>
+                                        <TableHead className="text-right">Öncelik</TableHead>
+                                        <TableHead className="text-right">P75</TableHead>
                                         <TableHead className="text-right">Ortalama Değer</TableHead>
                                         <TableHead className="text-right">İstek Sayısı</TableHead>
                                         <TableHead className="text-right">Kötü (Poor)</TableHead>
@@ -67,19 +122,33 @@ export default async function PageExperienceDashboard() {
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
-                                    {metrics.map((row, idx) => {
-                                        const isPoor = row.poor_count > 0;
+                                    {sortedMetrics.map((row, idx) => {
+                                        const rawMetricName = row.metric_name || "";
+                                        const metricName = isWebVitalName(rawMetricName) ? rawMetricName : null;
+                                        const isPoor = Number(row.poor_count || 0) > 0;
+                                        const needsImprovementCount = Number(row.needs_improvement_count || 0);
+                                        const priority = metricPriority(row);
                                         
                                         return (
                                             <TableRow key={`${row.pathname}-${row.metric_name}-${idx}`}>
-                                                <TableCell className="font-medium max-w-[200px] truncate" title={row.pathname}>
-                                                    {row.pathname}
+                                                <TableCell className="font-medium max-w-[200px] truncate" title={row.pathname || undefined}>
+                                                    {row.pathname || "-"}
                                                 </TableCell>
                                                 <TableCell>
                                                     <Badge variant="outline">{row.metric_name}</Badge>
                                                 </TableCell>
+                                                <TableCell className="text-right">
+                                                    {priority > 0 ? (
+                                                        <Badge variant={priority >= 9 ? "destructive" : "secondary"}>{priority}</Badge>
+                                                    ) : (
+                                                        <span className="text-muted-foreground">0</span>
+                                                    )}
+                                                </TableCell>
+                                                <TableCell className="text-right font-mono">
+                                                    {metricName ? formatWebVitalValue(metricName, row.p75_value) : row.p75_value || "-"}
+                                                </TableCell>
                                                 <TableCell className="text-right font-mono text-muted-foreground">
-                                                    {row.average_value}
+                                                    {metricName ? formatWebVitalValue(metricName, row.average_value) : row.average_value}
                                                 </TableCell>
                                                 <TableCell className="text-right">
                                                     {row.event_count}
@@ -92,12 +161,12 @@ export default async function PageExperienceDashboard() {
                                                     )}
                                                 </TableCell>
                                                 <TableCell className="text-right">
-                                                    {row.needs_improvement_count > 0 ? (
+                                                    {needsImprovementCount > 0 ? (
                                                         <Badge variant="secondary" className="bg-yellow-500/20 text-yellow-600 hover:bg-yellow-500/30 dark:text-yellow-400">
-                                                            {row.needs_improvement_count}
+                                                            {needsImprovementCount}
                                                         </Badge>
                                                     ) : (
-                                                        <span className="text-muted-foreground">{row.needs_improvement_count}</span>
+                                                        <span className="text-muted-foreground">{needsImprovementCount}</span>
                                                     )}
                                                 </TableCell>
                                                 <TableCell className="text-right text-muted-foreground">
