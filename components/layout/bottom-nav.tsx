@@ -17,6 +17,7 @@ export function BottomNav() {
     const lastScrollYRef = useRef(0);
     const hiddenRef = useRef(false);
     const frameRef = useRef<number | null>(null);
+    const lastActivationRef = useRef<{ href: string; time: number } | null>(null);
     const [optimisticHref, setOptimisticHref] = useState<string | null>(null);
 
     useEffect(() => {
@@ -83,6 +84,8 @@ export function BottomNav() {
     };
 
     useEffect(() => {
+        router.prefetch("/paylas");
+
         const prefetchPrimaryRoutes = () => {
             for (const href of PRIMARY_MOBILE_ROUTES) {
                 if (href !== pathname) router.prefetch(href);
@@ -99,6 +102,15 @@ export function BottomNav() {
     }, [pathname, router]);
 
     const activateRoute = (href: string) => {
+        const now = performance.now();
+        const lastActivation = lastActivationRef.current;
+
+        if (lastActivation?.href === href && now - lastActivation.time < 220) {
+            return;
+        }
+
+        lastActivationRef.current = { href, time: now };
+        router.prefetch(href);
         navRef.current?.classList.remove(HIDDEN_NAV_CLASS);
         hiddenRef.current = false;
         setOptimisticHref(href);
@@ -106,7 +118,17 @@ export function BottomNav() {
     };
 
     const handleSharePointerDown = (event: React.PointerEvent<HTMLAnchorElement>) => {
-        if (event.pointerType !== "mouse") activateRoute("/paylas");
+        if (event.pointerType === "mouse") return;
+
+        event.preventDefault();
+        activateRoute("/paylas");
+
+        if (isHrefActive("/paylas")) {
+            window.scrollTo({ top: 0, behavior: "auto" });
+            return;
+        }
+
+        router.push("/paylas");
     };
 
     const handleShareClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
@@ -139,6 +161,10 @@ export function BottomNav() {
                         shortLabel="Ana"
                         isActive={(optimisticHref ?? pathname) === "/"}
                         onActivate={activateRoute}
+                        onFastNavigate={(href) => {
+                            activateRoute(href);
+                            router.push(href);
+                        }}
                     />
 
                     <NavItem
@@ -149,6 +175,10 @@ export function BottomNav() {
                         shortLabel="Keşfet"
                         isActive={(optimisticHref ?? pathname).startsWith("/makale")}
                         onActivate={activateRoute}
+                        onFastNavigate={(href) => {
+                            activateRoute(href);
+                            router.push(href);
+                        }}
                     />
 
                     <div className="relative -top-3.5 z-20">
@@ -160,8 +190,6 @@ export function BottomNav() {
                             aria-label="Paylaş"
                             onPointerDown={handleSharePointerDown}
                             onClick={handleShareClick}
-                            onTouchStart={() => activateRoute("/paylas")}
-                            onFocus={() => activateRoute("/paylas")}
                         >
                             <div
                                 className="
@@ -192,6 +220,10 @@ export function BottomNav() {
                         shortLabel="Forum"
                         isActive={(optimisticHref ?? pathname).startsWith("/forum")}
                         onActivate={activateRoute}
+                        onFastNavigate={(href) => {
+                            activateRoute(href);
+                            router.push(href);
+                        }}
                     />
 
                     <NavItem
@@ -202,6 +234,10 @@ export function BottomNav() {
                         shortLabel="Profil"
                         isActive={(optimisticHref ?? pathname).startsWith("/profil")}
                         onActivate={activateRoute}
+                        onFastNavigate={(href) => {
+                            activateRoute(href);
+                            router.push(href);
+                        }}
                     />
                 </div>
             </nav>
@@ -217,6 +253,7 @@ function NavItem({
     shortLabel,
     isActive,
     onActivate,
+    onFastNavigate,
 }: {
     id?: string;
     href: string;
@@ -225,9 +262,20 @@ function NavItem({
     shortLabel?: string;
     isActive: boolean;
     onActivate: (href: string) => void;
+    onFastNavigate: (href: string) => void;
 }) {
     const handlePointerDown = (event: React.PointerEvent<HTMLAnchorElement>) => {
-        if (event.pointerType !== "mouse") onActivate(href);
+        if (event.pointerType === "mouse") return;
+
+        event.preventDefault();
+
+        if (isActive) {
+            onActivate(href);
+            window.scrollTo({ top: 0, behavior: "auto" });
+            return;
+        }
+
+        onFastNavigate(href);
     };
 
     const handleNavItemClick = (e: React.MouseEvent) => {
@@ -246,8 +294,6 @@ function NavItem({
             prefetch
             onClick={handleNavItemClick}
             onPointerDown={handlePointerDown}
-            onTouchStart={() => onActivate(href)}
-            onFocus={() => onActivate(href)}
             aria-label={label}
             aria-current={isActive ? 'page' : undefined}
             className={cn(

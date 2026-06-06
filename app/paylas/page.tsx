@@ -14,43 +14,48 @@ import {
     type LucideIcon
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { m as motion, Variants } from "framer-motion";
 import { BorderBeam } from "@/components/magicui/border-beam";
-import HyperText from "@/components/magicui/hyper-text";
-import { GlitchText } from "@/components/magicui/glitch-text";
 import { createClient } from "@/lib/supabase";
-import { TiltCard } from "@/components/magicui/tilt-card";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
-// PERF: Lazy-load heavy Three.js WebGL canvas to prevent main-thread blocking
+const SHARE_DESTINATIONS = [
+    "/makale/yeni?type=blog",
+    "/forum?create=true",
+    "/makale/yeni?type=experiment",
+    "/kitap-inceleme/yeni",
+    "/makale/yeni?type=term",
+    "/ara",
+    "/login",
+];
+
+// PERF: Lazy-load the heavy Three.js canvas only on desktop and only after idle.
 const RealisticStars = dynamic(() => import("@/components/share/realistic-stars").then(mod => mod.RealisticStars), {
     ssr: false,
     loading: () => null
 });
 
-const container: Variants = {
-    hidden: { opacity: 0 },
-    show: {
-        opacity: 1,
-        transition: {
-            staggerChildren: 0.08
-        }
-    }
-};
+function DeferredDesktopStars() {
+    const [shouldLoadStars, setShouldLoadStars] = useState(false);
 
-// PERF: Opacity-only transitions to prevent CLS (no y/scale transforms)
-const item: Variants = {
-    hidden: { opacity: 0 },
-    show: {
-        opacity: 1,
-        transition: {
-            duration: 0.4,
-            ease: "easeOut"
+    useEffect(() => {
+        const media = window.matchMedia("(min-width: 768px) and (prefers-reduced-motion: no-preference)");
+        if (!media.matches) return;
+
+        const enable = () => setShouldLoadStars(true);
+
+        if ("requestIdleCallback" in window) {
+            const idleId = window.requestIdleCallback(enable, { timeout: 1800 });
+            return () => window.cancelIdleCallback(idleId);
         }
-    }
-};
+
+        const timeoutId = globalThis.setTimeout(enable, 700);
+        return () => globalThis.clearTimeout(timeoutId);
+    }, []);
+
+    return shouldLoadStars ? <RealisticStars /> : null;
+}
 
 // BENTO BOX STYLE CARDS (Agresif Neo-Brutalizm)
 interface FreshCardProps {
@@ -80,104 +85,103 @@ function FreshCard({ title, description, href, icon: Icon, color, accentColor, e
     };
 
     return (
-        <motion.div
-            variants={item}
+        <div
             className={cn("relative group w-full h-full [perspective:1000px] motion-safe:hover:-translate-y-1 motion-safe:hover:scale-[1.01] active:scale-[0.985] transition-transform duration-300", colSpan, rowSpan)}
         >
-            <Link prefetch={false} href={href} aria-label={`${title} paylaş`} className="block h-full" onClick={handleClick}>
-                <TiltCard className="h-full w-full" rotationFactor={5}>
-                    <div className={cn(
-                        "relative h-full w-full bg-white flex flex-col justify-between overflow-hidden",
-                        "border-[2.5px] sm:border-[3px] border-black rounded-[10px]",
-                        "shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] sm:shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] group-hover:shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] sm:group-hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]",
-                        "transition-all duration-300 ease-out",
-                        isLarge ? "p-4 min-[390px]:p-5 md:p-7" : "p-3.5 min-[390px]:p-4 md:p-5"
-                    )}>
-                        {showBorderBeam && (
-                            <BorderBeam
-                                size={400}
-                                duration={8}
-                                delay={0}
-                                borderWidth={4}
-                                colorFrom={accentColor}
-                                colorTo="#000000"
-                            />
-                        )}
+            <Link prefetch href={href} aria-label={`${title} paylaş`} className="block h-full" onClick={handleClick}>
+                <div className={cn(
+                    "relative h-full w-full bg-white flex flex-col justify-between overflow-hidden",
+                    "border-[2.5px] sm:border-[3px] border-black rounded-[10px]",
+                    "shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] sm:shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] group-hover:shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] sm:group-hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]",
+                    "transition-all duration-300 ease-out",
+                    isLarge ? "p-4 min-[390px]:p-5 md:p-7" : "p-3.5 min-[390px]:p-4 md:p-5"
+                )}>
+                    {showBorderBeam && (
+                        <BorderBeam
+                            size={400}
+                            duration={8}
+                            delay={0}
+                            borderWidth={4}
+                            colorFrom={accentColor}
+                            colorTo="#000000"
+                        />
+                    )}
 
-                        {/* Top Accent Line */}
-                        <div className={cn("absolute top-0 left-0 right-0 h-2.5 sm:h-3 border-b-[2.5px] sm:border-b-[3px] border-black", color)} />
-                        <div className={cn("absolute bottom-0 left-0 h-[42%] w-2 border-r-[3px] border-black opacity-0 transition-opacity duration-300 group-hover:opacity-100", color)} />
+                    {/* Top Accent Line */}
+                    <div className={cn("absolute top-0 left-0 right-0 h-2.5 sm:h-3 border-b-[2.5px] sm:border-b-[3px] border-black", color)} />
+                    <div className={cn("absolute bottom-0 left-0 h-[42%] w-2 border-r-[3px] border-black opacity-0 transition-opacity duration-300 group-hover:opacity-100", color)} />
 
-                        {/* Banner & Icon Header */}
-                        <div className="flex items-start justify-between w-full mt-1.5 mb-3 min-[390px]:mb-4">
-                            <div className="flex flex-col gap-2 min-[390px]:gap-2.5">
-                                <div className={cn(
-                                    "flex items-center justify-center rounded-[10px] border-[2.5px] sm:border-[3px] border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] sm:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]",
-                                    color,
-                                    isLarge ? "w-14 h-14 sm:w-[4.5rem] sm:h-[4.5rem]" : "w-12 h-12 min-[390px]:w-14 min-[390px]:h-14"
-                                )}>
-                                    <Icon className={cn("text-black stroke-[2.6px]", isLarge ? "w-7 h-7 sm:w-9 sm:h-9" : "w-6 h-6 min-[390px]:w-7 min-[390px]:h-7")} />
-                                </div>
-                                {badge && (
-                                    <span className="inline-flex min-h-7 items-center self-start px-2.5 py-1 bg-black text-white text-[9px] sm:text-[10px] font-black uppercase rounded-full shadow-[2px_2px_0px_0px_#fff] border border-black -rotate-2">
-                                        {badge}
-                                    </span>
-                                )}
-                            </div>
-
+                    {/* Banner & Icon Header */}
+                    <div className="flex items-start justify-between w-full mt-1.5 mb-3 min-[390px]:mb-4">
+                        <div className="flex flex-col gap-2 min-[390px]:gap-2.5">
                             <div className={cn(
-                                "flex items-center justify-center rounded-full border-[3px] border-black",
-                                "bg-white group-hover:bg-black transition-colors duration-300",
-                                "shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] group-hover:shadow-none",
-                                isLarge ? "w-11 h-11 sm:w-12 sm:h-12" : "w-11 h-11"
+                                "flex items-center justify-center rounded-[10px] border-[2.5px] sm:border-[3px] border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] sm:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]",
+                                color,
+                                isLarge ? "w-14 h-14 sm:w-[4.5rem] sm:h-[4.5rem]" : "w-12 h-12 min-[390px]:w-14 min-[390px]:h-14"
                             )}>
-                                {isCheckingAuth ? (
-                                    <Loader2 className="h-5 w-5 animate-spin text-black" />
-                                ) : isLocked ? (
-                                    <Lock className="h-5 w-5 text-black group-hover:text-white transition-colors duration-300" />
-                                ) : (
-                                    <ArrowRight className={cn(
-                                    "text-black group-hover:text-white transition-colors duration-300",
-                                    isLarge ? "w-5 h-5 sm:w-6 sm:h-6" : "w-5 h-5",
-                                    "group-hover:translate-x-1"
-                                    )} />
-                                )}
+                                <Icon className={cn("text-black stroke-[2.6px]", isLarge ? "w-7 h-7 sm:w-9 sm:h-9" : "w-6 h-6 min-[390px]:w-7 min-[390px]:h-7")} />
                             </div>
+                            {badge && (
+                                <span className="inline-flex min-h-7 items-center self-start px-2.5 py-1 bg-black text-white text-[9px] sm:text-[10px] font-black uppercase rounded-full shadow-[2px_2px_0px_0px_#fff] border border-black -rotate-2">
+                                    {badge}
+                                </span>
+                            )}
                         </div>
 
-                        {/* Text Content */}
-                        <div className="relative z-10 mt-auto">
-                            <span className={cn(
-                                "mb-2 hidden text-[10px] font-black uppercase text-zinc-400",
-                                isLarge ? "min-[380px]:block" : "md:block"
-                            )}>
-                                {eyebrow}
-                            </span>
-                            <h3 className={cn(
-                                "font-black text-black uppercase mb-1.5 md:mb-2 leading-[0.92]",
-                                isLarge ? "text-[2.35rem] min-[390px]:text-4xl sm:text-5xl lg:text-6xl" : "text-[1.8rem] min-[390px]:text-[2rem] md:text-[2.35rem]"
-                            )}>
-                                <GlitchText text={title} className="block group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-black group-hover:to-zinc-600 transition-all duration-300" />
-                            </h3>
-                            <p className={cn(
-                                "text-zinc-600 font-extrabold leading-snug",
-                                isLarge ? "text-sm min-[390px]:text-base sm:text-lg max-w-[94%] sm:max-w-[78%] line-clamp-3" : "text-[13px] min-[390px]:text-sm line-clamp-2"
-                            )}>
-                                {description}
-                            </p>
-                        </div>
-
-                        {/* Background Abstract Pattern */}
                         <div className={cn(
-                            "absolute pointer-events-none text-black transition-transform duration-700 ease-in-out group-hover:rotate-12 group-hover:scale-110",
-                            isLarge ? "-bottom-12 -right-10 opacity-10" : "-bottom-8 -right-8 opacity-[0.045]"
+                            "flex items-center justify-center rounded-full border-[3px] border-black",
+                            "bg-white group-hover:bg-black transition-colors duration-300",
+                            "shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] group-hover:shadow-none",
+                            isLarge ? "w-11 h-11 sm:w-12 sm:h-12" : "w-11 h-11"
                         )}>
-                            <Icon className={cn(isLarge ? "w-64 h-64" : "w-40 h-40")} />
+                            {isCheckingAuth ? (
+                                <Loader2 className="h-5 w-5 animate-spin text-black" />
+                            ) : isLocked ? (
+                                <Lock className="h-5 w-5 text-black group-hover:text-white transition-colors duration-300" />
+                            ) : (
+                                <ArrowRight className={cn(
+                                "text-black group-hover:text-white transition-colors duration-300",
+                                isLarge ? "w-5 h-5 sm:w-6 sm:h-6" : "w-5 h-5",
+                                "group-hover:translate-x-1"
+                                )} />
+                            )}
                         </div>
                     </div>
-                </TiltCard>
+
+                    {/* Text Content */}
+                    <div className="relative z-10 mt-auto">
+                        <span className={cn(
+                            "mb-2 hidden text-[10px] font-black uppercase text-zinc-400",
+                            isLarge ? "min-[380px]:block" : "md:block"
+                        )}>
+                            {eyebrow}
+                        </span>
+                        <h3 className={cn(
+                            "font-black text-black uppercase mb-1.5 md:mb-2 leading-[0.92]",
+                            isLarge ? "text-[2.35rem] min-[390px]:text-4xl sm:text-5xl lg:text-6xl" : "text-[1.8rem] min-[390px]:text-[2rem] md:text-[2.35rem]"
+                        )}>
+                            <span className="block group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-black group-hover:to-zinc-600 transition-all duration-300">
+                                {title}
+                            </span>
+                        </h3>
+                        <p className={cn(
+                            "text-zinc-600 font-extrabold leading-snug",
+                            isLarge ? "text-sm min-[390px]:text-base sm:text-lg max-w-[94%] sm:max-w-[78%] line-clamp-3" : "text-[13px] min-[390px]:text-sm line-clamp-2"
+                        )}>
+                            {description}
+                        </p>
+                    </div>
+
+                    {/* Background Abstract Pattern */}
+                    <div className={cn(
+                        "absolute pointer-events-none text-black transition-transform duration-700 ease-in-out group-hover:rotate-12 group-hover:scale-110",
+                        isLarge ? "-bottom-12 -right-10 opacity-10" : "-bottom-8 -right-8 opacity-[0.045]"
+                    )}>
+                        <Icon className={cn(isLarge ? "w-64 h-64" : "w-40 h-40")} />
+                    </div>
+                </div>
             </Link>
-        </motion.div>
+        </div>
     );
 }
 
@@ -189,51 +193,72 @@ export default function PaylasPage() {
     const router = useRouter();
 
     useEffect(() => {
+        for (const href of SHARE_DESTINATIONS) {
+            router.prefetch(href);
+        }
+    }, [router]);
+
+    useEffect(() => {
         let isMounted = true;
+        let idleId: number | null = null;
+        let timeoutId: ReturnType<typeof setTimeout> | null = null;
 
-        const fetchUser = async () => {
-            const { data: { user } } = await supabase.auth.getUser();
-            if (user) {
-                if (isMounted) setIsAuthenticated(true);
-                const { data: profile } = await supabase
-                    .from('profiles')
-                    .select('full_name, username')
-                    .eq('id', user.id)
-                    .single();
+        const loadProfileName = async (userId: string) => {
+            const { data: profile } = await supabase
+                .from("profiles")
+                .select("full_name, username")
+                .eq("id", userId)
+                .single();
 
-                if (profile) {
-                    if (isMounted) setUserName(profile.full_name || profile.username || "Bilim İnsanı");
-                } else {
-                    if (isMounted) setUserName("Bilim İnsanı");
-                }
-            } else if (isMounted) {
-                setIsAuthenticated(false);
-            }
-            if (isMounted) setLoaded(true);
+            if (!isMounted || !profile) return;
+            setUserName(profile.full_name || profile.username || "Bilim İnsanı");
         };
 
-        if ('requestIdleCallback' in window) {
-            const idleId = window.requestIdleCallback(() => fetchUser(), { timeout: 1600 });
-            return () => {
-                isMounted = false;
-                window.cancelIdleCallback(idleId);
-            };
-        }
+        const primeAuth = async () => {
+            const { data: { session } } = await supabase.auth.getSession();
+            const user = session?.user;
 
-        const timeout = setTimeout(() => fetchUser(), 350);
+            if (!isMounted) return;
+
+            setIsAuthenticated(Boolean(user));
+            setLoaded(true);
+
+            if (!user) return;
+
+            setUserName(
+                user.user_metadata?.full_name ||
+                user.user_metadata?.name ||
+                user.email?.split("@")[0] ||
+                "Bilim İnsanı"
+            );
+
+            const loadProfile = () => loadProfileName(user.id);
+
+            if ("requestIdleCallback" in window) {
+                idleId = window.requestIdleCallback(loadProfile, { timeout: 1200 });
+            } else {
+                timeoutId = globalThis.setTimeout(loadProfile, 250);
+            }
+        };
+
+        primeAuth().catch(() => {
+            if (!isMounted) return;
+            setIsAuthenticated(false);
+            setLoaded(true);
+        });
+
         return () => {
             isMounted = false;
-            clearTimeout(timeout);
+            if (idleId !== null) window.cancelIdleCallback(idleId);
+            if (timeoutId !== null) globalThis.clearTimeout(timeoutId);
         };
     }, [supabase]);
 
     const requireAuth = (href: string, title: string) => {
+        router.prefetch(href);
+
         if (!loaded) {
-            toast("Hesap durumu kontrol ediliyor", {
-                description: "Bir saniye sonra tekrar dene; seni yanlış sayfaya göndermeyelim.",
-                className: "dynamic-island-toast",
-                duration: 2200,
-            });
+            router.push(href);
             return;
         }
 
@@ -250,9 +275,7 @@ export default function PaylasPage() {
             duration: 3800,
         });
 
-        window.setTimeout(() => {
-            router.push(`/login?next=${encodeURIComponent(href)}`);
-        }, 850);
+        router.push(`/login?next=${encodeURIComponent(href)}`);
     };
 
     const cardAuthProps = {
@@ -264,8 +287,8 @@ export default function PaylasPage() {
     return (
         <div className="min-h-screen bg-background px-3 pb-[calc(6rem+env(safe-area-inset-bottom))] pt-3 font-sans relative overflow-hidden sm:px-4 md:pt-16">
 
-            {/* REALISTIC STARS - Behind texture */}
-            <RealisticStars />
+            {/* REALISTIC STARS - desktop-only and deferred so mobile navigation stays instant */}
+            <DeferredDesktopStars />
 
             {/* TEXTURED PAPER BACKGROUND - Reduced Opacity for Star Visibility */}
             <div className="absolute inset-0 opacity-[0.4] dark:opacity-30 pointer-events-none z-0 mix-blend-multiply dark:mix-blend-overlay"
@@ -280,29 +303,19 @@ export default function PaylasPage() {
             <div className="max-w-[980px] mx-auto relative z-10">
 
                 {/* Header - Compact */}
-                <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    className="mb-4 pt-1 relative sm:mb-6 md:mb-8"
-                >
+                <div className="mb-4 pt-1 relative sm:mb-6 md:mb-8">
                     <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 relative z-10">
                         <div className="flex flex-col">
                             <h1 className="text-[clamp(2.65rem,14vw,4.75rem)] md:text-7xl font-black text-[#EAB308] leading-[0.86] uppercase drop-shadow-[3px_3px_0px_#fff] text-stroke-black">
                                 Paylaşım<br />
                             </h1>
                             <div className="flex items-center">
-                                <HyperText
-                                    text="MERKEZİ"
-                                    className="text-[clamp(2.65rem,14vw,4.75rem)] md:text-7xl font-black text-white leading-[0.86] uppercase text-stroke-black drop-shadow-[3px_3px_0px_#000]"
-                                    duration={1200}
-                                />
+                                <span className="text-[clamp(2.65rem,14vw,4.75rem)] md:text-7xl font-black text-white leading-[0.86] uppercase text-stroke-black drop-shadow-[3px_3px_0px_#000]">
+                                    MERKEZİ
+                                </span>
                             </div>
                         </div>
-                        <motion.p
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            className="flex min-h-[56px] items-center justify-center md:items-start text-black font-black text-sm min-[390px]:text-base md:text-base w-full md:w-auto max-w-xl md:max-w-xs md:text-right leading-tight bg-white px-3.5 min-[390px]:px-4 py-3 rounded-[10px] border-[2.5px] sm:border-[3px] border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] md:min-h-[62px]"
-                        >
+                        <p className="flex min-h-[56px] items-center justify-center md:items-start text-black font-black text-sm min-[390px]:text-base md:text-base w-full md:w-auto max-w-xl md:max-w-xs md:text-right leading-tight bg-white px-3.5 min-[390px]:px-4 py-3 rounded-[10px] border-[2.5px] sm:border-[3px] border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] md:min-h-[62px]">
                             {loaded ? (
                                 userName ?
                                     <span className="line-clamp-2">Bugün ne paylaşmak istersin, {userName}?</span> :
@@ -310,17 +323,12 @@ export default function PaylasPage() {
                             ) : (
                                 <span className="opacity-50">Yükleniyor...</span>
                             )}
-                        </motion.p>
+                        </p>
                     </div>
-                </motion.div>
+                </div>
 
                 {/* ULTRA-PREMIUM BENTO GRID LAYOUT */}
-                <motion.div
-                    variants={container}
-                    initial="hidden"
-                    animate="show"
-                    className="grid grid-cols-1 gap-3.5 auto-rows-[178px] min-[390px]:auto-rows-[190px] sm:gap-5 sm:auto-rows-[210px] md:grid-cols-3 md:gap-5 md:auto-rows-[190px] lg:grid-cols-4"
-                >
+                <div className="grid grid-cols-1 gap-3.5 auto-rows-[178px] min-[390px]:auto-rows-[190px] sm:gap-5 sm:auto-rows-[210px] md:grid-cols-3 md:gap-5 md:auto-rows-[190px] lg:grid-cols-4">
                     {/* 1. Blog: L-Shape / Double Width & Height (Hero Item) */}
                     <FreshCard
                         title="BLOG"
@@ -391,16 +399,11 @@ export default function PaylasPage() {
                         {...cardAuthProps}
                     />
 
-                </motion.div>
+                </div>
 
                 {/* Footer / Terminal Search Bar - Hacker Style */}
-                <motion.div
-                    variants={item}
-                    initial="hidden"
-                    animate="show"
-                    className="mt-4 sm:mt-7 md:mt-9"
-                >
-                    <Link prefetch={false} href="/ara" className="block w-full group">
+                <div className="mt-4 sm:mt-7 md:mt-9">
+                    <Link prefetch href="/ara" className="block w-full group">
                         <div className="bg-zinc-950 text-emerald-500 min-h-14 sm:min-h-[4.5rem] rounded-[10px] flex items-center justify-between px-3.5 sm:px-7 border-[2.5px] sm:border-[3px] border-black hover:bg-black hover:border-emerald-500 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] sm:shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] group-hover:shadow-[0_0_20px_0px_rgba(16,185,129,0.5)] transition-all duration-300 relative overflow-hidden">
                             {/* Terminal Scanline Effect */}
                             <div className="absolute inset-0 bg-[linear-gradient(transparent_50%,rgba(0,0,0,0.5)_50%)] bg-[length:100%_4px] opacity-20 pointer-events-none"></div>
@@ -417,15 +420,10 @@ export default function PaylasPage() {
                             </div>
                         </div>
                     </Link>
-                </motion.div>
+                </div>
 
                 {/* E-E-A-T and GEO/SEO Context Section */}
-                <motion.section
-                    variants={item}
-                    initial="hidden"
-                    animate="show"
-                    className="mt-8 p-4 sm:p-6 bg-white/92 dark:bg-zinc-900/92 border-[2.5px] border-black dark:border-zinc-700 rounded-[10px] shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_0px_rgba(255,255,255,0.08)] text-black dark:text-zinc-100 relative overflow-hidden"
-                >
+                <section className="mt-8 p-4 sm:p-6 bg-white/92 dark:bg-zinc-900/92 border-[2.5px] border-black dark:border-zinc-700 rounded-[10px] shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_0px_rgba(255,255,255,0.08)] text-black dark:text-zinc-100 relative overflow-hidden">
                     {/* Top yellow accent strip */}
                     <div className="absolute top-0 left-0 right-0 h-1.5 bg-[#EAB308]"></div>
 
@@ -484,7 +482,7 @@ export default function PaylasPage() {
                             <span>Akran Denetimli Popüler Bilim Platformu</span>
                         </div>
                     </div>
-                </motion.section>
+                </section>
 
             </div>
 

@@ -34,7 +34,12 @@ export function Navbar() {
     const [raindrops, setRaindrops] = useState<{ left: number; duration: number; delay: number; formula: string; scale: number; opacity?: number }[]>([]);
 
     useEffect(() => {
+        let idleId: number | null = null;
+        let timeoutId: ReturnType<typeof setTimeout> | null = null;
+
         const generateRain = () => {
+            if (window.matchMedia("(hover: none) and (pointer: coarse)").matches) return;
+
             const isMobile = window.innerWidth < 768;
             const laneCount = isMobile ? 4 : 12;
             const dropCount = isMobile ? 6 : 30;
@@ -58,10 +63,15 @@ export function Navbar() {
 
         // Defer rain generation to avoid blocking initial hydration
         if ('requestIdleCallback' in window) {
-            window.requestIdleCallback(generateRain, { timeout: 2000 });
+            idleId = window.requestIdleCallback(generateRain, { timeout: 2000 });
         } else {
-            setTimeout(generateRain, 500);
+            timeoutId = setTimeout(generateRain, 500);
         }
+
+        return () => {
+            if (idleId !== null) window.cancelIdleCallback(idleId);
+            if (timeoutId !== null) clearTimeout(timeoutId);
+        };
     }, []);
 
     useEffect(() => {
