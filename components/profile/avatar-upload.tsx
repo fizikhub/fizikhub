@@ -3,7 +3,7 @@
 import { useState, useRef } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Camera, Loader2, X } from "lucide-react";
+import { Camera, Loader2 } from "lucide-react";
 import { uploadAvatar } from "@/app/profil/actions";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";

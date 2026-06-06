@@ -23,21 +23,33 @@ export function WaveSim({ simData }: { simData: { title?: string; color?: string
     const animationRef = useRef<number>(0);
     const lastTimeRef = useRef<number>(0);
 
-    const resetSim = () => { setIsPlaying(false); setTime(0); if (animationRef.current) cancelAnimationFrame(animationRef.current); };
+    const isPlayingRef = useRef(isPlaying);
+    useEffect(() => { isPlayingRef.current = isPlaying; }, [isPlaying]);
 
-    const loop = (timestamp: number) => {
-        if (!lastTimeRef.current) lastTimeRef.current = timestamp;
-        const dt = (timestamp - lastTimeRef.current) / 1000;
-        lastTimeRef.current = timestamp;
-        if (isPlaying) setTime(t => t + dt);
-        animationRef.current = requestAnimationFrame(loop);
+    const resetSim = () => {
+        setIsPlaying(false);
+        isPlayingRef.current = false;
+        setTime(0);
+        lastTimeRef.current = 0;
+        if (animationRef.current) cancelAnimationFrame(animationRef.current);
     };
 
     useEffect(() => {
+        let active = true;
+        const loop = (timestamp: number) => {
+            if (!active) return;
+            if (!lastTimeRef.current) lastTimeRef.current = timestamp;
+            const dt = (timestamp - lastTimeRef.current) / 1000;
+            lastTimeRef.current = timestamp;
+            if (isPlayingRef.current) setTime(t => t + dt);
+            animationRef.current = requestAnimationFrame(loop);
+        };
         animationRef.current = requestAnimationFrame(loop);
-        return () => { if (animationRef.current) cancelAnimationFrame(animationRef.current); };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isPlaying]);
+        return () => {
+            active = false;
+            if (animationRef.current) cancelAnimationFrame(animationRef.current);
+        };
+    }, []);
 
     const generateWavePath = (amp: number, freq: number, yOffset: number) => {
         const points: string[] = [];

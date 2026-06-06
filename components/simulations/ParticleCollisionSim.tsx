@@ -25,13 +25,41 @@ export function ParticleCollisionSim({ simData }: { simData: { title?: string; c
     const animationRef = useRef<number>(0);
     const lastTimeRef = useRef<number>(0);
 
-    const resetSim = () => { setIsPlaying(false); setX1(200); setX2(600); setV1(initV1); setV2(initV2); setHasCollided(false); lastTimeRef.current = 0; if (animationRef.current) cancelAnimationFrame(animationRef.current); };
+    const isPlayingRef = useRef(isPlaying);
+    const v1Ref = useRef(v1);
+    const v2Ref = useRef(v2);
+    const mass1Ref = useRef(mass1);
+    const mass2Ref = useRef(mass2);
+    const restitutionRef = useRef(restitution);
+
+    useEffect(() => { isPlayingRef.current = isPlaying; }, [isPlaying]);
+    useEffect(() => { v1Ref.current = v1; }, [v1]);
+    useEffect(() => { v2Ref.current = v2; }, [v2]);
+    useEffect(() => { mass1Ref.current = mass1; }, [mass1]);
+    useEffect(() => { mass2Ref.current = mass2; }, [mass2]);
+    useEffect(() => { restitutionRef.current = restitution; }, [restitution]);
+
+    const resetSim = () => {
+        setIsPlaying(false);
+        isPlayingRef.current = false;
+        setX1(200);
+        setX2(600);
+        setV1(initV1);
+        setV2(initV2);
+        v1Ref.current = initV1;
+        v2Ref.current = initV2;
+        setHasCollided(false);
+        lastTimeRef.current = 0;
+        if (animationRef.current) cancelAnimationFrame(animationRef.current);
+    };
 
     useEffect(() => {
         if (!isPlaying && !hasCollided) {
             const timeoutId = setTimeout(() => {
                 setV1(initV1);
                 setV2(initV2);
+                v1Ref.current = initV1;
+                v2Ref.current = initV2;
             }, 0);
             return () => clearTimeout(timeoutId);
         }
@@ -40,46 +68,64 @@ export function ParticleCollisionSim({ simData }: { simData: { title?: string; c
     const radius1 = 20 + Math.sqrt(mass1) * 8;
     const radius2 = 20 + Math.sqrt(mass2) * 8;
 
-    const loop = (timestamp: number) => {
-        if (!lastTimeRef.current) lastTimeRef.current = timestamp;
-        const dt = (timestamp - lastTimeRef.current) / 1000;
-        lastTimeRef.current = timestamp;
-        if (isPlaying) {
-            const tick = dt * 15;
-            setX1(prevX1 => {
-                let nextX1 = prevX1 + v1 * tick;
-                setX2(prevX2 => {
-                    let nextX2 = prevX2 + v2 * tick;
-                    if (nextX1 - radius1 < 0) { nextX1 = radius1; setV1(v => Math.abs(v) * restitution); }
-                    if (nextX2 + radius2 > canvasWidth) { nextX2 = canvasWidth - radius2; setV2(v => -Math.abs(v) * restitution); }
-                    if (nextX2 - radius2 < 0) { nextX2 = radius2; setV2(v => Math.abs(v) * restitution); }
-                    if (nextX1 + radius1 > canvasWidth) { nextX1 = canvasWidth - radius1; setV1(v => -Math.abs(v) * restitution); }
-                    const dx = nextX2 - nextX1;
-                    const minDist = radius1 + radius2;
-                    if (Math.abs(dx) < minDist) {
-                        setHasCollided(true);
-                        const overlap = minDist - Math.abs(dx);
-                        const push1 = (mass2 / (mass1 + mass2)) * overlap;
-                        const push2 = (mass1 / (mass1 + mass2)) * overlap;
-                        if (nextX1 < nextX2) { nextX1 -= push1; nextX2 += push2; } else { nextX1 += push1; nextX2 -= push2; }
-                        const curV1 = v1; const curV2 = v2;
-                        const newV1 = ((mass1 - restitution * mass2) * curV1 + mass2 * (1 + restitution) * curV2) / (mass1 + mass2);
-                        const newV2 = (mass1 * (1 + restitution) * curV1 + (mass2 - restitution * mass1) * curV2) / (mass1 + mass2);
-                        setV1(newV1); setV2(newV2);
-                    }
-                    return nextX2;
-                });
-                return nextX1;
-            });
-        }
-        animationRef.current = requestAnimationFrame(loop);
-    };
-
     useEffect(() => {
+        let active = true;
+        const loop = (timestamp: number) => {
+            if (!active) return;
+            if (!lastTimeRef.current) lastTimeRef.current = timestamp;
+            const dt = (timestamp - lastTimeRef.current) / 1000;
+            lastTimeRef.current = timestamp;
+
+            if (isPlayingRef.current) {
+                const tick = dt * 15;
+                const m1 = mass1Ref.current;
+                const m2 = mass2Ref.current;
+                const r1 = 20 + Math.sqrt(m1) * 8;
+                const r2 = 20 + Math.sqrt(m2) * 8;
+                const rest = restitutionRef.current;
+
+                setX1(prevX1 => {
+                    let nextX1 = prevX1 + v1Ref.current * tick;
+                    setX2(prevX2 => {
+                        let nextX2 = prevX2 + v2Ref.current * tick;
+                        let curV1 = v1Ref.current;
+                        let curV2 = v2Ref.current;
+
+                        if (nextX1 - r1 < 0) { nextX1 = r1; curV1 = Math.abs(curV1) * rest; }
+                        if (nextX2 + r2 > canvasWidth) { nextX2 = canvasWidth - r2; curV2 = -Math.abs(curV2) * rest; }
+                        if (nextX2 - r2 < 0) { nextX2 = r2; curV2 = Math.abs(curV2) * rest; }
+                        if (nextX1 + r1 > canvasWidth) { nextX1 = canvasWidth - r1; curV1 = -Math.abs(curV1) * rest; }
+
+                        const dx = nextX2 - nextX1;
+                        const minDist = r1 + r2;
+                        if (Math.abs(dx) < minDist) {
+                            setHasCollided(true);
+                            const overlap = minDist - Math.abs(dx);
+                            const push1 = (m2 / (m1 + m2)) * overlap;
+                            const push2 = (m1 / (m1 + m2)) * overlap;
+                            if (nextX1 < nextX2) { nextX1 -= push1; nextX2 += push2; } else { nextX1 += push1; nextX2 -= push2; }
+                            const oldV1 = curV1;
+                            const oldV2 = curV2;
+                            curV1 = ((m1 - rest * m2) * oldV1 + m2 * (1 + rest) * oldV2) / (m1 + m2);
+                            curV2 = (m1 * (1 + rest) * oldV1 + (m2 - rest * m1) * oldV2) / (m1 + m2);
+                        }
+
+                        if (curV1 !== v1Ref.current) { v1Ref.current = curV1; setV1(curV1); }
+                        if (curV2 !== v2Ref.current) { v2Ref.current = curV2; setV2(curV2); }
+
+                        return nextX2;
+                    });
+                    return nextX1;
+                });
+            }
+            animationRef.current = requestAnimationFrame(loop);
+        };
         animationRef.current = requestAnimationFrame(loop);
-        return () => { if (animationRef.current) cancelAnimationFrame(animationRef.current); };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isPlaying, mass1, mass2, restitution, v1, v2]);
+        return () => {
+            active = false;
+            if (animationRef.current) cancelAnimationFrame(animationRef.current);
+        };
+    }, []);
 
     const [missions, setMissions] = useState([
         { id: 1, title: "Mükemmel Aktarım", desc: "Kütleleri eşitle (m1=m2), e=1. Bir cismi durdur (hız=0) ve diğerini çarptır.", isCompleted: false,

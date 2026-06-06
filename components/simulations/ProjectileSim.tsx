@@ -44,44 +44,55 @@ export function ProjectileSim({ simData }: { simData: { title?: string; color?: 
     // -------------------------------------------------------------
     // 2. SIMULATION ENGINE
     // -------------------------------------------------------------
+    const isPlayingRef = useRef(isPlaying);
+    const timeOfFlightRef = useRef(timeOfFlight);
+
+    useEffect(() => { isPlayingRef.current = isPlaying; }, [isPlaying]);
+    useEffect(() => { timeOfFlightRef.current = timeOfFlight; }, [timeOfFlight]);
+
     const resetSim = () => {
         setIsPlaying(false);
+        isPlayingRef.current = false;
         setTime(0);
+        lastTimeRef.current = 0;
         if (animationRef.current) cancelAnimationFrame(animationRef.current);
     };
 
-    const loop = (timestamp: number) => {
-        if (!lastTimeRef.current) lastTimeRef.current = timestamp;
-        const dt = (timestamp - lastTimeRef.current) / 1000;
-        lastTimeRef.current = timestamp;
-
-        if (isPlaying) {
-            setTime(prev => {
-                const nextTime = prev + (dt * 2);
-                if (nextTime >= timeOfFlight) {
-                    setIsPlaying(false);
-                    return timeOfFlight;
-                }
-                return nextTime;
-            });
-        }
-        animationRef.current = requestAnimationFrame(loop);
-    };
-
     useEffect(() => {
+        let active = true;
+        const loop = (timestamp: number) => {
+            if (!active) return;
+            if (!lastTimeRef.current) lastTimeRef.current = timestamp;
+            const dt = (timestamp - lastTimeRef.current) / 1000;
+            lastTimeRef.current = timestamp;
+
+            if (isPlayingRef.current) {
+                const limit = timeOfFlightRef.current;
+                setTime(prev => {
+                    const nextTime = prev + (dt * 2);
+                    if (nextTime >= limit) {
+                        setIsPlaying(false);
+                        isPlayingRef.current = false;
+                        return limit;
+                    }
+                    return nextTime;
+                });
+            }
+            animationRef.current = requestAnimationFrame(loop);
+        };
         animationRef.current = requestAnimationFrame(loop);
         return () => {
+            active = false;
             if (animationRef.current) cancelAnimationFrame(animationRef.current);
         };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isPlaying, timeOfFlight]);
+    }, []);
 
     useEffect(() => {
         if (!isPlaying) {
-            const timeoutId = setTimeout(() => {
+            const handle = requestAnimationFrame(() => {
                 setTime(0);
-            }, 0);
-            return () => clearTimeout(timeoutId);
+            });
+            return () => cancelAnimationFrame(handle);
         }
     }, [velocity, angle, height, gravity, isPlaying]);
 

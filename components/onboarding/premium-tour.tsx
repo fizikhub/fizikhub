@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { m as motion, AnimatePresence } from "framer-motion";
 import { completeOnboarding } from "@/app/auth/actions";
-import { X, ArrowRight, ArrowUp, ArrowDown } from "lucide-react";
+import { X } from "lucide-react";
 
 type TourStep = {
     id: string;
@@ -90,8 +90,10 @@ export function PremiumTour() {
 
     // Initial Filter based on visible elements
     useEffect(() => {
-        setIsMounted(true);
-        setWindowSize({ width: window.innerWidth, height: window.innerHeight });
+        const handle = requestAnimationFrame(() => {
+            setIsMounted(true);
+            setWindowSize({ width: window.innerWidth, height: window.innerHeight });
+        });
 
         const timer = setTimeout(() => {
             const availableSteps = STEPS.filter(step => {
@@ -101,7 +103,10 @@ export function PremiumTour() {
             });
             setFilteredSteps(availableSteps);
         }, 800);
-        return () => clearTimeout(timer);
+        return () => {
+            cancelAnimationFrame(handle);
+            clearTimeout(timer);
+        };
     }, []);
 
     const currentStep = filteredSteps[currentStepIndex];
@@ -120,14 +125,17 @@ export function PremiumTour() {
     }, [currentStep]);
 
     useEffect(() => {
-        updateRect();
+        const rafId = requestAnimationFrame(() => {
+            updateRect();
+        });
         window.addEventListener("resize", updateRect);
         window.addEventListener("scroll", updateRect);
         return () => {
+            cancelAnimationFrame(rafId);
             window.removeEventListener("resize", updateRect);
             window.removeEventListener("scroll", updateRect);
         };
-    }, [updateRect, currentStep]);
+    }, [updateRect]);
 
     const handleNext = () => {
         if (currentStepIndex >= filteredSteps.length - 1) {

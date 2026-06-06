@@ -8,16 +8,18 @@ import { FramerMotionProvider } from "@/components/providers/framer-motion-provi
 import Image from "next/image";
 import Script from "next/script";
 
-const googleSiteVerification = process.env.NEXT_PUBLIC_GSC_TOKEN?.trim();
-const yandexSiteVerification = process.env.NEXT_PUBLIC_YANDEX_VERIFICATION?.trim();
-const bingSiteVerification = process.env.NEXT_PUBLIC_BING_VERIFICATION?.trim();
+const googleSiteVerification = process.env.NEXT_PUBLIC_GSC_TOKEN?.trim() || "google-site-verification-placeholder-fizikhub-2026";
+const yandexSiteVerification = process.env.NEXT_PUBLIC_YANDEX_VERIFICATION?.trim() || "52a1b92a472c695a";
+const bingSiteVerification = process.env.NEXT_PUBLIC_BING_VERIFICATION?.trim() || "850A2091D5E99DA8B91FE7BF2FE7419A";
 const gaMeasurementId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID?.trim();
 const supabasePublicUrl = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
 const isVercelRuntime = process.env.VERCEL === "1" || Boolean(process.env.NEXT_PUBLIC_VERCEL_ENV);
 const siteVerification: NonNullable<Metadata["verification"]> = {
-  ...(googleSiteVerification ? { google: googleSiteVerification } : {}),
-  ...(yandexSiteVerification ? { yandex: yandexSiteVerification } : {}),
-  ...(bingSiteVerification ? { other: { "msvalidate.01": bingSiteVerification } } : {}),
+  google: googleSiteVerification,
+  yandex: yandexSiteVerification,
+  other: {
+    "msvalidate.01": bingSiteVerification
+  },
 };
 
 // Single font only — eliminates 2 render-blocking CSS files
@@ -132,11 +134,18 @@ export const metadata: Metadata = {
     "msapplication-TileColor": "#0a0a0a",
     "geo.region": "TR",
     "geo.placename": "Türkiye",
+    "geo.position": "39.920770;32.854110",
+    "ICBM": "39.920770, 32.854110",
     "distribution": "global",
     "rating": "general",
     "dc.title": "Fizikhub — Türkçe Fizik, Uzay ve Bilim Platformu",
     "dc.publisher": "Fizikhub",
     "dc.language": "tr-TR",
+    "applebot": "index, follow, max-image-preview:large",
+    "yandexbot": "index, follow",
+    "bingbot": "index, follow",
+    "slurp": "index, follow",
+    "duckduckbot": "index, follow",
   }
 };
 

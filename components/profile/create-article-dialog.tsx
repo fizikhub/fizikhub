@@ -48,7 +48,7 @@ export function CreateArticleDialog({ trigger }: CreateArticleDialogProps) {
             } else {
                 toast.error(result.error || "Bir hata oluştu");
             }
-        } catch (error) {
+        } catch {
             toast.error("Beklenmeyen bir hata oluştu");
         } finally {
             setIsLoading(false);

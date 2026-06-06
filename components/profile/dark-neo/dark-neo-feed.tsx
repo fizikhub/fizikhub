@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import { m as motion, AnimatePresence } from "framer-motion";
 import { LayoutList, MessageCircle, Bookmark, FileText } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -84,7 +84,7 @@ export function DarkNeoFeed({
     const [isLoadingDeferredFeed, setIsLoadingDeferredFeed] = useState(false);
     const { playInteractSound } = useUiSounds();
 
-    const loadDeferredFeed = async () => {
+    const loadDeferredFeed = useCallback(async () => {
         if (hasLoadedDeferredFeed || isLoadingDeferredFeed) return;
 
         setIsLoadingDeferredFeed(true);
@@ -101,7 +101,7 @@ export function DarkNeoFeed({
         } finally {
             setIsLoadingDeferredFeed(false);
         }
-    };
+    }, [hasLoadedDeferredFeed, isLoadingDeferredFeed]);
 
     useEffect(() => {
         if (!isOwnProfile || hasLoadedDeferredFeed) return;

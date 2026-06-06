@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { Button } from "@/components/ui/button";
-import { Camera, Loader2, ImagePlus } from "lucide-react";
+
+import { Loader2, ImagePlus } from "lucide-react";
 import { uploadCover } from "@/app/profil/actions";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";

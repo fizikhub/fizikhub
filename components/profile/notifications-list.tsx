@@ -61,7 +61,7 @@ export function NotificationsList({ userId }: { userId: string }) {
         return () => {
             supabase.removeChannel(channel);
         };
-    }, [userId]);
+    }, [userId, supabase]);
 
     const getIcon = (type: string) => {
         switch (type) {

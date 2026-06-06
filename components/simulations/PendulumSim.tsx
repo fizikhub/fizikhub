@@ -25,51 +25,80 @@ export function PendulumSim({ simData }: { simData: { title?: string; color?: st
     const period = 2 * Math.PI * Math.sqrt(length / gravity);
 
     // 2. ENGINE
+    const isPlayingRef = useRef(isPlaying);
+    const gravityRef = useRef(gravity);
+    const lengthRef = useRef(length);
+    const dampingRef = useRef(damping);
+    const angleRef = useRef(angle);
+    const velocityRef = useRef(velocity);
+
+    useEffect(() => { isPlayingRef.current = isPlaying; }, [isPlaying]);
+    useEffect(() => { gravityRef.current = gravity; }, [gravity]);
+    useEffect(() => { lengthRef.current = length; }, [length]);
+    useEffect(() => { dampingRef.current = damping; }, [damping]);
+    useEffect(() => { angleRef.current = angle; }, [angle]);
+    useEffect(() => { velocityRef.current = velocity; }, [velocity]);
+
     const resetSim = () => {
         setIsPlaying(false);
+        isPlayingRef.current = false;
         setTime(0);
-        setAngle(initialAngle * (Math.PI / 180));
+        const startAngle = initialAngle * (Math.PI / 180);
+        setAngle(startAngle);
+        angleRef.current = startAngle;
         setVelocity(0);
+        velocityRef.current = 0;
+        lastTimeRef.current = 0;
         if (animationRef.current) cancelAnimationFrame(animationRef.current);
     };
 
-    const updatePhysics = (dt: number) => {
-        if (dt > 0.1) dt = 0.1;
-        setAngle((prevAngle) => {
-            setVelocity((prevVel) => {
-                const acceleration = -(gravity / length) * Math.sin(prevAngle) - damping * prevVel;
-                const newVel = prevVel + acceleration * dt;
-                const newAngle = prevAngle + newVel * dt;
-                setAngle(newAngle);
-                return newVel;
-            });
-            return prevAngle;
-        });
-        setTime(t => t + dt);
-    };
-
-    const loop = (timestamp: number) => {
-        if (!lastTimeRef.current) lastTimeRef.current = timestamp;
-        const dt = (timestamp - lastTimeRef.current) / 1000;
-        lastTimeRef.current = timestamp;
-        if (isPlaying) updatePhysics(dt);
-        animationRef.current = requestAnimationFrame(loop);
-    };
-
     useEffect(() => {
+        let active = true;
+        const loop = (timestamp: number) => {
+            if (!active) return;
+            if (!lastTimeRef.current) lastTimeRef.current = timestamp;
+            const dt = Math.min((timestamp - lastTimeRef.current) / 1000, 0.1);
+            lastTimeRef.current = timestamp;
+
+            if (isPlayingRef.current) {
+                const g = gravityRef.current;
+                const L = lengthRef.current;
+                const damp = dampingRef.current;
+
+                const curAngle = angleRef.current;
+                const curVel = velocityRef.current;
+
+                const acceleration = -(g / L) * Math.sin(curAngle) - damp * curVel;
+                const newVel = curVel + acceleration * dt;
+                const newAngle = curAngle + newVel * dt;
+
+                angleRef.current = newAngle;
+                velocityRef.current = newVel;
+
+                setAngle(newAngle);
+                setVelocity(newVel);
+                setTime(t => t + dt);
+            }
+            animationRef.current = requestAnimationFrame(loop);
+        };
         animationRef.current = requestAnimationFrame(loop);
-        return () => { if (animationRef.current) cancelAnimationFrame(animationRef.current); };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isPlaying, gravity, length, damping]);
+        return () => {
+            active = false;
+            if (animationRef.current) cancelAnimationFrame(animationRef.current);
+        };
+    }, []);
 
     useEffect(() => {
         if (!isPlaying) {
-            const timeoutId = setTimeout(() => {
-                setAngle(initialAngle * (Math.PI / 180));
+            const handle = requestAnimationFrame(() => {
+                const startAngle = initialAngle * (Math.PI / 180);
+                setAngle(startAngle);
+                angleRef.current = startAngle;
                 setVelocity(0);
+                velocityRef.current = 0;
                 setTime(0);
-            }, 0);
-            return () => clearTimeout(timeoutId);
+            });
+            return () => cancelAnimationFrame(handle);
         }
     }, [initialAngle, isPlaying]);
 

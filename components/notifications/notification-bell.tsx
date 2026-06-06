@@ -83,7 +83,9 @@ export function NotificationBell({ className }: { className?: string }) {
     useEffect(() => {
         let active = true;
 
-        fetchNotifications();
+        const handle = requestAnimationFrame(() => {
+            fetchNotifications();
+        });
 
         const setupRealtime = async () => {
             const { data: { user } } = await supabase.auth.getUser();
@@ -135,6 +137,7 @@ export function NotificationBell({ className }: { className?: string }) {
 
         return () => {
             active = false;
+            cancelAnimationFrame(handle);
             if (channel) {
                 supabase.removeChannel(channel);
             }

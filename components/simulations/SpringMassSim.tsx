@@ -26,35 +26,70 @@ export function SpringMassSim({ simData }: { simData: { title?: string; color?: 
     const kineticEnergy = 0.5 * mass * velocity * velocity;
     const springPotentialEnergy = 0.5 * springConstant * y * y;
 
-    const resetSim = () => { setIsPlaying(false); setY(equilibriumY + 30); setVelocity(0); if (animationRef.current) cancelAnimationFrame(animationRef.current); };
+    const isPlayingRef = useRef(isPlaying);
+    const springConstantRef = useRef(springConstant);
+    const massRef = useRef(mass);
+    const dampingRef = useRef(damping);
+    const gravityRef = useRef(gravity);
+    const yRef = useRef(y);
+    const velocityRef = useRef(velocity);
 
-    const updatePhysics = (dt: number) => {
-        if (dt > 0.1) dt = 0.1;
-        setY((prevY) => {
-            setVelocity((prevV) => {
-                const acceleration = gravity - (springConstant / mass) * prevY - (damping / mass) * prevV;
-                const newV = prevV + acceleration * dt;
-                const newY = prevY + newV * dt;
-                setY(newY);
-                return newV;
-            });
-            return prevY;
-        });
-    };
+    useEffect(() => { isPlayingRef.current = isPlaying; }, [isPlaying]);
+    useEffect(() => { springConstantRef.current = springConstant; }, [springConstant]);
+    useEffect(() => { massRef.current = mass; }, [mass]);
+    useEffect(() => { dampingRef.current = damping; }, [damping]);
+    useEffect(() => { gravityRef.current = gravity; }, [gravity]);
+    useEffect(() => { yRef.current = y; }, [y]);
+    useEffect(() => { velocityRef.current = velocity; }, [velocity]);
 
-    const loop = (timestamp: number) => {
-        if (!lastTimeRef.current) lastTimeRef.current = timestamp;
-        const dt = (timestamp - lastTimeRef.current) / 1000;
-        lastTimeRef.current = timestamp;
-        if (isPlaying) updatePhysics(dt * 2);
-        animationRef.current = requestAnimationFrame(loop);
+    const resetSim = () => {
+        setIsPlaying(false);
+        isPlayingRef.current = false;
+        const eqY = (mass * gravity) / springConstant;
+        setY(eqY + 30);
+        yRef.current = eqY + 30;
+        setVelocity(0);
+        velocityRef.current = 0;
+        lastTimeRef.current = 0;
+        if (animationRef.current) cancelAnimationFrame(animationRef.current);
     };
 
     useEffect(() => {
+        let active = true;
+        const loop = (timestamp: number) => {
+            if (!active) return;
+            if (!lastTimeRef.current) lastTimeRef.current = timestamp;
+            const dt = Math.min((timestamp - lastTimeRef.current) / 1000, 0.1);
+            lastTimeRef.current = timestamp;
+
+            if (isPlayingRef.current) {
+                const k = springConstantRef.current;
+                const m = massRef.current;
+                const b = dampingRef.current;
+                const g = gravityRef.current;
+
+                const curY = yRef.current;
+                const curV = velocityRef.current;
+
+                const acceleration = g - (k / m) * curY - (b / m) * curV;
+                const tick = dt * 2;
+                const newV = curV + acceleration * tick;
+                const newY = curY + newV * tick;
+
+                yRef.current = newY;
+                velocityRef.current = newV;
+
+                setY(newY);
+                setVelocity(newV);
+            }
+            animationRef.current = requestAnimationFrame(loop);
+        };
         animationRef.current = requestAnimationFrame(loop);
-        return () => { if (animationRef.current) cancelAnimationFrame(animationRef.current); };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isPlaying, springConstant, mass, damping, gravity]);
+        return () => {
+            active = false;
+            if (animationRef.current) cancelAnimationFrame(animationRef.current);
+        };
+    }, []);
 
     const canvasWidth = 800;
     const canvasHeight = 600;
