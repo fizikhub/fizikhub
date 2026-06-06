@@ -4,7 +4,7 @@ export function SpeculationRules() {
     if (process.env.NODE_ENV !== 'production') return null;
 
     const rules = {
-        prerender: [
+        prefetch: [
             {
                 source: 'document',
                 where: {
@@ -13,7 +13,7 @@ export function SpeculationRules() {
                         { not: { href_matches: ['/admin/*', '/yazar-paneli/*', '/profil/*', '/login', '/reset-password', '/forgot-password'] } }
                     ]
                 },
-                eagerness: 'moderate' // triggers prerender on hover/focus (moderate latency reduction)
+                eagerness: 'moderate'
             }
         ]
     };

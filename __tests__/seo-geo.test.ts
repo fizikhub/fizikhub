@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import robots from "@/app/robots";
+import { GET as robotsTxt } from "@/app/robots.txt/route";
 import { GET as aiSitemap } from "@/app/ai-sitemap.xml/route";
 import { GET as authorSitemap } from "@/app/author-sitemap.xml/route";
 import { GET as openSearchDescriptor } from "@/app/opensearch.xml/route";
@@ -17,6 +17,14 @@ import { decodeCategorySlug, isLowValueSeoQuery, shouldBypassSession } from "@/p
 
 function xmlLocs(xml: string) {
     return Array.from(xml.matchAll(/<loc>([^<]+)<\/loc>/g)).map((match) => match[1]);
+}
+
+function robotsValues(text: string, directive: string) {
+    return text
+        .split(/\n+/)
+        .filter((line) => line.startsWith(`${directive}: `))
+        .map((line) => line.slice(directive.length + 2).trim())
+        .filter(Boolean);
 }
 
 describe("SEO/GEO topic cluster helpers", () => {
@@ -83,15 +91,15 @@ describe("SEO topic sitemap", () => {
     it("is discoverable from the sitemap index and robots.txt metadata", async () => {
         const response = await sitemapIndex();
         const xml = await response.text();
-        const generated = robots();
-        const sitemaps = Array.isArray(generated.sitemap) ? generated.sitemap : [generated.sitemap];
+        const robotsResponse = robotsTxt();
+        const robotsText = await robotsResponse.text();
 
         expect(xmlLocs(xml)).toContain("https://www.fizikhub.com/topic-sitemap.xml");
         expect(xmlLocs(xml)).toContain("https://www.fizikhub.com/ai-sitemap.xml");
         expect(xmlLocs(xml)).toContain("https://www.fizikhub.com/author-sitemap.xml");
-        expect(sitemaps).toContain("https://www.fizikhub.com/topic-sitemap.xml");
-        expect(sitemaps).toContain("https://www.fizikhub.com/ai-sitemap.xml");
-        expect(sitemaps).toContain("https://www.fizikhub.com/author-sitemap.xml");
+        expect(robotsText).toContain("Sitemap: https://www.fizikhub.com/topic-sitemap.xml");
+        expect(robotsText).toContain("Sitemap: https://www.fizikhub.com/ai-sitemap.xml");
+        expect(robotsText).toContain("Sitemap: https://www.fizikhub.com/author-sitemap.xml");
     });
 
     it("publishes a curated AI sitemap for answer-engine discovery", async () => {
@@ -235,7 +243,7 @@ describe("SEO robots and canonical boundaries", () => {
         expect(shouldBypassSession("/api/search/suggestions", "")).toBe(true);
     });
 
-    it("keeps public author pages crawlable while private profile settings remain private", () => {
+    it("keeps public author pages crawlable while private profile settings remain private", async () => {
         expect(isPrivateSeoPath("/profil")).toBe(true);
         expect(isPrivateSeoPath("/profil/duzenle")).toBe(true);
         expect(isPrivateSeoPath("/kullanici/baran")).toBe(false);
@@ -246,28 +254,26 @@ describe("SEO robots and canonical boundaries", () => {
         expect(isForbiddenSitemapUrl("https://www.fizikhub.com/yazar/rehber")).toBe(false);
         expect(isForbiddenSitemapUrl("https://www.fizikhub.com/nevbara")).toBe(true);
 
-        const generated = robots();
-        const rules = Array.isArray(generated.rules) ? generated.rules : [generated.rules];
-        const userAgents = rules
-            .flatMap((rule) => Array.isArray(rule.userAgent) ? rule.userAgent : [rule.userAgent])
-            .filter(Boolean);
-        const disallowValues = rules
-            .flatMap((rule) => Array.isArray(rule.disallow) ? rule.disallow : [rule.disallow])
-            .filter(Boolean);
-        const allowValues = rules
-            .flatMap((rule) => Array.isArray(rule.allow) ? rule.allow : [rule.allow])
-            .filter(Boolean);
+        const robotsResponse = robotsTxt();
+        const robotsText = await robotsResponse.text();
+        const userAgents = robotsValues(robotsText, "User-agent");
+        const disallowValues = robotsValues(robotsText, "Disallow");
+        const allowValues = robotsValues(robotsText, "Allow");
 
         expect(userAgents).toEqual(expect.arrayContaining([
             "OAI-SearchBot",
             "Claude-SearchBot",
             "PerplexityBot",
+            "YandexBot",
+            "Bingbot",
         ]));
         expect(AI_CRAWLER_USER_AGENTS).toContain("ChatGPT-User");
         expect(AI_DISCOVERY_ROUTES.map((route) => route.path)).toContain("/simulation-learning.json");
         expect(allowValues).toContain("/simulation-learning.json");
+        expect(allowValues).toContain("/indexnow-key.txt");
         expect(allowValues).toContain("/paylas");
         expect(allowValues).toContain("/yazar/rehber");
+        expect(robotsText).toContain("Clean-param: utm_source");
         expect(disallowValues).not.toContain("/kullanici/");
         expect(disallowValues).not.toEqual(expect.arrayContaining([
             "/login",

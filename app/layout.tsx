@@ -9,9 +9,16 @@ import Image from "next/image";
 import Script from "next/script";
 
 const googleSiteVerification = process.env.NEXT_PUBLIC_GSC_TOKEN?.trim();
+const yandexSiteVerification = process.env.NEXT_PUBLIC_YANDEX_VERIFICATION?.trim();
+const bingSiteVerification = process.env.NEXT_PUBLIC_BING_VERIFICATION?.trim();
 const gaMeasurementId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID?.trim();
 const supabasePublicUrl = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
 const isVercelRuntime = process.env.VERCEL === "1" || Boolean(process.env.NEXT_PUBLIC_VERCEL_ENV);
+const siteVerification: NonNullable<Metadata["verification"]> = {
+  ...(googleSiteVerification ? { google: googleSiteVerification } : {}),
+  ...(yandexSiteVerification ? { yandex: yandexSiteVerification } : {}),
+  ...(bingSiteVerification ? { other: { "msvalidate.01": bingSiteVerification } } : {}),
+};
 
 // Single font only — eliminates 2 render-blocking CSS files
 const inter = Inter({
@@ -60,7 +67,7 @@ export const metadata: Metadata = {
       'application/rss+xml': '/feed.xml',
     },
   },
-  ...(googleSiteVerification ? { verification: { google: googleSiteVerification } } : {}),
+  ...(Object.keys(siteVerification).length > 0 ? { verification: siteVerification } : {}),
   description: "Fizikhub: Türkiye'nin en aktif bilim, fizik, uzay, kuantum ve evren platformu. Türkçe akademik makaleler, bilimsel forum, sözlük, fizik eğitim materyalleri, TYT/AYT/YKS fizik soru çözümü ve daha fazlası.",
   keywords: [
     "fizik", "bilim", "uzay", "evren", "fizikhub", "forum", "soru cevap", "türkçe fizik",
@@ -122,6 +129,14 @@ export const metadata: Metadata = {
   other: {
     "apple-mobile-web-app-capable": "yes",
     "mobile-web-app-capable": "yes",
+    "msapplication-TileColor": "#0a0a0a",
+    "geo.region": "TR",
+    "geo.placename": "Türkiye",
+    "distribution": "global",
+    "rating": "general",
+    "dc.title": "Fizikhub — Türkçe Fizik, Uzay ve Bilim Platformu",
+    "dc.publisher": "Fizikhub",
+    "dc.language": "tr-TR",
   }
 };
 
@@ -148,9 +163,11 @@ const jsonLdGraph = {
       inLanguage: 'tr-TR',
       areaServed: 'TR',
       knowsAbout: [
-        'Fizik', 'Kuantum Fizigi', 'Astrofizik', 'Termodinamik', 'Klasik Mekanik',
+        'Fizik', 'Kuantum Fiziği', 'Astrofizik', 'Termodinamik', 'Klasik Mekanik',
         'Nükleer Fizik', 'Optik', 'Elektromanyetizma', 'Kozmoloji', 'Bilim Tarihi',
-        'TYT Fizik', 'AYT Fizik', 'Astronomi', 'Kimya', 'Biyofizik'
+        'TYT Fizik', 'AYT Fizik', 'YKS Fizik', 'Astronomi', 'Kimya', 'Biyofizik',
+        'Akışkanlar Mekaniği', 'Parçacık Fiziği', 'Fizik Formülleri', 'Fizik Soru Çözümü',
+        'Fizik Simülasyonları', 'Bilim Sözlüğü', 'Modern Fizik', 'Uzay Bilimleri'
       ],
       hasOfferCatalog: {
         '@type': 'OfferCatalog',

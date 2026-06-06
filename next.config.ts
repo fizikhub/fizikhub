@@ -244,6 +244,10 @@ const nextConfig: NextConfig = {
         source: '/api/webhooks/:path*',
         headers: apiNoindexHeaders,
       },
+      {
+        source: '/indexnow-key.txt',
+        headers: noindexHeader,
+      },
       // Prevent indexing of font/media assets to clean up GSC "Crawled - not indexed" warnings
       {
         source: '/_next/static/media/:all*',

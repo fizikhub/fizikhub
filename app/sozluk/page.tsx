@@ -64,7 +64,7 @@ export const metadata: Metadata = {
 
 export const revalidate = 3600;
 
-const MAX_STRUCTURED_DATA_TERMS = 500;
+const MAX_STRUCTURED_DATA_TERMS = 700;
 
 export default async function DictionaryPage() {
     const terms = await getDictionaryTerms();

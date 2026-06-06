@@ -91,7 +91,6 @@ async function getDynamicEntries(baseUrl: string): Promise<SitemapEntry[]> {
 
         const dictionaryEntries = terms
             .filter((term) => isLikelyIndexableTitle(term.term) && hasUsefulIndexableText(term.definition, 40))
-            .slice(0, 300)
             .map((term) => entry(baseUrl, `/sozluk/${slugify(term.term)}`, {
                 lastmod: toIsoDate(term.created_at),
                 changefreq: "monthly",

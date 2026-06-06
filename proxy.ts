@@ -30,6 +30,7 @@ const SEO_METADATA_PATHS = new Set([
     '/llms.txt',
     '/ai-index.json',
     '/simulation-learning.json',
+    '/indexnow-key.txt',
     '/opensearch.xml',
     '/opengraph-image',
 ]);
@@ -69,7 +70,8 @@ const LOW_VALUE_QUERY_PATHS = new Set([
     '/testler',
     '/simulasyonlar',
 ]);
-const SEARCH_CRAWLER_PATTERN = /Googlebot|Googlebot-Image|Googlebot-News|Bingbot|DuckDuckBot|YandexBot|Applebot|LinkedInBot|Twitterbot|facebookexternalhit|Facebot|WhatsApp|Slackbot|TelegramBot|Instagram|Pinterest|Discordbot/i;
+const TRACKING_PARAM_PATTERN = /^(?:utm_.+|fbclid|gclid|yclid|ysclid|mc_cid|mc_eid|ref|source)$/i;
+const SEARCH_CRAWLER_PATTERN = /Googlebot|Googlebot-Image|Googlebot-News|Bingbot|DuckDuckBot|Yandex|YandexBot|YandexImages|Applebot|Applebot-Extended|Baiduspider|SeznamBot|Naverbot|Sogou|PetalBot|Bytespider|LinkedInBot|Twitterbot|facebookexternalhit|Facebot|WhatsApp|Slackbot|TelegramBot|Instagram|Pinterest|Discordbot/i;
 
 type UpstashPipelineResult = Array<{ result?: unknown; error?: string }>;
 
@@ -201,6 +203,16 @@ function normalizeSeoUrl(request: NextRequest) {
     const forwardedProto = request.headers.get('x-forwarded-proto') || original.protocol.replace(':', '');
     const isProductionDomain = host === 'fizikhub.com' || host === CANONICAL_HOST;
     let changed = isProductionDomain && (host !== CANONICAL_HOST || forwardedProto !== 'https');
+    const shouldStripTrackingParams = isPublicSeoPath(original.pathname) || SEO_METADATA_PATHS.has(original.pathname);
+
+    if (shouldStripTrackingParams) {
+        for (const key of Array.from(url.searchParams.keys())) {
+            if (TRACKING_PARAM_PATTERN.test(key)) {
+                url.searchParams.delete(key);
+                changed = true;
+            }
+        }
+    }
 
     if (url.pathname === '/index') {
         url.pathname = '/';

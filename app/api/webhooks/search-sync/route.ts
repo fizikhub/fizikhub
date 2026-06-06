@@ -3,6 +3,7 @@ import { createAdminClient } from "@/lib/supabase-admin";
 import { slugify } from "@/lib/slug";
 import { isValidBearerToken } from "@/lib/security";
 import { rateLimiter } from "@/lib/upstash";
+import { submitIndexNowUrls } from "@/lib/indexnow";
 
 type SearchSyncRecord = {
     id?: string | number | null;
@@ -89,6 +90,17 @@ function isRecordIndexable(table: string, record: SearchSyncRecord | null | unde
     return true; // Dictionary terms and quizzes are indexable by default
 }
 
+async function notifyIndexNow(canonicalPath: string | null) {
+    if (!canonicalPath) return null;
+
+    try {
+        return await submitIndexNowUrls([canonicalPath]);
+    } catch (error) {
+        console.error("[Search-Sync] IndexNow notification failed:", error);
+        return null;
+    }
+}
+
 export async function POST(req: Request) {
     // 1. Rate limiting check to prevent webhook spam / DDoS (60 requests per minute)
     const ip = req.headers.get("x-forwarded-for") || "127.0.0.1";
@@ -146,7 +158,10 @@ export async function POST(req: Request) {
                 return NextResponse.json({ error: "Database delete failed", details: deleteError }, { status: 500 });
             }
 
-            return NextResponse.json({ message: "Document deleted successfully", source_type: tableSingular, source_id: oldId });
+            const canonicalPath = getCanonicalPath(table, old_record || record || {});
+            const indexNow = await notifyIndexNow(canonicalPath);
+
+            return NextResponse.json({ message: "Document deleted successfully", source_type: tableSingular, source_id: oldId, indexNow });
         }
 
         // 4. Handle INSERT and UPDATE operations
@@ -160,6 +175,7 @@ export async function POST(req: Request) {
 
             // If it shouldn't be indexed (e.g. drafted article, soft-deleted question), remove it from search
             if (!shouldIndex) {
+                const canonicalPath = getCanonicalPath(table, record);
                 const { error: removeError } = await supabase
                     .from("documents")
                     .delete()
@@ -171,7 +187,9 @@ export async function POST(req: Request) {
                     return NextResponse.json({ error: "Database remove failed", details: removeError }, { status: 500 });
                 }
 
-                return NextResponse.json({ message: "Document removed due to status change", source_type: tableSingular, source_id: recordId });
+                const indexNow = await notifyIndexNow(canonicalPath);
+
+                return NextResponse.json({ message: "Document removed due to status change", source_type: tableSingular, source_id: recordId, indexNow });
             }
 
             // --- ASYNC BACKGROUND EXECUTION VIA QSTASH ---
@@ -210,12 +228,15 @@ export async function POST(req: Request) {
                 // but we log the error.
             }
 
+            const indexNow = await notifyIndexNow(metadata.canonical_path);
+
             // Return immediately without waiting for the embedding to finish
             return NextResponse.json({ 
                 message: "Document indexing job queued successfully", 
                 source_type: tableSingular, 
                 source_id: recordId, 
-                action: "queued" 
+                action: "queued",
+                indexNow,
             });
         }
 

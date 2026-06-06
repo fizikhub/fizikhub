@@ -4,7 +4,7 @@ import { escapeXml } from "@/lib/xml";
 
 export const revalidate = 3600;
 
-const TOPIC_LAST_MODIFIED = "2026-05-13T00:00:00.000+03:00";
+const TOPIC_LAST_MODIFIED = "2026-06-06T00:00:00.000+03:00";
 
 export async function GET() {
     const baseUrl = getSiteUrl();

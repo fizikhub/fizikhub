@@ -14,6 +14,7 @@
     "verify": "npm run typecheck && npm run lint && npm run test:run",
     "seo:health": "node scripts/seo-health-check.mjs",
     "seo:gsc-recrawl": "node scripts/gsc-recrawl-plan.mjs",
+    "seo:indexnow": "node scripts/indexnow-submit.mjs",
     "seo:samples": "node scripts/seo-url-samples.mjs",
     "seo:quarantine": "node scripts/seo-quarantine-content.mjs",
     "seo:quarantine:apply": "node scripts/seo-quarantine-content.mjs --apply",

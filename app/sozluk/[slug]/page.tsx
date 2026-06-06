@@ -200,6 +200,8 @@ export default async function DictionaryTermPage({ params }: PageProps) {
         .filter((link) => link.href !== `/sozluk/${slug}`)
         .filter((link, index, all) => all.findIndex((item) => item.href === link.href) === index)
         .slice(0, 8);
+    const contextNote = getTermContextNote(term.term, term.category);
+    const citationAccessDate = new Date().toLocaleDateString("tr-TR");
 
     const combinedJsonLd = {
         "@context": "https://schema.org",
@@ -245,10 +247,32 @@ export default async function DictionaryTermPage({ params }: PageProps) {
                     "@type": "EducationalAudience",
                     educationalRole: "student",
                 },
+            },
+            {
+                "@type": "FAQPage",
+                "@id": `${canonical}#faq`,
+                inLanguage: "tr-TR",
+                mainEntity: [
+                    {
+                        "@type": "Question",
+                        name: `${term.term} nedir?`,
+                        acceptedAnswer: {
+                            "@type": "Answer",
+                            text: term.definition,
+                        },
+                    },
+                    {
+                        "@type": "Question",
+                        name: `${term.term} nerede işine yarar?`,
+                        acceptedAnswer: {
+                            "@type": "Answer",
+                            text: contextNote,
+                        },
+                    },
+                ],
             }
         ]
     };
-    const contextNote = getTermContextNote(term.term, term.category);
 
     return (
         <>
@@ -405,7 +429,7 @@ export default async function DictionaryTermPage({ params }: PageProps) {
                         </h2>
                         <div className="rounded-xl border-2 border-zinc-800 bg-[#242427] p-5 space-y-4">
                             <p className="text-xs text-zinc-400 font-semibold leading-relaxed">
-                                Bu bilimsel kavramı makalenizde, araştırmanızda veya okul ödevinizde kaynak göstermek için aşağıdaki formatları kopyalayabilirsiniz. Yapay zeka arama motorları ve akademik tarayıcılar (GEO) için optimize edilmiştir.
+                                Bu bilimsel kavramı makalenizde, araştırmanızda veya okul ödevinizde kaynak göstermek için aşağıdaki formatları kullanabilirsiniz. Kanonik URL, yayıncı ve açık başlık bilgisi özellikle korunmuştur.
                             </p>
                             
                             <div className="space-y-4">
@@ -426,7 +450,7 @@ export default async function DictionaryTermPage({ params }: PageProps) {
   title = {${term.term} Nedir? Bilim Sözlüğü},
   year = {2026},
   url = {${canonical}},
-  note = {Erişim Tarihi: 27 Mayıs 2026}
+  note = {Erişim Tarihi: ${citationAccessDate}}
 }`}
                                     </pre>
                                 </div>
