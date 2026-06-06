@@ -15,6 +15,9 @@ export function DeferredHomeControls() {
     const [enabled, setEnabled] = useState(false);
 
     useEffect(() => {
+        if (window.matchMedia("(hover: none) and (pointer: coarse)").matches) return;
+        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
         const enable = () => setEnabled(true);
 
         if ("requestIdleCallback" in window) {

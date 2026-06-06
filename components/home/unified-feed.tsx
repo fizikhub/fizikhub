@@ -307,7 +307,7 @@ export function UnifiedFeed({ items: initialItems, suggestedUsers = [], showExtr
                 {items.map((item, index) => (
                     <div
                         key={`${item.type}-${item.data.id}`}
-                        className="feed-item-appear will-change-transform"
+                        className="feed-item-appear feed-render-guard"
                         style={{ 
                             animationDelay: index < 3 ? `${index * 50}ms` : undefined,
                             contentVisibility: index > 4 ? 'auto' : undefined,

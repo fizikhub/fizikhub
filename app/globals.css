@@ -710,7 +710,6 @@ select,
 
 /* Force GPU rendering for animated elements */
 .will-change-transform,
-[class*="animate-"],
 .hover\:scale,
 .group-hover\:scale {
     will-change: transform;
@@ -758,12 +757,9 @@ select {
     /* -webkit-overflow-scrolling: touch — REMOVED (deprecated, no longer needed in modern iOS Safari) */
 }
 
-/* Content stability — SCOPED. 
-   'contain: paint' on <main> hid content during fast scrolling
-   because the browser skipped painting off-viewport children.
-   Changed to 'contain: layout style' only (no paint containment). */
-main,
-.content {
+/* Content stability is scoped to feed/card islands. Applying containment to
+   every <main> can interfere with scroll anchoring and sticky descendants. */
+.feed-render-guard {
     contain: layout style;
 }
 

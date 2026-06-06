@@ -25,6 +25,7 @@ const EasterEggs = dynamic(
 
 export function RuntimeEffects() {
   const [loadIdleEffects, setLoadIdleEffects] = useState(false);
+  const [loadDesktopEffects, setLoadDesktopEffects] = useState(false);
 
   useEffect(() => {
     if (typeof window !== "undefined" && !(window as any)._fizikhubHello) {
@@ -46,13 +47,24 @@ export function RuntimeEffects() {
     }
 
     const enable = () => setLoadIdleEffects(true);
+    const enableDesktop = () => {
+      if (!window.matchMedia("(hover: none) and (pointer: coarse)").matches) {
+        setLoadDesktopEffects(true);
+      }
+    };
 
     if ("requestIdleCallback" in window) {
-      const idleId = window.requestIdleCallback(enable, { timeout: 3500 });
+      const idleId = window.requestIdleCallback(() => {
+        enable();
+        enableDesktop();
+      }, { timeout: 3500 });
       return () => window.cancelIdleCallback(idleId);
     }
 
-    const timeout = setTimeout(enable, 2500);
+    const timeout = setTimeout(() => {
+      enable();
+      enableDesktop();
+    }, 2500);
     return () => clearTimeout(timeout);
   }, []);
 
@@ -82,7 +94,7 @@ export function RuntimeEffects() {
         <>
           <UserActivityTracker />
           <OnboardingCheck />
-          <EasterEggs />
+          {loadDesktopEffects ? <EasterEggs /> : null}
         </>
       )}
     </>

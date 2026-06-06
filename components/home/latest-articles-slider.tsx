@@ -37,7 +37,7 @@ export function LatestArticlesSlider({ articles }: LatestArticlesSliderProps) {
             </div>
 
             {/* Horizontal Scroll */}
-            <div className="flex overflow-x-auto gap-3 pb-3 scrollbar-hide snap-x snap-mandatory -mx-3 px-3 sm:mx-0 sm:px-0" role="region" aria-label="Popüler yazılar karusel">
+            <div className="flex touch-pan-x overscroll-x-contain overflow-x-auto gap-3 pb-3 scrollbar-hide snap-x snap-mandatory -mx-3 px-3 sm:mx-0 sm:px-0" role="region" aria-label="Popüler yazılar karusel">
                 {articles.slice(0, 6).map((article, index) => {
                     const isNew = new Date().getTime() - new Date(article.created_at).getTime() < 3 * 24 * 60 * 60 * 1000;
                     const isAboveFold = index < 2;
