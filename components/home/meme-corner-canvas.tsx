@@ -372,20 +372,18 @@ function BackgroundStars({ count = 2000 }) {
 }
 
 export default function MemeCornerCanvas() {
-    const [shouldRender, setShouldRender] = useState(false);
+    const [isLowEnd, setIsLowEnd] = useState(false);
     const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
         setMounted(true);
         const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        const isTouchDevice = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
-        const deviceMemory = (navigator as Navigator & { deviceMemory?: number }).deviceMemory || 4;
-        const cores = navigator.hardwareConcurrency || 4;
-
-        setShouldRender(!prefersReducedMotion && !isTouchDevice && deviceMemory >= 4 && cores >= 4);
+        if (prefersReducedMotion) {
+            setIsLowEnd(true);
+        }
     }, []);
 
-    if (!mounted || !shouldRender) {
+    if (!mounted || isLowEnd) {
         // Return a lightweight empty div maintaining dimensions if necessary, or null.
         return null; 
     }
@@ -394,20 +392,20 @@ export default function MemeCornerCanvas() {
         <Canvas
             camera={{ position: [0, 5, 7], fov: 50 }}
             gl={{
-                antialias: false,
-                powerPreference: "low-power",
+                antialias: true,
+                powerPreference: "high-performance",
                 alpha: true
             }}
-            dpr={[1, Math.min(window.devicePixelRatio, 1.5)]}
+            dpr={[1, Math.min(window.devicePixelRatio, 2)]}
         >
             <group>
                 <BackgroundStars />
-                <GalaxyDust count={9000} />
-                <MainStars count={3500} />
-                <NebulaClouds count={2200} />
+                <GalaxyDust />
+                <MainStars />
+                <NebulaClouds />
             </group>
 
-            <EffectComposer enableNormalPass={false} multisampling={0}>
+            <EffectComposer enableNormalPass={false} multisampling={8}>
                 <Bloom
                     luminanceThreshold={0.6} // Higher threshold = Only brightest stars glow
                     intensity={1.0}
