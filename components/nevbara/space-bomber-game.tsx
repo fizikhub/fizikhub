@@ -5,6 +5,8 @@ import * as THREE from 'three';
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
+import { GlitchPass } from 'three/examples/jsm/postprocessing/GlitchPass.js';
+import { FilmPass } from 'three/examples/jsm/postprocessing/FilmPass.js';
 import { Activity, Shield, Flame, Target, Volume2, VolumeX, Crosshair, Zap, Navigation } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import confetti from 'canvas-confetti';
@@ -210,7 +212,10 @@ export function SpaceBomberGame() {
     const cameraRef3D = useRef<THREE.PerspectiveCamera | null>(null);
     const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
     const composerRef = useRef<EffectComposer | null>(null);
+    const glitchPassRef = useRef<GlitchPass | null>(null);
     const screenShakeRef = useRef<number>(0);
+    const lastGamepadFire = useRef<number>(0);
+    const wormholeMatRef = useRef<THREE.ShaderMaterial | null>(null);
     
     // 3D Objects
     const playerShipGroup = useRef<THREE.Group | null>(null);
@@ -312,12 +317,19 @@ export function SpaceBomberGame() {
         const clamped = Math.max(0, Math.min(100, value));
         armorRef.current = clamped;
         setArmor(Math.round(clamped));
+
         if (clamped <= 0) {
             soundRef.current?.playExplosion();
             createExplosion(shipPos.current.x, shipPos.current.y, shipPos.current.z, '#ff4a11', 150, 3.5);
             createShockwave(shipPos.current.x, shipPos.current.y, shipPos.current.z, '#ff4a11');
             setGameState('gameover');
             if (playerShipGroup.current) playerShipGroup.current.visible = false;
+        } else if (value < armorRef.current) {
+            // Trigger Glitch
+            if (glitchPassRef.current) {
+                glitchPassRef.current.enabled = true;
+                setTimeout(() => { if (glitchPassRef.current) glitchPassRef.current.enabled = false; }, 200);
+            }
         }
     }, [createExplosion, createShockwave]);
 
@@ -362,9 +374,19 @@ export function SpaceBomberGame() {
         const renderPass = new RenderPass(scene, camera);
         composer.addPass(renderPass);
 
+        const filmPass = new FilmPass(0.35, false);
+        composer.addPass(filmPass);
+
         const bloomPass = new UnrealBloomPass(new THREE.Vector2(width, height), 1.5, 0.5, 0.85);
         composer.addPass(bloomPass);
+        
+        const glitchPass = new GlitchPass();
+        glitchPass.enabled = false;
+        glitchPass.goWild = false;
+        composer.addPass(glitchPass);
+        
         composerRef.current = composer;
+        glitchPassRef.current = glitchPass;
 
         // Lighting
         const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
@@ -529,6 +551,44 @@ export function SpaceBomberGame() {
         scene.add(instancedAst);
         asteroidMesh.current = instancedAst;
 
+        // --- GLSL WORMHOLE SHADER ---
+        const portalGeo = new THREE.PlaneGeometry(6000, 6000);
+        const portalMat = new THREE.ShaderMaterial({
+            uniforms: {
+                time: { value: 0.0 },
+                color: { value: new THREE.Color('#00ffff') }
+            },
+            vertexShader: `
+                varying vec2 vUv;
+                void main() {
+                    vUv = uv;
+                    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+                }
+            `,
+            fragmentShader: `
+                uniform float time;
+                uniform vec3 color;
+                varying vec2 vUv;
+                void main() {
+                    vec2 p = -1.0 + 2.0 * vUv;
+                    float r = length(p);
+                    float a = atan(p.y, p.x);
+                    // Swirling galaxy math
+                    float f = cos(a * 8.0 + time * 1.5) * sin(r * 15.0 - time * 3.0);
+                    float glow = 0.05 / r;
+                    float alpha = smoothstep(1.0, 0.0, r) * (f * 0.5 + 0.5 + glow);
+                    gl_FragColor = vec4(color * glow * 2.0, alpha * 0.4);
+                }
+            `,
+            transparent: true,
+            blending: THREE.AdditiveBlending,
+            depthWrite: false
+        });
+        const portalMesh = new THREE.Mesh(portalGeo, portalMat);
+        portalMesh.position.set(0, 0, -4500);
+        scene.add(portalMesh);
+        wormholeMatRef.current = portalMat;
+
     }, []);
 
     const triggerHyperspace = useCallback(() => {
@@ -627,6 +687,14 @@ export function SpaceBomberGame() {
             setBossMaxHealth(bossH);
             setBossHealth(bossH);
             addLog("UYARI: DEVASA BİR ANOMALİ (BOSS) TESPİT EDİLDİ!");
+            
+            if (wormholeMatRef.current) {
+                wormholeMatRef.current.uniforms.color.value = new THREE.Color('#ff00ff');
+            }
+        } else {
+            if (wormholeMatRef.current) {
+                wormholeMatRef.current.uniforms.color.value = new THREE.Color('#00ffff');
+            }
         }
 
     }, [clearAllEntities, level, setFuelLevel, setShieldLevel, setArmorLevel, addLog]);
@@ -786,11 +854,42 @@ export function SpaceBomberGame() {
             return;
         }
 
-        // --- 1. SHIP MOVEMENT (6-DOF) ---
+        // --- 1. SHIP MOVEMENT (6-DOF) & GAMEPAD ---
         // Slower sensitivity for laptop trackpads
         let pitch = -mouseDelta.current.y * 0.02 * dt;
         let yaw = -mouseDelta.current.x * 0.02 * dt;
         let roll = 0;
+        
+        // Gamepad API integration
+        const gamepads = navigator.getGamepads ? navigator.getGamepads() : [];
+        const gp = gamepads[0];
+        if (gp && gp.connected) {
+            const axX = gp.axes[2] || gp.axes[0] || 0; // Right/Left stick X
+            const axY = gp.axes[3] || gp.axes[1] || 0; // Right/Left stick Y
+            
+            if (Math.abs(axX) > 0.1) yaw += -axX * 0.04 * dt;
+            if (Math.abs(axY) > 0.1) pitch += -axY * 0.04 * dt;
+            
+            // Triggers for speed
+            if (gp.buttons[7] && gp.buttons[7].pressed) {
+                targetSpeed.current = Math.min(targetSpeed.current + 0.35 * dt, MAX_SPEED);
+                if (fuelRef.current > 0) setFuelLevel(fuelRef.current - 0.05 * dt);
+            } else if (gp.buttons[6] && gp.buttons[6].pressed) {
+                targetSpeed.current = Math.max(targetSpeed.current - 0.5 * dt, 0); 
+            }
+            
+            // Buttons to fire (A, X, or RT)
+            if ((gp.buttons[0]?.pressed || gp.buttons[5]?.pressed)) {
+                if (gameState === 'playing' && time - lastGamepadFire.current > 200) {
+                    fireWeapon();
+                    lastGamepadFire.current = time;
+                }
+            }
+            
+            // Roll with bumpers
+            if (gp.buttons[4]?.pressed) roll += 0.06 * dt; // LB
+            if (gp.buttons[5]?.pressed) roll -= 0.06 * dt; // RB
+        }
         
         if (keys.current['a']) roll += 0.06 * dt;
         if (keys.current['d']) roll -= 0.06 * dt;
@@ -800,7 +899,7 @@ export function SpaceBomberGame() {
             if (fuelRef.current > 0) setFuelLevel(fuelRef.current - 0.04 * dt);
         } else if (keys.current['s']) {
             targetSpeed.current = Math.max(targetSpeed.current - 0.4 * dt, 0); 
-        } else {
+        } else if (!gp || (!gp.buttons[7]?.pressed && !gp.buttons[6]?.pressed)) {
             targetSpeed.current = Math.max(targetSpeed.current - 0.015 * dt, MIN_SPEED); 
         }
 
@@ -877,6 +976,10 @@ export function SpaceBomberGame() {
                 im.setMatrixAt(i, dummy.matrix);
             }
             im.instanceMatrix.needsUpdate = true;
+        }
+
+        if (wormholeMatRef.current) {
+            wormholeMatRef.current.uniforms.time.value += dt * 0.8;
         }
 
         // --- 3. BULLETS ---
@@ -1425,7 +1528,7 @@ export function SpaceBomberGame() {
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-2">
                 <div className="bg-[#0a0a1a] p-5 rounded-xl border border-cyan-900/50 shadow-lg hover:border-cyan-500/50 transition-colors">
                     <h3 className="text-xs font-bold text-cyan-400 uppercase tracking-widest mb-3 flex items-center gap-2"><Target className="w-4 h-4" /> Uçuş Kontrolü</h3>
-                    <p className="text-xs text-muted-foreground leading-relaxed">Farenizi kullanarak geminin burnunu uzayda özgürce yönlendirin. Nişangahı hedefin üzerinde tutun.</p>
+                    <p className="text-xs text-muted-foreground leading-relaxed">Farenizi kullanarak geminin burnunu uzayda özgürce yönlendirin. Yeni nesil <b>Gamepad (Oyun Kolu)</b> takarak konsol deneyimi yaşayabilirsiniz!</p>
                 </div>
                 <div className="bg-[#0a0a1a] p-5 rounded-xl border border-emerald-900/50 shadow-lg hover:border-emerald-500/50 transition-colors">
                     <h3 className="text-xs font-bold text-emerald-400 uppercase tracking-widest mb-3 flex items-center gap-2"><Activity className="w-4 h-4" /> İtki & Dönüş</h3>
