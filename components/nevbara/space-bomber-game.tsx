@@ -265,7 +265,7 @@ class SoundSynth {
 
 // --- GAME CONFIG & INTERFACES ---
 const SHIP_SIZE = 15;
-const DRAG = 0.994; // Realistic space momentum, less air resistance
+const DRAG = 0.985; // Snappier momentum for easier control
 
 interface Vector2D {
     x: number;
@@ -879,16 +879,19 @@ export function SpaceBomberGame() {
         if (!scene || !camera || !renderer) return;
 
         // --- SHIP CONTROLS & PHYSICS ---
-        // Rotational inertia
+        // Rotational inertia (Snappier for better control)
         if (keys.current['ArrowLeft'] || keys.current['a'] || keys.current['A']) {
-            shipAngularVel.current += config.rotationSpeed * 0.1 * dt; // Acceleration
+            shipAngularVel.current += config.rotationSpeed * 0.15 * dt; // Faster acceleration
         }
         if (keys.current['ArrowRight'] || keys.current['d'] || keys.current['D']) {
-            shipAngularVel.current -= config.rotationSpeed * 0.1 * dt; // Acceleration
+            shipAngularVel.current -= config.rotationSpeed * 0.15 * dt; // Faster acceleration
         }
         
-        // Apply angular damping (friction in rotation)
-        shipAngularVel.current *= 0.95;
+        // Clamp angular velocity so it doesn't spin wildly
+        shipAngularVel.current = Math.max(-0.15, Math.min(0.15, shipAngularVel.current));
+
+        // Apply angular damping (friction in rotation) - High damping stops it instantly
+        shipAngularVel.current *= 0.82;
         
         // Apply angular velocity to angle
         shipAngle.current += shipAngularVel.current * dt;
@@ -933,8 +936,12 @@ export function SpaceBomberGame() {
 
         // Apply environment physics
         shipVel.current.y -= config.gravity * dt; // gravity pulls downward (-Y)
-        shipVel.current.x *= DRAG;
-        shipVel.current.y *= DRAG;
+        
+        // Space Brakes: if not thrusting, add extra drag so you don't drift endlessly
+        const currentDrag = isThrusting ? DRAG : DRAG * 0.98;
+        
+        shipVel.current.x *= currentDrag;
+        shipVel.current.y *= currentDrag;
 
         shipPos.current.x += shipVel.current.x * dt;
         shipPos.current.y += shipVel.current.y * dt;
