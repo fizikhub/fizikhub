@@ -19,6 +19,9 @@ import {
 } from "lucide-react";
 import confetti from "canvas-confetti";
 import * as THREE from "three";
+import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer.js";
+import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js";
+import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass.js";
 
 // --- WEB AUDIO API PROCEDURAL SYNTHESIZER ---
 class SoundSynth {
@@ -384,6 +387,8 @@ export function SpaceBomberGame() {
     const terrainWireframe = useRef<THREE.LineSegments | null>(null);
     const backgroundStars = useRef<THREE.Points | null>(null);
     const lightFollower = useRef<THREE.PointLight | null>(null);
+    const composerRef = useRef<EffectComposer | null>(null);
+    const screenShakeRef = useRef<number>(0);
 
     // Physics state refs
     const shipPos = useRef<Vector2D>({ x: 100, y: 350 });
@@ -432,15 +437,18 @@ export function SpaceBomberGame() {
         return base + hills + obstacles;
     };
 
-    // Explosion Creator (3D Particles)
+    // Explosion Creator (3D Particles & Screen Shake)
     const createExplosion = useCallback((x: number, y: number, color: string, count: number, velocityScale = 1.0) => {
         if (!sceneRef.current) return;
+        
+        // Trigger screen shake proportional to explosion size
+        screenShakeRef.current = Math.min(20, screenShakeRef.current + (count * 0.1 * velocityScale));
 
         const particleCount = count;
         const positions = new Float32Array(particleCount * 3);
         const colors = new Float32Array(particleCount * 3);
         
-        const threeColor = new THREE.Color(color);
+        const threeColor = new THREE.Color(color).multiplyScalar(2.0); // Multiply to trigger Bloom Pass
 
         for (let i = 0; i < particleCount; i++) {
             const px = x + (Math.random() - 0.5) * 5;
@@ -567,6 +575,16 @@ export function SpaceBomberGame() {
         renderer.setClearColor('#050508', 1.0);
         renderer.shadowMap.enabled = true;
         rendererRef.current = renderer;
+
+        // Post-Processing
+        const renderScene = new RenderPass(scene, camera);
+        const bloomPass = new UnrealBloomPass(new THREE.Vector2(width, height), 2.0, 0.4, 0.85);
+        // strength, radius, threshold
+        
+        const composer = new EffectComposer(renderer);
+        composer.addPass(renderScene);
+        composer.addPass(bloomPass);
+        composerRef.current = composer;
 
         // Add Lights
         const amb = new THREE.AmbientLight('#181822', 0.8);
@@ -733,11 +751,11 @@ export function SpaceBomberGame() {
         }
         terrainGeo.computeVertexNormals();
 
-        // Terrain styling: Dark solid mesh base + bright digital wireframe mesh overlay
+        // Terrain styling: Synthwave Grid Terrain
         const terrMat = new THREE.MeshStandardMaterial({
-            color: '#0e0b1f',
-            roughness: 0.85,
-            metalness: 0.15,
+            color: '#080512', // Very dark purple/black
+            roughness: 0.9,
+            metalness: 0.1,
             flatShading: true
         });
         const terr = new THREE.Mesh(terrainGeo, terrMat);
@@ -745,7 +763,12 @@ export function SpaceBomberGame() {
         terrainMesh.current = terr;
 
         const wireGeo = new THREE.WireframeGeometry(terrainGeo);
-        const wireMat = new THREE.LineBasicMaterial({ color: '#6c5ce7', transparent: true, opacity: 0.45 });
+        const wireMat = new THREE.LineBasicMaterial({ 
+            color: '#ff007f', // Cyberpunk pink neon
+            transparent: true, 
+            opacity: 0.5,
+            blending: THREE.AdditiveBlending
+        });
         const wire = new THREE.LineSegments(wireGeo, wireMat);
         scene.add(wire);
         terrainWireframe.current = wire;
@@ -1010,12 +1033,18 @@ export function SpaceBomberGame() {
             const bvx = shipVel.current.x + Math.cos(shipAngle.current) * 14;
             const bvy = shipVel.current.y + Math.sin(shipAngle.current) * 14;
 
-            const bGeo = new THREE.CylinderGeometry(0.5, 0.5, 4.5, 4);
+            const bGeo = new THREE.CylinderGeometry(0.6, 0.6, 6.0, 4);
             bGeo.rotateZ(shipAngle.current + Math.PI / 2);
-            const bMat = new THREE.MeshBasicMaterial({ color: '#ff7675' });
+            
+            // Glowing neon material for bullets
+            const bColor = new THREE.Color('#ff007f').multiplyScalar(2.5);
+            const bMat = new THREE.MeshBasicMaterial({ color: bColor });
             const bMesh = new THREE.Mesh(bGeo, bMat);
             bMesh.position.set(bx, by, 0);
             scene.add(bMesh);
+            
+            // Recoil screen shake
+            screenShakeRef.current = Math.min(10, screenShakeRef.current + 2.0);
 
             bullets.current.push({
                 x: bx,
@@ -1297,12 +1326,12 @@ export function SpaceBomberGame() {
         const targetCamX = shipPos.current.x + shipVel.current.x * 1.5;
         const targetCamY = Math.max(200, shipPos.current.y + 20 + shipVel.current.y * 0.8);
         
-        // Dynamically zoom camera out slightly at high velocities to capture speed feeling
+        // Dynamically zoom camera out massively at high velocities for a hyperspeed feel
         const speed = Math.sqrt(shipVel.current.x ** 2 + shipVel.current.y ** 2);
-        const targetCamZ = 180 + Math.min(100, speed * 6.5);
+        const targetCamZ = 180 + Math.min(180, speed * 12.0);
 
-        camera.position.x += (targetCamX - camera.position.x) * 0.08 * dt;
-        camera.position.y += (targetCamY - camera.position.y) * 0.08 * dt;
+        camera.position.x += (targetCamX - camera.position.x) * 0.1 * dt;
+        camera.position.y += (targetCamY - camera.position.y) * 0.1 * dt;
         camera.position.z += (targetCamZ - camera.position.z) * 0.06 * dt;
 
         // Camera looks slightly ahead of the ship
@@ -1333,8 +1362,20 @@ export function SpaceBomberGame() {
             soundRef.current?.playWarning();
         }
 
-        // Render Frame
-        renderer.render(scene, camera);
+        // Screen shake logic
+        if (screenShakeRef.current > 0) {
+            camera.position.x += (Math.random() - 0.5) * screenShakeRef.current;
+            camera.position.y += (Math.random() - 0.5) * screenShakeRef.current;
+            screenShakeRef.current *= 0.9; // decay
+            if (screenShakeRef.current < 0.1) screenShakeRef.current = 0;
+        }
+
+        // Render Frame with Post-Processing
+        if (composerRef.current) {
+            composerRef.current.render();
+        } else {
+            renderer.render(scene, camera);
+        }
 
         animationFrameId.current = requestAnimationFrame((nextTime) => tickRef.current(nextTime));
     }, [gameState, level, createExplosion, setFuelLevel, setShieldLevel, setArmorLevel]);
@@ -1404,10 +1445,11 @@ export function SpaceBomberGame() {
         const handleResize = () => {
             const canvas = canvasRef.current;
             const container = containerRef.current;
-            if (canvas && container && rendererRef.current && cameraRef3D.current) {
+            if (canvas && container && rendererRef.current && cameraRef3D.current && composerRef.current) {
                 const w = container.clientWidth || 800;
                 const h = 550;
                 rendererRef.current.setSize(w, h);
+                composerRef.current.setSize(w, h);
                 cameraRef3D.current.aspect = w / h;
                 cameraRef3D.current.updateProjectionMatrix();
             }
