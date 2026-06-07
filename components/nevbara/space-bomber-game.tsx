@@ -293,6 +293,7 @@ interface Bullet {
     vy: number;
     life: number;
     isEnemy: boolean;
+    isBeam?: boolean;
     mesh: THREE.Mesh;
 }
 
@@ -300,7 +301,7 @@ interface Enemy {
     id: number;
     x: number;
     y: number;
-    type: 'turret' | 'floater';
+    type: 'turret' | 'floater' | 'boss';
     health: number;
     maxHealth: number;
     active: boolean;
@@ -318,6 +319,26 @@ interface FuelCrystal {
     vy: number;
     active: boolean;
     mesh: THREE.Mesh;
+}
+
+interface PowerUp {
+    id: number;
+    x: number;
+    y: number;
+    vx: number;
+    vy: number;
+    type: 'multi' | 'beam';
+    active: boolean;
+    mesh: THREE.Mesh;
+}
+
+interface FloatingText {
+    id: number;
+    text: string;
+    x: number;
+    y: number;
+    life: number;
+    color: string;
 }
 
 // Level configurations
@@ -351,6 +372,7 @@ const LEVELS = [
 export function SpaceBomberGame() {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
+    const floatingTextContainerRef = useRef<HTMLDivElement>(null);
 
     // Sound manager ref
     const soundRef = useRef<SoundSynth | null>(null);
@@ -363,6 +385,10 @@ export function SpaceBomberGame() {
     const [shield, setShield] = useState(100);
     const [armor, setArmor] = useState(100);
     const [level, setLevel] = useState(1);
+    
+    // Boss health states
+    const [bossHealth, setBossHealth] = useState(0);
+    const [bossMaxHealth, setBossMaxHealth] = useState(40);
     
     // Telemetry and speed states for HUD
     const [speedVal, setSpeedVal] = useState(0);
@@ -400,6 +426,13 @@ export function SpaceBomberGame() {
     const bullets = useRef<Bullet[]>([]);
     const enemies = useRef<Enemy[]>([]);
     const crystals = useRef<FuelCrystal[]>([]);
+    const powerUps = useRef<PowerUp[]>([]);
+    const floatingTexts = useRef<FloatingText[]>([]);
+    const asteroidMesh = useRef<THREE.InstancedMesh | null>(null);
+    const comboMultiplier = useRef<number>(1);
+    const comboTimer = useRef<number>(0);
+    const weaponType = useRef<'normal' | 'multi' | 'beam'>('normal');
+    const weaponTimer = useRef<number>(0);
     
     const keys = useRef<{ [key: string]: boolean }>({});
     const animationFrameId = useRef<number>(0);
@@ -621,6 +654,35 @@ export function SpaceBomberGame() {
         scene.add(stars);
         backgroundStars.current = stars;
 
+        // Background Asteroid Belt (InstancedMesh for performance)
+        const astCount = 250;
+        const astGeo = new THREE.DodecahedronGeometry(8, 0);
+        const astMat = new THREE.MeshStandardMaterial({ color: '#1e1b30', roughness: 0.9, metalness: 0.1, flatShading: true });
+        const astMesh = new THREE.InstancedMesh(astGeo, astMat, astCount);
+        
+        const dummy = new THREE.Object3D();
+        for (let i = 0; i < astCount; i++) {
+            dummy.position.set(
+                (Math.random() - 0.5) * 4500,
+                Math.random() * 800 + 200,
+                -300 - Math.random() * 800
+            );
+            
+            dummy.rotation.set(
+                Math.random() * Math.PI,
+                Math.random() * Math.PI,
+                Math.random() * Math.PI
+            );
+            
+            const scale = 0.5 + Math.random() * 2.5;
+            dummy.scale.set(scale, scale, scale);
+            
+            dummy.updateMatrix();
+            astMesh.setMatrixAt(i, dummy.matrix);
+        }
+        scene.add(astMesh);
+        asteroidMesh.current = astMesh;
+
         // Build Player Spaceship Model (Advanced 3D Geometry)
         const shipGroup = new THREE.Group();
         
@@ -787,6 +849,7 @@ export function SpaceBomberGame() {
         setFuelLevel(100);
         setShieldLevel(100);
         setArmorLevel(100);
+        setBossHealth(40);
         
         if (playerShipGroup.current) {
             playerShipGroup.current.position.set(120, 350, 0);
@@ -860,6 +923,42 @@ export function SpaceBomberGame() {
                 mesh: enemyGroup
             });
         }
+
+        // --- SPAWN BOSS AT THE END OF THE LEVEL ---
+        const bossX = terrainWidth - 500;
+        const bossY = getGroundHeight(bossX) + 150;
+        
+        const bossGroup = new THREE.Group();
+        
+        // Massive octagonal boss core
+        const coreGeo = new THREE.CylinderGeometry(15, 15, 30, 8);
+        coreGeo.rotateX(Math.PI / 2);
+        const coreMat = new THREE.MeshStandardMaterial({ color: '#833471', emissive: '#130f40', metalness: 0.8 });
+        const bossCore = new THREE.Mesh(coreGeo, coreMat);
+        bossGroup.add(bossCore);
+        
+        // Spinning ring
+        const bossRingGeo = new THREE.TorusGeometry(25, 2, 8, 24);
+        const bossRingMat = new THREE.MeshStandardMaterial({ color: '#EA2027', emissive: '#ea2027', emissiveIntensity: 1.5 });
+        const bossRing = new THREE.Mesh(bossRingGeo, bossRingMat);
+        bossRing.name = "ring";
+        bossGroup.add(bossRing);
+        
+        bossGroup.position.set(bossX, bossY, 0);
+        scene.add(bossGroup);
+        
+        enemies.current.push({
+            id: 9999,
+            x: bossX,
+            y: bossY,
+            type: 'boss',
+            health: 40,
+            maxHealth: 40,
+            active: true,
+            lastFire: 0,
+            fireCooldown: 800, // fires faster
+            mesh: bossGroup
+        });
 
         addLog(`${config.name} Bölgesi Yüklendi. Sürüm: 3.0.0.`);
     }, [clearAllEntities, setFuelLevel, setShieldLevel, setArmorLevel]);
@@ -1037,33 +1136,51 @@ export function SpaceBomberGame() {
             
             const bx = shipPos.current.x + Math.cos(shipAngle.current) * 16;
             const by = shipPos.current.y + Math.sin(shipAngle.current) * 16;
-            const bvx = shipVel.current.x + Math.cos(shipAngle.current) * 14;
-            const bvy = shipVel.current.y + Math.sin(shipAngle.current) * 14;
-
-            const bGeo = new THREE.CylinderGeometry(0.6, 0.6, 6.0, 4);
-            bGeo.rotateZ(shipAngle.current + Math.PI / 2);
             
-            // Glowing neon material for bullets
-            const bColor = new THREE.Color('#ff007f').multiplyScalar(2.5);
-            const bMat = new THREE.MeshBasicMaterial({ color: bColor });
-            const bMesh = new THREE.Mesh(bGeo, bMat);
-            bMesh.position.set(bx, by, 0);
-            scene.add(bMesh);
-            
-            // Recoil screen shake
-            screenShakeRef.current = Math.min(10, screenShakeRef.current + 2.0);
+            const wType = weaponType.current;
 
-            bullets.current.push({
-                x: bx,
-                y: by,
-                vx: bvx,
-                vy: bvy,
-                life: 50,
-                isEnemy: false,
-                mesh: bMesh
-            });
+            const fireBullet = (angleOffset: number, isBeam: boolean) => {
+                const bAngle = shipAngle.current + angleOffset;
+                const bvx = shipVel.current.x + Math.cos(bAngle) * (isBeam ? 25 : 14);
+                const bvy = shipVel.current.y + Math.sin(bAngle) * (isBeam ? 25 : 14);
+
+                const bGeo = new THREE.CylinderGeometry(isBeam ? 1.5 : 0.6, isBeam ? 1.5 : 0.6, isBeam ? 18.0 : 6.0, 4);
+                bGeo.rotateZ(bAngle + Math.PI / 2);
+                
+                const bColor = new THREE.Color(isBeam ? '#d63031' : '#ff007f').multiplyScalar(2.5);
+                const bMat = new THREE.MeshBasicMaterial({ color: bColor });
+                const bMesh = new THREE.Mesh(bGeo, bMat);
+                bMesh.position.set(bx, by, 0);
+                scene.add(bMesh);
+
+                bullets.current.push({
+                    x: bx,
+                    y: by,
+                    vx: bvx,
+                    vy: bvy,
+                    life: 50,
+                    isEnemy: false,
+                    mesh: bMesh,
+                    isBeam // we add isBeam property to bullets so we know if it pierces or does more damage
+                });
+            };
+
+            if (wType === 'normal') {
+                fireBullet(0, false);
+                screenShakeRef.current = Math.min(10, screenShakeRef.current + 2.0);
+            } else if (wType === 'multi') {
+                fireBullet(0, false);
+                fireBullet(-0.15, false);
+                fireBullet(0.15, false);
+                screenShakeRef.current = Math.min(15, screenShakeRef.current + 4.0);
+            } else if (wType === 'beam') {
+                fireBullet(0, true);
+                screenShakeRef.current = Math.min(25, screenShakeRef.current + 8.0);
+            }
+
             keys.current['fired'] = true;
         }
+        // Allows rapid fire if we reset `fired` state quickly, or we can just enforce one per press
         if (!isFiring) keys.current['fired'] = false;
 
         // --- BULLET PHYSICS ---
@@ -1102,10 +1219,17 @@ export function SpaceBomberGame() {
                     ring.rotation.x += 0.02 * dt;
                     ring.rotation.y += 0.03 * dt;
                 }
+            } else if (enemy.type === 'boss') {
+                enemy.mesh.position.y = enemy.y + Math.sin(time * 0.002) * 20;
+                const ring = enemy.mesh.getObjectByName("ring");
+                if (ring) {
+                    ring.rotation.x -= 0.04 * dt;
+                    ring.rotation.y += 0.06 * dt;
+                }
             }
 
             // Tracking and Shooting
-            if (dist < 420) {
+            if (dist < (enemy.type === 'boss' ? 700 : 420)) {
                 const angle = Math.atan2(dy, dx);
                 enemy.targetAngle = angle;
 
@@ -1122,21 +1246,33 @@ export function SpaceBomberGame() {
                     soundRef.current?.playEnemyLaser();
                     enemy.lastFire = time;
 
-                    const bGeo = new THREE.SphereGeometry(1.2, 6, 6);
-                    const bMat = new THREE.MeshBasicMaterial({ color: '#fbc531' });
-                    const bMesh = new THREE.Mesh(bGeo, bMat);
-                    bMesh.position.set(enemy.x, enemy.y + (enemy.type === 'turret' ? 6 : 0), 0);
-                    scene.add(bMesh);
+                    const spawnEnemyBullet = (angleOffset: number, speed: number, size: number, color: string) => {
+                        const finalAngle = angle + angleOffset;
+                        const bGeo = new THREE.SphereGeometry(size, 8, 8);
+                        const bMat = new THREE.MeshBasicMaterial({ color });
+                        const bMesh = new THREE.Mesh(bGeo, bMat);
+                        bMesh.position.set(enemy.x, enemy.y + (enemy.type === 'turret' ? 6 : 0), 0);
+                        scene.add(bMesh);
 
-                    bullets.current.push({
-                        x: enemy.x,
-                        y: enemy.y + (enemy.type === 'turret' ? 6 : 0),
-                        vx: Math.cos(angle) * 7.5,
-                        vy: Math.sin(angle) * 7.5,
-                        life: 75,
-                        isEnemy: true,
-                        mesh: bMesh
-                    });
+                        bullets.current.push({
+                            x: enemy.x,
+                            y: enemy.y + (enemy.type === 'turret' ? 6 : 0),
+                            vx: Math.cos(finalAngle) * speed,
+                            vy: Math.sin(finalAngle) * speed,
+                            life: 80,
+                            isEnemy: true,
+                            mesh: bMesh
+                        });
+                    };
+
+                    if (enemy.type === 'boss') {
+                        // Boss fires 3 spread shots
+                        spawnEnemyBullet(0, 9.0, 2.5, '#ea2027');
+                        spawnEnemyBullet(-0.2, 8.5, 2.0, '#ff9f43');
+                        spawnEnemyBullet(0.2, 8.5, 2.0, '#ff9f43');
+                    } else {
+                        spawnEnemyBullet(0, 7.5, 1.2, '#fbc531');
+                    }
                 }
             }
         });
@@ -1156,6 +1292,9 @@ export function SpaceBomberGame() {
                     lastHitTime.current = time;
                     createExplosion(shipPos.current.x, shipPos.current.y, '#fbc531', 12, 0.8);
                     
+                    comboMultiplier.current = 1; // Reset combo
+                    comboTimer.current = 0;
+                    
                     const dmg = 12;
                     if (shieldRef.current > 0) {
                         setShieldLevel(shieldRef.current - dmg * 0.7);
@@ -1172,23 +1311,67 @@ export function SpaceBomberGame() {
                     const dx = b.x - enemy.x;
                     const dy = b.y - enemy.y;
                     const dist = Math.sqrt(dx * dx + dy * dy);
-                    const radius = enemy.type === 'turret' ? 12 : 9;
+                    const radius = enemy.type === 'turret' ? 12 : (enemy.type === 'boss' ? 25 : 9);
 
                     if (dist < radius) {
-                        b.life = 0;
-                        enemy.health--;
+                        if (!b.isBeam) b.life = 0; // beam pierces
+                        
+                        const dmg = b.isBeam ? 2 : 1; // Beam deals more damage per tick
+                        enemy.health -= dmg;
+                        
+                        if (enemy.type === 'boss') {
+                            setBossHealth(Math.max(0, enemy.health));
+                        }
+                        
                         createExplosion(enemy.x, enemy.y, '#e84118', 6, 0.6);
 
                         if (enemy.health <= 0) {
                             enemy.active = false;
                             scene.remove(enemy.mesh);
                             soundRef.current?.playExplosion();
-                            createExplosion(enemy.x, enemy.y, '#00d2d3', 25, 1.4);
-                            setScore(s => s + 150);
-                            addLog(`Düşman Ünitesi İmha Edildi. +150 Sk`);
+                            createExplosion(enemy.x, enemy.y, '#00d2d3', enemy.type === 'boss' ? 120 : 25, enemy.type === 'boss' ? 4.0 : 1.4);
+                            
+                            comboMultiplier.current += 1;
+                            comboTimer.current = 2.0; // 2 seconds to keep combo
+                            const scoreGained = (enemy.type === 'boss' ? 5000 : 150) * comboMultiplier.current;
+                            setScore(s => s + scoreGained);
+                            
+                            addLog(`Düşman Ünitesi İmha Edildi. +${scoreGained} Sk (x${comboMultiplier.current} Kombo)`);
+                            
+                            // Spawn Floating Text for Score
+                            floatingTexts.current.push({
+                                id: Math.random(),
+                                text: `${scoreGained}`,
+                                x: enemy.x,
+                                y: enemy.y + 10,
+                                life: 1.5,
+                                color: comboMultiplier.current > 2 ? '#ff9f43' : '#ffffff'
+                            });
 
-                            // Drop energy crystal
-                            const crystalGeo = new THREE.OctahedronGeometry(2.2);
+                            // Drop energy crystal or PowerUp
+                            const randDrop = Math.random();
+                            if (randDrop > 0.8) {
+                                // Drop PowerUp
+                                const pType = Math.random() > 0.5 ? 'multi' : 'beam';
+                                const pGeo = new THREE.BoxGeometry(4, 4, 4);
+                                const pMat = new THREE.MeshBasicMaterial({ color: pType === 'multi' ? '#0984e3' : '#d63031' });
+                                const pMesh = new THREE.Mesh(pGeo, pMat);
+                                pMesh.position.set(enemy.x, enemy.y, 0);
+                                scene.add(pMesh);
+                                
+                                powerUps.current.push({
+                                    id: Math.random(),
+                                    x: enemy.x,
+                                    y: enemy.y,
+                                    vx: (Math.random() - 0.5) * 3,
+                                    vy: 4 + Math.random() * 2,
+                                    type: pType as 'multi' | 'beam',
+                                    active: true,
+                                    mesh: pMesh
+                                });
+                            } else {
+                                // Drop regular crystal
+                                const crystalGeo = new THREE.OctahedronGeometry(2.2);
                             const crystalMat = new THREE.MeshStandardMaterial({
                                 color: '#44bd32',
                                 emissive: '#1b4d14',
@@ -1207,6 +1390,7 @@ export function SpaceBomberGame() {
                                 active: true,
                                 mesh: cMesh
                             });
+                            }
 
                             // Check Victory
                             const remaining = enemies.current.filter(e => e.active).length;
@@ -1285,6 +1469,112 @@ export function SpaceBomberGame() {
         // Filter out inactive crystals
         crystals.current = crystals.current.filter(c => c.active);
 
+        // --- POWER UP PHYSICS & COLLECTION ---
+        powerUps.current.forEach(p => {
+            if (!p.active) return;
+            p.mesh.rotation.y += 0.08 * dt;
+            p.mesh.rotation.x += 0.08 * dt;
+            p.vy -= 0.04 * dt;
+            p.vx *= 0.98;
+            p.vy *= 0.98;
+            p.x += p.vx * dt;
+            p.y += p.vy * dt;
+
+            const gHeight = getGroundHeight(p.x);
+            if (p.y < gHeight + 2) {
+                p.y = gHeight + 2;
+                p.vy = 0;
+                p.vx = 0;
+            }
+
+            const pdx = shipPos.current.x - p.x;
+            const pdy = shipPos.current.y - p.y;
+            const dist = Math.sqrt(pdx * pdx + pdy * pdy);
+            
+            // Stronger magnetic pull for powerups
+            if (dist < 150) {
+                const pull = 0.35 * dt;
+                p.vx += (pdx / dist) * pull;
+                p.vy += (pdy / dist) * pull;
+            }
+
+            p.mesh.position.set(p.x, p.y, 0);
+
+            if (dist < SHIP_SIZE + 4) {
+                p.active = false;
+                scene.remove(p.mesh);
+                soundRef.current?.playCollect();
+                weaponType.current = p.type;
+                weaponTimer.current = 250; // Active for 250 ticks (~4-5 seconds)
+                createExplosion(p.x, p.y, p.type === 'multi' ? '#0984e3' : '#d63031', 30, 1.5);
+                addLog(`SİLAH GÜÇLENDİRİCİSİ ALINDI: ${p.type.toUpperCase()}`);
+                
+                floatingTexts.current.push({
+                    id: Math.random(),
+                    text: p.type.toUpperCase(),
+                    x: p.x,
+                    y: p.y + 15,
+                    life: 2.0,
+                    color: p.type === 'multi' ? '#0984e3' : '#d63031'
+                });
+            }
+        });
+        powerUps.current = powerUps.current.filter(p => p.active);
+
+        // --- FLOATING TEXT UPDATES & RENDER ---
+        floatingTexts.current.forEach(ft => {
+            ft.y += 0.5 * dt;
+            ft.life -= 0.016 * dt; // approx 1 second
+        });
+        floatingTexts.current = floatingTexts.current.filter(ft => ft.life > 0);
+        
+        if (floatingTextContainerRef.current) {
+            floatingTextContainerRef.current.innerHTML = '';
+            floatingTexts.current.forEach(ft => {
+                const vec = new THREE.Vector3(ft.x, ft.y, 0);
+                vec.project(camera);
+                
+                // Convert to screen coordinates based on container size, not window
+                const width = canvasRef.current?.clientWidth || 800;
+                const height = canvasRef.current?.clientHeight || 550;
+                const screenX = (vec.x * 0.5 + 0.5) * width;
+                const screenY = -(vec.y * 0.5 - 0.5) * height;
+                
+                const el = document.createElement('div');
+                el.innerText = ft.text;
+                el.style.position = 'absolute';
+                el.style.left = `${screenX}px`;
+                el.style.top = `${screenY}px`;
+                el.style.color = ft.color;
+                el.style.opacity = `${Math.max(0, ft.life)}`;
+                el.style.transform = 'translate(-50%, -50%)';
+                el.style.fontWeight = 'bold';
+                el.style.fontSize = '1.2rem';
+                el.style.textShadow = `0 0 10px ${ft.color}, 0 0 20px ${ft.color}`;
+                el.style.pointerEvents = 'none';
+                floatingTextContainerRef.current?.appendChild(el);
+            });
+        }
+
+        // --- COMBO & WEAPON TIMERS ---
+        if (comboTimer.current > 0) {
+            comboTimer.current -= 0.016 * dt;
+            if (comboTimer.current <= 0) {
+                if (comboMultiplier.current > 1) {
+                    addLog("Kombo Serisi Bozuldu.");
+                }
+                comboMultiplier.current = 1;
+            }
+        }
+        
+        if (weaponTimer.current > 0) {
+            weaponTimer.current -= dt;
+            if (weaponTimer.current <= 0) {
+                weaponType.current = 'normal';
+                addLog("Silah Güçlendiricisi Tükendi.");
+            }
+        }
+
         // --- 3D PARTICLE SYSTEMS METADATA UPDATE ---
         particles.current.forEach(p => {
             p.x += p.vx * dt;
@@ -1344,9 +1634,15 @@ export function SpaceBomberGame() {
         // Camera looks slightly ahead of the ship
         camera.lookAt(new THREE.Vector3(shipPos.current.x + 30, shipPos.current.y - 10, 0));
 
-        // Background planet and star updates (make them scroll slowly to give parallax depth)
+        // Background planet, star, and asteroid updates (parallax depth)
         if (backgroundStars.current) {
             backgroundStars.current.position.x = camera.position.x * 0.75;
+        }
+        if (asteroidMesh.current) {
+            // Asteroids move slightly to give illusion of depth and slow rotation
+            asteroidMesh.current.position.x = camera.position.x * 0.4;
+            asteroidMesh.current.rotation.y += 0.0005 * dt;
+            asteroidMesh.current.rotation.z += 0.0002 * dt;
         }
 
         // --- RADAR DATA ---
