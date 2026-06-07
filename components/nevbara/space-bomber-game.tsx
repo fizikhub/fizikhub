@@ -74,104 +74,240 @@ interface FloatingText {
 
 // --- Sound Synth Manager ---
 class SoundSynth {
-    ctx: AudioContext;
-    masterGain: GainNode;
+    ctx: AudioContext | null = null;
+    masterGain: GainNode | null = null;
     enabled: boolean = true;
+    
+    // Ambient engine sound
+    ambientOsc: OscillatorNode | null = null;
+    ambientFilter: BiquadFilterNode | null = null;
+    ambientGain: GainNode | null = null;
 
     constructor() {
-        this.ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
-        this.masterGain = this.ctx.createGain();
-        this.masterGain.gain.value = 0.4;
-        this.masterGain.connect(this.ctx.destination);
+        try {
+            const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+            if (AudioContextClass) {
+                this.ctx = new AudioContextClass();
+                this.masterGain = this.ctx.createGain();
+                this.masterGain.gain.value = 0.4;
+                this.masterGain.connect(this.ctx.destination);
+            }
+        } catch (e) {
+            console.error("SoundSynth AudioContext failed to initialize:", e);
+        }
     }
     
     setEnabled(val: boolean) {
         this.enabled = val;
-        this.masterGain.gain.value = val ? 0.4 : 0;
-    }
-
-    playShoot(isBeam = false) {
-        if (!this.enabled) return;
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
-        osc.connect(gain);
-        gain.connect(this.masterGain);
-
-        if (isBeam) {
-            osc.type = 'sawtooth';
-            osc.frequency.setValueAtTime(800, this.ctx.currentTime);
-            osc.frequency.exponentialRampToValueAtTime(100, this.ctx.currentTime + 0.3);
-            gain.gain.setValueAtTime(0.5, this.ctx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.3);
-            osc.start();
-            osc.stop(this.ctx.currentTime + 0.3);
-        } else {
-            osc.type = 'square';
-            osc.frequency.setValueAtTime(600, this.ctx.currentTime);
-            osc.frequency.exponentialRampToValueAtTime(100, this.ctx.currentTime + 0.1);
-            gain.gain.setValueAtTime(0.3, this.ctx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.1);
-            osc.start();
-            osc.stop(this.ctx.currentTime + 0.1);
+        if (this.masterGain) {
+            this.masterGain.gain.value = val ? 0.4 : 0;
         }
     }
 
+    startAmbient() {
+        if (!this.enabled || !this.ctx || !this.masterGain || this.ambientOsc) return;
+        try {
+            const osc = this.ctx.createOscillator();
+            const filter = this.ctx.createBiquadFilter();
+            const gain = this.ctx.createGain();
+
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(45, this.ctx.currentTime); // Low pitch rumble
+
+            filter.type = 'lowpass';
+            filter.frequency.setValueAtTime(150, this.ctx.currentTime);
+            filter.Q.setValueAtTime(3.0, this.ctx.currentTime); 
+
+            gain.gain.setValueAtTime(0.12, this.ctx.currentTime);
+
+            osc.connect(filter);
+            filter.connect(gain);
+            gain.connect(this.masterGain);
+
+            osc.start();
+
+            this.ambientOsc = osc;
+            this.ambientFilter = filter;
+            this.ambientGain = gain;
+        } catch (e) {
+            console.warn("Failed to start ambient audio:", e);
+        }
+    }
+
+    updateAmbient(speedRatio: number) {
+        if (!this.enabled || !this.ctx || !this.ambientOsc || !this.ambientFilter) return;
+        try {
+            const targetPitch = 45 + speedRatio * 35; // 45Hz to 80Hz
+            const targetCutoff = 150 + speedRatio * 400; // 150Hz to 550Hz
+            
+            this.ambientOsc.frequency.setTargetAtTime(targetPitch, this.ctx.currentTime, 0.1);
+            this.ambientFilter.frequency.setTargetAtTime(targetCutoff, this.ctx.currentTime, 0.1);
+        } catch (e) {}
+    }
+
+    stopAmbient() {
+        if (this.ambientOsc) {
+            try {
+                this.ambientOsc.stop();
+                this.ambientOsc.disconnect();
+            } catch (e) {}
+            this.ambientOsc = null;
+        }
+        if (this.ambientFilter) {
+            try {
+                this.ambientFilter.disconnect();
+            } catch (e) {}
+            this.ambientFilter = null;
+        }
+        if (this.ambientGain) {
+            try {
+                this.ambientGain.disconnect();
+            } catch (e) {}
+            this.ambientGain = null;
+        }
+    }
+
+    playShoot(isBeam = false) {
+        if (!this.enabled || !this.ctx || !this.masterGain) return;
+        try {
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.connect(gain);
+            gain.connect(this.masterGain);
+
+            if (isBeam) {
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(800, this.ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(100, this.ctx.currentTime + 0.3);
+                gain.gain.setValueAtTime(0.5, this.ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.3);
+                osc.start();
+                osc.stop(this.ctx.currentTime + 0.3);
+            } else {
+                osc.type = 'square';
+                osc.frequency.setValueAtTime(600, this.ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(100, this.ctx.currentTime + 0.1);
+                gain.gain.setValueAtTime(0.3, this.ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.1);
+                osc.start();
+                osc.stop(this.ctx.currentTime + 0.1);
+            }
+        } catch (e) {}
+    }
+
     playExplosion() {
-        if (!this.enabled) return;
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
-        osc.connect(gain);
-        gain.connect(this.masterGain);
-        
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(100, this.ctx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(10, this.ctx.currentTime + 0.5);
-        gain.gain.setValueAtTime(0.8, this.ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.5);
-        
-        osc.start();
-        osc.stop(this.ctx.currentTime + 0.5);
+        if (!this.enabled || !this.ctx || !this.masterGain) return;
+        try {
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.connect(gain);
+            gain.connect(this.masterGain);
+            
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(100, this.ctx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(10, this.ctx.currentTime + 0.5);
+            gain.gain.setValueAtTime(0.8, this.ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.5);
+            
+            osc.start();
+            osc.stop(this.ctx.currentTime + 0.5);
+        } catch (e) {}
     }
 
     playCollect() {
-        if (!this.enabled) return;
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
-        osc.connect(gain);
-        gain.connect(this.masterGain);
-        
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(800, this.ctx.currentTime);
-        osc.frequency.linearRampToValueAtTime(1200, this.ctx.currentTime + 0.1);
-        gain.gain.setValueAtTime(0.4, this.ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.2);
-        
-        osc.start();
-        osc.stop(this.ctx.currentTime + 0.2);
+        if (!this.enabled || !this.ctx || !this.masterGain) return;
+        try {
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.connect(gain);
+            gain.connect(this.masterGain);
+            
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(800, this.ctx.currentTime);
+            osc.frequency.linearRampToValueAtTime(1200, this.ctx.currentTime + 0.1);
+            gain.gain.setValueAtTime(0.4, this.ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.2);
+            
+            osc.start();
+            osc.stop(this.ctx.currentTime + 0.2);
+        } catch (e) {}
     }
 
     playHyperspace() {
-        if (!this.enabled) return;
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
-        osc.connect(gain);
-        gain.connect(this.masterGain);
-        
-        osc.type = 'triangle';
-        osc.frequency.setValueAtTime(100, this.ctx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(2000, this.ctx.currentTime + 1.5);
-        gain.gain.setValueAtTime(0, this.ctx.currentTime);
-        gain.gain.linearRampToValueAtTime(0.6, this.ctx.currentTime + 1.0);
-        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 2.0);
-        
-        osc.start();
-        osc.stop(this.ctx.currentTime + 2.0);
+        if (!this.enabled || !this.ctx || !this.masterGain) return;
+        try {
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.connect(gain);
+            gain.connect(this.masterGain);
+            
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(100, this.ctx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(2000, this.ctx.currentTime + 1.5);
+            gain.gain.setValueAtTime(0, this.ctx.currentTime);
+            gain.gain.linearRampToValueAtTime(0.6, this.ctx.currentTime + 1.0);
+            gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 2.0);
+            
+            osc.start();
+            osc.stop(this.ctx.currentTime + 2.0);
+        } catch (e) {}
     }
 }
 
-// Global Consts
-const MAX_SPEED = 8.0;
+// Global Consts & Ship Specs
 const MIN_SPEED = 0.5;
+
+interface ShipClass {
+    id: 'vanguard' | 'interceptor' | 'dreadnought';
+    name: string;
+    description: string;
+    maxSpeed: number;
+    maxShield: number;
+    maxArmor: number;
+    laserColor: string;
+    weaponPattern: 'normal' | 'multi' | 'beam';
+    turnSensitivity: number;
+    modelColor: number;
+}
+
+const SHIP_CLASSES: ShipClass[] = [
+    {
+        id: 'vanguard',
+        name: 'Void Vanguard',
+        description: 'Dengeli uçuş modülü ve standart çift yeşil lazer silahı ile donatılmış standart zırhlı kruvazör.',
+        maxSpeed: 8.0,
+        maxShield: 100,
+        maxArmor: 100,
+        laserColor: '#0be881',
+        weaponPattern: 'normal',
+        turnSensitivity: 0.02,
+        modelColor: 0x222222
+    },
+    {
+        id: 'interceptor',
+        name: 'Nevbara Interceptor',
+        description: 'Yüksek manevra kabiliyeti, artırılmış maksimum hız ve seri ateşlenen turuncu plazma lazerleri. Düşük kalkan.',
+        maxSpeed: 11.5,
+        maxShield: 70,
+        maxArmor: 80,
+        laserColor: '#ff9f43',
+        weaponPattern: 'multi',
+        turnSensitivity: 0.027,
+        modelColor: 0xe67e22
+    },
+    {
+        id: 'dreadnought',
+        name: 'Titan Dreadnought',
+        description: 'Güçlendirilmiş titanyum zırh ve aşırı yüklenmiş kalkan jeneratörleri. Yavaş hız, yıkıcı mavi dalga lazeri.',
+        maxSpeed: 6.0,
+        maxShield: 150,
+        maxArmor: 150,
+        laserColor: '#00d2d3',
+        weaponPattern: 'beam',
+        turnSensitivity: 0.015,
+        modelColor: 0x2c3e50
+    }
+];
 
 export function SpaceBomberGame() {
     const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -181,6 +317,14 @@ export function SpaceBomberGame() {
     // Sound manager ref
     const soundRef = useRef<SoundSynth | null>(null);
     const [soundEnabled, setSoundEnabled] = useState(true);
+
+    // Ship Class state
+    const [selectedShipId, setSelectedShipId] = useState<'vanguard' | 'interceptor' | 'dreadnought'>('vanguard');
+    const [webglError, setWebglError] = useState<string | null>(null);
+
+    const currentShipClass = useMemo(() => {
+        return SHIP_CLASSES.find(s => s.id === selectedShipId) || SHIP_CLASSES[0];
+    }, [selectedShipId]);
 
     // Game states
     const [gameState, setGameState] = useState<'idle' | 'hyperspace' | 'playing' | 'paused' | 'gameover' | 'victory'>('idle');
@@ -222,6 +366,8 @@ export function SpaceBomberGame() {
     const thrusterFlameMeshL = useRef<THREE.Mesh | null>(null);
     const thrusterFlameMeshR = useRef<THREE.Mesh | null>(null);
     const shieldBubbleMesh = useRef<THREE.Mesh | null>(null);
+    const speedLinesGroup = useRef<THREE.Group | null>(null);
+    const shieldHitLife = useRef<number>(0);
     const asteroidMesh = useRef<THREE.InstancedMesh | null>(null);
     const starPoints = useRef<THREE.Points | null>(null);
     const starMaterial = useRef<THREE.PointsMaterial | null>(null);
@@ -308,30 +454,35 @@ export function SpaceBomberGame() {
     }, []);
 
     const setShieldLevel = useCallback((value: number) => {
-        const clamped = Math.max(0, Math.min(100, value));
+        if (value < shieldRef.current) {
+            shieldHitLife.current = 1.0;
+        }
+        const clamped = Math.max(0, Math.min(currentShipClass.maxShield, value));
         shieldRef.current = clamped;
         setShield(Math.round(clamped));
-    }, []);
+    }, [currentShipClass]);
 
     const setArmorLevel = useCallback((value: number) => {
-        const clamped = Math.max(0, Math.min(100, value));
+        const clamped = Math.max(0, Math.min(currentShipClass.maxArmor, value));
+        const prevArmor = armorRef.current;
         armorRef.current = clamped;
         setArmor(Math.round(clamped));
 
         if (clamped <= 0) {
             soundRef.current?.playExplosion();
+            soundRef.current?.stopAmbient();
             createExplosion(shipPos.current.x, shipPos.current.y, shipPos.current.z, '#ff4a11', 150, 3.5);
             createShockwave(shipPos.current.x, shipPos.current.y, shipPos.current.z, '#ff4a11');
             setGameState('gameover');
             if (playerShipGroup.current) playerShipGroup.current.visible = false;
-        } else if (value < armorRef.current) {
+        } else if (value < prevArmor) {
             // Trigger Glitch
             if (glitchPassRef.current) {
                 glitchPassRef.current.enabled = true;
                 setTimeout(() => { if (glitchPassRef.current) glitchPassRef.current.enabled = false; }, 200);
             }
         }
-    }, [createExplosion, createShockwave]);
+    }, [createExplosion, createShockwave, currentShipClass]);
 
     const clearAllEntities = useCallback(() => {
         const scene = sceneRef.current;
@@ -349,247 +500,292 @@ export function SpaceBomberGame() {
         const canvas = canvasRef.current;
         if (!canvas) return;
 
-        if (rendererRef.current) {
-            rendererRef.current.dispose();
-        }
+        try {
+            if (rendererRef.current) {
+                rendererRef.current.dispose();
+            }
 
-        const width = canvas.clientWidth || 800;
-        const height = canvas.clientHeight || 550;
+            const width = canvas.clientWidth || 800;
+            const height = canvas.clientHeight || 550;
 
-        const scene = new THREE.Scene();
-        scene.background = new THREE.Color('#030109');
-        scene.fog = new THREE.FogExp2('#030109', 0.0010);
-        sceneRef.current = scene;
+            const scene = new THREE.Scene();
+            scene.background = new THREE.Color('#030109');
+            scene.fog = new THREE.FogExp2('#030109', 0.0010);
+            sceneRef.current = scene;
 
-        const camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 8000);
-        camera.position.set(0, 10, 30);
-        cameraRef3D.current = camera;
+            const camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 8000);
+            camera.position.set(0, 10, 30);
+            cameraRef3D.current = camera;
 
-        const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
-        renderer.setSize(width, height);
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-        rendererRef.current = renderer;
+            const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
+            renderer.setSize(width, height);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            rendererRef.current = renderer;
 
-        const composer = new EffectComposer(renderer);
-        const renderPass = new RenderPass(scene, camera);
-        composer.addPass(renderPass);
+            const composer = new EffectComposer(renderer);
+            const renderPass = new RenderPass(scene, camera);
+            composer.addPass(renderPass);
 
-        const filmPass = new FilmPass(0.35, false);
-        composer.addPass(filmPass);
+            const filmPass = new FilmPass(0.35, false);
+            composer.addPass(filmPass);
 
-        const bloomPass = new UnrealBloomPass(new THREE.Vector2(width, height), 1.5, 0.5, 0.85);
-        composer.addPass(bloomPass);
-        
-        const glitchPass = new GlitchPass();
-        glitchPass.enabled = false;
-        glitchPass.goWild = false;
-        composer.addPass(glitchPass);
-        
-        composerRef.current = composer;
-        glitchPassRef.current = glitchPass;
-
-        // Lighting
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
-        scene.add(ambientLight);
-        const dirLight = new THREE.DirectionalLight(0xa29bfe, 2.0);
-        dirLight.position.set(100, 200, 50);
-        scene.add(dirLight);
-
-        // --- SHIP MESH (Advanced Starfighter) ---
-        const shipGroup = new THREE.Group();
-        
-        // Fuselage
-        const fuselageGeo = new THREE.BoxGeometry(2, 1.5, 8);
-        const fuselageMat = new THREE.MeshStandardMaterial({ color: 0x222222, roughness: 0.2, metalness: 0.9 });
-        const fuselage = new THREE.Mesh(fuselageGeo, fuselageMat);
-        shipGroup.add(fuselage);
-
-        // Nose
-        const noseGeo = new THREE.ConeGeometry(1, 5, 4);
-        const noseMat = new THREE.MeshStandardMaterial({ color: 0x333333, roughness: 0.3, metalness: 0.9 });
-        const nose = new THREE.Mesh(noseGeo, noseMat);
-        nose.position.set(0, 0, -6.5);
-        nose.rotation.x = -Math.PI / 2;
-        nose.rotation.y = Math.PI / 4;
-        shipGroup.add(nose);
-
-        // Cockpit
-        const cockpitGeo = new THREE.BoxGeometry(1.4, 1.2, 3);
-        const cockpitMat = new THREE.MeshStandardMaterial({ color: 0x00ffff, transparent: true, opacity: 0.8, roughness: 0.1, metalness: 1.0, emissive: 0x005555 });
-        const cockpit = new THREE.Mesh(cockpitGeo, cockpitMat);
-        cockpit.position.set(0, 1.2, -1);
-        shipGroup.add(cockpit);
-
-        // Wings (Swept back)
-        const wingShape = new THREE.Shape();
-        wingShape.moveTo(0, 0);
-        wingShape.lineTo(8, -4);
-        wingShape.lineTo(8, -6);
-        wingShape.lineTo(0, -2);
-        
-        const extrudeSettings = { depth: 0.3, bevelEnabled: true, bevelSegments: 2, steps: 1, bevelSize: 0.1, bevelThickness: 0.1 };
-        const wingGeoL = new THREE.ExtrudeGeometry(wingShape, extrudeSettings);
-        const wingMat = new THREE.MeshStandardMaterial({ color: 0x111111, roughness: 0.5, metalness: 0.8 });
-        
-        const wingL = new THREE.Mesh(wingGeoL, wingMat);
-        wingL.rotation.x = Math.PI / 2;
-        wingL.position.set(0, -0.2, 2);
-        shipGroup.add(wingL);
-
-        const wingGeoR = wingGeoL.clone();
-        wingGeoR.applyMatrix4(new THREE.Matrix4().makeScale(-1, 1, 1));
-        const wingR = new THREE.Mesh(wingGeoR, wingMat);
-        wingR.rotation.x = Math.PI / 2;
-        wingR.position.set(0, -0.2, 2);
-        shipGroup.add(wingR);
-        
-        // Wingtips Glow
-        const wingTipGeo = new THREE.BoxGeometry(0.4, 1.5, 3);
-        const wingTipMat = new THREE.MeshStandardMaterial({ color: 0x0984e3, emissive: 0x0984e3, emissiveIntensity: 1.5 });
-        const wingTipL = new THREE.Mesh(wingTipGeo, wingTipMat);
-        wingTipL.position.set(-8, 0.2, 5);
-        shipGroup.add(wingTipL);
-        const wingTipR = new THREE.Mesh(wingTipGeo, wingTipMat);
-        wingTipR.position.set(8, 0.2, 5);
-        shipGroup.add(wingTipR);
-
-        // Thrusters
-        const thrusterGeo = new THREE.CylinderGeometry(0.6, 0.9, 2, 8);
-        const thrusterMat = new THREE.MeshStandardMaterial({ color: 0x050505, roughness: 0.5, metalness: 0.9 });
-        const thrusterL = new THREE.Mesh(thrusterGeo, thrusterMat);
-        thrusterL.rotation.x = Math.PI / 2;
-        thrusterL.position.set(-1.5, 0, 4);
-        shipGroup.add(thrusterL);
-        
-        const thrusterR = new THREE.Mesh(thrusterGeo, thrusterMat);
-        thrusterR.rotation.x = Math.PI / 2;
-        thrusterR.position.set(1.5, 0, 4);
-        shipGroup.add(thrusterR);
-
-        // Flames
-        const flameGeo = new THREE.ConeGeometry(0.6, 4, 8);
-        const flameMat = new THREE.MeshBasicMaterial({ color: 0x00ffff, transparent: true, opacity: 0.9, blending: THREE.AdditiveBlending });
-        const flameL = new THREE.Mesh(flameGeo, flameMat);
-        flameL.rotation.x = -Math.PI / 2;
-        flameL.position.set(-1.5, 0, 6.5);
-        shipGroup.add(flameL);
-        thrusterFlameMeshL.current = flameL;
-
-        const flameR = new THREE.Mesh(flameGeo, flameMat);
-        flameR.rotation.x = -Math.PI / 2;
-        flameR.position.set(1.5, 0, 6.5);
-        shipGroup.add(flameR);
-        thrusterFlameMeshR.current = flameR;
-
-        // Shield Bubble (Hidden as requested)
-        const shieldGeo = new THREE.SphereGeometry(7, 32, 32);
-        const sMat = new THREE.MeshBasicMaterial({ color: 0x00d2d3, wireframe: true, transparent: true, opacity: 0.0, visible: false });
-        const shieldBubble = new THREE.Mesh(shieldGeo, sMat);
-        shipGroup.add(shieldBubble);
-        shieldBubbleMesh.current = shieldBubble;
-
-        scene.add(shipGroup);
-        playerShipGroup.current = shipGroup;
-
-        // --- STARFIELD ---
-        const sGeo = new THREE.BufferGeometry();
-        const starCount = 8000;
-        const sPos = new Float32Array(starCount * 3);
-        const sColors = new Float32Array(starCount * 3);
-        const c1 = new THREE.Color('#ffffff');
-        const c2 = new THREE.Color('#00ffff');
-        const c3 = new THREE.Color('#ff00ff');
-
-        for (let i = 0; i < starCount; i++) {
-            const r = 300 + Math.random() * 4000;
-            const theta = Math.random() * 2 * Math.PI;
-            const phi = Math.acos(2 * Math.random() - 1);
+            const bloomPass = new UnrealBloomPass(new THREE.Vector2(width, height), 1.5, 0.5, 0.85);
+            composer.addPass(bloomPass);
             
-            sPos[i * 3] = r * Math.sin(phi) * Math.cos(theta);
-            sPos[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
-            sPos[i * 3 + 2] = r * Math.cos(phi);
+            const glitchPass = new GlitchPass();
+            glitchPass.enabled = false;
+            glitchPass.goWild = false;
+            composer.addPass(glitchPass);
+            
+            composerRef.current = composer;
+            glitchPassRef.current = glitchPass;
 
-            const rnd = Math.random();
-            const col = rnd > 0.9 ? c2 : (rnd > 0.8 ? c3 : c1);
-            sColors[i * 3] = col.r;
-            sColors[i * 3 + 1] = col.g;
-            sColors[i * 3 + 2] = col.b;
+            // Lighting
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
+            scene.add(ambientLight);
+            const dirLight = new THREE.DirectionalLight(0xa29bfe, 2.0);
+            dirLight.position.set(100, 200, 50);
+            scene.add(dirLight);
+
+            // --- SHIP MESH (Advanced Starfighter) ---
+            const shipGroup = new THREE.Group();
+            
+            if (currentShipClass.id === 'dreadnought') {
+                shipGroup.scale.set(1.4, 1.3, 1.2);
+            } else if (currentShipClass.id === 'interceptor') {
+                shipGroup.scale.set(0.85, 0.85, 0.95);
+            } else {
+                shipGroup.scale.set(1.0, 1.0, 1.0);
+            }
+            
+            // Fuselage
+            const fuselageGeo = new THREE.BoxGeometry(2, 1.5, 8);
+            const fuselageMat = new THREE.MeshStandardMaterial({ color: currentShipClass.modelColor, roughness: 0.2, metalness: 0.9 });
+            const fuselage = new THREE.Mesh(fuselageGeo, fuselageMat);
+            shipGroup.add(fuselage);
+
+            // Nose
+            const noseGeo = new THREE.ConeGeometry(1, 5, 4);
+            const noseMat = new THREE.MeshStandardMaterial({ color: 0x333333, roughness: 0.3, metalness: 0.9 });
+            const nose = new THREE.Mesh(noseGeo, noseMat);
+            nose.position.set(0, 0, -6.5);
+            nose.rotation.x = -Math.PI / 2;
+            nose.rotation.y = Math.PI / 4;
+            shipGroup.add(nose);
+
+            // Cockpit
+            const cockpitGeo = new THREE.BoxGeometry(1.4, 1.2, 3);
+            const cockpitMat = new THREE.MeshStandardMaterial({ color: 0x00ffff, transparent: true, opacity: 0.8, roughness: 0.1, metalness: 1.0, emissive: 0x005555 });
+            const cockpit = new THREE.Mesh(cockpitGeo, cockpitMat);
+            cockpit.position.set(0, 1.2, -1);
+            shipGroup.add(cockpit);
+
+            // Wings (Swept back)
+            const wingShape = new THREE.Shape();
+            wingShape.moveTo(0, 0);
+            if (currentShipClass.id === 'interceptor') {
+                wingShape.lineTo(9, -6);
+                wingShape.lineTo(9, -8);
+            } else if (currentShipClass.id === 'dreadnought') {
+                wingShape.lineTo(7, -3);
+                wingShape.lineTo(7, -5);
+            } else {
+                wingShape.lineTo(8, -4);
+                wingShape.lineTo(8, -6);
+            }
+            wingShape.lineTo(0, -2);
+            
+            const extrudeSettings = { depth: 0.3, bevelEnabled: true, bevelSegments: 2, steps: 1, bevelSize: 0.1, bevelThickness: 0.1 };
+            const wingGeoL = new THREE.ExtrudeGeometry(wingShape, extrudeSettings);
+            const wingMat = new THREE.MeshStandardMaterial({ color: 0x111111, roughness: 0.5, metalness: 0.8 });
+            
+            const wingL = new THREE.Mesh(wingGeoL, wingMat);
+            wingL.rotation.x = Math.PI / 2;
+            wingL.position.set(0, -0.2, 2);
+            shipGroup.add(wingL);
+
+            const wingGeoR = wingGeoL.clone();
+            wingGeoR.applyMatrix4(new THREE.Matrix4().makeScale(-1, 1, 1));
+            const wingR = new THREE.Mesh(wingGeoR, wingMat);
+            wingR.rotation.x = Math.PI / 2;
+            wingR.position.set(0, -0.2, 2);
+            shipGroup.add(wingR);
+            
+            // Wingtips Glow
+            const wingTipGeo = new THREE.BoxGeometry(0.4, 1.5, 3);
+            const tipColor = new THREE.Color(currentShipClass.laserColor);
+            const wingTipMat = new THREE.MeshStandardMaterial({ color: tipColor, emissive: tipColor, emissiveIntensity: 1.5 });
+            const wingTipL = new THREE.Mesh(wingTipGeo, wingTipMat);
+            const tipX = currentShipClass.id === 'interceptor' ? -9 : (currentShipClass.id === 'dreadnought' ? -7 : -8);
+            wingTipL.position.set(tipX, 0.2, 5);
+            shipGroup.add(wingTipL);
+            const wingTipR = new THREE.Mesh(wingTipGeo, wingTipMat);
+            wingTipR.position.set(-tipX, 0.2, 5);
+            shipGroup.add(wingTipR);
+
+            // Thrusters
+            const thrusterGeo = new THREE.CylinderGeometry(0.6, 0.9, 2, 8);
+            const thrusterMat = new THREE.MeshStandardMaterial({ color: 0x050505, roughness: 0.5, metalness: 0.9 });
+            const thrusterL = new THREE.Mesh(thrusterGeo, thrusterMat);
+            thrusterL.rotation.x = Math.PI / 2;
+            thrusterL.position.set(-1.5, 0, 4);
+            shipGroup.add(thrusterL);
+            
+            const thrusterR = new THREE.Mesh(thrusterGeo, thrusterMat);
+            thrusterR.rotation.x = Math.PI / 2;
+            thrusterR.position.set(1.5, 0, 4);
+            shipGroup.add(thrusterR);
+
+            // Flames
+            const flameGeo = new THREE.ConeGeometry(0.6, 4, 8);
+            const flameMat = new THREE.MeshBasicMaterial({ color: tipColor, transparent: true, opacity: 0.9, blending: THREE.AdditiveBlending });
+            const flameL = new THREE.Mesh(flameGeo, flameMat);
+            flameL.rotation.x = -Math.PI / 2;
+            flameL.position.set(-1.5, 0, 6.5);
+            shipGroup.add(flameL);
+            thrusterFlameMeshL.current = flameL;
+
+            const flameR = new THREE.Mesh(flameGeo, flameMat);
+            flameR.rotation.x = -Math.PI / 2;
+            flameR.position.set(1.5, 0, 6.5);
+            shipGroup.add(flameR);
+            thrusterFlameMeshR.current = flameR;
+
+            // Shield Bubble
+            const shieldGeo = new THREE.SphereGeometry(currentShipClass.id === 'dreadnought' ? 8.5 : 7, 16, 16);
+            const sMat = new THREE.MeshBasicMaterial({ 
+                color: tipColor, 
+                wireframe: true, 
+                transparent: true, 
+                opacity: 0.0,
+                blending: THREE.AdditiveBlending 
+            });
+            const shieldBubble = new THREE.Mesh(shieldGeo, sMat);
+            shipGroup.add(shieldBubble);
+            shieldBubbleMesh.current = shieldBubble;
+
+            scene.add(shipGroup);
+            playerShipGroup.current = shipGroup;
+
+            // --- WARP / SPEED LINES ---
+            const linesGroup = new THREE.Group();
+            const lineMat = new THREE.LineBasicMaterial({ color: tipColor, transparent: true, opacity: 0.0, blending: THREE.AdditiveBlending });
+            for (let i = 0; i < 40; i++) {
+                const points = [];
+                points.push(new THREE.Vector3(0, 0, 0));
+                points.push(new THREE.Vector3(0, 0, -12));
+                const lineGeo = new THREE.BufferGeometry().setFromPoints(points);
+                const line = new THREE.Line(lineGeo, lineMat);
+                line.position.set(
+                    (Math.random() - 0.5) * 140,
+                    (Math.random() - 0.5) * 140,
+                    -100 - Math.random() * 200
+                );
+                linesGroup.add(line);
+            }
+            scene.add(linesGroup);
+            speedLinesGroup.current = linesGroup;
+
+            // --- STARFIELD ---
+            const sGeo = new THREE.BufferGeometry();
+            const starCount = 8000;
+            const sPos = new Float32Array(starCount * 3);
+            const sColors = new Float32Array(starCount * 3);
+            const c1 = new THREE.Color('#ffffff');
+            const c2 = new THREE.Color(currentShipClass.laserColor);
+            const c3 = new THREE.Color('#ff00ff');
+
+            for (let i = 0; i < starCount; i++) {
+                const r = 300 + Math.random() * 4000;
+                const theta = Math.random() * 2 * Math.PI;
+                const phi = Math.acos(2 * Math.random() - 1);
+                
+                sPos[i * 3] = r * Math.sin(phi) * Math.cos(theta);
+                sPos[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
+                sPos[i * 3 + 2] = r * Math.cos(phi);
+
+                const rnd = Math.random();
+                const col = rnd > 0.9 ? c2 : (rnd > 0.8 ? c3 : c1);
+                sColors[i * 3] = col.r;
+                sColors[i * 3 + 1] = col.g;
+                sColors[i * 3 + 2] = col.b;
+            }
+            sGeo.setAttribute('position', new THREE.BufferAttribute(sPos, 3));
+            sGeo.setAttribute('color', new THREE.BufferAttribute(sColors, 3));
+            const sMat2 = new THREE.PointsMaterial({ size: 1.5, vertexColors: true, transparent: true, opacity: 0.9, sizeAttenuation: true });
+            starMaterial.current = sMat2;
+            const stars = new THREE.Points(sGeo, sMat2);
+            scene.add(stars);
+            starPoints.current = stars;
+
+            // --- 3D ASTEROID FIELD ---
+            const astGeo = new THREE.DodecahedronGeometry(15, 1);
+            const astMat = new THREE.MeshStandardMaterial({ color: 0x444444, roughness: 0.9, metalness: 0.1 });
+            const astCount = 600;
+            const instancedAst = new THREE.InstancedMesh(astGeo, astMat, astCount);
+            
+            const dummy = new THREE.Object3D();
+            for (let i = 0; i < astCount; i++) {
+                dummy.position.set(
+                    (Math.random() - 0.5) * 6000,
+                    (Math.random() - 0.5) * 6000,
+                    (Math.random() - 0.5) * 6000
+                );
+                const scale = Math.random() * 4 + 0.5;
+                dummy.scale.set(scale, scale, scale);
+                dummy.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, Math.random() * Math.PI);
+                dummy.updateMatrix();
+                instancedAst.setMatrixAt(i, dummy.matrix);
+            }
+            
+            const rotSpeeds = new Float32Array(astCount * 3);
+            for (let i=0; i<astCount*3; i++) rotSpeeds[i] = (Math.random() - 0.5) * 0.02;
+            instancedAst.geometry.setAttribute('aRotSpeed', new THREE.InstancedBufferAttribute(rotSpeeds, 3));
+
+            scene.add(instancedAst);
+            asteroidMesh.current = instancedAst;
+
+            // --- GLSL WORMHOLE SHADER ---
+            const portalGeo = new THREE.PlaneGeometry(6000, 6000);
+            const portalMat = new THREE.ShaderMaterial({
+                uniforms: {
+                    time: { value: 0.0 },
+                    color: { value: new THREE.Color(currentShipClass.laserColor) }
+                },
+                vertexShader: `
+                    varying vec2 vUv;
+                    void main() {
+                        vUv = uv;
+                        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+                    }
+                `,
+                fragmentShader: `
+                    uniform float time;
+                    uniform vec3 color;
+                    varying vec2 vUv;
+                    void main() {
+                        vec2 p = -1.0 + 2.0 * vUv;
+                        float r = length(p);
+                        float a = atan(p.y, p.x);
+                        float f = cos(a * 8.0 + time * 1.5) * sin(r * 15.0 - time * 3.0);
+                        float glow = 0.05 / r;
+                        float alpha = smoothstep(1.0, 0.0, r) * (f * 0.5 + 0.5 + glow);
+                        gl_FragColor = vec4(color * glow * 2.0, alpha * 0.4);
+                    }
+                `,
+                transparent: true,
+                blending: THREE.AdditiveBlending,
+                depthWrite: false
+            });
+            const portalMesh = new THREE.Mesh(portalGeo, portalMat);
+            portalMesh.position.set(0, 0, -4500);
+            scene.add(portalMesh);
+            wormholeMatRef.current = portalMat;
+        } catch (e: any) {
+            console.error("WebGL Init failed:", e);
+            setWebglError(e.message || "WebGL initialization failed. Make sure your browser has hardware acceleration enabled.");
         }
-        sGeo.setAttribute('position', new THREE.BufferAttribute(sPos, 3));
-        sGeo.setAttribute('color', new THREE.BufferAttribute(sColors, 3));
-        const sMat2 = new THREE.PointsMaterial({ size: 1.5, vertexColors: true, transparent: true, opacity: 0.9, sizeAttenuation: true });
-        starMaterial.current = sMat2;
-        const stars = new THREE.Points(sGeo, sMat2);
-        scene.add(stars);
-        starPoints.current = stars;
-
-        // --- 3D ASTEROID FIELD ---
-        const astGeo = new THREE.DodecahedronGeometry(15, 1);
-        const astMat = new THREE.MeshStandardMaterial({ color: 0x444444, roughness: 0.9, metalness: 0.1 });
-        const astCount = 600;
-        const instancedAst = new THREE.InstancedMesh(astGeo, astMat, astCount);
-        
-        const dummy = new THREE.Object3D();
-        for (let i = 0; i < astCount; i++) {
-            dummy.position.set(
-                (Math.random() - 0.5) * 6000,
-                (Math.random() - 0.5) * 6000,
-                (Math.random() - 0.5) * 6000
-            );
-            const scale = Math.random() * 4 + 0.5;
-            dummy.scale.set(scale, scale, scale);
-            dummy.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, Math.random() * Math.PI);
-            dummy.updateMatrix();
-            instancedAst.setMatrixAt(i, dummy.matrix);
-        }
-        
-        // Add custom attribute to store rotation speeds for animation
-        const rotSpeeds = new Float32Array(astCount * 3);
-        for (let i=0; i<astCount*3; i++) rotSpeeds[i] = (Math.random() - 0.5) * 0.02;
-        instancedAst.geometry.setAttribute('aRotSpeed', new THREE.InstancedBufferAttribute(rotSpeeds, 3));
-
-        scene.add(instancedAst);
-        asteroidMesh.current = instancedAst;
-
-        // --- GLSL WORMHOLE SHADER ---
-        const portalGeo = new THREE.PlaneGeometry(6000, 6000);
-        const portalMat = new THREE.ShaderMaterial({
-            uniforms: {
-                time: { value: 0.0 },
-                color: { value: new THREE.Color('#00ffff') }
-            },
-            vertexShader: `
-                varying vec2 vUv;
-                void main() {
-                    vUv = uv;
-                    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-                }
-            `,
-            fragmentShader: `
-                uniform float time;
-                uniform vec3 color;
-                varying vec2 vUv;
-                void main() {
-                    vec2 p = -1.0 + 2.0 * vUv;
-                    float r = length(p);
-                    float a = atan(p.y, p.x);
-                    // Swirling galaxy math
-                    float f = cos(a * 8.0 + time * 1.5) * sin(r * 15.0 - time * 3.0);
-                    float glow = 0.05 / r;
-                    float alpha = smoothstep(1.0, 0.0, r) * (f * 0.5 + 0.5 + glow);
-                    gl_FragColor = vec4(color * glow * 2.0, alpha * 0.4);
-                }
-            `,
-            transparent: true,
-            blending: THREE.AdditiveBlending,
-            depthWrite: false
-        });
-        const portalMesh = new THREE.Mesh(portalGeo, portalMat);
-        portalMesh.position.set(0, 0, -4500);
-        scene.add(portalMesh);
-        wormholeMatRef.current = portalMat;
-
-    }, []);
+    }, [currentShipClass]);
 
     const triggerHyperspace = useCallback(() => {
         setGameState('hyperspace');
@@ -601,8 +797,8 @@ export function SpaceBomberGame() {
     const buildLevelWorld = useCallback(() => {
         clearAllEntities();
         setFuelLevel(100);
-        setShieldLevel(100);
-        setArmorLevel(100);
+        setShieldLevel(currentShipClass.maxShield);
+        setArmorLevel(currentShipClass.maxArmor);
         setBossHealth(40);
         
         shipPos.current = new THREE.Vector3(0, 0, 0);
@@ -693,11 +889,11 @@ export function SpaceBomberGame() {
             }
         } else {
             if (wormholeMatRef.current) {
-                wormholeMatRef.current.uniforms.color.value = new THREE.Color('#00ffff');
+                wormholeMatRef.current.uniforms.color.value = new THREE.Color(currentShipClass.laserColor);
             }
         }
 
-    }, [clearAllEntities, level, setFuelLevel, setShieldLevel, setArmorLevel, addLog]);
+    }, [clearAllEntities, level, setFuelLevel, setShieldLevel, setArmorLevel, addLog, currentShipClass]);
 
     const spawnBullet = useCallback((offsetX: number, offsetY: number, color: string, speedScale: number = 1.0, isBeam: boolean = false) => {
         if (!sceneRef.current || !playerShipGroup.current) return;
@@ -736,20 +932,25 @@ export function SpaceBomberGame() {
     const fireWeapon = useCallback(() => {
         if (gameState !== 'playing' || fuelRef.current <= 0) return;
         
-        if (weaponType.current === 'beam') {
-            spawnBullet(0, 0, '#ff4757', 3.0, true);
+        const activeWeaponPattern = weaponTimer.current > 0 ? weaponType.current : currentShipClass.weaponPattern;
+        const activeLaserColor = weaponTimer.current > 0 
+            ? (weaponType.current === 'beam' ? '#ff4757' : '#00d2d3') 
+            : currentShipClass.laserColor;
+
+        if (activeWeaponPattern === 'beam') {
+            spawnBullet(0, 0, activeLaserColor, 3.0, true);
             soundRef.current?.playShoot(true);
-        } else if (weaponType.current === 'multi') {
-            spawnBullet(-4, 0, '#00d2d3', 1.0);
-            spawnBullet(4, 0, '#00d2d3', 1.0);
-            spawnBullet(0, 3, '#00d2d3', 1.0);
+        } else if (activeWeaponPattern === 'multi') {
+            spawnBullet(-4, 0, activeLaserColor, 1.0);
+            spawnBullet(4, 0, activeLaserColor, 1.0);
+            spawnBullet(0, 3, activeLaserColor, 1.0);
             soundRef.current?.playShoot();
         } else {
-            spawnBullet(-2, 0, '#0be881');
-            spawnBullet(2, 0, '#0be881');
+            spawnBullet(-2, 0, activeLaserColor);
+            spawnBullet(2, 0, activeLaserColor);
             soundRef.current?.playShoot();
         }
-    }, [gameState, spawnBullet]);
+    }, [gameState, spawnBullet, currentShipClass]);
 
     // Keyboard & Mouse Events
     useEffect(() => {
@@ -835,7 +1036,7 @@ export function SpaceBomberGame() {
             }
             
             // Move ship extremely fast forward
-            targetSpeed.current = MAX_SPEED * 10;
+            targetSpeed.current = currentShipClass.maxSpeed * 10;
             const forward = new THREE.Vector3(0, 0, -1).applyQuaternion(shipQuaternion.current);
             shipVel.current.copy(forward).multiplyScalar(targetSpeed.current);
             shipPos.current.addScaledVector(shipVel.current, dt);
@@ -856,8 +1057,8 @@ export function SpaceBomberGame() {
 
         // --- 1. SHIP MOVEMENT (6-DOF) & GAMEPAD ---
         // Slower sensitivity for laptop trackpads
-        let pitch = -mouseDelta.current.y * 0.02 * dt;
-        let yaw = -mouseDelta.current.x * 0.02 * dt;
+        let pitch = -mouseDelta.current.y * currentShipClass.turnSensitivity * dt;
+        let yaw = -mouseDelta.current.x * currentShipClass.turnSensitivity * dt;
         let roll = 0;
         
         // Gamepad API integration
@@ -872,7 +1073,7 @@ export function SpaceBomberGame() {
             
             // Triggers for speed
             if (gp.buttons[7] && gp.buttons[7].pressed) {
-                targetSpeed.current = Math.min(targetSpeed.current + 0.35 * dt, MAX_SPEED);
+                targetSpeed.current = Math.min(targetSpeed.current + 0.35 * dt, currentShipClass.maxSpeed);
                 if (fuelRef.current > 0) setFuelLevel(fuelRef.current - 0.05 * dt);
             } else if (gp.buttons[6] && gp.buttons[6].pressed) {
                 targetSpeed.current = Math.max(targetSpeed.current - 0.5 * dt, 0); 
@@ -895,7 +1096,7 @@ export function SpaceBomberGame() {
         if (keys.current['d']) roll -= 0.06 * dt;
 
         if (keys.current['w']) {
-            targetSpeed.current = Math.min(targetSpeed.current + 0.25 * dt, MAX_SPEED);
+            targetSpeed.current = Math.min(targetSpeed.current + 0.25 * dt, currentShipClass.maxSpeed);
             if (fuelRef.current > 0) setFuelLevel(fuelRef.current - 0.04 * dt);
         } else if (keys.current['s']) {
             targetSpeed.current = Math.max(targetSpeed.current - 0.4 * dt, 0); 
@@ -921,18 +1122,64 @@ export function SpaceBomberGame() {
         ship.quaternion.copy(shipQuaternion.current);
         
         // Thruster visual
-        const thrustScale = Math.max(0.3, targetSpeed.current / MAX_SPEED * 2.5);
+        const thrustScale = Math.max(0.3, targetSpeed.current / currentShipClass.maxSpeed * 2.5);
         if (thrusterFlameMeshL.current) thrusterFlameMeshL.current.scale.set(1, thrustScale, 1);
         if (thrusterFlameMeshR.current) thrusterFlameMeshR.current.scale.set(1, thrustScale, 1);
 
-        // Shield logic
+        // Shield Bubble Flash Animation
         if (shieldBubbleMesh.current) {
-            shieldBubbleMesh.current.visible = false;
+            if (shieldHitLife.current > 0) {
+                shieldHitLife.current -= 0.08 * dt;
+                shieldBubbleMesh.current.visible = true;
+                const mat = shieldBubbleMesh.current.material as THREE.MeshBasicMaterial;
+                mat.opacity = shieldHitLife.current * 0.5;
+                const bubbleScale = 1.0 + (1.0 - shieldHitLife.current) * 0.05;
+                shieldBubbleMesh.current.scale.set(bubbleScale, bubbleScale, bubbleScale);
+            } else {
+                shieldBubbleMesh.current.visible = false;
+            }
+        }
+
+        // Speed lines animation
+        if (speedLinesGroup.current) {
+            const lines = speedLinesGroup.current.children;
+            const velocity = targetSpeed.current;
+            const isMovingFast = velocity > 3.0;
+            
+            speedLinesGroup.current.position.copy(shipPos.current);
+            speedLinesGroup.current.quaternion.copy(shipQuaternion.current);
+            
+            lines.forEach((line: any) => {
+                line.position.z += velocity * 1.5 * dt;
+                
+                if (line.position.z > 50) {
+                    line.position.set(
+                        (Math.random() - 0.5) * 140,
+                        (Math.random() - 0.5) * 140,
+                        -250 - Math.random() * 150
+                    );
+                }
+                
+                const mat = line.material as THREE.LineBasicMaterial;
+                if (isMovingFast) {
+                    mat.opacity = Math.min(0.6, (velocity - 3.0) / 5.0) * 0.8;
+                    const stretch = 1.0 + (velocity - 3.0) * 0.8;
+                    line.scale.set(1, 1, stretch);
+                } else {
+                    mat.opacity = 0.0;
+                }
+            });
+        }
+
+        // Update procedural engine sound pitch and cutoff
+        if (soundRef.current) {
+            const speedRatio = Math.min(1.0, targetSpeed.current / currentShipClass.maxSpeed);
+            soundRef.current.updateAmbient(speedRatio);
         }
 
         // --- 2. CAMERA UPDATE (Dynamic Chase Cam) ---
         // Camera pulls back slightly based on speed
-        const camZ = 15 + (targetSpeed.current / MAX_SPEED) * 5;
+        const camZ = 15 + (targetSpeed.current / currentShipClass.maxSpeed) * 5;
         const idealOffset = new THREE.Vector3(0, 4, camZ);
         idealOffset.applyQuaternion(shipQuaternion.current);
         idealOffset.add(shipPos.current);
@@ -1016,8 +1263,10 @@ export function SpaceBomberGame() {
                 e.y += dir.y * 0.8 * dt;
                 e.z += dir.z * 0.8 * dt;
                 
-                e.mesh.rotation.x += 0.05 * dt;
-                e.mesh.rotation.y += 0.05 * dt;
+                // Rotate floater to look at player
+                const targetRotationMatrix = new THREE.Matrix4().lookAt(eVec, shipPos.current, new THREE.Vector3(0, 1, 0));
+                const targetQuat = new THREE.Quaternion().setFromRotationMatrix(targetRotationMatrix);
+                e.mesh.quaternion.slerp(targetQuat, 0.05 * dt);
 
                 // Add engine trails to floaters occasionally
                 if (Math.random() < 0.2) {
@@ -1305,8 +1554,11 @@ export function SpaceBomberGame() {
         if (animationFrameId.current) cancelAnimationFrame(animationFrameId.current);
         animationFrameId.current = requestAnimationFrame((t) => tickRef.current(t));
         
-        if (soundRef.current && soundRef.current.ctx.state === 'suspended') {
-            soundRef.current.ctx.resume();
+        if (soundRef.current) {
+            if (soundRef.current.ctx && soundRef.current.ctx.state === 'suspended') {
+                soundRef.current.ctx.resume();
+            }
+            soundRef.current.startAmbient();
         }
         addLog("SİMÜLASYON AKTİF.");
     };
@@ -1315,6 +1567,19 @@ export function SpaceBomberGame() {
         setLevel(l => l + 1);
         triggerHyperspace();
     };
+
+    if (webglError) {
+        return (
+            <div className="w-full max-w-[1400px] mx-auto p-8 flex flex-col items-center justify-center min-h-[600px] bg-[#030109] text-center border border-rose-500/30 rounded-xl font-sans text-white relative overflow-hidden">
+                <div className="absolute inset-0 opacity-10 pointer-events-none bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-rose-500 via-transparent to-transparent"></div>
+                <h2 className="text-3xl font-black text-rose-500 mb-4 tracking-tighter drop-shadow-[0_0_20px_rgba(244,63,94,0.5)]">SİMÜLASYON BAŞLATILAMIYOR</h2>
+                <p className="text-cyan-100/70 max-w-md mb-8 leading-relaxed font-light">{webglError}</p>
+                <div className="p-4 border border-white/10 rounded-xl bg-white/5 text-xs text-cyan-200/50 max-w-lg leading-relaxed">
+                    Sisteminiz veya tarayıcınız WebGL / Donanım İvmesini desteklemiyor olabilir. Lütfen tarayıcı ayarlarından <b>"Kullanılabilir olduğunda donanım ivmesini kullan"</b> (Hardware Acceleration) seçeneğinin açık olduğundan emin olun.
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="w-full max-w-[1400px] mx-auto p-4 flex flex-col gap-4 font-sans" ref={containerRef}>
@@ -1342,20 +1607,20 @@ export function SpaceBomberGame() {
                     <div className="flex flex-col w-24 md:w-32">
                         <div className="flex justify-between items-center mb-1 text-[10px] font-bold text-cyan-500/80 uppercase tracking-widest">
                             <span className="flex items-center gap-1"><Shield className="w-3 h-3" /> Kalkan</span>
-                            <span className="font-mono">{shield}%</span>
+                            <span className="font-mono">{Math.round((shield / currentShipClass.maxShield) * 100)}%</span>
                         </div>
                         <div className="h-3 w-full bg-black rounded-full overflow-hidden border border-cyan-900/50 shadow-inner">
-                            <div className="h-full bg-gradient-to-r from-cyan-600 to-cyan-300 transition-all duration-150 shadow-[0_0_12px_#22d3ee]" style={{ width: `${shield}%` }} />
+                            <div className="h-full bg-gradient-to-r from-cyan-600 to-cyan-300 transition-all duration-150 shadow-[0_0_12px_#22d3ee]" style={{ width: `${(shield / currentShipClass.maxShield) * 100}%` }} />
                         </div>
                     </div>
 
                     <div className="flex flex-col w-24 md:w-32">
                         <div className="flex justify-between items-center mb-1 text-[10px] font-bold text-rose-500/80 uppercase tracking-widest">
                             <span className="flex items-center gap-1"><Activity className="w-3 h-3" /> Zırh</span>
-                            <span className="font-mono">{armor}%</span>
+                            <span className="font-mono">{Math.round((armor / currentShipClass.maxArmor) * 100)}%</span>
                         </div>
                         <div className="h-3 w-full bg-black rounded-full overflow-hidden border border-rose-900/50 shadow-inner">
-                            <div className="h-full bg-gradient-to-r from-rose-700 to-rose-400 transition-all duration-150 shadow-[0_0_12px_#f43f5e]" style={{ width: `${armor}%` }} />
+                            <div className="h-full bg-gradient-to-r from-rose-700 to-rose-400 transition-all duration-150 shadow-[0_0_12px_#f43f5e]" style={{ width: `${(armor / currentShipClass.maxArmor) * 100}%` }} />
                         </div>
                     </div>
 
@@ -1478,15 +1743,71 @@ export function SpaceBomberGame() {
 
                 {/* Overlays */}
                 {gameState === 'idle' && (
-                    <div className="absolute inset-0 bg-black/90 backdrop-blur-sm flex flex-col items-center justify-center z-30">
+                    <div className="absolute inset-0 bg-black/95 backdrop-blur-sm flex flex-col items-center justify-center z-30 pointer-events-auto cursor-default p-4 select-none">
                         <div className="absolute inset-0 opacity-20 pointer-events-none bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-cyan-500 via-transparent to-transparent"></div>
-                        <h1 className="text-6xl md:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-br from-indigo-400 via-cyan-300 to-emerald-400 mb-6 tracking-tighter drop-shadow-[0_0_30px_rgba(34,211,238,0.5)] text-center">
-                            GRAVITY WARRIOR <br/> <span className="text-rose-500 text-5xl">3D: ASCENSION</span>
+                        
+                        <h1 className="text-4xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-br from-indigo-400 via-cyan-300 to-emerald-400 mb-2 tracking-tighter drop-shadow-[0_0_30px_rgba(34,211,238,0.5)] text-center select-none">
+                            GRAVITY WARRIOR <br/> <span className="text-rose-500 text-3xl md:text-4xl">3D: ASCENSION</span>
                         </h1>
-                        <p className="text-cyan-100/70 max-w-xl text-center mb-10 text-lg font-light leading-relaxed">
-                            Tam 6 eksenli (6-DOF) uçuş simülasyonuna hoş geldiniz. Derin uzayda sınırsız manevra kabiliyeti ve hiper gerçekçi savaş mekanikleri ile hayatta kalın.
+                        <p className="text-cyan-100/60 max-w-xl text-center mb-6 text-xs md:text-sm font-light leading-relaxed px-4 select-none">
+                            Tam 6 eksenli (6-DOF) uçuş simülasyonu. Derin uzayda sınırsız manevra kabiliyeti ve hiper gerçekçi savaş mekanikleri. Başlamadan önce gemi sınıfınızı seçin:
                         </p>
-                        <Button onClick={startGame} size="lg" className="bg-cyan-500 hover:bg-cyan-400 text-black font-black px-14 py-8 text-xl rounded-full shadow-[0_0_40px_#22d3ee] transition-all hover:scale-105 border-4 border-cyan-200">
+
+                        {/* Ship Class Selection */}
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-4xl w-full px-6 mb-8 z-40">
+                            {SHIP_CLASSES.map((ship) => {
+                                const isSelected = selectedShipId === ship.id;
+                                return (
+                                    <div 
+                                        key={ship.id}
+                                        onClick={() => setSelectedShipId(ship.id)}
+                                        className={`cursor-pointer p-4 rounded-xl border transition-all duration-300 flex flex-col gap-2 relative overflow-hidden group select-none ${
+                                            isSelected 
+                                                ? 'bg-gradient-to-b from-cyan-950/40 to-[#0a0a20]/80 border-cyan-400 shadow-[0_0_20px_rgba(34,211,238,0.25)]' 
+                                                : 'bg-[#050510]/60 border-white/10 hover:border-cyan-500/40 hover:bg-[#070718]/80'
+                                        }`}
+                                    >
+                                        <div className="absolute top-0 right-0 w-16 h-16 bg-cyan-500/10 rounded-full blur-xl group-hover:bg-cyan-500/20 transition-all duration-300" />
+                                        
+                                        <div className="flex justify-between items-center">
+                                            <span className={`text-xs font-black uppercase tracking-widest ${isSelected ? 'text-cyan-400' : 'text-cyan-100/60'}`}>
+                                                {ship.name}
+                                            </span>
+                                            {isSelected && (
+                                                <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse shadow-[0_0_8px_#22d3ee]" />
+                                            )}
+                                        </div>
+                                        
+                                        <p className="text-[11px] text-cyan-100/50 leading-relaxed font-light flex-grow">
+                                            {ship.description}
+                                        </p>
+                                        
+                                        <div className="border-t border-white/5 pt-1.5 flex flex-col gap-0.5 text-[9px] font-mono text-cyan-200/60">
+                                            <div className="flex justify-between">
+                                                <span>Maks Hız:</span>
+                                                <span className="font-bold text-cyan-100">{ship.maxSpeed * 100} km/s</span>
+                                            </div>
+                                            <div className="flex justify-between">
+                                                <span>Kalkan / Zırh:</span>
+                                                <span className="font-bold text-cyan-100">{ship.maxShield} / {ship.maxArmor}</span>
+                                            </div>
+                                            <div className="flex justify-between">
+                                                <span>Birincil Silah:</span>
+                                                <span className="font-bold text-cyan-100 capitalize">
+                                                    {ship.weaponPattern === 'normal' ? 'Çift Lazer' : (ship.weaponPattern === 'multi' ? 'Üçlü Plazma' : 'Lazer Ağır Dalga')}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+
+                        <Button 
+                            onClick={startGame} 
+                            size="lg" 
+                            className="bg-cyan-500 hover:bg-cyan-400 text-black font-black px-12 py-6 text-base md:text-lg rounded-full shadow-[0_0_40px_#22d3ee] transition-all hover:scale-105 border-2 border-cyan-200 z-50 cursor-pointer pointer-events-auto"
+                        >
                             SİMÜLASYONU BAŞLAT
                         </Button>
                     </div>
