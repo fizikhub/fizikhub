@@ -7,7 +7,7 @@ import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
 import { GlitchPass } from 'three/examples/jsm/postprocessing/GlitchPass.js';
 import { FilmPass } from 'three/examples/jsm/postprocessing/FilmPass.js';
-import { Activity, Shield, Flame, Target, Volume2, VolumeX, Crosshair, Zap, Navigation } from 'lucide-react';
+import { Activity, Shield, Flame, Target, Volume2, VolumeX, Crosshair, Zap, Navigation, Sparkles, ZapOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import confetti from 'canvas-confetti';
 
@@ -434,6 +434,35 @@ export function SpaceBomberGame() {
     const containerRef = useRef<HTMLDivElement>(null);
     const floatingTextContainerRef = useRef<HTMLDivElement>(null);
 
+    // Direct DOM HUD references to eliminate React re-render overhead at 60 FPS
+    const hudSpeedRef = useRef<HTMLSpanElement>(null);
+    const hudDistanceRef = useRef<HTMLSpanElement>(null);
+    const hudScoreRef = useRef<HTMLSpanElement>(null);
+    const hudShieldBarRef = useRef<HTMLDivElement>(null);
+    const hudShieldTextRef = useRef<HTMLSpanElement>(null);
+    const hudArmorBarRef = useRef<HTMLDivElement>(null);
+    const hudArmorTextRef = useRef<HTMLSpanElement>(null);
+    const hudFuelBarRef = useRef<HTMLDivElement>(null);
+    const hudFuelTextRef = useRef<HTMLSpanElement>(null);
+    const hudDamageVignetteRef = useRef<HTMLDivElement>(null);
+    const hudProximityDangerRef = useRef<HTMLDivElement>(null);
+    const hudComboRef = useRef<HTMLDivElement>(null);
+    const hudEnemiesRef = useRef<HTMLSpanElement>(null);
+
+    const scoreRef = useRef<number>(0);
+    const totalEnemiesRef = useRef<number>(0);
+    const enemiesRemainingRef = useRef<number>(0);
+    const graphicsQualityRef = useRef<'high' | 'perf'>('high');
+    const [graphicsQuality, setGraphicsQuality] = useState<'high' | 'perf'>('high');
+
+    // Gameplay timers and state refs (direct updates to bypass React rerender loop)
+    const autoFireTimer = useRef<number>(0);
+    const shieldRegenTimer = useRef<number>(0);
+    const damageVignetteRef = useRef<number>(0);
+    const proximityDangerRef = useRef<number>(0);
+    const bossPhase = useRef<number>(1);
+    const hitFlashMap = useRef<Map<number, number>>(new Map());
+
     // Sound manager ref
     const soundRef = useRef<SoundSynth | null>(null);
     const [soundEnabled, setSoundEnabled] = useState(true);
@@ -537,6 +566,13 @@ export function SpaceBomberGame() {
         }
     };
 
+    const toggleQuality = () => {
+        const nextQ = graphicsQualityRef.current === 'high' ? 'perf' : 'high';
+        setGraphicsQuality(nextQ);
+        graphicsQualityRef.current = nextQ;
+        addLog(nextQ === 'high' ? "GÖRSEL: YÜKSEK (BLOOM AKTİF)" : "GÖRSEL: HIZLI (BLOOM DEVRE DIŞI)");
+    };
+
     const createShockwave = useCallback((x: number, y: number, z: number, color: string) => {
         if (!sceneRef.current) return;
         const swGeo = new THREE.SphereGeometry(1, 16, 16);
@@ -574,7 +610,17 @@ export function SpaceBomberGame() {
     const setFuelLevel = useCallback((value: number) => {
         const clamped = Math.max(0, Math.min(100, value));
         fuelRef.current = clamped;
-        setFuel(Math.round(clamped));
+        if (hudFuelBarRef.current) {
+            hudFuelBarRef.current.style.width = `${Math.round(clamped)}%`;
+            if (clamped < 20) {
+                hudFuelBarRef.current.classList.add('animate-pulse');
+            } else {
+                hudFuelBarRef.current.classList.remove('animate-pulse');
+            }
+        }
+        if (hudFuelTextRef.current) {
+            hudFuelTextRef.current.textContent = `${Math.round(clamped)}%`;
+        }
     }, []);
 
     const setShieldLevel = useCallback((value: number) => {
@@ -583,14 +629,26 @@ export function SpaceBomberGame() {
         }
         const clamped = Math.max(0, Math.min(currentShipClass.maxShield, value));
         shieldRef.current = clamped;
-        setShield(Math.round(clamped));
+        const pct = Math.round((clamped / currentShipClass.maxShield) * 100);
+        if (hudShieldBarRef.current) {
+            hudShieldBarRef.current.style.width = `${pct}%`;
+        }
+        if (hudShieldTextRef.current) {
+            hudShieldTextRef.current.textContent = `${pct}%`;
+        }
     }, [currentShipClass]);
 
     const setArmorLevel = useCallback((value: number) => {
         const clamped = Math.max(0, Math.min(currentShipClass.maxArmor, value));
         const prevArmor = armorRef.current;
         armorRef.current = clamped;
-        setArmor(Math.round(clamped));
+        const pct = Math.round((clamped / currentShipClass.maxArmor) * 100);
+        if (hudArmorBarRef.current) {
+            hudArmorBarRef.current.style.width = `${pct}%`;
+        }
+        if (hudArmorTextRef.current) {
+            hudArmorTextRef.current.textContent = `${pct}%`;
+        }
 
         if (clamped <= 0) {
             soundRef.current?.playExplosion();
@@ -598,6 +656,10 @@ export function SpaceBomberGame() {
             soundRef.current?.stopSequencer();
             createExplosion(shipPos.current.x, shipPos.current.y, shipPos.current.z, '#ff4a11', 150, 3.5);
             createShockwave(shipPos.current.x, shipPos.current.y, shipPos.current.z, '#ff4a11');
+            setScore(scoreRef.current);
+            setFuel(Math.round(fuelRef.current));
+            setShield(Math.round(shieldRef.current));
+            setArmor(Math.round(armorRef.current));
             setGameState('gameover');
             if (playerShipGroup.current) playerShipGroup.current.visible = false;
         } else if (value < prevArmor) {
@@ -1286,6 +1348,14 @@ export function SpaceBomberGame() {
                 wormholeMatRef.current.uniforms.color.value = new THREE.Color(currentShipClass.laserColor);
             }
         }
+        
+        // Initialize enemy counter refs and DOM element
+        const total = enemies.current.length;
+        totalEnemiesRef.current = total;
+        enemiesRemainingRef.current = total;
+        if (hudEnemiesRef.current) {
+            hudEnemiesRef.current.textContent = `${total} / ${total}`;
+        }
     }, [clearAllEntities, level, setFuelLevel, setShieldLevel, setArmorLevel, addLog, currentShipClass, createTurretMesh, createFloaterMesh, createBossMesh]);
 
     const spawnBullet = useCallback((offsetX: number, offsetY: number, color: string, speedScale: number = 1.0, isBeam: boolean = false) => {
@@ -1310,6 +1380,9 @@ export function SpaceBomberGame() {
         mesh.position.copy(spawnPos);
         mesh.quaternion.copy(shipQuaternion.current);
         sceneRef.current.add(mesh);
+        
+        // Spawn small muzzle flash sparks at the wingtip gun barrels
+        createExplosion(spawnPos.x, spawnPos.y, spawnPos.z, color, 3, 0.3);
 
         bullets.current.push({
             id: Math.random(),
@@ -1351,7 +1424,6 @@ export function SpaceBomberGame() {
             keys.current[k] = true;
             if (k === ' ' || k === 'p') {
                 e.preventDefault();
-                fireWeapon();
             }
         };
         const handleKeyUp = (e: KeyboardEvent) => { keys.current[e.key.toLowerCase()] = false; };
@@ -1449,9 +1521,10 @@ export function SpaceBomberGame() {
         
         let forwardSpeed = 0;
         if (!hasReachedEnd) {
-            forwardSpeed = (currentShipClass.maxSpeed * 0.45) * dt;
+            const speedMultiplier = fuelRef.current > 0 ? 0.45 : 0.08; // Heavy engine crawling if out of fuel
+            forwardSpeed = (currentShipClass.maxSpeed * speedMultiplier) * dt;
             shipPos.current.z -= forwardSpeed;
-            targetSpeed.current = currentShipClass.maxSpeed * 0.45;
+            targetSpeed.current = currentShipClass.maxSpeed * speedMultiplier;
         } else {
             targetSpeed.current = 0;
             
@@ -1459,6 +1532,7 @@ export function SpaceBomberGame() {
             if (level % 3 !== 0) {
                 const activeEnemies = enemies.current.filter(en => en.active).length;
                 if (activeEnemies === 0 && gameState === 'playing') {
+                    setScore(scoreRef.current);
                     setGameState('victory');
                     soundRef.current?.stopSequencer();
                     soundRef.current?.stopAmbient();
@@ -1467,12 +1541,38 @@ export function SpaceBomberGame() {
             } else {
                 const boss = enemies.current.find(en => en.type === 'boss');
                 if (boss && !boss.active && gameState === 'playing') {
+                    setScore(scoreRef.current);
                     setGameState('victory');
                     soundRef.current?.stopSequencer();
                     soundRef.current?.stopAmbient();
                     confetti({ particleCount: 200, spread: 100, origin: { y: 0.6 } });
                 }
             }
+        }
+
+        // Auto-fire when P or Space held down
+        const fireInterval = currentShipClass.weaponPattern === 'beam' ? 18 : (currentShipClass.weaponPattern === 'multi' ? 10 : 8);
+        if (keys.current['p'] || keys.current[' ']) {
+            autoFireTimer.current += dt;
+            if (autoFireTimer.current >= fireInterval) {
+                autoFireTimer.current = 0;
+                fireWeapon();
+            }
+        } else {
+            autoFireTimer.current = fireInterval; // Ready to fire immediately on next press
+        }
+
+        // Fuel consumption: slowly decrease fuel, faster if boosting/firing
+        let fuelDepletion = 0.04 * dt; // Base rate
+        if (keys.current['p'] || keys.current[' ']) {
+            fuelDepletion = 0.09 * dt; // Firing/boosting costs more fuel
+        }
+        setFuelLevel(fuelRef.current - fuelDepletion);
+
+        // Shield slow regen (5 seconds without damage)
+        shieldRegenTimer.current += dt;
+        if (shieldRegenTimer.current > 300 && shieldRef.current < currentShipClass.maxShield * 0.3) {
+            setShieldLevel(shieldRef.current + 0.08 * dt);
         }
 
         // Steer left/right (A/D) and up/down (W/S)
@@ -1771,54 +1871,107 @@ export function SpaceBomberGame() {
             const bVec = new THREE.Vector3(b.x, b.y, b.z);
 
             if (b.isEnemy) {
-                if (bVec.distanceTo(shipPos.current) < 12) {
+                const distToPlayer = bVec.distanceTo(shipPos.current);
+                // Proximity warning: enemy bullet within 35 units
+                if (distToPlayer < 35 && distToPlayer > 12) {
+                    proximityDangerRef.current = Math.max(proximityDangerRef.current, (35 - distToPlayer) / 35);
+                }
+                if (distToPlayer < 12) {
                     b.life = 0;
-                    screenShakeRef.current = 2.5;
+                    screenShakeRef.current = 3.5;
                     soundRef.current?.playExplosion();
-                    createExplosion(shipPos.current.x, shipPos.current.y, shipPos.current.z, '#fbc531', 15, 1.0);
+                    createExplosion(shipPos.current.x, shipPos.current.y, shipPos.current.z, '#fbc531', 20, 1.5);
+                    createShockwave(shipPos.current.x, shipPos.current.y, shipPos.current.z, '#ff3f34');
                     
                     comboMultiplier.current = 1;
+                    shieldRegenTimer.current = 0; // Reset regen timer
+                    damageVignetteRef.current = 1.0; // Full vignette flash
+                    
                     const dmg = 20;
                     if (shieldRef.current > 0) {
+                        shieldHitLife.current = 1.0;
                         setShieldLevel(shieldRef.current - dmg * 0.7);
                         setArmorLevel(armorRef.current - dmg * 0.3);
+                        addLog(`KALKAN HASARI! Kalkan: %${Math.round(shieldRef.current)}`);
                     } else {
                         setArmorLevel(armorRef.current - dmg);
+                        addLog(`KRİTİK HASAR! Zırh: %${Math.round(armorRef.current)}`);
                     }
-                    addLog(`KABİN HASARI! Kalkan: %${shieldRef.current}`);
                 }
             } else {
                 enemies.current.forEach(e => {
                     if (!e.active) return;
                     const eVec = new THREE.Vector3(e.x, e.y, e.z);
-                    const radius = e.type === 'boss' ? 40 : 10;
+                    const radius = e.type === 'boss' ? 40 : 12;
                     
                     if (bVec.distanceTo(eVec) < radius) {
                         if (!b.isBeam) b.life = 0;
-                        e.health -= b.isBeam ? 2 : 1;
+                        const dmgAmt = b.isBeam ? 2 : 1;
+                        e.health -= dmgAmt;
                         
-                        if (e.type === 'boss') setBossHealth(Math.max(0, e.health));
+                        // Hit flash effect
+                        const currentFlash = hitFlashMap.current.get(e.id) || 0;
+                        hitFlashMap.current.set(e.id, Math.max(currentFlash, 1.0));
                         
-                        createExplosion(e.x, e.y, e.z, '#ff3f34', 5, 0.5);
+                        if (e.type === 'boss') {
+                            setBossHealth(Math.max(0, e.health));
+                            const ratio = e.health / e.maxHealth;
+                            if (ratio < 0.35 && bossPhase.current < 3) {
+                                bossPhase.current = 3;
+                                addLog("BOSS SİSTEM AŞAMASI 3: KRİTİK SEVİYE! SÜREKLİ YÜKSEK ATEŞ GÜCÜ!");
+                                e.fireCooldown = 45; // 0.75 seconds fire rate
+                            } else if (ratio < 0.7 && bossPhase.current < 2) {
+                                bossPhase.current = 2;
+                                addLog("BOSS SİSTEM AŞAMASI 2: ZIRH KIRILDI! HIZLI ATEŞ MODU AKTİF!");
+                                e.fireCooldown = 80; // 1.33 seconds fire rate
+                            }
+                        }
+                        
+                        // Small hit sparks
+                        createExplosion(bVec.x, bVec.y, bVec.z, '#ffffff', 4, 0.4);
 
                         if (e.health <= 0) {
                             e.active = false;
                             scene.remove(e.mesh);
+                            hitFlashMap.current.delete(e.id);
                             soundRef.current?.playExplosion();
                             
-                            createShockwave(e.x, e.y, e.z, '#00ffff');
-                            createExplosion(e.x, e.y, e.z, '#00ffff', e.type === 'boss' ? 100 : 25, e.type === 'boss' ? 5.0 : 2.0);
+                            // Multi-phase death explosion
+                            const isBoss = e.type === 'boss';
+                            const expColor1 = isBoss ? '#ff6b6b' : '#ff9f43';
+                            const expColor2 = isBoss ? '#8c7ae6' : '#00ffff';
                             
-                            comboMultiplier.current += 1;
-                            comboTimer.current = 150; 
-                            const scoreGained = (e.type === 'boss' ? 15000 : 350) * comboMultiplier.current;
-                            setScore(s => s + scoreGained);
-                            addLog(`HEDEF İMHA EDİLDİ: +${scoreGained}`);
+                            createShockwave(e.x, e.y, e.z, expColor2);
+                            createExplosion(e.x, e.y, e.z, expColor1, isBoss ? 60 : 20, isBoss ? 4.0 : 1.5);
+                            createExplosion(e.x, e.y, e.z, '#ffffff', isBoss ? 30 : 8, isBoss ? 2.0 : 0.8);
                             
+                            if (isBoss) {
+                                // Second and third shockwave rings
+                                setTimeout(() => createShockwave(e.x, e.y, e.z, '#ff6b6b'), 150);
+                                setTimeout(() => {
+                                    createShockwave(e.x, e.y, e.z, '#ffffff');
+                                    createExplosion(e.x, e.y, e.z, expColor1, 40, 3.0);
+                                }, 300);
+                                screenShakeRef.current = 8.0;
+                            }
+                            
+                            comboMultiplier.current = Math.min(comboMultiplier.current + 1, 10);
+                            comboTimer.current = 180;
+                            const scoreGained = (e.type === 'boss' ? 20000 : 500) * comboMultiplier.current;
+                            scoreRef.current += scoreGained;
+                            if (hudScoreRef.current) {
+                                hudScoreRef.current.textContent = scoreRef.current.toString();
+                            }
+                            
+                            const comboLabel = comboMultiplier.current > 1 ? ` ×${comboMultiplier.current} COMBO!` : '';
+                            addLog(`HEDEF İMHA! +${scoreGained}${comboLabel}`);
+                            
+                            const floatColor = comboMultiplier.current >= 5 ? '#ff3f34' : (comboMultiplier.current >= 3 ? '#ff9f43' : '#ffffff');
                             floatingTexts.current.push({
-                                id: Math.random(), text: `${scoreGained}`,
+                                id: Math.random(),
+                                text: comboMultiplier.current > 1 ? `+${scoreGained} ×${comboMultiplier.current}` : `+${scoreGained}`,
                                 x: e.x, y: e.y + 15, z: e.z,
-                                life: 2.0, color: comboMultiplier.current > 2 ? '#ff9f43' : '#ffffff'
+                                life: 2.0, color: floatColor
                             });
 
                             // Drops
@@ -1849,6 +2002,7 @@ export function SpaceBomberGame() {
 
                             // Victory Check
                             if (enemies.current.filter(en => en.active).length === 0) {
+                                setScore(scoreRef.current);
                                 setGameState('victory');
                                 soundRef.current?.stopSequencer();
                                 soundRef.current?.stopAmbient();
@@ -2007,6 +2161,44 @@ export function SpaceBomberGame() {
     const startGame = () => {
         setGameState('playing');
         setScore(0);
+        
+        // Reset gameplay refs
+        scoreRef.current = 0;
+        damageVignetteRef.current = 0;
+        proximityDangerRef.current = 0;
+        shieldRegenTimer.current = 0;
+        autoFireTimer.current = 0;
+        hitFlashMap.current.clear();
+        bossPhase.current = 1;
+        
+        fuelRef.current = 100;
+        shieldRef.current = currentShipClass.maxShield;
+        armorRef.current = currentShipClass.maxArmor;
+
+        // Reset HUD element displays
+        if (hudScoreRef.current) hudScoreRef.current.textContent = '0';
+        if (hudFuelBarRef.current) hudFuelBarRef.current.style.width = '100%';
+        if (hudFuelTextRef.current) hudFuelTextRef.current.textContent = '100%';
+        if (hudShieldBarRef.current) hudShieldBarRef.current.style.width = '100%';
+        if (hudShieldTextRef.current) hudShieldTextRef.current.textContent = '100%';
+        if (hudArmorBarRef.current) hudArmorBarRef.current.style.width = '100%';
+        if (hudArmorTextRef.current) hudArmorTextRef.current.textContent = '100%';
+        if (hudSpeedRef.current) hudSpeedRef.current.innerHTML = `0 <span class="text-xs text-cyan-700 font-normal">km/s</span>`;
+        if (hudDistanceRef.current) hudDistanceRef.current.innerHTML = `0 <span class="text-xs text-emerald-700 font-normal">ly</span>`;
+
+        if (hudDamageVignetteRef.current) {
+            hudDamageVignetteRef.current.style.opacity = '0';
+            hudDamageVignetteRef.current.style.display = 'none';
+        }
+        if (hudProximityDangerRef.current) {
+            hudProximityDangerRef.current.style.opacity = '0';
+            hudProximityDangerRef.current.style.display = 'none';
+        }
+        if (hudComboRef.current) {
+            hudComboRef.current.style.opacity = '0';
+            hudComboRef.current.style.transform = 'translateX(20px)';
+        }
+
         buildLevelWorld();
         lastTime.current = performance.now();
         if (animationFrameId.current) cancelAnimationFrame(animationFrameId.current);
@@ -2019,7 +2211,7 @@ export function SpaceBomberGame() {
             soundRef.current.startAmbient();
             soundRef.current.startSequencer(level % 3 === 0);
         }
-        addLog("SİMÜLASYON AKTİF.");
+        addLog("SİMÜLASYON AKTİF. [P] TUŞUNU BASILI TUTARAK ATEŞ ET!");
     };
 
     const nextLevel = () => {
@@ -2050,15 +2242,15 @@ export function SpaceBomberGame() {
                 <div className="flex items-center gap-8">
                     <div className="flex flex-col">
                         <span className="text-[10px] text-cyan-500/70 uppercase font-black tracking-[0.2em] mb-1"><Navigation className="inline w-3 h-3 mr-1" />Hız</span>
-                        <span className="text-2xl font-black text-cyan-400 font-mono tracking-tighter drop-shadow-[0_0_8px_rgba(34,211,238,0.5)]">{speedVal} <span className="text-xs text-cyan-700 font-normal">km/s</span></span>
+                        <span ref={hudSpeedRef} className="text-2xl font-black text-cyan-400 font-mono tracking-tighter drop-shadow-[0_0_8px_rgba(34,211,238,0.5)]">{speedVal} <span className="text-xs text-cyan-700 font-normal">km/s</span></span>
                     </div>
                     <div className="flex flex-col">
                         <span className="text-[10px] text-emerald-500/70 uppercase font-black tracking-[0.2em] mb-1"><Target className="inline w-3 h-3 mr-1" />Mesafe</span>
-                        <span className="text-2xl font-black text-emerald-400 font-mono tracking-tighter drop-shadow-[0_0_8px_rgba(16,185,129,0.5)]">{altitudeVal} <span className="text-xs text-emerald-700 font-normal">ly</span></span>
+                        <span ref={hudDistanceRef} className="text-2xl font-black text-emerald-400 font-mono tracking-tighter drop-shadow-[0_0_8px_rgba(16,185,129,0.5)]">{altitudeVal} <span className="text-xs text-emerald-700 font-normal">ly</span></span>
                     </div>
                     <div className="flex flex-col">
                         <span className="text-[10px] text-amber-500/70 uppercase font-black tracking-[0.2em] mb-1"><Zap className="inline w-3 h-3 mr-1" />Skor</span>
-                        <span className="text-2xl font-black text-amber-400 font-mono tracking-tighter drop-shadow-[0_0_8px_rgba(251,191,36,0.5)]">{score}</span>
+                        <span ref={hudScoreRef} className="text-2xl font-black text-amber-400 font-mono tracking-tighter drop-shadow-[0_0_8px_rgba(251,191,36,0.5)]">{score}</span>
                     </div>
                 </div>
 
@@ -2066,37 +2258,40 @@ export function SpaceBomberGame() {
                     <div className="flex flex-col w-24 md:w-32">
                         <div className="flex justify-between items-center mb-1 text-[10px] font-bold text-cyan-500/80 uppercase tracking-widest">
                             <span className="flex items-center gap-1"><Shield className="w-3 h-3" /> Kalkan</span>
-                            <span className="font-mono">{Math.round((shield / currentShipClass.maxShield) * 100)}%</span>
+                            <span ref={hudShieldTextRef} className="font-mono">{Math.round((shield / currentShipClass.maxShield) * 100)}%</span>
                         </div>
                         <div className="h-3 w-full bg-black rounded-full overflow-hidden border border-cyan-900/50 shadow-inner">
-                            <div className="h-full bg-gradient-to-r from-cyan-600 to-cyan-300 transition-all duration-150 shadow-[0_0_12px_#22d3ee]" style={{ width: `${(shield / currentShipClass.maxShield) * 100}%` }} />
+                            <div ref={hudShieldBarRef} className="h-full bg-gradient-to-r from-cyan-600 to-cyan-300 transition-all duration-150 shadow-[0_0_12px_#22d3ee]" style={{ width: `${(shield / currentShipClass.maxShield) * 100}%` }} />
                         </div>
                     </div>
 
                     <div className="flex flex-col w-24 md:w-32">
                         <div className="flex justify-between items-center mb-1 text-[10px] font-bold text-rose-500/80 uppercase tracking-widest">
                             <span className="flex items-center gap-1"><Activity className="w-3 h-3" /> Zırh</span>
-                            <span className="font-mono">{Math.round((armor / currentShipClass.maxArmor) * 100)}%</span>
+                            <span ref={hudArmorTextRef} className="font-mono">{Math.round((armor / currentShipClass.maxArmor) * 100)}%</span>
                         </div>
                         <div className="h-3 w-full bg-black rounded-full overflow-hidden border border-rose-900/50 shadow-inner">
-                            <div className="h-full bg-gradient-to-r from-rose-700 to-rose-400 transition-all duration-150 shadow-[0_0_12px_#f43f5e]" style={{ width: `${(armor / currentShipClass.maxArmor) * 100}%` }} />
+                            <div ref={hudArmorBarRef} className="h-full bg-gradient-to-r from-rose-700 to-rose-400 transition-all duration-150 shadow-[0_0_12px_#f43f5e]" style={{ width: `${(armor / currentShipClass.maxArmor) * 100}%` }} />
                         </div>
                     </div>
 
                     <div className="flex flex-col w-24 md:w-32">
                         <div className="flex justify-between items-center mb-1 text-[10px] font-bold text-amber-500/80 uppercase tracking-widest">
                             <span className="flex items-center gap-1"><Flame className="w-3 h-3" /> Yakıt</span>
-                            <span className="font-mono">{fuel}%</span>
+                            <span ref={hudFuelTextRef} className="font-mono">{fuel}%</span>
                         </div>
                         <div className="h-3 w-full bg-black rounded-full overflow-hidden border border-amber-900/50 shadow-inner">
-                            <div className={`h-full bg-gradient-to-r from-amber-600 to-amber-300 transition-all duration-150 shadow-[0_0_12px_#f59e0b] ${fuel < 20 ? 'animate-pulse' : ''}`} style={{ width: `${fuel}%` }} />
+                            <div ref={hudFuelBarRef} className={`h-full bg-gradient-to-r from-amber-600 to-amber-300 transition-all duration-150 shadow-[0_0_12px_#f59e0b] ${fuel < 20 ? 'animate-pulse' : ''}`} style={{ width: `${fuel}%` }} />
                         </div>
                     </div>
                 </div>
 
                 <div className="flex gap-3 items-center border-l border-white/10 pl-4 ml-2">
-                    <Button size="icon" variant="ghost" className="h-10 w-10 bg-black/40 hover:bg-white/10 text-muted-foreground rounded-full border border-white/5 transition-all" onClick={toggleSound}>
+                    <Button size="icon" variant="ghost" className="h-10 w-10 bg-black/40 hover:bg-white/10 text-muted-foreground rounded-full border border-white/5 transition-all" onClick={toggleSound} title="Ses">
                         {soundEnabled ? <Volume2 className="w-5 h-5 text-cyan-400" /> : <VolumeX className="w-5 h-5 text-rose-500" />}
+                    </Button>
+                    <Button size="icon" variant="ghost" className="h-10 w-10 bg-black/40 hover:bg-white/10 text-muted-foreground rounded-full border border-white/5 transition-all" onClick={toggleQuality} title="Grafik Kalitesi">
+                        {graphicsQuality === 'high' ? <Sparkles className="w-5 h-5 text-amber-400 animate-pulse" /> : <ZapOff className="w-5 h-5 text-zinc-500" />}
                     </Button>
                     <div className="px-4 py-2 bg-gradient-to-br from-indigo-900/50 to-purple-900/50 rounded-lg border border-indigo-500/30 font-black text-indigo-200 tracking-[0.2em] uppercase text-xs shadow-[0_0_15px_rgba(99,102,241,0.3)]">
                         SEKTÖR <span className="text-white text-sm">{level}</span>
@@ -2107,6 +2302,47 @@ export function SpaceBomberGame() {
             {/* Game Viewport Container (Cockpit Effect) */}
             <div className="relative rounded-b-xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.5)] bg-black cursor-crosshair border-x border-b border-white/5">
                 
+                {/* Red damage vignette overlay */}
+                <div 
+                    ref={hudDamageVignetteRef} 
+                    className="absolute inset-0 pointer-events-none z-20 transition-opacity duration-75 mix-blend-color-burn" 
+                    style={{ 
+                        background: 'radial-gradient(circle, rgba(244,63,94,0) 40%, rgba(244,63,94,0.65) 100%)',
+                        opacity: 0,
+                        display: 'none'
+                    }} 
+                />
+
+                {/* Proximity warning pulsing border overlay */}
+                <div 
+                    ref={hudProximityDangerRef} 
+                    className="absolute inset-0 pointer-events-none z-20 transition-opacity duration-75 border-[6px] border-rose-500/80 rounded-b-xl" 
+                    style={{ 
+                        boxShadow: 'inset 0 0 40px rgba(239,68,68,0.5)',
+                        opacity: 0,
+                        display: 'none'
+                    }} 
+                />
+
+                {/* Enemies Remaining holographic UI */}
+                {(gameState === 'playing' || gameState === 'hyperspace') && (
+                    <div className="absolute top-6 left-6 p-3 rounded-xl border border-cyan-500/30 bg-black/60 backdrop-blur-md pointer-events-none z-10 flex flex-col gap-0.5 shadow-lg select-none">
+                        <span className="text-[9px] text-cyan-500/70 uppercase font-black tracking-[0.2em]">Kalan Hedefler</span>
+                        <span ref={hudEnemiesRef} className="text-xl font-black text-cyan-400 font-mono tracking-tighter drop-shadow-[0_0_8px_rgba(34,211,238,0.5)]">
+                            0 / 0
+                        </span>
+                    </div>
+                )}
+
+                {/* Combo Overlay */}
+                <div ref={hudComboRef} className="absolute top-6 right-6 p-3 rounded-lg border border-amber-500/30 bg-black/60 backdrop-blur-md text-right pointer-events-none z-10 flex flex-col gap-1 shadow-lg transition-all duration-300 opacity-0 transform translate-x-4">
+                    <div className="text-[9px] text-amber-500/60 uppercase font-black tracking-widest">Çarpan Kombo</div>
+                    <div className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-500 font-mono tracking-tighter" id="hud-combo-text">×1</div>
+                    <div className="w-24 h-1 bg-black rounded-full overflow-hidden border border-amber-900/40">
+                        <div className="h-full bg-amber-500" id="hud-combo-bar" style={{ width: '100%' }}></div>
+                    </div>
+                </div>
+
                 {/* Cockpit Overlay SVG */}
                 <div className="absolute inset-0 pointer-events-none z-20 opacity-30">
                     <svg width="100%" height="100%" preserveAspectRatio="none">
