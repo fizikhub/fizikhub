@@ -1,11 +1,11 @@
 "use client";
 
-import React, { useEffect, useRef, useState, useCallback } from 'react';
+import React, { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import * as THREE from 'three';
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
-import { Activity, Shield, Flame, Target, Volume2, VolumeX, Crosshair } from 'lucide-react';
+import { Activity, Shield, Flame, Target, Volume2, VolumeX, Crosshair, Zap, Navigation } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import confetti from 'canvas-confetti';
 
@@ -16,6 +16,11 @@ interface Particle {
     x: number; y: number; z: number;
     vx: number; vy: number; vz: number;
     life: number; color: string; size: number;
+    mesh: THREE.Mesh;
+}
+
+interface Shockwave {
+    life: number;
     mesh: THREE.Mesh;
 }
 
@@ -142,10 +147,28 @@ class SoundSynth {
         osc.start();
         osc.stop(this.ctx.currentTime + 0.2);
     }
+
+    playHyperspace() {
+        if (!this.enabled) return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.connect(gain);
+        gain.connect(this.masterGain);
+        
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(100, this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(2000, this.ctx.currentTime + 1.5);
+        gain.gain.setValueAtTime(0, this.ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.6, this.ctx.currentTime + 1.0);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 2.0);
+        
+        osc.start();
+        osc.stop(this.ctx.currentTime + 2.0);
+    }
 }
 
 // Global Consts
-const MAX_SPEED = 6.0;
+const MAX_SPEED = 8.0;
 const MIN_SPEED = 0.5;
 
 export function SpaceBomberGame() {
@@ -158,12 +181,13 @@ export function SpaceBomberGame() {
     const [soundEnabled, setSoundEnabled] = useState(true);
 
     // Game states
-    const [gameState, setGameState] = useState<'idle' | 'playing' | 'paused' | 'gameover' | 'victory'>('idle');
+    const [gameState, setGameState] = useState<'idle' | 'hyperspace' | 'playing' | 'paused' | 'gameover' | 'victory'>('idle');
     const [score, setScore] = useState(0);
     const [fuel, setFuel] = useState(100);
     const [shield, setShield] = useState(100);
     const [armor, setArmor] = useState(100);
     const [level, setLevel] = useState(1);
+    const [targetLocked, setTargetLocked] = useState(false);
     
     // Boss health states
     const [bossHealth, setBossHealth] = useState(0);
@@ -177,7 +201,6 @@ export function SpaceBomberGame() {
     const fuelRef = useRef(100);
     const shieldRef = useRef(100);
     const armorRef = useRef(100);
-    const lastHitTime = useRef(0);
 
     // Three.js instances
     const sceneRef = useRef<THREE.Scene | null>(null);
@@ -192,6 +215,8 @@ export function SpaceBomberGame() {
     const thrusterFlameMeshR = useRef<THREE.Mesh | null>(null);
     const shieldBubbleMesh = useRef<THREE.Mesh | null>(null);
     const asteroidMesh = useRef<THREE.InstancedMesh | null>(null);
+    const starPoints = useRef<THREE.Points | null>(null);
+    const starMaterial = useRef<THREE.PointsMaterial | null>(null);
 
     // Physics state refs (6-DOF)
     const shipPos = useRef<THREE.Vector3>(new THREE.Vector3(0, 0, 0));
@@ -201,6 +226,7 @@ export function SpaceBomberGame() {
     const mouseDelta = useRef<{ x: number, y: number }>({ x: 0, y: 0 });
     
     const particles = useRef<Particle[]>([]);
+    const shockwaves = useRef<Shockwave[]>([]);
     const bullets = useRef<Bullet[]>([]);
     const enemies = useRef<Enemy[]>([]);
     const crystals = useRef<FuelCrystal[]>([]);
@@ -211,6 +237,7 @@ export function SpaceBomberGame() {
     const comboTimer = useRef<number>(0);
     const weaponType = useRef<'normal' | 'multi' | 'beam'>('normal');
     const weaponTimer = useRef<number>(0);
+    const hyperspaceTimer = useRef<number>(0);
     
     const keys = useRef<{ [key: string]: boolean }>({});
     const animationFrameId = useRef<number>(0);
@@ -220,10 +247,10 @@ export function SpaceBomberGame() {
     // Radar points
     const [radarEntities, setRadarEntities] = useState<{ x: number, y: number, z: number, type: string }[]>([]);
 
-    const addLog = (msg: string) => {
+    const addLog = useCallback((msg: string) => {
         const timestamp = new Date().toLocaleTimeString('tr-TR', { hour12: false });
         setLogMessages(prev => [`[${timestamp}] ${msg}`, ...prev.slice(0, 4)]);
-    };
+    }, []);
 
     const toggleSound = () => {
         if (soundRef.current) {
@@ -232,10 +259,20 @@ export function SpaceBomberGame() {
         }
     };
 
+    const createShockwave = useCallback((x: number, y: number, z: number, color: string) => {
+        if (!sceneRef.current) return;
+        const swGeo = new THREE.SphereGeometry(1, 16, 16);
+        const swMat = new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.8, wireframe: true });
+        const swMesh = new THREE.Mesh(swGeo, swMat);
+        swMesh.position.set(x, y, z);
+        sceneRef.current.add(swMesh);
+        shockwaves.current.push({ life: 1.0, mesh: swMesh });
+    }, []);
+
     const createExplosion = useCallback((x: number, y: number, z: number, color: string, count: number, sizeScale: number) => {
         if (!sceneRef.current) return;
         const pGeo = new THREE.BoxGeometry(sizeScale, sizeScale, sizeScale);
-        const pMat = new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.8 });
+        const pMat = new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.8, blending: THREE.AdditiveBlending });
         
         for (let i = 0; i < count; i++) {
             const mesh = new THREE.Mesh(pGeo, pMat);
@@ -245,10 +282,10 @@ export function SpaceBomberGame() {
             
             particles.current.push({
                 x, y, z,
-                vx: (Math.random() - 0.5) * 4,
-                vy: (Math.random() - 0.5) * 4,
-                vz: (Math.random() - 0.5) * 4,
-                life: 15 + Math.random() * 20,
+                vx: (Math.random() - 0.5) * 6,
+                vy: (Math.random() - 0.5) * 6,
+                vz: (Math.random() - 0.5) * 6,
+                life: 15 + Math.random() * 25,
                 color,
                 size: sizeScale,
                 mesh
@@ -274,11 +311,12 @@ export function SpaceBomberGame() {
         setArmor(Math.round(clamped));
         if (clamped <= 0) {
             soundRef.current?.playExplosion();
-            createExplosion(shipPos.current.x, shipPos.current.y, shipPos.current.z, '#ff4a11', 120, 2.5);
+            createExplosion(shipPos.current.x, shipPos.current.y, shipPos.current.z, '#ff4a11', 150, 3.5);
+            createShockwave(shipPos.current.x, shipPos.current.y, shipPos.current.z, '#ff4a11');
             setGameState('gameover');
             if (playerShipGroup.current) playerShipGroup.current.visible = false;
         }
-    }, [createExplosion]);
+    }, [createExplosion, createShockwave]);
 
     const clearAllEntities = useCallback(() => {
         const scene = sceneRef.current;
@@ -288,6 +326,7 @@ export function SpaceBomberGame() {
         crystals.current.forEach(c => scene.remove(c.mesh)); crystals.current = [];
         powerUps.current.forEach(p => scene.remove(p.mesh)); powerUps.current = [];
         particles.current.forEach(p => scene.remove(p.mesh)); particles.current = [];
+        shockwaves.current.forEach(s => scene.remove(s.mesh)); shockwaves.current = [];
     }, []);
 
     // Setup 3D Scene structures
@@ -295,7 +334,6 @@ export function SpaceBomberGame() {
         const canvas = canvasRef.current;
         if (!canvas) return;
 
-        // Clear previous renderer if any
         if (rendererRef.current) {
             rendererRef.current.dispose();
         }
@@ -305,10 +343,10 @@ export function SpaceBomberGame() {
 
         const scene = new THREE.Scene();
         scene.background = new THREE.Color('#030109');
-        scene.fog = new THREE.FogExp2('#030109', 0.0015);
+        scene.fog = new THREE.FogExp2('#030109', 0.0010);
         sceneRef.current = scene;
 
-        const camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 5000);
+        const camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 8000);
         camera.position.set(0, 10, 30);
         cameraRef3D.current = camera;
 
@@ -317,67 +355,82 @@ export function SpaceBomberGame() {
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
         rendererRef.current = renderer;
 
-        // Post-processing
         const composer = new EffectComposer(renderer);
         const renderPass = new RenderPass(scene, camera);
         composer.addPass(renderPass);
 
-        const bloomPass = new UnrealBloomPass(new THREE.Vector2(width, height), 1.2, 0.4, 0.85);
+        const bloomPass = new UnrealBloomPass(new THREE.Vector2(width, height), 1.5, 0.5, 0.85);
         composer.addPass(bloomPass);
         composerRef.current = composer;
 
         // Lighting
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.2);
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
         scene.add(ambientLight);
-        const dirLight = new THREE.DirectionalLight(0xa29bfe, 1.5);
+        const dirLight = new THREE.DirectionalLight(0xa29bfe, 2.0);
         dirLight.position.set(100, 200, 50);
         scene.add(dirLight);
 
-        // --- SHIP MESH (Starfighter) ---
+        // --- SHIP MESH (Advanced Starfighter) ---
         const shipGroup = new THREE.Group();
         
         // Fuselage
         const fuselageGeo = new THREE.BoxGeometry(2, 1.5, 8);
-        const fuselageMat = new THREE.MeshStandardMaterial({ color: 0x333333, roughness: 0.2, metalness: 0.8 });
+        const fuselageMat = new THREE.MeshStandardMaterial({ color: 0x222222, roughness: 0.2, metalness: 0.9 });
         const fuselage = new THREE.Mesh(fuselageGeo, fuselageMat);
         shipGroup.add(fuselage);
 
         // Nose
-        const noseGeo = new THREE.ConeGeometry(1, 4, 4);
-        const noseMat = new THREE.MeshStandardMaterial({ color: 0x444444, roughness: 0.3, metalness: 0.8 });
+        const noseGeo = new THREE.ConeGeometry(1, 5, 4);
+        const noseMat = new THREE.MeshStandardMaterial({ color: 0x333333, roughness: 0.3, metalness: 0.9 });
         const nose = new THREE.Mesh(noseGeo, noseMat);
-        nose.position.set(0, 0, -6);
+        nose.position.set(0, 0, -6.5);
         nose.rotation.x = -Math.PI / 2;
         nose.rotation.y = Math.PI / 4;
         shipGroup.add(nose);
 
         // Cockpit
-        const cockpitGeo = new THREE.BoxGeometry(1.4, 1.0, 3);
-        const cockpitMat = new THREE.MeshStandardMaterial({ color: 0x00d2d3, transparent: true, opacity: 0.7, roughness: 0.1, metalness: 0.9, emissive: 0x005555 });
+        const cockpitGeo = new THREE.BoxGeometry(1.4, 1.2, 3);
+        const cockpitMat = new THREE.MeshStandardMaterial({ color: 0x00ffff, transparent: true, opacity: 0.8, roughness: 0.1, metalness: 1.0, emissive: 0x005555 });
         const cockpit = new THREE.Mesh(cockpitGeo, cockpitMat);
-        cockpit.position.set(0, 1.0, -1);
+        cockpit.position.set(0, 1.2, -1);
         shipGroup.add(cockpit);
 
-        // Wings
-        const wingGeo = new THREE.BoxGeometry(12, 0.3, 3);
-        const wingMat = new THREE.MeshStandardMaterial({ color: 0x222222, roughness: 0.4, metalness: 0.7 });
-        const wings = new THREE.Mesh(wingGeo, wingMat);
-        wings.position.set(0, -0.2, 1);
-        shipGroup.add(wings);
+        // Wings (Swept back)
+        const wingShape = new THREE.Shape();
+        wingShape.moveTo(0, 0);
+        wingShape.lineTo(8, -4);
+        wingShape.lineTo(8, -6);
+        wingShape.lineTo(0, -2);
         
-        // Wingtips
-        const wingTipGeo = new THREE.BoxGeometry(0.4, 2, 3);
-        const wingTipMat = new THREE.MeshStandardMaterial({ color: 0x0984e3, emissive: 0x0984e3, emissiveIntensity: 0.5 });
+        const extrudeSettings = { depth: 0.3, bevelEnabled: true, bevelSegments: 2, steps: 1, bevelSize: 0.1, bevelThickness: 0.1 };
+        const wingGeoL = new THREE.ExtrudeGeometry(wingShape, extrudeSettings);
+        const wingMat = new THREE.MeshStandardMaterial({ color: 0x111111, roughness: 0.5, metalness: 0.8 });
+        
+        const wingL = new THREE.Mesh(wingGeoL, wingMat);
+        wingL.rotation.x = Math.PI / 2;
+        wingL.position.set(0, -0.2, 2);
+        shipGroup.add(wingL);
+
+        const wingGeoR = wingGeoL.clone();
+        wingGeoR.applyMatrix4(new THREE.Matrix4().makeScale(-1, 1, 1));
+        const wingR = new THREE.Mesh(wingGeoR, wingMat);
+        wingR.rotation.x = Math.PI / 2;
+        wingR.position.set(0, -0.2, 2);
+        shipGroup.add(wingR);
+        
+        // Wingtips Glow
+        const wingTipGeo = new THREE.BoxGeometry(0.4, 1.5, 3);
+        const wingTipMat = new THREE.MeshStandardMaterial({ color: 0x0984e3, emissive: 0x0984e3, emissiveIntensity: 1.5 });
         const wingTipL = new THREE.Mesh(wingTipGeo, wingTipMat);
-        wingTipL.position.set(-6, 0.8, 1);
+        wingTipL.position.set(-8, 0.2, 5);
         shipGroup.add(wingTipL);
         const wingTipR = new THREE.Mesh(wingTipGeo, wingTipMat);
-        wingTipR.position.set(6, 0.8, 1);
+        wingTipR.position.set(8, 0.2, 5);
         shipGroup.add(wingTipR);
 
         // Thrusters
-        const thrusterGeo = new THREE.CylinderGeometry(0.6, 0.8, 2, 8);
-        const thrusterMat = new THREE.MeshStandardMaterial({ color: 0x111111, roughness: 0.5, metalness: 0.9 });
+        const thrusterGeo = new THREE.CylinderGeometry(0.6, 0.9, 2, 8);
+        const thrusterMat = new THREE.MeshStandardMaterial({ color: 0x050505, roughness: 0.5, metalness: 0.9 });
         const thrusterL = new THREE.Mesh(thrusterGeo, thrusterMat);
         thrusterL.rotation.x = Math.PI / 2;
         thrusterL.position.set(-1.5, 0, 4);
@@ -389,24 +442,24 @@ export function SpaceBomberGame() {
         shipGroup.add(thrusterR);
 
         // Flames
-        const flameGeo = new THREE.ConeGeometry(0.5, 3, 8);
-        const flameMat = new THREE.MeshBasicMaterial({ color: 0xff9f43, transparent: true, opacity: 0.8, blending: THREE.AdditiveBlending });
+        const flameGeo = new THREE.ConeGeometry(0.6, 4, 8);
+        const flameMat = new THREE.MeshBasicMaterial({ color: 0x00ffff, transparent: true, opacity: 0.9, blending: THREE.AdditiveBlending });
         const flameL = new THREE.Mesh(flameGeo, flameMat);
         flameL.rotation.x = -Math.PI / 2;
-        flameL.position.set(-1.5, 0, 6);
+        flameL.position.set(-1.5, 0, 6.5);
         shipGroup.add(flameL);
         thrusterFlameMeshL.current = flameL;
 
         const flameR = new THREE.Mesh(flameGeo, flameMat);
         flameR.rotation.x = -Math.PI / 2;
-        flameR.position.set(1.5, 0, 6);
+        flameR.position.set(1.5, 0, 6.5);
         shipGroup.add(flameR);
         thrusterFlameMeshR.current = flameR;
 
         // Shield Bubble
-        const shieldGeo = new THREE.SphereGeometry(6, 16, 16);
-        const shieldMat = new THREE.MeshBasicMaterial({ color: 0x00d2d3, wireframe: true, transparent: true, opacity: 0.15, blending: THREE.AdditiveBlending });
-        const shieldBubble = new THREE.Mesh(shieldGeo, shieldMat);
+        const shieldGeo = new THREE.SphereGeometry(7, 32, 32);
+        const sMat = new THREE.MeshBasicMaterial({ color: 0x00d2d3, wireframe: true, transparent: true, opacity: 0.2, blending: THREE.AdditiveBlending });
+        const shieldBubble = new THREE.Mesh(shieldGeo, sMat);
         shipGroup.add(shieldBubble);
         shieldBubbleMesh.current = shieldBubble;
 
@@ -414,59 +467,73 @@ export function SpaceBomberGame() {
         playerShipGroup.current = shipGroup;
 
         // --- STARFIELD ---
-        const starGeo = new THREE.BufferGeometry();
-        const starCount = 3000;
-        const starPos = new Float32Array(starCount * 3);
-        const starColors = new Float32Array(starCount * 3);
+        const sGeo = new THREE.BufferGeometry();
+        const starCount = 8000;
+        const sPos = new Float32Array(starCount * 3);
+        const sColors = new Float32Array(starCount * 3);
         const c1 = new THREE.Color('#ffffff');
-        const c2 = new THREE.Color('#74b9ff');
-        const c3 = new THREE.Color('#fdcb6e');
+        const c2 = new THREE.Color('#00ffff');
+        const c3 = new THREE.Color('#ff00ff');
 
         for (let i = 0; i < starCount; i++) {
-            // Spherical distribution
-            const r = 200 + Math.random() * 2000;
+            const r = 300 + Math.random() * 4000;
             const theta = Math.random() * 2 * Math.PI;
             const phi = Math.acos(2 * Math.random() - 1);
             
-            starPos[i * 3] = r * Math.sin(phi) * Math.cos(theta);
-            starPos[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
-            starPos[i * 3 + 2] = r * Math.cos(phi);
+            sPos[i * 3] = r * Math.sin(phi) * Math.cos(theta);
+            sPos[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
+            sPos[i * 3 + 2] = r * Math.cos(phi);
 
             const rnd = Math.random();
-            const col = rnd > 0.8 ? c2 : (rnd > 0.6 ? c3 : c1);
-            starColors[i * 3] = col.r;
-            starColors[i * 3 + 1] = col.g;
-            starColors[i * 3 + 2] = col.b;
+            const col = rnd > 0.9 ? c2 : (rnd > 0.8 ? c3 : c1);
+            sColors[i * 3] = col.r;
+            sColors[i * 3 + 1] = col.g;
+            sColors[i * 3 + 2] = col.b;
         }
-        starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
-        starGeo.setAttribute('color', new THREE.BufferAttribute(starColors, 3));
-        const starMat = new THREE.PointsMaterial({ size: 1.5, vertexColors: true, transparent: true, opacity: 0.8, sizeAttenuation: true });
-        const stars = new THREE.Points(starGeo, starMat);
+        sGeo.setAttribute('position', new THREE.BufferAttribute(sPos, 3));
+        sGeo.setAttribute('color', new THREE.BufferAttribute(sColors, 3));
+        const sMat2 = new THREE.PointsMaterial({ size: 1.5, vertexColors: true, transparent: true, opacity: 0.9, sizeAttenuation: true });
+        starMaterial.current = sMat2;
+        const stars = new THREE.Points(sGeo, sMat2);
         scene.add(stars);
+        starPoints.current = stars;
 
         // --- 3D ASTEROID FIELD ---
-        const astGeo = new THREE.DodecahedronGeometry(10, 1);
-        const astMat = new THREE.MeshStandardMaterial({ color: 0x555555, roughness: 0.8, metalness: 0.2 });
-        const astCount = 400;
+        const astGeo = new THREE.DodecahedronGeometry(15, 1);
+        const astMat = new THREE.MeshStandardMaterial({ color: 0x444444, roughness: 0.9, metalness: 0.1 });
+        const astCount = 600;
         const instancedAst = new THREE.InstancedMesh(astGeo, astMat, astCount);
         
         const dummy = new THREE.Object3D();
         for (let i = 0; i < astCount; i++) {
             dummy.position.set(
-                (Math.random() - 0.5) * 3000,
-                (Math.random() - 0.5) * 3000,
-                (Math.random() - 0.5) * 3000
+                (Math.random() - 0.5) * 6000,
+                (Math.random() - 0.5) * 6000,
+                (Math.random() - 0.5) * 6000
             );
-            const scale = Math.random() * 3 + 0.5;
+            const scale = Math.random() * 4 + 0.5;
             dummy.scale.set(scale, scale, scale);
             dummy.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, Math.random() * Math.PI);
             dummy.updateMatrix();
             instancedAst.setMatrixAt(i, dummy.matrix);
         }
+        
+        // Add custom attribute to store rotation speeds for animation
+        const rotSpeeds = new Float32Array(astCount * 3);
+        for (let i=0; i<astCount*3; i++) rotSpeeds[i] = (Math.random() - 0.5) * 0.02;
+        instancedAst.geometry.setAttribute('aRotSpeed', new THREE.InstancedBufferAttribute(rotSpeeds, 3));
+
         scene.add(instancedAst);
         asteroidMesh.current = instancedAst;
 
     }, []);
+
+    const triggerHyperspace = useCallback(() => {
+        setGameState('hyperspace');
+        hyperspaceTimer.current = 100; // frames
+        soundRef.current?.playHyperspace();
+        addLog("HİPER UZAY MOTORLARI AKTİF! ATLAYIŞ BAŞLIYOR.");
+    }, [addLog]);
 
     const buildLevelWorld = useCallback(() => {
         clearAllEntities();
@@ -489,17 +556,21 @@ export function SpaceBomberGame() {
         const scene = sceneRef.current;
         if (!scene) return;
 
-        // Spawn Enemies in 3D Space (Ahead of player)
-        for (let i = 0; i < 20 + level * 5; i++) {
-            const eGeo = new THREE.IcosahedronGeometry(4, 0);
-            const eMat = new THREE.MeshStandardMaterial({ color: '#e84118', emissive: '#c23616', emissiveIntensity: 0.5, wireframe: true });
+        // Spawn Enemies
+        for (let i = 0; i < 20 + level * 6; i++) {
+            const eGeo = new THREE.IcosahedronGeometry(4, 1);
+            const eMat = new THREE.MeshStandardMaterial({ color: '#ff3f34', emissive: '#ff3f34', emissiveIntensity: 0.4, wireframe: true });
             const eMesh = new THREE.Group();
             const core = new THREE.Mesh(eGeo, eMat);
             eMesh.add(core);
 
-            // Spawn them in a wide cylinder ahead of the player
-            const zDist = -300 - Math.random() * 1500;
-            const radius = Math.random() * 400;
+            // Inner core
+            const iGeo = new THREE.SphereGeometry(2, 8, 8);
+            const iMat = new THREE.MeshBasicMaterial({ color: '#ffffff' });
+            eMesh.add(new THREE.Mesh(iGeo, iMat));
+
+            const zDist = -400 - Math.random() * 2000;
+            const radius = Math.random() * 600;
             const angle = Math.random() * Math.PI * 2;
             
             const px = Math.cos(angle) * radius;
@@ -513,79 +584,78 @@ export function SpaceBomberGame() {
                 id: Math.random(),
                 x: px, y: py, z: pz,
                 type: 'floater',
-                health: 4,
-                maxHealth: 4,
+                health: 5 + level,
+                maxHealth: 5 + level,
                 active: true,
                 lastFire: 0,
-                fireCooldown: 120 + Math.random() * 60,
+                fireCooldown: 90 + Math.random() * 60,
                 mesh: eMesh,
                 targetQuaternion: new THREE.Quaternion()
             });
         }
 
-        // Spawn Boss if level % 3 == 0
+        // Spawn Boss
         if (level % 3 === 0) {
-            const bossGeo = new THREE.OctahedronGeometry(25, 2);
-            const bossMat = new THREE.MeshStandardMaterial({ color: '#8c7ae6', emissive: '#4cd137', emissiveIntensity: 0.2, wireframe: true });
+            const bossGeo = new THREE.DodecahedronGeometry(35, 2);
+            const bossMat = new THREE.MeshStandardMaterial({ color: '#8c7ae6', emissive: '#4cd137', emissiveIntensity: 0.3, wireframe: true });
             const bossMesh = new THREE.Group();
             const bCore = new THREE.Mesh(bossGeo, bossMat);
             bossMesh.add(bCore);
             
             const px = 0;
             const py = 0;
-            const pz = -2000;
+            const pz = -2500;
 
             bossMesh.position.set(px, py, pz);
             scene.add(bossMesh);
 
+            const bossH = 60 + level * 15;
             enemies.current.push({
                 id: Math.random(),
                 x: px, y: py, z: pz,
                 type: 'boss',
-                health: 40 + level * 10,
-                maxHealth: 40 + level * 10,
+                health: bossH,
+                maxHealth: bossH,
                 active: true,
                 lastFire: 0,
-                fireCooldown: 80,
+                fireCooldown: 60,
                 mesh: bossMesh
             });
-            setBossMaxHealth(40 + level * 10);
-            setBossHealth(40 + level * 10);
+            setBossMaxHealth(bossH);
+            setBossHealth(bossH);
+            addLog("UYARI: DEVASA BİR ANOMALİ (BOSS) TESPİT EDİLDİ!");
         }
 
-    }, [clearAllEntities, level, setFuelLevel, setShieldLevel, setArmorLevel]);
+    }, [clearAllEntities, level, setFuelLevel, setShieldLevel, setArmorLevel, addLog]);
 
     const spawnBullet = useCallback((offsetX: number, offsetY: number, color: string, speedScale: number = 1.0, isBeam: boolean = false) => {
         if (!sceneRef.current || !playerShipGroup.current) return;
         
-        // Beam has different geometry
-        const geo = isBeam ? new THREE.CylinderGeometry(0.5, 0.5, 40) : new THREE.SphereGeometry(1.2, 8, 8);
-        if (isBeam) geo.rotateX(Math.PI / 2); // point beam forward
+        const geo = isBeam ? new THREE.CylinderGeometry(0.8, 0.8, 50) : new THREE.SphereGeometry(1.5, 12, 12);
+        if (isBeam) geo.rotateX(Math.PI / 2);
 
         const mat = new THREE.MeshBasicMaterial({ color, blending: THREE.AdditiveBlending, transparent: true, opacity: 0.9 });
         const mesh = new THREE.Mesh(geo, mat);
 
-        // Calculate spawn position
-        const spawnPos = new THREE.Vector3(offsetX, offsetY, -5);
+        const spawnPos = new THREE.Vector3(offsetX, offsetY, -6);
         spawnPos.applyQuaternion(shipQuaternion.current);
         spawnPos.add(shipPos.current);
         
-        // Calculate velocity (forward)
         const forward = new THREE.Vector3(0, 0, -1).applyQuaternion(shipQuaternion.current);
-        const bulletSpeed = 30 * speedScale;
+        const bulletSpeed = 35 * speedScale;
         const bVx = forward.x * bulletSpeed;
         const bVy = forward.y * bulletSpeed;
         const bVz = forward.z * bulletSpeed;
 
         mesh.position.copy(spawnPos);
-        mesh.quaternion.copy(shipQuaternion.current); // align bullet/beam with ship
+        mesh.quaternion.copy(shipQuaternion.current);
         sceneRef.current.add(mesh);
 
         bullets.current.push({
             id: Math.random(),
             x: spawnPos.x, y: spawnPos.y, z: spawnPos.z,
             vx: bVx, vy: bVy, vz: bVz,
-            life: 80,
+            life: 100,
             isEnemy: false,
             isBeam,
             mesh
@@ -596,18 +666,16 @@ export function SpaceBomberGame() {
         if (gameState !== 'playing' || fuelRef.current <= 0) return;
         
         if (weaponType.current === 'beam') {
-            spawnBullet(0, 0, '#ff4757', 2.0, true);
+            spawnBullet(0, 0, '#ff4757', 3.0, true);
             soundRef.current?.playShoot(true);
         } else if (weaponType.current === 'multi') {
-            // Wait, multi shot needs slightly angled trajectories in 3D.
-            // For simplicity, just spawn them offset.
-            spawnBullet(-3, 0, '#2ed573', 1.0);
-            spawnBullet(3, 0, '#2ed573', 1.0);
-            spawnBullet(0, 2, '#2ed573', 1.0);
+            spawnBullet(-4, 0, '#00d2d3', 1.0);
+            spawnBullet(4, 0, '#00d2d3', 1.0);
+            spawnBullet(0, 3, '#00d2d3', 1.0);
             soundRef.current?.playShoot();
         } else {
-            spawnBullet(-1.5, 0, '#1dd1a1');
-            spawnBullet(1.5, 0, '#1dd1a1');
+            spawnBullet(-2, 0, '#0be881');
+            spawnBullet(2, 0, '#0be881');
             soundRef.current?.playShoot();
         }
     }, [gameState, spawnBullet]);
@@ -624,7 +692,6 @@ export function SpaceBomberGame() {
         };
         const handleKeyUp = (e: KeyboardEvent) => { keys.current[e.key.toLowerCase()] = false; };
         
-        // Mouse steering mapping: X/Y relative to center (-1 to 1)
         const handleMouseMove = (e: MouseEvent) => {
             if (gameState !== 'playing') return;
             const rect = canvasRef.current?.getBoundingClientRect();
@@ -633,15 +700,12 @@ export function SpaceBomberGame() {
             const cx = rect.left + rect.width / 2;
             const cy = rect.top + rect.height / 2;
             
-            // Map to [-1, 1]
             let dx = (e.clientX - cx) / (rect.width / 2);
             let dy = (e.clientY - cy) / (rect.height / 2);
             
-            // Deadzone
             if (Math.abs(dx) < 0.1) dx = 0;
             if (Math.abs(dy) < 0.1) dy = 0;
             
-            // Clamp
             mouseDelta.current.x = Math.max(-1, Math.min(1, dx));
             mouseDelta.current.y = Math.max(-1, Math.min(1, dy));
         };
@@ -664,7 +728,7 @@ export function SpaceBomberGame() {
 
     // Main 6-DOF Loop
     tickRef.current = (time: number) => {
-        if (gameState !== 'playing') {
+        if (gameState !== 'playing' && gameState !== 'hyperspace') {
             lastTime.current = time;
             animationFrameId.current = requestAnimationFrame(tickRef.current);
             return;
@@ -672,7 +736,7 @@ export function SpaceBomberGame() {
 
         const rawDt = (time - lastTime.current) / 1000;
         lastTime.current = time;
-        const dt = Math.min(rawDt * 60, 3.0); // Normalized to 60FPS
+        const dt = Math.min(rawDt * 60, 3.0);
 
         const scene = sceneRef.current;
         const camera = cameraRef3D.current;
@@ -684,26 +748,52 @@ export function SpaceBomberGame() {
             return;
         }
 
-        // --- 1. SHIP MOVEMENT (6-DOF) ---
-        let pitch = -mouseDelta.current.y * 0.04 * dt;
-        let yaw = -mouseDelta.current.x * 0.04 * dt;
-        let roll = 0;
-        
-        if (keys.current['a']) roll += 0.05 * dt;
-        if (keys.current['d']) roll -= 0.05 * dt;
+        // --- HYPERSPACE ANIMATION ---
+        if (gameState === 'hyperspace') {
+            hyperspaceTimer.current -= dt;
+            if (starMaterial.current) {
+                // Stretch stars
+                starMaterial.current.size = 2.0 + (100 - hyperspaceTimer.current) * 0.1;
+                starMaterial.current.needsUpdate = true;
+            }
+            
+            // Move ship extremely fast forward
+            targetSpeed.current = MAX_SPEED * 10;
+            const forward = new THREE.Vector3(0, 0, -1).applyQuaternion(shipQuaternion.current);
+            shipVel.current.copy(forward).multiplyScalar(targetSpeed.current);
+            shipPos.current.addScaledVector(shipVel.current, dt);
+            
+            ship.position.copy(shipPos.current);
+            camera.position.lerp(new THREE.Vector3(0, 10, 40).applyQuaternion(shipQuaternion.current).add(shipPos.current), 0.1);
 
-        // Thrust
-        if (keys.current['w']) {
-            targetSpeed.current = Math.min(targetSpeed.current + 0.2 * dt, MAX_SPEED);
-            // Fuel consumption
-            if (fuelRef.current > 0) setFuelLevel(fuelRef.current - 0.05 * dt);
-        } else if (keys.current['s']) {
-            targetSpeed.current = Math.max(targetSpeed.current - 0.3 * dt, 0); // space brakes
-        } else {
-            targetSpeed.current = Math.max(targetSpeed.current - 0.01 * dt, MIN_SPEED); // idle glide
+            if (hyperspaceTimer.current <= 0) {
+                if (starMaterial.current) starMaterial.current.size = 1.5;
+                setGameState('playing');
+                buildLevelWorld();
+            }
+
+            composer.render();
+            animationFrameId.current = requestAnimationFrame(tickRef.current);
+            return;
         }
 
-        // Apply Rotations to Quaternion
+        // --- 1. SHIP MOVEMENT (6-DOF) ---
+        let pitch = -mouseDelta.current.y * 0.05 * dt;
+        let yaw = -mouseDelta.current.x * 0.05 * dt;
+        let roll = 0;
+        
+        if (keys.current['a']) roll += 0.06 * dt;
+        if (keys.current['d']) roll -= 0.06 * dt;
+
+        if (keys.current['w']) {
+            targetSpeed.current = Math.min(targetSpeed.current + 0.25 * dt, MAX_SPEED);
+            if (fuelRef.current > 0) setFuelLevel(fuelRef.current - 0.04 * dt);
+        } else if (keys.current['s']) {
+            targetSpeed.current = Math.max(targetSpeed.current - 0.4 * dt, 0); 
+        } else {
+            targetSpeed.current = Math.max(targetSpeed.current - 0.015 * dt, MIN_SPEED); 
+        }
+
         const qPitch = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1, 0, 0), pitch);
         const qYaw = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), yaw);
         const qRoll = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 0, 1), roll);
@@ -713,19 +803,16 @@ export function SpaceBomberGame() {
         shipQuaternion.current.multiply(qRoll);
         shipQuaternion.current.normalize();
 
-        // Calculate Forward Velocity
         const forward = new THREE.Vector3(0, 0, -1).applyQuaternion(shipQuaternion.current);
         
-        // Move Ship
         shipVel.current.copy(forward).multiplyScalar(targetSpeed.current);
         shipPos.current.addScaledVector(shipVel.current, dt);
 
-        // Update Ship Mesh
         ship.position.copy(shipPos.current);
         ship.quaternion.copy(shipQuaternion.current);
         
-        // Visual effects for thrusters based on speed
-        const thrustScale = Math.max(0.5, targetSpeed.current / MAX_SPEED * 2);
+        // Thruster visual
+        const thrustScale = Math.max(0.3, targetSpeed.current / MAX_SPEED * 2.5);
         if (thrusterFlameMeshL.current) thrusterFlameMeshL.current.scale.set(1, thrustScale, 1);
         if (thrusterFlameMeshR.current) thrusterFlameMeshR.current.scale.set(1, thrustScale, 1);
 
@@ -735,31 +822,55 @@ export function SpaceBomberGame() {
             const sScale = 1.0 + (100 - shieldRef.current) / 200;
             shieldBubbleMesh.current.scale.set(sScale, sScale, sScale);
             shieldBubbleMesh.current.rotation.y += 0.05 * dt;
+            shieldBubbleMesh.current.rotation.x += 0.03 * dt;
         }
 
-        // --- 2. CAMERA UPDATE (Chase Cam) ---
-        const idealOffset = new THREE.Vector3(0, 4, 15);
+        // --- 2. CAMERA UPDATE (Dynamic Chase Cam) ---
+        // Camera pulls back slightly based on speed
+        const camZ = 15 + (targetSpeed.current / MAX_SPEED) * 5;
+        const idealOffset = new THREE.Vector3(0, 4, camZ);
         idealOffset.applyQuaternion(shipQuaternion.current);
         idealOffset.add(shipPos.current);
         
         camera.position.lerp(idealOffset, 0.15 * dt);
         
-        // Look ahead
-        const idealLookAt = new THREE.Vector3(0, 0, -30);
+        const idealLookAt = new THREE.Vector3(0, 0, -50);
         idealLookAt.applyQuaternion(shipQuaternion.current);
         idealLookAt.add(shipPos.current);
         
-        // Slerp camera rotation
         const m = new THREE.Matrix4().lookAt(camera.position, idealLookAt, new THREE.Vector3(0, 1, 0).applyQuaternion(shipQuaternion.current));
         const targetCamQuat = new THREE.Quaternion().setFromRotationMatrix(m);
         camera.quaternion.slerp(targetCamQuat, 0.15 * dt);
         
-        // Screen Shake
         if (screenShakeRef.current > 0) {
             camera.position.x += (Math.random() - 0.5) * screenShakeRef.current;
             camera.position.y += (Math.random() - 0.5) * screenShakeRef.current;
             camera.position.z += (Math.random() - 0.5) * screenShakeRef.current;
-            screenShakeRef.current *= 0.9;
+            screenShakeRef.current *= 0.85;
+        }
+
+        // --- ASTEROIDS ANIMATION ---
+        if (asteroidMesh.current) {
+            // Rotating instanced meshes
+            const im = asteroidMesh.current;
+            const dummy = new THREE.Object3D();
+            const speeds = im.geometry.attributes.aRotSpeed as THREE.InstancedBufferAttribute;
+            for (let i = 0; i < im.count; i++) {
+                im.getMatrixAt(i, dummy.matrix);
+                dummy.matrix.decompose(dummy.position, dummy.quaternion, dummy.scale);
+                
+                const sx = speeds.getX(i) * dt;
+                const sy = speeds.getY(i) * dt;
+                const sz = speeds.getZ(i) * dt;
+                
+                dummy.rotation.x += sx;
+                dummy.rotation.y += sy;
+                dummy.rotation.z += sz;
+                
+                dummy.updateMatrix();
+                im.setMatrixAt(i, dummy.matrix);
+            }
+            im.instanceMatrix.needsUpdate = true;
         }
 
         // --- 3. BULLETS ---
@@ -775,43 +886,62 @@ export function SpaceBomberGame() {
         bullets.current = bullets.current.filter(b => b.life > 0);
 
         // --- 4. ENEMIES & COMBAT ---
+        let isTargetInCrosshair = false;
+
         enemies.current.forEach(e => {
             if (!e.active) return;
             
             const eVec = new THREE.Vector3(e.x, e.y, e.z);
             const distToPlayer = eVec.distanceTo(shipPos.current);
             
+            // Check crosshair lock (dot product)
+            const dirToEnemy = new THREE.Vector3().subVectors(eVec, shipPos.current).normalize();
+            if (forward.dot(dirToEnemy) > 0.98 && distToPlayer < 2000) {
+                isTargetInCrosshair = true;
+            }
+
             // AI Movement
             if (e.type === 'floater') {
-                // Fly towards player slowly
                 const dir = new THREE.Vector3().subVectors(shipPos.current, eVec).normalize();
-                e.x += dir.x * 0.5 * dt;
-                e.y += dir.y * 0.5 * dt;
-                e.z += dir.z * 0.5 * dt;
+                e.x += dir.x * 0.8 * dt;
+                e.y += dir.y * 0.8 * dt;
+                e.z += dir.z * 0.8 * dt;
                 
-                // Rotation animation
-                e.mesh.rotation.x += 0.02 * dt;
-                e.mesh.rotation.y += 0.03 * dt;
+                e.mesh.rotation.x += 0.05 * dt;
+                e.mesh.rotation.y += 0.05 * dt;
+
+                // Add engine trails to floaters occasionally
+                if (Math.random() < 0.2) {
+                    const tGeo = new THREE.BoxGeometry(0.5, 0.5, 0.5);
+                    const tMat = new THREE.MeshBasicMaterial({ color: '#ff3f34', transparent: true, opacity: 0.5 });
+                    const tMesh = new THREE.Mesh(tGeo, tMat);
+                    tMesh.position.copy(eVec);
+                    scene.add(tMesh);
+                    particles.current.push({
+                        x: e.x, y: e.y, z: e.z,
+                        vx: 0, vy: 0, vz: 0,
+                        life: 10, color: '#ff3f34', size: 0.5, mesh: tMesh
+                    });
+                }
+
             } else if (e.type === 'boss') {
-                // Boss stays at distance but slowly tracks
                 const dir = new THREE.Vector3().subVectors(shipPos.current, eVec).normalize();
-                e.x += dir.x * 0.2 * dt;
-                e.y += dir.y * 0.2 * dt;
-                e.z += dir.z * 0.2 * dt;
-                e.mesh.rotation.y += 0.01 * dt;
+                e.x += dir.x * 0.3 * dt;
+                e.y += dir.y * 0.3 * dt;
+                e.z += dir.z * 0.3 * dt;
+                e.mesh.rotation.y += 0.02 * dt;
             }
 
             e.mesh.position.set(e.x, e.y, e.z);
 
             // Firing Logic
             e.lastFire += dt;
-            if (e.lastFire > e.fireCooldown && distToPlayer < 800) {
+            if (e.lastFire > e.fireCooldown && distToPlayer < 1200) {
                 e.lastFire = 0;
-                // Enemy fire bullet towards player
                 const dir = new THREE.Vector3().subVectors(shipPos.current, eVec).normalize();
-                const bSpeed = 15;
-                const bGeo = new THREE.SphereGeometry(1.5, 8, 8);
-                const bMat = new THREE.MeshBasicMaterial({ color: '#fbc531' });
+                const bSpeed = 20;
+                const bGeo = new THREE.SphereGeometry(2.0, 8, 8);
+                const bMat = new THREE.MeshBasicMaterial({ color: '#fbc531', blending: THREE.AdditiveBlending });
                 const bMesh = new THREE.Mesh(bGeo, bMat);
                 bMesh.position.set(e.x, e.y, e.z);
                 scene.add(bMesh);
@@ -820,10 +950,12 @@ export function SpaceBomberGame() {
                     id: Math.random(),
                     x: e.x, y: e.y, z: e.z,
                     vx: dir.x * bSpeed, vy: dir.y * bSpeed, vz: dir.z * bSpeed,
-                    life: 100, isEnemy: true, mesh: bMesh
+                    life: 120, isEnemy: true, mesh: bMesh
                 });
             }
         });
+
+        if (targetLocked !== isTargetInCrosshair) setTargetLocked(isTargetInCrosshair);
 
         // Bullet Hit Detections
         bullets.current.forEach(b => {
@@ -831,27 +963,27 @@ export function SpaceBomberGame() {
             const bVec = new THREE.Vector3(b.x, b.y, b.z);
 
             if (b.isEnemy) {
-                if (bVec.distanceTo(shipPos.current) < 10) {
+                if (bVec.distanceTo(shipPos.current) < 12) {
                     b.life = 0;
-                    screenShakeRef.current = 2.0;
+                    screenShakeRef.current = 2.5;
                     soundRef.current?.playExplosion();
-                    createExplosion(shipPos.current.x, shipPos.current.y, shipPos.current.z, '#fbc531', 10, 1.0);
+                    createExplosion(shipPos.current.x, shipPos.current.y, shipPos.current.z, '#fbc531', 15, 1.0);
                     
                     comboMultiplier.current = 1;
-                    const dmg = 15;
+                    const dmg = 20;
                     if (shieldRef.current > 0) {
                         setShieldLevel(shieldRef.current - dmg * 0.7);
                         setArmorLevel(armorRef.current - dmg * 0.3);
                     } else {
                         setArmorLevel(armorRef.current - dmg);
                     }
-                    addLog(`GÖVDE DARBESİ! Kalkan: %${shieldRef.current}`);
+                    addLog(`KABİN HASARI! Kalkan: %${shieldRef.current}`);
                 }
             } else {
                 enemies.current.forEach(e => {
                     if (!e.active) return;
                     const eVec = new THREE.Vector3(e.x, e.y, e.z);
-                    const radius = e.type === 'boss' ? 30 : 8;
+                    const radius = e.type === 'boss' ? 40 : 10;
                     
                     if (bVec.distanceTo(eVec) < radius) {
                         if (!b.isBeam) b.life = 0;
@@ -859,51 +991,50 @@ export function SpaceBomberGame() {
                         
                         if (e.type === 'boss') setBossHealth(Math.max(0, e.health));
                         
-                        createExplosion(e.x, e.y, e.z, '#e84118', 4, 0.5);
+                        createExplosion(e.x, e.y, e.z, '#ff3f34', 5, 0.5);
 
                         if (e.health <= 0) {
                             e.active = false;
                             scene.remove(e.mesh);
                             soundRef.current?.playExplosion();
-                            createExplosion(e.x, e.y, e.z, '#00d2d3', e.type === 'boss' ? 80 : 15, e.type === 'boss' ? 4.0 : 1.5);
+                            
+                            createShockwave(e.x, e.y, e.z, '#00ffff');
+                            createExplosion(e.x, e.y, e.z, '#00ffff', e.type === 'boss' ? 100 : 25, e.type === 'boss' ? 5.0 : 2.0);
                             
                             comboMultiplier.current += 1;
-                            comboTimer.current = 120; // 2 secs roughly
-                            const scoreGained = (e.type === 'boss' ? 10000 : 250) * comboMultiplier.current;
+                            comboTimer.current = 150; 
+                            const scoreGained = (e.type === 'boss' ? 15000 : 350) * comboMultiplier.current;
                             setScore(s => s + scoreGained);
-                            addLog(`DÜŞMAN İMHA EDİLDİ! +${scoreGained}`);
+                            addLog(`HEDEF İMHA EDİLDİ: +${scoreGained}`);
                             
-                            // Floating Text
                             floatingTexts.current.push({
                                 id: Math.random(), text: `${scoreGained}`,
-                                x: e.x, y: e.y + 10, z: e.z,
-                                life: 1.5, color: comboMultiplier.current > 2 ? '#ff9f43' : '#ffffff'
+                                x: e.x, y: e.y + 15, z: e.z,
+                                life: 2.0, color: comboMultiplier.current > 2 ? '#ff9f43' : '#ffffff'
                             });
 
                             // Drops
-                            if (Math.random() > 0.8) {
-                                // PowerUp
+                            if (Math.random() > 0.75) {
                                 const pType = Math.random() > 0.5 ? 'multi' : 'beam';
-                                const pGeo = new THREE.BoxGeometry(4, 4, 4);
-                                const pMat = new THREE.MeshBasicMaterial({ color: pType === 'multi' ? '#0984e3' : '#d63031' });
+                                const pGeo = new THREE.BoxGeometry(5, 5, 5);
+                                const pMat = new THREE.MeshBasicMaterial({ color: pType === 'multi' ? '#00d2d3' : '#ff4757', wireframe: true });
                                 const pMesh = new THREE.Mesh(pGeo, pMat);
                                 pMesh.position.set(e.x, e.y, e.z);
                                 scene.add(pMesh);
                                 powerUps.current.push({
                                     id: Math.random(), x: e.x, y: e.y, z: e.z,
-                                    vx: (Math.random() - 0.5) * 2, vy: (Math.random() - 0.5) * 2, vz: (Math.random() - 0.5) * 2,
+                                    vx: (Math.random() - 0.5) * 4, vy: (Math.random() - 0.5) * 4, vz: (Math.random() - 0.5) * 4,
                                     type: pType, active: true, mesh: pMesh
                                 });
                             } else {
-                                // Crystal
-                                const cGeo = new THREE.OctahedronGeometry(2);
-                                const cMat = new THREE.MeshStandardMaterial({ color: '#44bd32', emissive: '#1b4d14' });
+                                const cGeo = new THREE.OctahedronGeometry(3);
+                                const cMat = new THREE.MeshStandardMaterial({ color: '#2ed573', emissive: '#10ac84' });
                                 const cMesh = new THREE.Mesh(cGeo, cMat);
                                 cMesh.position.set(e.x, e.y, e.z);
                                 scene.add(cMesh);
                                 crystals.current.push({
                                     id: Math.random(), x: e.x, y: e.y, z: e.z,
-                                    vx: (Math.random() - 0.5) * 2, vy: (Math.random() - 0.5) * 2, vz: (Math.random() - 0.5) * 2,
+                                    vx: (Math.random() - 0.5) * 3, vy: (Math.random() - 0.5) * 3, vz: (Math.random() - 0.5) * 3,
                                     active: true, mesh: cMesh
                                 });
                             }
@@ -911,7 +1042,7 @@ export function SpaceBomberGame() {
                             // Victory Check
                             if (enemies.current.filter(en => en.active).length === 0) {
                                 setGameState('victory');
-                                confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 } });
+                                confetti({ particleCount: 200, spread: 100, origin: { y: 0.6 } });
                             }
                         }
                     }
@@ -925,21 +1056,21 @@ export function SpaceBomberGame() {
                 if (!item.active) return;
                 item.x += item.vx * dt; item.y += item.vy * dt; item.z += item.vz * dt;
                 item.mesh.position.set(item.x, item.y, item.z);
-                item.mesh.rotation.x += 0.02 * dt;
-                item.mesh.rotation.y += 0.03 * dt;
+                item.mesh.rotation.x += 0.04 * dt;
+                item.mesh.rotation.y += 0.05 * dt;
                 
                 const dVec = new THREE.Vector3(item.x, item.y, item.z);
                 const dist = dVec.distanceTo(shipPos.current);
                 
                 // Magnet
-                if (dist < 150) {
+                if (dist < 200) {
                     const dir = new THREE.Vector3().subVectors(shipPos.current, dVec).normalize();
-                    item.vx += dir.x * 0.5 * dt;
-                    item.vy += dir.y * 0.5 * dt;
-                    item.vz += dir.z * 0.5 * dt;
+                    item.vx += dir.x * 0.8 * dt;
+                    item.vy += dir.y * 0.8 * dt;
+                    item.vz += dir.z * 0.8 * dt;
                 }
                 
-                if (dist < 15) handler(item);
+                if (dist < 20) handler(item);
             });
         };
 
@@ -956,26 +1087,36 @@ export function SpaceBomberGame() {
             scene.remove(p.mesh);
             soundRef.current?.playCollect();
             weaponType.current = p.type;
-            weaponTimer.current = 300; // ~5 secs
-            addLog(`SİLAH YÜKSELTİLDİ: ${p.type.toUpperCase()}`);
+            weaponTimer.current = 400; // ~6-7 secs
+            addLog(`SİSTEM GÜNCELLENDİ: ${p.type.toUpperCase()}`);
         });
         powerUps.current = powerUps.current.filter(p => p.active);
 
-        // --- 6. PARTICLES ---
+        // --- 6. PARTICLES & SHOCKWAVES ---
         particles.current.forEach(p => {
             if (p.life <= 0) return;
             p.x += p.vx * dt; p.y += p.vy * dt; p.z += p.vz * dt;
             p.life -= dt;
             p.mesh.position.set(p.x, p.y, p.z);
-            p.mesh.scale.multiplyScalar(0.95);
+            p.mesh.scale.multiplyScalar(0.93); // shrink faster
         });
         particles.current.filter(p => p.life <= 0).forEach(p => scene.remove(p.mesh));
         particles.current = particles.current.filter(p => p.life > 0);
 
+        shockwaves.current.forEach(s => {
+            if (s.life <= 0) return;
+            s.life -= 0.02 * dt;
+            const scale = 1.0 + (1.0 - s.life) * 40; // Expand to 40x size
+            s.mesh.scale.set(scale, scale, scale);
+            (s.mesh.material as THREE.MeshBasicMaterial).opacity = s.life * 0.5;
+        });
+        shockwaves.current.filter(s => s.life <= 0).forEach(s => scene.remove(s.mesh));
+        shockwaves.current = shockwaves.current.filter(s => s.life > 0);
+
         // --- 7. FLOATING TEXTS & UI UPDATES ---
         floatingTexts.current.forEach(ft => {
-            ft.y += 0.5 * dt;
-            ft.life -= 0.016 * dt;
+            ft.y += 0.8 * dt;
+            ft.life -= 0.02 * dt;
         });
         floatingTexts.current = floatingTexts.current.filter(ft => ft.life > 0);
 
@@ -988,7 +1129,6 @@ export function SpaceBomberGame() {
                 const width = canvasRef.current?.clientWidth || 800;
                 const height = canvasRef.current?.clientHeight || 550;
                 
-                // Only render if in front of camera
                 if (vec.z < 1) {
                     const screenX = (vec.x * 0.5 + 0.5) * width;
                     const screenY = -(vec.y * 0.5 - 0.5) * height;
@@ -1001,9 +1141,9 @@ export function SpaceBomberGame() {
                     el.style.color = ft.color;
                     el.style.opacity = `${Math.max(0, ft.life)}`;
                     el.style.transform = 'translate(-50%, -50%)';
-                    el.style.fontWeight = 'bold';
-                    el.style.fontSize = '1.2rem';
-                    el.style.textShadow = `0 0 10px ${ft.color}`;
+                    el.style.fontWeight = '900';
+                    el.style.fontSize = '1.5rem';
+                    el.style.textShadow = `0 0 15px ${ft.color}, 0 0 5px #000`;
                     el.style.pointerEvents = 'none';
                     floatingTextContainerRef.current?.appendChild(el);
                 }
@@ -1020,12 +1160,10 @@ export function SpaceBomberGame() {
             if (weaponTimer.current <= 0) weaponType.current = 'normal';
         }
 
-        // Radar 3D to 2D projection (relative to ship)
-        // Throttle radar updates for performance
-        if (Math.random() < 0.1) {
+        // Radar
+        if (Math.random() < 0.15) {
             const radarData = enemies.current.filter(e => e.active).map(e => {
                 const relativePos = new THREE.Vector3(e.x, e.y, e.z).sub(shipPos.current);
-                // Rotate relative pos by inverse of ship quaternion to get local coords
                 relativePos.applyQuaternion(shipQuaternion.current.clone().invert());
                 return { x: relativePos.x, y: relativePos.z, z: relativePos.y, type: e.type };
             });
@@ -1033,13 +1171,12 @@ export function SpaceBomberGame() {
         }
 
         setSpeedVal(Math.round(targetSpeed.current * 100));
-        setAltitudeVal(Math.round(shipPos.current.length() / 10)); // Distance from origin
+        setAltitudeVal(Math.round(shipPos.current.length() / 10)); 
 
         composer.render();
         animationFrameId.current = requestAnimationFrame(tickRef.current);
     };
 
-    // Initialization Effect
     useEffect(() => {
         soundRef.current = new SoundSynth();
         initThreeWorld();
@@ -1051,7 +1188,6 @@ export function SpaceBomberGame() {
         };
     }, [initThreeWorld, clearAllEntities]);
 
-    // Game Control Actions
     const startGame = () => {
         setGameState('playing');
         setScore(0);
@@ -1062,130 +1198,159 @@ export function SpaceBomberGame() {
         if (soundRef.current && soundRef.current.ctx.state === 'suspended') {
             soundRef.current.ctx.resume();
         }
-        addLog("UZAY GÖREVİ BAŞLADI.");
+        addLog("SİMÜLASYON AKTİF.");
     };
 
     const nextLevel = () => {
         setLevel(l => l + 1);
-        startGame();
+        triggerHyperspace();
     };
 
     return (
-        <div className="w-full max-w-6xl mx-auto p-4 flex flex-col gap-4 font-sans" ref={containerRef}>
+        <div className="w-full max-w-[1400px] mx-auto p-4 flex flex-col gap-4 font-sans" ref={containerRef}>
             
-            {/* Header / Top HUD */}
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center p-4 bg-black/80 border border-white/10 rounded-xl shadow-2xl backdrop-blur-md gap-4">
-                <div className="flex items-center gap-6">
+            {/* Header HUD */}
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center p-4 bg-gradient-to-r from-black/90 via-[#0a0a1a]/90 to-black/90 border-b border-cyan-500/30 rounded-t-xl shadow-[0_4px_30px_rgba(0,255,255,0.1)] backdrop-blur-xl gap-4 relative overflow-hidden">
+                <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-cyan-400 to-transparent opacity-50"></div>
+                
+                <div className="flex items-center gap-8">
                     <div className="flex flex-col">
-                        <span className="text-[10px] text-muted-foreground uppercase font-semibold tracking-wider">Hız</span>
-                        <span className="text-lg font-bold text-cyan-400 font-mono">{speedVal} <span className="text-xs text-cyan-700">km/s</span></span>
+                        <span className="text-[10px] text-cyan-500/70 uppercase font-black tracking-[0.2em] mb-1"><Navigation className="inline w-3 h-3 mr-1" />Hız</span>
+                        <span className="text-2xl font-black text-cyan-400 font-mono tracking-tighter drop-shadow-[0_0_8px_rgba(34,211,238,0.5)]">{speedVal} <span className="text-xs text-cyan-700 font-normal">km/s</span></span>
                     </div>
                     <div className="flex flex-col">
-                        <span className="text-[10px] text-muted-foreground uppercase font-semibold tracking-wider">Mesafe</span>
-                        <span className="text-lg font-bold text-emerald-400 font-mono">{altitudeVal} <span className="text-xs text-emerald-700">ly</span></span>
+                        <span className="text-[10px] text-emerald-500/70 uppercase font-black tracking-[0.2em] mb-1"><Target className="inline w-3 h-3 mr-1" />Mesafe</span>
+                        <span className="text-2xl font-black text-emerald-400 font-mono tracking-tighter drop-shadow-[0_0_8px_rgba(16,185,129,0.5)]">{altitudeVal} <span className="text-xs text-emerald-700 font-normal">ly</span></span>
                     </div>
                     <div className="flex flex-col">
-                        <span className="text-[10px] text-muted-foreground uppercase font-semibold tracking-wider">Skor</span>
-                        <span className="text-lg font-bold text-amber-400 font-mono">{score}</span>
+                        <span className="text-[10px] text-amber-500/70 uppercase font-black tracking-[0.2em] mb-1"><Zap className="inline w-3 h-3 mr-1" />Skor</span>
+                        <span className="text-2xl font-black text-amber-400 font-mono tracking-tighter drop-shadow-[0_0_8px_rgba(251,191,36,0.5)]">{score}</span>
                     </div>
                 </div>
 
-                <div className="flex gap-4 flex-1 max-w-sm justify-center md:justify-end">
-                    <div className="flex flex-col w-20 md:w-24">
-                        <div className="flex justify-between items-center mb-0.5 text-[9px] font-semibold text-muted-foreground uppercase">
-                            <span className="flex items-center gap-0.5"><Shield className="w-2.5 h-2.5 text-cyan-400" /> Kalkan</span>
-                            <span className="font-mono text-cyan-400">{shield}%</span>
+                <div className="flex gap-6 flex-1 max-w-lg justify-center md:justify-end">
+                    <div className="flex flex-col w-24 md:w-32">
+                        <div className="flex justify-between items-center mb-1 text-[10px] font-bold text-cyan-500/80 uppercase tracking-widest">
+                            <span className="flex items-center gap-1"><Shield className="w-3 h-3" /> Kalkan</span>
+                            <span className="font-mono">{shield}%</span>
                         </div>
-                        <div className="h-2.5 w-full bg-secondary/80 rounded-full overflow-hidden border border-white/5">
-                            <div className="h-full bg-cyan-400 transition-all duration-150 relative shadow-[0_0_8px_#22d3ee]" style={{ width: `${shield}%` }} />
-                        </div>
-                    </div>
-
-                    <div className="flex flex-col w-20 md:w-24">
-                        <div className="flex justify-between items-center mb-0.5 text-[9px] font-semibold text-muted-foreground uppercase">
-                            <span className="flex items-center gap-0.5"><Activity className="w-2.5 h-2.5 text-rose-500" /> Zırh</span>
-                            <span className="font-mono text-rose-500">{armor}%</span>
-                        </div>
-                        <div className="h-2.5 w-full bg-secondary/80 rounded-full overflow-hidden border border-white/5">
-                            <div className="h-full bg-rose-500 transition-all duration-150 shadow-[0_0_8px_#f43f5e]" style={{ width: `${armor}%` }} />
+                        <div className="h-3 w-full bg-black rounded-full overflow-hidden border border-cyan-900/50 shadow-inner">
+                            <div className="h-full bg-gradient-to-r from-cyan-600 to-cyan-300 transition-all duration-150 shadow-[0_0_12px_#22d3ee]" style={{ width: `${shield}%` }} />
                         </div>
                     </div>
 
-                    <div className="flex flex-col w-20 md:w-24">
-                        <div className="flex justify-between items-center mb-0.5 text-[9px] font-semibold text-muted-foreground uppercase">
-                            <span className="flex items-center gap-0.5"><Flame className="w-2.5 h-2.5 text-amber-500" /> Yakıt</span>
-                            <span className="font-mono text-amber-500">{fuel}%</span>
+                    <div className="flex flex-col w-24 md:w-32">
+                        <div className="flex justify-between items-center mb-1 text-[10px] font-bold text-rose-500/80 uppercase tracking-widest">
+                            <span className="flex items-center gap-1"><Activity className="w-3 h-3" /> Zırh</span>
+                            <span className="font-mono">{armor}%</span>
                         </div>
-                        <div className="h-2.5 w-full bg-secondary/80 rounded-full overflow-hidden border border-white/5">
-                            <div className={`h-full transition-all duration-150 shadow-[0_0_8px_#f59e0b] ${fuel < 20 ? 'bg-amber-600 animate-pulse' : 'bg-amber-500'}`} style={{ width: `${fuel}%` }} />
+                        <div className="h-3 w-full bg-black rounded-full overflow-hidden border border-rose-900/50 shadow-inner">
+                            <div className="h-full bg-gradient-to-r from-rose-700 to-rose-400 transition-all duration-150 shadow-[0_0_12px_#f43f5e]" style={{ width: `${armor}%` }} />
+                        </div>
+                    </div>
+
+                    <div className="flex flex-col w-24 md:w-32">
+                        <div className="flex justify-between items-center mb-1 text-[10px] font-bold text-amber-500/80 uppercase tracking-widest">
+                            <span className="flex items-center gap-1"><Flame className="w-3 h-3" /> Yakıt</span>
+                            <span className="font-mono">{fuel}%</span>
+                        </div>
+                        <div className="h-3 w-full bg-black rounded-full overflow-hidden border border-amber-900/50 shadow-inner">
+                            <div className={`h-full bg-gradient-to-r from-amber-600 to-amber-300 transition-all duration-150 shadow-[0_0_12px_#f59e0b] ${fuel < 20 ? 'animate-pulse' : ''}`} style={{ width: `${fuel}%` }} />
                         </div>
                     </div>
                 </div>
 
-                <div className="flex gap-2 items-center">
-                    <Button size="icon" variant="ghost" className="h-8 w-8 text-muted-foreground hover:text-white rounded-lg border border-white/10" onClick={toggleSound}>
-                        {soundEnabled ? <Volume2 className="w-4 h-4 text-cyan-400" /> : <VolumeX className="w-4 h-4 text-rose-400" />}
+                <div className="flex gap-3 items-center border-l border-white/10 pl-4 ml-2">
+                    <Button size="icon" variant="ghost" className="h-10 w-10 bg-black/40 hover:bg-white/10 text-muted-foreground rounded-full border border-white/5 transition-all" onClick={toggleSound}>
+                        {soundEnabled ? <Volume2 className="w-5 h-5 text-cyan-400" /> : <VolumeX className="w-5 h-5 text-rose-500" />}
                     </Button>
-                    <div className="px-2 py-1 bg-primary/20 rounded border border-primary/40 font-bold text-primary tracking-wider uppercase text-[10px]">
-                        SEKTÖR {level}
+                    <div className="px-4 py-2 bg-gradient-to-br from-indigo-900/50 to-purple-900/50 rounded-lg border border-indigo-500/30 font-black text-indigo-200 tracking-[0.2em] uppercase text-xs shadow-[0_0_15px_rgba(99,102,241,0.3)]">
+                        SEKTÖR <span className="text-white text-sm">{level}</span>
                     </div>
                 </div>
             </div>
 
-            {/* Game Canvas Container */}
-            <div className="relative rounded-lg overflow-hidden border border-border shadow-2xl bg-black cursor-crosshair">
-                <canvas ref={canvasRef} className="w-full block focus:outline-none" style={{ height: '600px' }} width={800} height={600} tabIndex={0} />
+            {/* Game Viewport Container (Cockpit Effect) */}
+            <div className="relative rounded-b-xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.5)] bg-black cursor-crosshair border-x border-b border-white/5">
                 
-                <div ref={floatingTextContainerRef} className="absolute top-0 left-0 w-full h-[600px] pointer-events-none z-10 overflow-hidden" />
+                {/* Cockpit Overlay SVG */}
+                <div className="absolute inset-0 pointer-events-none z-20 opacity-30">
+                    <svg width="100%" height="100%" preserveAspectRatio="none">
+                        <path d="M0,0 L200,0 L250,50 Lcalc(100% - 250px),50 Lcalc(100% - 200px),0 L100%,0 L100%,100% L0,100% Z" fill="none" stroke="#00ffff" strokeWidth="2" opacity="0.3"/>
+                        <path d="M0,100% L200,100% L250,calc(100% - 50px) Lcalc(100% - 250px),calc(100% - 50px) Lcalc(100% - 200px),100% L100%,100%" fill="none" stroke="#00ffff" strokeWidth="2" opacity="0.3"/>
+                        
+                        {/* Crosshair guidelines */}
+                        <line x1="50%" y1="40%" x2="50%" y2="48%" stroke="#00ffff" strokeWidth="1" strokeDasharray="4 4" opacity="0.4" />
+                        <line x1="50%" y1="52%" x2="50%" y2="60%" stroke="#00ffff" strokeWidth="1" strokeDasharray="4 4" opacity="0.4" />
+                        <line x1="40%" y1="50%" x2="48%" y2="50%" stroke="#00ffff" strokeWidth="1" strokeDasharray="4 4" opacity="0.4" />
+                        <line x1="52%" y1="50%" x2="60%" y2="50%" stroke="#00ffff" strokeWidth="1" strokeDasharray="4 4" opacity="0.4" />
+                    </svg>
+                </div>
 
-                {/* Cyber Crosshair */}
-                {gameState === 'playing' && (
-                    <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none opacity-50 z-10">
-                        <Crosshair className="w-8 h-8 text-cyan-400" />
+                <canvas ref={canvasRef} className="w-full block focus:outline-none" style={{ height: '700px' }} width={1200} height={700} tabIndex={0} />
+                
+                <div ref={floatingTextContainerRef} className="absolute top-0 left-0 w-full h-[700px] pointer-events-none z-10 overflow-hidden" />
+
+                {/* Adaptive Crosshair */}
+                {(gameState === 'playing' || gameState === 'hyperspace') && (
+                    <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none z-10 transition-all duration-200">
+                        <Crosshair className={`w-12 h-12 transition-colors duration-200 ${targetLocked ? 'text-rose-500 drop-shadow-[0_0_10px_#f43f5e] scale-110' : 'text-cyan-400 opacity-60 drop-shadow-[0_0_5px_#22d3ee]'}`} />
+                        {targetLocked && (
+                            <div className="absolute top-full mt-2 left-1/2 transform -translate-x-1/2 text-[9px] text-rose-500 font-bold tracking-widest uppercase animate-pulse">
+                                HEDEF KİLİTLENDİ
+                            </div>
+                        )}
                     </div>
                 )}
 
                 {/* Boss Health Bar */}
                 {gameState === 'playing' && bossHealth > 0 && (
-                    <div className="absolute top-6 left-1/2 transform -translate-x-1/2 w-96 flex flex-col items-center z-20">
-                        <span className="text-rose-500 text-[10px] font-bold uppercase tracking-[0.3em] mb-2 drop-shadow-[0_0_5px_rgba(244,63,94,0.8)]">Anomali Tespit Edildi</span>
-                        <div className="w-full h-3 bg-black/60 border border-rose-500/30 rounded-full overflow-hidden backdrop-blur-sm">
-                            <div className="h-full bg-gradient-to-r from-rose-700 to-rose-400 transition-all duration-300 shadow-[0_0_15px_#f43f5e]" style={{ width: `${(bossHealth / bossMaxHealth) * 100}%` }} />
+                    <div className="absolute top-12 left-1/2 transform -translate-x-1/2 w-full max-w-lg flex flex-col items-center z-20 bg-black/40 p-4 rounded-xl backdrop-blur-sm border border-rose-500/20">
+                        <div className="flex justify-between w-full mb-2">
+                            <span className="text-rose-500 text-xs font-black uppercase tracking-[0.3em] drop-shadow-[0_0_8px_rgba(244,63,94,0.8)]">Sınıf-X Anomali</span>
+                            <span className="text-rose-400 font-mono text-xs">{Math.round((bossHealth/bossMaxHealth)*100)}%</span>
+                        </div>
+                        <div className="w-full h-4 bg-black/80 border border-rose-500/50 rounded-full overflow-hidden">
+                            <div className="h-full bg-gradient-to-r from-rose-900 via-rose-500 to-rose-300 transition-all duration-300 shadow-[0_0_20px_#f43f5e]" style={{ width: `${(bossHealth / bossMaxHealth) * 100}%` }} />
                         </div>
                     </div>
                 )}
 
                 {/* Radar UI */}
                 {gameState === 'playing' && (
-                    <div className="absolute bottom-4 right-4 w-32 h-32 bg-black/60 backdrop-blur-md rounded-full border border-white/10 pointer-events-none flex items-center justify-center overflow-hidden shadow-[0_0_30px_rgba(34,211,238,0.15)]">
-                        <div className="absolute inset-0 rounded-full border border-cyan-500/20 m-4" />
-                        <div className="absolute inset-0 rounded-full border border-cyan-500/10 m-8" />
-                        <div className="w-full h-full animate-[spin_4s_linear_infinite] border-t border-cyan-400/40 rounded-full" style={{ clipPath: 'polygon(50% 50%, 100% 0, 100% 100%)' }} />
-                        <div className="w-2 h-2 bg-cyan-400 rounded-full shadow-[0_0_10px_#22d3ee] z-10" />
-                        <div className="absolute text-[8px] text-cyan-500/50 top-2 font-mono">N</div>
-                        <div className="absolute text-[8px] text-cyan-500/50 right-2 font-mono">E</div>
+                    <div className="absolute bottom-6 right-6 w-40 h-40 bg-black/40 backdrop-blur-xl rounded-full border-2 border-cyan-500/30 pointer-events-none flex items-center justify-center overflow-hidden shadow-[0_0_40px_rgba(34,211,238,0.2)]">
+                        <div className="absolute inset-0 rounded-full border border-cyan-400/20 m-5" />
+                        <div className="absolute inset-0 rounded-full border border-cyan-400/10 m-10" />
+                        <div className="absolute w-full h-[1px] bg-cyan-500/20" />
+                        <div className="absolute h-full w-[1px] bg-cyan-500/20" />
+                        
+                        <div className="w-full h-full animate-[spin_3s_linear_infinite] border-t-2 border-cyan-400/60 rounded-full" style={{ clipPath: 'polygon(50% 50%, 100% 0, 100% 100%)', background: 'linear-gradient(90deg, rgba(34,211,238,0) 50%, rgba(34,211,238,0.2) 100%)' }} />
+                        <div className="w-3 h-3 bg-cyan-300 rounded-full shadow-[0_0_15px_#22d3ee] z-10" />
+                        
+                        <div className="absolute text-[9px] text-cyan-400/70 top-2 font-mono font-bold">Z</div>
+                        <div className="absolute text-[9px] text-cyan-400/70 right-2 font-mono font-bold">X</div>
                         
                         {radarEntities.map((e, idx) => {
-                            // Map local space coords to radar scale (1 unit = 5 px, clamp to radius)
-                            const scale = 0.05;
-                            const rx = Math.max(-14, Math.min(14, e.x * scale));
-                            const ry = Math.max(-14, Math.min(14, e.y * scale)); // use local Z as Y on radar
+                            const scale = 0.04;
+                            const limit = 18;
+                            const rx = Math.max(-limit, Math.min(limit, e.x * scale));
+                            const ry = Math.max(-limit, Math.min(limit, e.y * scale)); 
                             
                             return (
-                                <div key={idx} className={`absolute w-1.5 h-1.5 rounded-full ${e.type === 'boss' ? 'bg-purple-500 w-2.5 h-2.5 shadow-[0_0_8px_#a855f7]' : 'bg-rose-500 shadow-[0_0_5px_#f43f5e]'}`} style={{ transform: `translate(${rx}px, ${ry}px)` }} />
+                                <div key={idx} className={`absolute rounded-full transition-all duration-100 ${e.type === 'boss' ? 'bg-purple-500 w-3 h-3 shadow-[0_0_12px_#a855f7]' : 'bg-rose-500 w-2 h-2 shadow-[0_0_8px_#f43f5e]'}`} style={{ transform: `translate(${rx}px, ${ry}px)` }} />
                             );
                         })}
                     </div>
                 )}
 
                 {/* Flight Log */}
-                {gameState === 'playing' && (
-                    <div className="absolute bottom-4 left-4 p-3 rounded-lg border border-white/5 bg-black/55 backdrop-blur-sm max-w-xs text-[10px] text-emerald-400 font-mono tracking-wide pointer-events-none z-10 flex flex-col gap-1 shadow-md">
-                        <div className="text-[8px] text-muted-foreground border-b border-white/10 pb-0.5 mb-1 uppercase font-bold flex items-center gap-1">
-                            <Activity className="w-2.5 h-2.5" /> Sistem Kayıtları
+                {(gameState === 'playing' || gameState === 'hyperspace') && (
+                    <div className="absolute bottom-6 left-6 p-4 rounded-xl border border-white/10 bg-black/60 backdrop-blur-md max-w-sm w-full text-[11px] text-emerald-400 font-mono tracking-wide pointer-events-none z-10 flex flex-col gap-1.5 shadow-[0_10px_30px_rgba(0,0,0,0.5)]">
+                        <div className="text-[10px] text-emerald-500/60 border-b border-emerald-500/20 pb-1 mb-1.5 uppercase font-black flex items-center gap-2">
+                            <Activity className="w-3.5 h-3.5" /> Sistem Kayıtları (v2.4)
                         </div>
                         {logMessages.map((log, idx) => (
-                            <div key={idx} className={`${idx === 0 ? 'text-emerald-300 font-bold opacity-100' : 'opacity-65'}`}>
+                            <div key={idx} className={`transition-all duration-300 ${idx === 0 ? 'text-emerald-300 font-bold scale-100 opacity-100' : 'text-emerald-500/70 scale-95 origin-left opacity-70'}`}>
                                 {log}
                             </div>
                         ))}
@@ -1194,57 +1359,69 @@ export function SpaceBomberGame() {
 
                 {/* Overlays */}
                 {gameState === 'idle' && (
-                    <div className="absolute inset-0 bg-black/80 backdrop-blur-sm flex flex-col items-center justify-center z-30">
-                        <h1 className="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-br from-indigo-400 to-cyan-300 mb-4 tracking-tighter drop-shadow-lg">
-                            GRAVITY WARRIOR <span className="text-rose-500">3D</span>
+                    <div className="absolute inset-0 bg-black/90 backdrop-blur-sm flex flex-col items-center justify-center z-30">
+                        <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-cyan-500 via-transparent to-transparent"></div>
+                        <h1 className="text-6xl md:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-br from-indigo-400 via-cyan-300 to-emerald-400 mb-6 tracking-tighter drop-shadow-[0_0_30px_rgba(34,211,238,0.5)] text-center">
+                            GRAVITY WARRIOR <br/> <span className="text-rose-500 text-5xl">3D: ASCENSION</span>
                         </h1>
-                        <p className="text-muted-foreground max-w-md text-center mb-8">
-                            Uzay boşluğunda tam 6 eksenli (6-DOF) uçuş simülasyonu. 
+                        <p className="text-cyan-100/70 max-w-xl text-center mb-10 text-lg font-light leading-relaxed">
+                            Tam 6 eksenli (6-DOF) uçuş simülasyonuna hoş geldiniz. Derin uzayda sınırsız manevra kabiliyeti ve hiper gerçekçi savaş mekanikleri ile hayatta kalın.
                         </p>
-                        <Button onClick={startGame} size="lg" className="bg-cyan-500 hover:bg-cyan-400 text-black font-bold px-12 py-6 text-lg rounded-full shadow-[0_0_20px_#22d3ee] transition-all hover:scale-105">
+                        <Button onClick={startGame} size="lg" className="bg-cyan-500 hover:bg-cyan-400 text-black font-black px-14 py-8 text-xl rounded-full shadow-[0_0_40px_#22d3ee] transition-all hover:scale-105 border-4 border-cyan-200">
                             SİMÜLASYONU BAŞLAT
                         </Button>
                     </div>
                 )}
 
+                {gameState === 'hyperspace' && (
+                    <div className="absolute inset-0 bg-transparent flex flex-col items-center justify-center z-30 pointer-events-none">
+                        <h2 className="text-5xl font-black text-white tracking-[0.5em] drop-shadow-[0_0_20px_#00ffff] animate-pulse">HİPER UZAY ATLAYIŞI</h2>
+                    </div>
+                )}
+
                 {gameState === 'gameover' && (
-                    <div className="absolute inset-0 bg-rose-950/90 backdrop-blur-md flex flex-col items-center justify-center z-30">
-                        <h2 className="text-4xl font-black text-white mb-2 tracking-widest drop-shadow-[0_0_15px_#f43f5e]">GEMİ YOK EDİLDİ</h2>
-                        <p className="text-rose-200 mb-8 font-mono">Ulaşılan Sektör: {level} | Skor: {score}</p>
-                        <Button onClick={startGame} className="bg-white text-rose-900 hover:bg-rose-100 font-bold">
-                            SİSTEMİ YENİDEN BAŞLAT
-                        </Button>
+                    <div className="absolute inset-0 bg-rose-950/95 backdrop-blur-xl flex flex-col items-center justify-center z-30">
+                        <div className="p-10 rounded-3xl border border-rose-500/30 bg-black/50 flex flex-col items-center shadow-[0_0_100px_rgba(244,63,94,0.3)]">
+                            <h2 className="text-5xl font-black text-rose-500 mb-4 tracking-widest drop-shadow-[0_0_20px_#f43f5e]">SİSTEM ÇÖKTÜ</h2>
+                            <p className="text-rose-200 mb-2 font-mono text-xl">Ulaşılan Sektör: <span className="text-white font-black">{level}</span></p>
+                            <p className="text-rose-200 mb-10 font-mono text-xl">Final Skor: <span className="text-white font-black">{score}</span></p>
+                            <Button onClick={startGame} className="bg-rose-500 text-white hover:bg-rose-400 font-bold px-10 py-6 text-lg rounded-xl shadow-[0_0_20px_#f43f5e]">
+                                SİSTEMİ YENİDEN BAŞLAT
+                            </Button>
+                        </div>
                     </div>
                 )}
 
                 {gameState === 'victory' && (
-                    <div className="absolute inset-0 bg-emerald-950/90 backdrop-blur-md flex flex-col items-center justify-center z-30">
-                        <h2 className="text-4xl font-black text-white mb-2 tracking-widest drop-shadow-[0_0_15px_#10b981]">SEKTÖR TEMİZLENDİ</h2>
-                        <p className="text-emerald-200 mb-8 font-mono">Skor: {score}</p>
-                        <Button onClick={nextLevel} className="bg-white text-emerald-900 hover:bg-emerald-100 font-bold">
-                            SONRAKİ SEKTÖRE ATLA
-                        </Button>
+                    <div className="absolute inset-0 bg-emerald-950/95 backdrop-blur-xl flex flex-col items-center justify-center z-30">
+                        <div className="p-10 rounded-3xl border border-emerald-500/30 bg-black/50 flex flex-col items-center shadow-[0_0_100px_rgba(16,185,129,0.3)]">
+                            <h2 className="text-5xl font-black text-emerald-400 mb-4 tracking-widest drop-shadow-[0_0_20px_#10b981]">SEKTÖR TEMİZLENDİ</h2>
+                            <p className="text-emerald-200 mb-10 font-mono text-xl">Mevcut Skor: <span className="text-white font-black">{score}</span></p>
+                            <Button onClick={nextLevel} className="bg-emerald-500 text-black hover:bg-emerald-400 font-black px-10 py-6 text-lg rounded-xl shadow-[0_0_30px_#10b981] animate-bounce">
+                                SONRAKİ SEKTÖRE ATLA
+                            </Button>
+                        </div>
                     </div>
                 )}
             </div>
 
-            {/* Instructions */}
+            {/* Tactical Instructions */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-2">
-                <div className="bg-secondary/40 p-4 rounded-xl border border-white/5">
-                    <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2 flex items-center gap-1.5"><Target className="w-3.5 h-3.5" /> Uçuş Kontrolü</h3>
-                    <p className="text-[11px] text-muted-foreground leading-relaxed">Farenizi ekranda gezdirerek geminin burnunu yönlendirin (Pitch/Yaw).</p>
+                <div className="bg-[#0a0a1a] p-5 rounded-xl border border-cyan-900/50 shadow-lg hover:border-cyan-500/50 transition-colors">
+                    <h3 className="text-xs font-bold text-cyan-400 uppercase tracking-widest mb-3 flex items-center gap-2"><Target className="w-4 h-4" /> Uçuş Kontrolü</h3>
+                    <p className="text-xs text-muted-foreground leading-relaxed">Farenizi kullanarak geminin burnunu uzayda özgürce yönlendirin. Nişangahı hedefin üzerinde tutun.</p>
                 </div>
-                <div className="bg-secondary/40 p-4 rounded-xl border border-white/5">
-                    <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2 flex items-center gap-1.5"><Activity className="w-3.5 h-3.5" /> Manevra & İtki</h3>
-                    <p className="text-[11px] text-muted-foreground leading-relaxed"><kbd className="bg-black border border-white/20 px-1 py-0.5 rounded">W</kbd> / <kbd className="bg-black border border-white/20 px-1 py-0.5 rounded">S</kbd> tuşları ile itki ve fren yapın. <kbd className="bg-black border border-white/20 px-1 py-0.5 rounded">A</kbd> / <kbd className="bg-black border border-white/20 px-1 py-0.5 rounded">D</kbd> ile gemiyi ekseninde döndürün (Roll).</p>
+                <div className="bg-[#0a0a1a] p-5 rounded-xl border border-emerald-900/50 shadow-lg hover:border-emerald-500/50 transition-colors">
+                    <h3 className="text-xs font-bold text-emerald-400 uppercase tracking-widest mb-3 flex items-center gap-2"><Activity className="w-4 h-4" /> İtki & Dönüş</h3>
+                    <p className="text-xs text-muted-foreground leading-relaxed"><kbd className="bg-black text-emerald-300 border border-emerald-500/30 px-1.5 py-0.5 rounded font-mono">W</kbd> / <kbd className="bg-black text-emerald-300 border border-emerald-500/30 px-1.5 py-0.5 rounded font-mono">S</kbd> ile hızlanıp yavaşlayın. <kbd className="bg-black text-emerald-300 border border-emerald-500/30 px-1.5 py-0.5 rounded font-mono">A</kbd> / <kbd className="bg-black text-emerald-300 border border-emerald-500/30 px-1.5 py-0.5 rounded font-mono">D</kbd> tuşlarıyla namlu ekseninde yuvarlanın (Roll).</p>
                 </div>
-                <div className="bg-secondary/40 p-4 rounded-xl border border-white/5">
-                    <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2 flex items-center gap-1.5"><Crosshair className="w-3.5 h-3.5" /> Silahlar</h3>
-                    <p className="text-[11px] text-muted-foreground leading-relaxed"><kbd className="bg-black border border-white/20 px-1 py-0.5 rounded">SPACE</kbd> tuşu veya Fare Sol Tık ile nişangahın baktığı yöne ateş edin.</p>
+                <div className="bg-[#0a0a1a] p-5 rounded-xl border border-rose-900/50 shadow-lg hover:border-rose-500/50 transition-colors">
+                    <h3 className="text-xs font-bold text-rose-400 uppercase tracking-widest mb-3 flex items-center gap-2"><Crosshair className="w-4 h-4" /> Silahlar</h3>
+                    <p className="text-xs text-muted-foreground leading-relaxed"><kbd className="bg-black text-rose-300 border border-rose-500/30 px-1.5 py-0.5 rounded font-mono">SPACE</kbd> tuşu veya Fare Tıklaması ile ateş edin. Lazer ağınız ile düşman filolarını yok edin.</p>
                 </div>
-                <div className="bg-secondary/40 p-4 rounded-xl border border-white/5">
-                    <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2 flex items-center gap-1.5"><Shield className="w-3.5 h-3.5" /> Taktik</h3>
-                    <p className="text-[11px] text-muted-foreground leading-relaxed">Uzay boşluğunda düşmanları avlayıp güçlendiricileri (Kırmızı/Mavi) toplayarak silahlarınızı geliştirin.</p>
+                <div className="bg-[#0a0a1a] p-5 rounded-xl border border-amber-900/50 shadow-lg hover:border-amber-500/50 transition-colors">
+                    <h3 className="text-xs font-bold text-amber-400 uppercase tracking-widest mb-3 flex items-center gap-2"><Shield className="w-4 h-4" /> Taktik</h3>
+                    <p className="text-xs text-muted-foreground leading-relaxed">Radarınızı (sağ alt) kullanarak düşman sürüsünün konumunu tespit edin. Yeşil kristalleri toplayarak yakıt takviyesi yapın.</p>
                 </div>
             </div>
         </div>
