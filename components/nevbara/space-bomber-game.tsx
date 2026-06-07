@@ -47,6 +47,7 @@ interface Enemy {
     fireCooldown: number;
     mesh: THREE.Group;
     targetQuaternion?: THREE.Quaternion;
+    headMesh?: THREE.Group | THREE.Mesh;
 }
 
 interface FuelCrystal {
@@ -83,6 +84,13 @@ class SoundSynth {
     ambientFilter: BiquadFilterNode | null = null;
     ambientGain: GainNode | null = null;
 
+    // Sequencer properties
+    sequencerTimer: any = null;
+    isPlayingMusic: boolean = false;
+    bossActive: boolean = false;
+    currentStep: number = 0;
+    noiseBuffer: AudioBuffer | null = null;
+
     constructor() {
         try {
             const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
@@ -91,6 +99,14 @@ class SoundSynth {
                 this.masterGain = this.ctx.createGain();
                 this.masterGain.gain.value = 0.4;
                 this.masterGain.connect(this.ctx.destination);
+
+                // Pre-generate noise buffer for hi-hats
+                const bufferSize = this.ctx.sampleRate * 2;
+                this.noiseBuffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+                const data = this.noiseBuffer.getChannelData(0);
+                for (let i = 0; i < bufferSize; i++) {
+                    data[i] = Math.random() * 2 - 1;
+                }
             }
         } catch (e) {
             console.error("SoundSynth AudioContext failed to initialize:", e);
@@ -252,6 +268,108 @@ class SoundSynth {
             osc.stop(this.ctx.currentTime + 2.0);
         } catch (e) {}
     }
+
+    playNote(freq: number, type: 'sawtooth' | 'triangle' | 'square' | 'sine', duration: number, volume: number) {
+        if (!this.enabled || !this.ctx || !this.masterGain) return;
+        try {
+            const osc = this.ctx.createOscillator();
+            const gainNode = this.ctx.createGain();
+            const filterNode = this.ctx.createBiquadFilter();
+
+            osc.type = type;
+            osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+
+            filterNode.type = 'lowpass';
+            filterNode.frequency.setValueAtTime(freq * 3, this.ctx.currentTime);
+            filterNode.Q.setValueAtTime(1, this.ctx.currentTime);
+
+            gainNode.gain.setValueAtTime(volume, this.ctx.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + duration);
+
+            osc.connect(filterNode);
+            filterNode.connect(gainNode);
+            gainNode.connect(this.masterGain);
+
+            osc.start();
+            osc.stop(this.ctx.currentTime + duration);
+        } catch(e){}
+    }
+
+    playNoise(duration: number, volume: number) {
+        if (!this.enabled || !this.ctx || !this.masterGain || !this.noiseBuffer) return;
+        try {
+            const source = this.ctx.createBufferSource();
+            source.buffer = this.noiseBuffer;
+
+            const filter = this.ctx.createBiquadFilter();
+            filter.type = 'bandpass';
+            filter.frequency.setValueAtTime(6000, this.ctx.currentTime);
+            filter.Q.setValueAtTime(2, this.ctx.currentTime);
+
+            const gainNode = this.ctx.createGain();
+            gainNode.gain.setValueAtTime(volume, this.ctx.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + duration);
+
+            source.connect(filter);
+            filter.connect(gainNode);
+            gainNode.connect(this.masterGain);
+
+            source.start();
+            source.stop(this.ctx.currentTime + duration);
+        } catch(e){}
+    }
+
+    startSequencer(isBoss = false) {
+        if (!this.ctx) return;
+        
+        this.stopSequencer();
+        this.isPlayingMusic = true;
+        this.bossActive = isBoss;
+
+        const bpm = isBoss ? 140 : 110;
+        const stepTime = 60 / bpm / 2;
+        
+        const tick = () => {
+            if (!this.isPlayingMusic || !this.ctx) return;
+
+            const bass = [55, 55, 65.4, 55, 73.4, 55, 82.4, 98];
+            const bossBass = [55, 55, 48.99, 48.99, 43.65, 43.65, 48.99, 55];
+
+            const melody = [0, 220, 0, 261.6, 293.7, 0, 329.6, 392.0];
+            const bossMelody = [0, 220, 233.08, 0, 277.18, 293.66, 0, 311.13];
+
+            const step = this.currentStep % 8;
+            
+            const bNote = this.bossActive ? bossBass[step] : bass[step];
+            if (bNote > 0) {
+                this.playNote(bNote, 'sawtooth', stepTime * 0.9, 0.12);
+            }
+
+            const mNote = this.bossActive ? bossMelody[step] : melody[step];
+            if (mNote > 0 && Math.random() > 0.3) {
+                this.playNote(mNote, 'triangle', stepTime * 1.5, 0.08);
+            }
+
+            if (step % 2 === 1) {
+                this.playNoise(0.04, 0.05);
+            } else if (step === 4 && Math.random() > 0.5) {
+                this.playNoise(0.15, 0.03);
+            }
+
+            this.currentStep++;
+            this.sequencerTimer = setTimeout(tick, stepTime * 1000);
+        };
+
+        tick();
+    }
+
+    stopSequencer() {
+        this.isPlayingMusic = false;
+        if (this.sequencerTimer) {
+            clearTimeout(this.sequencerTimer);
+            this.sequencerTimer = null;
+        }
+    }
 }
 
 // Global Consts & Ship Specs
@@ -371,6 +489,10 @@ export function SpaceBomberGame() {
     const asteroidMesh = useRef<THREE.InstancedMesh | null>(null);
     const starPoints = useRef<THREE.Points | null>(null);
     const starMaterial = useRef<THREE.PointsMaterial | null>(null);
+    const engineParticleGeo = useRef<THREE.BoxGeometry | null>(null);
+    const engineParticleMat = useRef<THREE.MeshBasicMaterial | null>(null);
+    const warpTunnelMesh = useRef<THREE.Mesh | null>(null);
+    const warpTunnelMat = useRef<THREE.ShaderMaterial | null>(null);
 
     // Physics state refs (6-DOF)
     const shipPos = useRef<THREE.Vector3>(new THREE.Vector3(0, 0, 0));
@@ -471,6 +593,7 @@ export function SpaceBomberGame() {
         if (clamped <= 0) {
             soundRef.current?.playExplosion();
             soundRef.current?.stopAmbient();
+            soundRef.current?.stopSequencer();
             createExplosion(shipPos.current.x, shipPos.current.y, shipPos.current.z, '#ff4a11', 150, 3.5);
             createShockwave(shipPos.current.x, shipPos.current.y, shipPos.current.z, '#ff4a11');
             setGameState('gameover');
@@ -781,6 +904,63 @@ export function SpaceBomberGame() {
             portalMesh.position.set(0, 0, -4500);
             scene.add(portalMesh);
             wormholeMatRef.current = portalMat;
+
+            // --- WARP TUNNEL CYLINDER ---
+            const tunnelGeo = new THREE.CylinderGeometry(150, 150, 2000, 32, 1, true);
+            tunnelGeo.rotateX(Math.PI / 2);
+            
+            const tunnelMat = new THREE.ShaderMaterial({
+                uniforms: {
+                    time: { value: 0.0 },
+                    color: { value: new THREE.Color(currentShipClass.laserColor) },
+                    opacity: { value: 0.0 }
+                },
+                vertexShader: `
+                    varying vec2 vUv;
+                    void main() {
+                        vUv = uv;
+                        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+                    }
+                `,
+                fragmentShader: `
+                    uniform float time;
+                    uniform vec3 color;
+                    uniform float opacity;
+                    varying vec2 vUv;
+                    
+                    void main() {
+                        float stripe = sin(vUv.x * 60.0) * sin(vUv.y * 10.0 - time * 8.0);
+                        stripe = step(0.1, stripe);
+                        
+                        float line = step(0.98, sin(vUv.y * 100.0 - time * 15.0));
+                        float finalVal = clamp(stripe * 0.4 + line * 0.8, 0.0, 1.0);
+                        
+                        float fade = smoothstep(0.0, 0.2, vUv.y) * smoothstep(1.0, 0.8, vUv.y);
+                        gl_FragColor = vec4(color * (finalVal + 0.2), finalVal * opacity * fade);
+                    }
+                `,
+                transparent: true,
+                side: THREE.BackSide,
+                depthWrite: false,
+                blending: THREE.AdditiveBlending
+            });
+            
+            const tunnelMesh = new THREE.Mesh(tunnelGeo, tunnelMat);
+            tunnelMesh.visible = false;
+            scene.add(tunnelMesh);
+            
+            warpTunnelMesh.current = tunnelMesh;
+            warpTunnelMat.current = tunnelMat;
+
+            // --- ENGINE PARTICLE GEOMETRY & MATERIAL ---
+            const pSize = 0.4;
+            engineParticleGeo.current = new THREE.BoxGeometry(pSize, pSize, pSize);
+            engineParticleMat.current = new THREE.MeshBasicMaterial({ 
+                color: new THREE.Color(currentShipClass.laserColor), 
+                transparent: true, 
+                opacity: 0.8, 
+                blending: THREE.AdditiveBlending 
+            });
         } catch (e: any) {
             console.error("WebGL Init failed:", e);
             setWebglError(e.message || "WebGL initialization failed. Make sure your browser has hardware acceleration enabled.");
@@ -794,8 +974,45 @@ export function SpaceBomberGame() {
         addLog("HİPER UZAY MOTORLARI AKTİF! ATLAYIŞ BAŞLIYOR.");
     }, [addLog]);
 
+    const createTurretMesh = useCallback((color: string) => {
+        const group = new THREE.Group();
+        
+        // Base - Cylinder
+        const baseGeo = new THREE.CylinderGeometry(6, 8, 12, 12);
+        const baseMat = new THREE.MeshStandardMaterial({ color: 0x333333, metalness: 0.8, roughness: 0.2 });
+        const base = new THREE.Mesh(baseGeo, baseMat);
+        base.position.y = -6;
+        group.add(base);
+        
+        // Head - Sphere (tracks the player)
+        const headGeo = new THREE.SphereGeometry(6, 12, 12);
+        const headMat = new THREE.MeshStandardMaterial({ color: 0x222222, metalness: 0.9, roughness: 0.1 });
+        const head = new THREE.Mesh(headGeo, headMat);
+        head.position.y = 0;
+        group.add(head);
+        
+        // Barrel - Cylinder pointing forward
+        const barrelGeo = new THREE.CylinderGeometry(1.2, 1.2, 12, 8);
+        barrelGeo.rotateX(Math.PI / 2);
+        const barrelMat = new THREE.MeshStandardMaterial({ color: 0x111111, metalness: 0.9, roughness: 0.3 });
+        const barrel = new THREE.Mesh(barrelGeo, barrelMat);
+        barrel.position.set(0, 0, -6);
+        head.add(barrel);
+        
+        // Glowing emitter ring
+        const ringGeo = new THREE.TorusGeometry(1.2, 0.4, 8, 16);
+        const ringMat = new THREE.MeshBasicMaterial({ color: new THREE.Color(color), toneMapped: false });
+        const ring = new THREE.Mesh(ringGeo, ringMat);
+        ring.position.set(0, 0, -12);
+        head.add(ring);
+        
+        return { group, head };
+    }, []);
+
     const buildLevelWorld = useCallback(() => {
         clearAllEntities();
+        if (warpTunnelMesh.current) warpTunnelMesh.current.visible = false;
+
         setFuelLevel(100);
         setShieldLevel(currentShipClass.maxShield);
         setArmorLevel(currentShipClass.maxArmor);
@@ -815,7 +1032,12 @@ export function SpaceBomberGame() {
         const scene = sceneRef.current;
         if (!scene) return;
 
-        // Spawn Enemies (Made huge and bright red to easily distinguish)
+        // Start sequencer background music
+        if (soundRef.current) {
+            soundRef.current.startSequencer(level % 3 === 0);
+        }
+
+        // Spawn floaters
         for (let i = 0; i < 20 + level * 6; i++) {
             const eGeo = new THREE.IcosahedronGeometry(8, 1);
             const eMat = new THREE.MeshBasicMaterial({ color: '#ff3f34', wireframe: true });
@@ -850,6 +1072,37 @@ export function SpaceBomberGame() {
                 fireCooldown: 90 + Math.random() * 60,
                 mesh: eMesh,
                 targetQuaternion: new THREE.Quaternion()
+            });
+        }
+
+        // Spawn Turrets (Space Turrets)
+        const numTurrets = 5 + level * 2;
+        for (let i = 0; i < numTurrets; i++) {
+            const turretColor = '#ff3f34';
+            const { group: tMesh, head: tHead } = createTurretMesh(turretColor);
+
+            const zDist = -400 - Math.random() * 2000;
+            const radius = Math.random() * 500;
+            const angle = Math.random() * Math.PI * 2;
+            
+            const px = Math.cos(angle) * radius;
+            const py = Math.sin(angle) * radius;
+            const pz = zDist;
+
+            tMesh.position.set(px, py, pz);
+            scene.add(tMesh);
+
+            enemies.current.push({
+                id: Math.random(),
+                x: px, y: py, z: pz,
+                type: 'turret',
+                health: 8 + level * 2,
+                maxHealth: 8 + level * 2,
+                active: true,
+                lastFire: 0,
+                fireCooldown: 120 + Math.random() * 60,
+                mesh: tMesh,
+                headMesh: tHead
             });
         }
 
@@ -893,7 +1146,7 @@ export function SpaceBomberGame() {
             }
         }
 
-    }, [clearAllEntities, level, setFuelLevel, setShieldLevel, setArmorLevel, addLog, currentShipClass]);
+    }, [clearAllEntities, level, setFuelLevel, setShieldLevel, setArmorLevel, addLog, currentShipClass, createTurretMesh]);
 
     const spawnBullet = useCallback((offsetX: number, offsetY: number, color: string, speedScale: number = 1.0, isBeam: boolean = false) => {
         if (!sceneRef.current || !playerShipGroup.current) return;
@@ -1029,9 +1282,29 @@ export function SpaceBomberGame() {
         // --- HYPERSPACE ANIMATION ---
         if (gameState === 'hyperspace') {
             hyperspaceTimer.current -= dt;
+
+            // Warp tunnel cylinder updates
+            if (warpTunnelMesh.current && warpTunnelMat.current) {
+                warpTunnelMesh.current.visible = true;
+                warpTunnelMesh.current.position.copy(shipPos.current);
+                warpTunnelMesh.current.quaternion.copy(shipQuaternion.current);
+                
+                warpTunnelMat.current.uniforms.time.value += dt * 0.15;
+                
+                let op = 0.0;
+                if (hyperspaceTimer.current > 70) {
+                    op = (100 - hyperspaceTimer.current) / 30; // fade in
+                } else if (hyperspaceTimer.current < 30) {
+                    op = hyperspaceTimer.current / 30; // fade out
+                } else {
+                    op = 1.0;
+                }
+                warpTunnelMat.current.uniforms.opacity.value = Math.max(0.0, Math.min(1.0, op));
+            }
+
             if (starMaterial.current) {
                 // Stretch stars
-                starMaterial.current.size = 2.0 + (100 - hyperspaceTimer.current) * 0.1;
+                starMaterial.current.size = 2.0 + (100 - hyperspaceTimer.current) * 0.25;
                 starMaterial.current.needsUpdate = true;
             }
             
@@ -1046,6 +1319,7 @@ export function SpaceBomberGame() {
 
             if (hyperspaceTimer.current <= 0) {
                 if (starMaterial.current) starMaterial.current.size = 1.5;
+                if (warpTunnelMesh.current) warpTunnelMesh.current.visible = false;
                 setGameState('playing');
                 buildLevelWorld();
             }
@@ -1053,6 +1327,11 @@ export function SpaceBomberGame() {
             composer.render();
             animationFrameId.current = requestAnimationFrame((t) => tickRef.current(t));
             return;
+        }
+
+        // Hide warp tunnel mesh if in normal play
+        if (gameState === 'playing' && warpTunnelMesh.current && warpTunnelMesh.current.visible) {
+            warpTunnelMesh.current.visible = false;
         }
 
         // --- 1. SHIP MOVEMENT (6-DOF) & GAMEPAD ---
@@ -1125,6 +1404,56 @@ export function SpaceBomberGame() {
         const thrustScale = Math.max(0.3, targetSpeed.current / currentShipClass.maxSpeed * 2.5);
         if (thrusterFlameMeshL.current) thrusterFlameMeshL.current.scale.set(1, thrustScale, 1);
         if (thrusterFlameMeshR.current) thrusterFlameMeshR.current.scale.set(1, thrustScale, 1);
+
+        // Spawn engine particles trailing behind the engines
+        if (gameState === 'playing') {
+            let thrusterOffset = 1.5;
+            let thrusterZ = 4;
+            if (currentShipClass.id === 'dreadnought') {
+                thrusterOffset = 1.5 * 1.4;
+                thrusterZ = 4 * 1.2;
+            } else if (currentShipClass.id === 'interceptor') {
+                thrusterOffset = 1.5 * 0.85;
+                thrusterZ = 4 * 0.95;
+            }
+            
+            const leftThrusterPos = new THREE.Vector3(-thrusterOffset, 0, thrusterZ).applyQuaternion(shipQuaternion.current).add(shipPos.current);
+            const rightThrusterPos = new THREE.Vector3(thrusterOffset, 0, thrusterZ).applyQuaternion(shipQuaternion.current).add(shipPos.current);
+            
+            const numParticles = keys.current['w'] ? 3 : 1;
+            for (let i = 0; i < numParticles; i++) {
+                [leftThrusterPos, rightThrusterPos].forEach(pos => {
+                    if (!engineParticleGeo.current || !engineParticleMat.current) return;
+                    
+                    const mat = engineParticleMat.current.clone();
+                    const mesh = new THREE.Mesh(engineParticleGeo.current, mat);
+                    mesh.position.copy(pos);
+                    mesh.position.x += (Math.random() - 0.5) * 0.5;
+                    mesh.position.y += (Math.random() - 0.5) * 0.5;
+                    mesh.position.z += (Math.random() - 0.5) * 0.5;
+                    scene.add(mesh);
+
+                    const backward = new THREE.Vector3(0, 0, 1).applyQuaternion(shipQuaternion.current);
+                    const dispersion = 1.5;
+                    const pVx = backward.x * (5 + targetSpeed.current * 0.4) + (Math.random() - 0.5) * dispersion;
+                    const pVy = backward.y * (5 + targetSpeed.current * 0.4) + (Math.random() - 0.5) * dispersion;
+                    const pVz = backward.z * (5 + targetSpeed.current * 0.4) + (Math.random() - 0.5) * dispersion;
+
+                    particles.current.push({
+                        x: mesh.position.x,
+                        y: mesh.position.y,
+                        z: mesh.position.z,
+                        vx: pVx,
+                        vy: pVy,
+                        vz: pVz,
+                        life: 15 + Math.random() * 10,
+                        color: currentShipClass.laserColor,
+                        size: 0.4,
+                        mesh
+                    });
+                });
+            }
+        }
 
         // Shield Bubble Flash Animation
         if (shieldBubbleMesh.current) {
@@ -1282,6 +1611,15 @@ export function SpaceBomberGame() {
                     });
                 }
 
+            } else if (e.type === 'turret') {
+                // Aim turret head at player
+                if (e.headMesh) {
+                    const headVec = new THREE.Vector3(e.x, e.y, e.z);
+                    const dirToPlayer = new THREE.Vector3().subVectors(shipPos.current, headVec).normalize();
+                    const targetRotationMatrix = new THREE.Matrix4().lookAt(new THREE.Vector3(0, 0, 0), dirToPlayer, new THREE.Vector3(0, 1, 0));
+                    const targetQuat = new THREE.Quaternion().setFromRotationMatrix(targetRotationMatrix);
+                    e.headMesh.quaternion.slerp(targetQuat, 0.1 * dt);
+                }
             } else if (e.type === 'boss') {
                 const dir = new THREE.Vector3().subVectors(shipPos.current, eVec).normalize();
                 e.x += dir.x * 0.3 * dt;
@@ -1296,18 +1634,28 @@ export function SpaceBomberGame() {
             e.lastFire += dt;
             if (e.lastFire > e.fireCooldown && distToPlayer < 1200) {
                 e.lastFire = 0;
-                const dir = new THREE.Vector3().subVectors(shipPos.current, eVec).normalize();
-                const bSpeed = 20;
+                let fireDir = new THREE.Vector3().subVectors(shipPos.current, eVec).normalize();
+                let spawnP = new THREE.Vector3(e.x, e.y, e.z);
+                
+                if (e.type === 'turret' && e.headMesh) {
+                    const barrelTipLocal = new THREE.Vector3(0, 0, -12);
+                    barrelTipLocal.applyQuaternion(e.headMesh.quaternion);
+                    spawnP.add(barrelTipLocal);
+                    fireDir = new THREE.Vector3(0, 0, -1).applyQuaternion(e.headMesh.quaternion).normalize();
+                }
+
+                const bSpeed = e.type === 'turret' ? 25 : 20;
+                const bColor = e.type === 'turret' ? '#ff9f43' : '#fbc531';
                 const bGeo = new THREE.SphereGeometry(2.0, 8, 8);
-                const bMat = new THREE.MeshBasicMaterial({ color: '#fbc531', blending: THREE.AdditiveBlending });
+                const bMat = new THREE.MeshBasicMaterial({ color: bColor, blending: THREE.AdditiveBlending });
                 const bMesh = new THREE.Mesh(bGeo, bMat);
-                bMesh.position.set(e.x, e.y, e.z);
+                bMesh.position.copy(spawnP);
                 scene.add(bMesh);
                 
                 bullets.current.push({
                     id: Math.random(),
-                    x: e.x, y: e.y, z: e.z,
-                    vx: dir.x * bSpeed, vy: dir.y * bSpeed, vz: dir.z * bSpeed,
+                    x: spawnP.x, y: spawnP.y, z: spawnP.z,
+                    vx: fireDir.x * bSpeed, vy: fireDir.y * bSpeed, vz: fireDir.z * bSpeed,
                     life: 120, isEnemy: true, mesh: bMesh
                 });
             }
@@ -1400,6 +1748,8 @@ export function SpaceBomberGame() {
                             // Victory Check
                             if (enemies.current.filter(en => en.active).length === 0) {
                                 setGameState('victory');
+                                soundRef.current?.stopSequencer();
+                                soundRef.current?.stopAmbient();
                                 confetti({ particleCount: 200, spread: 100, origin: { y: 0.6 } });
                             }
                         }
@@ -1457,6 +1807,10 @@ export function SpaceBomberGame() {
             p.life -= dt;
             p.mesh.position.set(p.x, p.y, p.z);
             p.mesh.scale.multiplyScalar(0.93); // shrink faster
+            const mat = p.mesh.material as THREE.MeshBasicMaterial;
+            if (mat && mat.opacity !== undefined) {
+                mat.opacity = Math.max(0, p.life / 25);
+            }
         });
         particles.current.filter(p => p.life <= 0).forEach(p => scene.remove(p.mesh));
         particles.current = particles.current.filter(p => p.life > 0);
@@ -1542,6 +1896,8 @@ export function SpaceBomberGame() {
         return () => {
             cancelAnimationFrame(animationFrameId.current);
             clearAllEntities();
+            soundRef.current?.stopSequencer();
+            soundRef.current?.stopAmbient();
             if (rendererRef.current) rendererRef.current.dispose();
         };
     }, [initThreeWorld, clearAllEntities]);
@@ -1559,6 +1915,7 @@ export function SpaceBomberGame() {
                 soundRef.current.ctx.resume();
             }
             soundRef.current.startAmbient();
+            soundRef.current.startSequencer(level % 3 === 0);
         }
         addLog("SİMÜLASYON AKTİF.");
     };
