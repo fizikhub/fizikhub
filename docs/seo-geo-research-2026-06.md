@@ -71,6 +71,15 @@ Bu calisma Fizikhub'in teknik SEO, GEO (Generative Engine Optimization), mobil p
 - Email notification HTML'i makale basligi, excerpt, kapak gorseli ve URL'ler icin escape/sanitize kullaniyor.
 - Ana hero semantigi iyilestirildi: dekoratif animasyon H1'i `role="img"` altinda gizlemiyor.
 
+## 2026-06-07 derin audit uygulama notu
+
+- Root metadata'daki placeholder Google Search Console verification degeri kaldirildi. Google verification artik yalnizca gercek `NEXT_PUBLIC_GSC_TOKEN` varsa basilir; Bing/Yandex mevcut token davranisini korur.
+- Markdown embed guvenligi client ve server renderer icin ortak allowlist'e alindi. Fizikhub artik sadece `https` YouTube, YouTube-nocookie ve PhET embed kaynaklarini kabul eder; bilinmeyen iframe kaynaklari render edilmez.
+- Makale sayfasi JSON-LD tarafindaki Article/WebPage/LearningResource URL'leri metadata ile ayni canonical helper'a baglandi. Bu, redirect/canonical ayrismasi durumunda structured data'nin farkli URL soylemesini engeller.
+- Makale okuyucusundaki auth/like/bookmark yenilemesi ilk paint sonrasi idle zamana ertelendi. Okuma deneyimi ve LCP/INP butcesi icin kritik olmayan Supabase istekleri daha sakin calisir.
+- Akademik atif bloklari tarayicinin anlik `window.location.href` degeri yerine canonical `https://www.fizikhub.com/makale/{slug}` URL'sini kullanir. Query string veya paylasim parametreleri kaynakcalara karismaz.
+- Ana sayfadaki dekoratif 3D canvas icin varsayilan particle sayilari, DPR tavan degeri ve bloom multisampling dusuruldu. Gorsel kimlik korunurken mobil ana-thread/GPU maliyeti azaltildi.
+
 ## Kaynaklar
 
 - Google Search Central - AI features and your website: https://developers.google.com/search/docs/appearance/ai-features

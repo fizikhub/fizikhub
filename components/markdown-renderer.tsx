@@ -13,6 +13,7 @@ import { ZoomIn } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { highlightDictionaryTerms } from "@/components/articles/term-tooltip";
+import { isAllowedMarkdownEmbedUrl } from "@/lib/markdown-embeds";
 
 interface MarkdownRendererProps {
     content: string;
@@ -302,18 +303,25 @@ export function MarkdownRenderer({
                         );
                     },
                     // Iframe responsive embed
-                    iframe: ({ node: _node, ...props }: React.ComponentPropsWithoutRef<'iframe'> & { node?: unknown }) => (
-                        <div className="aspect-video w-full my-8 sm:my-12 rounded-xl overflow-hidden border-4 border-black dark:border-zinc-800 shadow-[6px_6px_0px_0px_#000] dark:shadow-[6px_6px_0px_0px_rgba(0,0,0,0.5)] bg-black/50">
-                            <iframe
-                                className="w-full h-full"
-                                {...props}
-                                loading="lazy"
-                                allowFullScreen
-                                sandbox="allow-scripts allow-same-origin allow-popups"
-                                referrerPolicy="no-referrer"
-                            />
-                        </div>
-                    ),
+                    iframe: ({ node: _node, ...props }: React.ComponentPropsWithoutRef<'iframe'> & { node?: unknown }) => {
+                        const src = typeof props.src === "string" ? props.src : "";
+                        if (!isAllowedMarkdownEmbedUrl(src)) return null;
+
+                        return (
+                            <div className="aspect-video w-full my-8 sm:my-12 rounded-xl overflow-hidden border-4 border-black dark:border-zinc-800 shadow-[6px_6px_0px_0px_#000] dark:shadow-[6px_6px_0px_0px_rgba(0,0,0,0.5)] bg-black/50">
+                                <iframe
+                                    className="w-full h-full"
+                                    {...props}
+                                    src={src}
+                                    loading="lazy"
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                    allowFullScreen
+                                    sandbox="allow-scripts allow-same-origin allow-popups"
+                                    referrerPolicy="strict-origin-when-cross-origin"
+                                />
+                            </div>
+                        );
+                    },
                 }}
             >
                 {processedContent}

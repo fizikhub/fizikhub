@@ -12,6 +12,7 @@
  */
 
 import { cn } from "@/lib/utils";
+import { isAllowedMarkdownEmbedUrl } from "@/lib/markdown-embeds";
 
 interface ServerMarkdownRendererProps {
     content: string;
@@ -50,23 +51,6 @@ function sanitizeUrlForAttribute(value: string): string {
     return "#";
 }
 
-function isAllowedEmbedUrl(value: string | null): boolean {
-    if (!value) return false;
-
-    try {
-        const url = new URL(value, "https://www.fizikhub.com");
-        return [
-            "www.youtube.com",
-            "youtube.com",
-            "www.youtube-nocookie.com",
-            "youtube-nocookie.com",
-            "phet.colorado.edu",
-        ].includes(url.hostname);
-    } catch {
-        return false;
-    }
-}
-
 function sanitizeRenderedHtml(html: string): string {
     return html
         .replace(/<\s*(script|style|object|embed|form|input|button|textarea|select|meta|link)\b[\s\S]*?<\/\s*\1\s*>/gi, "")
@@ -77,7 +61,7 @@ function sanitizeRenderedHtml(html: string): string {
         })
         .replace(/<iframe\b([^>]*)><\/iframe>/gi, (_match, attrs) => {
             const src = attrs.match(/\ssrc=(["'])(.*?)\1/i)?.[2] || null;
-            if (!isAllowedEmbedUrl(src)) return "";
+            if (!isAllowedMarkdownEmbedUrl(src)) return "";
 
             const title = attrs.match(/\stitle=(["'])(.*?)\1/i)?.[2] || "Gömülü fizik içeriği";
 

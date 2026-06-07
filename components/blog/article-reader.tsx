@@ -57,6 +57,7 @@ export function ArticleReader({
     const [fontFamily, setFontFamily] = useState<'sans' | 'serif'>('sans');
     const [showScrollTop, setShowScrollTop] = useState(false);
     const contentRef = useRef<HTMLDivElement>(null);
+    const articleUrl = `https://www.fizikhub.com/makale/${article.slug}`;
 
     const [userContext, setUserContext] = useState({
         isLiked: initialLiked,
@@ -68,12 +69,16 @@ export function ArticleReader({
     });
 
     useEffect(() => {
+        let cancelled = false;
+        let idleId: number | null = null;
+        let timeoutId: ReturnType<typeof setTimeout> | null = null;
+
         const fetchUserData = async () => {
             try {
                 const supabase = createClient();
                 const { data: { user } } = await supabase.auth.getUser();
                 
-                if (!user) return;
+                if (!user || cancelled) return;
                 
                 const isUserAdmin = isAdminEmail(user.email);
                 const baseAvatar = user.user_metadata?.avatar_url;
@@ -84,6 +89,8 @@ export function ArticleReader({
                     supabase.from('profiles').select('username, avatar_url').eq('id', user.id).maybeSingle()
                 ]);
 
+                if (cancelled) return;
+
                 setUserContext({
                     isLiked: !!likesRes.data,
                     isBookmarked: !!bookmarksRes.data,
@@ -92,12 +99,30 @@ export function ArticleReader({
                     userAvatar: profileRes.data?.avatar_url || baseAvatar,
                     currentUsername: profileRes.data?.username || user.user_metadata?.username
                 });
-            } catch (err) {
-                // Silently fail — user context is non-critical and defaults are already set
-                console.error('Failed to fetch user context:', err);
+            } catch {
+                // User context is non-critical; SSR defaults keep the reader usable.
             }
         };
-        fetchUserData();
+
+        if ("requestIdleCallback" in window) {
+            idleId = window.requestIdleCallback(() => {
+                void fetchUserData();
+            }, { timeout: 2500 });
+        } else {
+            timeoutId = setTimeout(() => {
+                void fetchUserData();
+            }, 800);
+        }
+
+        return () => {
+            cancelled = true;
+            if (idleId !== null && "cancelIdleCallback" in window) {
+                window.cancelIdleCallback(idleId);
+            }
+            if (timeoutId !== null) {
+                clearTimeout(timeoutId);
+            }
+        };
     }, [article.id]);
 
     const { scrollYProgress } = useScroll();
@@ -478,7 +503,7 @@ export function ArticleReader({
                                                     <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">APA Formatı</span>
                                                     <button
                                                         onClick={() => {
-                                                            const citationText = `${article.author?.full_name || article.author?.username || 'Fizikhub'}. (${format(new Date(article.created_at), "yyyy")}). "${article.title}". Fizikhub. Erişim adresi: ${window.location.href}`;
+                                                            const citationText = `${article.author?.full_name || article.author?.username || 'Fizikhub'}. (${format(new Date(article.created_at), "yyyy")}). "${article.title}". Fizikhub. Erişim adresi: ${articleUrl}`;
                                                             navigator.clipboard.writeText(citationText);
                                                             toast.success("APA formatı kopyalandı!");
                                                         }}
@@ -488,7 +513,7 @@ export function ArticleReader({
                                                     </button>
                                                 </div>
                                                 <div className="bg-zinc-55 dark:bg-black/40 border border-black/5 dark:border-border/30 rounded-lg p-3 text-xs text-neutral-800 dark:text-slate-300 font-mono select-all break-all leading-normal">
-                                                    {article.author?.full_name || article.author?.username || 'Fizikhub'}. ({format(new Date(article.created_at), "yyyy")}). &quot;{article.title}&quot;. Fizikhub. Erişim adresi: <span className="text-[#23A9FA] dark:text-[#EAB308]">{typeof window !== 'undefined' ? window.location.href : `https://www.fizikhub.com/makale/${article.slug}`}</span>
+                                                    {article.author?.full_name || article.author?.username || 'Fizikhub'}. ({format(new Date(article.created_at), "yyyy")}). &quot;{article.title}&quot;. Fizikhub. Erişim adresi: <span className="text-[#23A9FA] dark:text-[#EAB308]">{articleUrl}</span>
                                                 </div>
                                             </div>
 
@@ -498,7 +523,7 @@ export function ArticleReader({
                                                     <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">BibTeX Formatı</span>
                                                     <button
                                                         onClick={() => {
-                                                            const citationText = `@misc{fizikhub_${article.slug},\n  author = {${article.author?.full_name || article.author?.username || 'Fizikhub'}},\n  title = {${article.title}},\n  howpublished = {Fizikhub},\n  year = {${format(new Date(article.created_at), "yyyy")}},\n  url = {${window.location.href}}\n}`;
+                                                            const citationText = `@misc{fizikhub_${article.slug},\n  author = {${article.author?.full_name || article.author?.username || 'Fizikhub'}},\n  title = {${article.title}},\n  howpublished = {Fizikhub},\n  year = {${format(new Date(article.created_at), "yyyy")}},\n  url = {${articleUrl}}\n}`;
                                                             navigator.clipboard.writeText(citationText);
                                                             toast.success("BibTeX formatı kopyalandı!");
                                                         }}
@@ -513,7 +538,7 @@ export function ArticleReader({
   title = {${article.title}},
   howpublished = {Fizikhub},
   year = {${format(new Date(article.created_at), "yyyy")}},
-  url = {${typeof window !== 'undefined' ? window.location.href : `https://www.fizikhub.com/makale/${article.slug}`}}
+  url = {${articleUrl}}
 }`}
                                                 </pre>
                                             </div>

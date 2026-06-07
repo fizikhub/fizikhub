@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { preprocessMarkdownContent } from '../components/markdown-renderer';
 import { markdownToHtml } from '../components/server-markdown-renderer';
+import { isAllowedMarkdownEmbedUrl } from '../lib/markdown-embeds';
 
 describe('preprocessMarkdownContent', () => {
     it('keeps markdown heading markers attached to their text', () => {
@@ -62,5 +63,20 @@ describe('server markdown safety', () => {
         expect(html).not.toContain('srcdoc');
         expect(html).not.toContain('onload');
         expect(html).not.toContain('https://example.com/embed');
+    });
+});
+
+describe('markdown embed allowlist', () => {
+    it('allows trusted learning embeds only over https', () => {
+        expect(isAllowedMarkdownEmbedUrl('https://www.youtube.com/embed/abc123xyz')).toBe(true);
+        expect(isAllowedMarkdownEmbedUrl('https://www.youtube-nocookie.com/embed/abc123xyz')).toBe(true);
+        expect(isAllowedMarkdownEmbedUrl('https://phet.colorado.edu/sims/html/projectile-motion/latest/projectile-motion_tr.html')).toBe(true);
+        expect(isAllowedMarkdownEmbedUrl('http://www.youtube.com/embed/abc123xyz')).toBe(false);
+    });
+
+    it('rejects unsafe or unknown embed sources', () => {
+        expect(isAllowedMarkdownEmbedUrl('https://example.com/embed/abc123xyz')).toBe(false);
+        expect(isAllowedMarkdownEmbedUrl('javascript:alert(1)')).toBe(false);
+        expect(isAllowedMarkdownEmbedUrl('')).toBe(false);
     });
 });

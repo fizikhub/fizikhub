@@ -65,7 +65,7 @@ function getNebulaTexture() {
 }
 
 // --- GALAXY DUST ( The Haze ) ---
-function GalaxyDust({ count = 30000 }) {
+function GalaxyDust({ count = 16000 }) {
     const pointsRef = useRef<THREE.Points>(null!);
     const texture = useMemo(() => getStarTexture(), []); // Use same texture, just smaller
 
@@ -139,7 +139,7 @@ function GalaxyDust({ count = 30000 }) {
 }
 
 // --- MAIN STARS ( Bright & Distinct ) ---
-function MainStars({ count = 10000 }) {
+function MainStars({ count = 6500 }) {
     const pointsRef = useRef<THREE.Points>(null!);
     const texture = useMemo(() => getStarTexture(), []);
 
@@ -155,7 +155,7 @@ function MainStars({ count = 10000 }) {
 
         const arms = 2;
         const spin = 3.5;
-        const bulgeCount = 4000;
+        const bulgeCount = Math.min(2600, Math.floor(count * 0.4));
 
         for (let i = 0; i < count; i++) {
             const i3 = i * 3;
@@ -241,7 +241,7 @@ function MainStars({ count = 10000 }) {
 }
 
 // --- VOLUMETRIC NEBULA (MAX VISIBILITY) ---
-function NebulaClouds({ count = 8000 }) {
+function NebulaClouds({ count = 4200 }) {
     const pointsRef = useRef<THREE.Points>(null!);
     const texture = useMemo(() => getNebulaTexture(), []);
 
@@ -310,7 +310,7 @@ function NebulaClouds({ count = 8000 }) {
 }
 
 // --- DISTANT BACKGROUND STARS ---
-function BackgroundStars({ count = 2000 }) {
+function BackgroundStars({ count = 1200 }) {
     const pointsRef = useRef<THREE.Points>(null!);
     const texture = useMemo(() => getStarTexture(), []);
 
@@ -396,7 +396,7 @@ export default function MemeCornerCanvas() {
                 powerPreference: "high-performance",
                 alpha: true
             }}
-            dpr={[1, Math.min(window.devicePixelRatio, 2)]}
+            dpr={[1, Math.min(window.devicePixelRatio, 1.5)]}
         >
             <group>
                 <BackgroundStars />
@@ -405,7 +405,7 @@ export default function MemeCornerCanvas() {
                 <NebulaClouds />
             </group>
 
-            <EffectComposer enableNormalPass={false} multisampling={8}>
+            <EffectComposer enableNormalPass={false} multisampling={2}>
                 <Bloom
                     luminanceThreshold={0.6} // Higher threshold = Only brightest stars glow
                     intensity={1.0}

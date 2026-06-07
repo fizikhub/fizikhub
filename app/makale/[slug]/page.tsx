@@ -317,7 +317,9 @@ export default async function ArticlePage({ params }: PageProps) {
     const intentOverride = getSeoIntentForSlug(article.slug);
     const articleDescription = intentOverride?.metadataDescription || toMetaDescription(article);
     const baseUrl = getSiteUrl();
-    const articleUrl = `${baseUrl}/makale/${article.slug}`;
+    const canonicalOrigin = getCanonicalOrigin();
+    const canonicalPath = getArticleCanonicalPath(article) || `/makale/${article.slug || slug}`;
+    const articleUrl = `${canonicalOrigin}${canonicalPath}`;
     const articleImageUrl = toAbsoluteUrl(article.cover_url || (article as any).image_url, baseUrl) || `${baseUrl}/api/og?title=${encodeURIComponent(article.title)}`;
     const authorUrl = article.author?.username ? `${baseUrl}/kullanici/${article.author.username}` : baseUrl;
     const authorName = article.author?.full_name || article.author?.username || 'Fizikhub Ekibi';

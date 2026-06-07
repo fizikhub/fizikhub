@@ -9,18 +9,16 @@ import { JsonLd } from "@/components/seo/json-ld";
 import Image from "next/image";
 import Script from "next/script";
 
-const googleSiteVerification = process.env.NEXT_PUBLIC_GSC_TOKEN?.trim() || "google-site-verification-placeholder-fizikhub-2026";
+const googleSiteVerification = process.env.NEXT_PUBLIC_GSC_TOKEN?.trim();
 const yandexSiteVerification = process.env.NEXT_PUBLIC_YANDEX_VERIFICATION?.trim() || "52a1b92a472c695a";
 const bingSiteVerification = process.env.NEXT_PUBLIC_BING_VERIFICATION?.trim() || "850A2091D5E99DA8B91FE7BF2FE7419A";
 const gaMeasurementId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID?.trim();
 const supabasePublicUrl = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
 const isVercelRuntime = process.env.VERCEL === "1" || Boolean(process.env.NEXT_PUBLIC_VERCEL_ENV);
 const siteVerification: NonNullable<Metadata["verification"]> = {
-  google: googleSiteVerification,
-  yandex: yandexSiteVerification,
-  other: {
-    "msvalidate.01": bingSiteVerification
-  },
+  ...(googleSiteVerification ? { google: googleSiteVerification } : {}),
+  ...(yandexSiteVerification ? { yandex: yandexSiteVerification } : {}),
+  ...(bingSiteVerification ? { other: { "msvalidate.01": bingSiteVerification } } : {}),
 };
 
 // Single font only — eliminates 2 render-blocking CSS files
