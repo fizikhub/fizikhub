@@ -189,6 +189,9 @@ export function SpaceBomberGame() {
     const [level, setLevel] = useState(1);
     const [targetLocked, setTargetLocked] = useState(false);
     
+    // Mouse tracker for UI so the player knows where they are steering
+    const [mouseUI, setMouseUI] = useState({ x: -100, y: -100 });
+    
     // Boss health states
     const [bossHealth, setBossHealth] = useState(0);
     const [bossMaxHealth, setBossMaxHealth] = useState(40);
@@ -456,9 +459,9 @@ export function SpaceBomberGame() {
         shipGroup.add(flameR);
         thrusterFlameMeshR.current = flameR;
 
-        // Shield Bubble
+        // Shield Bubble (Hidden as requested)
         const shieldGeo = new THREE.SphereGeometry(7, 32, 32);
-        const sMat = new THREE.MeshBasicMaterial({ color: 0x00d2d3, wireframe: true, transparent: true, opacity: 0.2, blending: THREE.AdditiveBlending });
+        const sMat = new THREE.MeshBasicMaterial({ color: 0x00d2d3, wireframe: true, transparent: true, opacity: 0.0, visible: false });
         const shieldBubble = new THREE.Mesh(shieldGeo, sMat);
         shipGroup.add(shieldBubble);
         shieldBubbleMesh.current = shieldBubble;
@@ -556,17 +559,17 @@ export function SpaceBomberGame() {
         const scene = sceneRef.current;
         if (!scene) return;
 
-        // Spawn Enemies
+        // Spawn Enemies (Made huge and bright red to easily distinguish)
         for (let i = 0; i < 20 + level * 6; i++) {
-            const eGeo = new THREE.IcosahedronGeometry(4, 1);
-            const eMat = new THREE.MeshStandardMaterial({ color: '#ff3f34', emissive: '#ff3f34', emissiveIntensity: 0.4, wireframe: true });
+            const eGeo = new THREE.IcosahedronGeometry(8, 1);
+            const eMat = new THREE.MeshBasicMaterial({ color: '#ff3f34', wireframe: true });
             const eMesh = new THREE.Group();
             const core = new THREE.Mesh(eGeo, eMat);
             eMesh.add(core);
 
-            // Inner core
-            const iGeo = new THREE.SphereGeometry(2, 8, 8);
-            const iMat = new THREE.MeshBasicMaterial({ color: '#ffffff' });
+            // Inner core (Pure glowing red)
+            const iGeo = new THREE.SphereGeometry(4, 8, 8);
+            const iMat = new THREE.MeshBasicMaterial({ color: '#ff0000' });
             eMesh.add(new THREE.Mesh(iGeo, iMat));
 
             const zDist = -400 - Math.random() * 2000;
@@ -703,6 +706,9 @@ export function SpaceBomberGame() {
             let dx = (e.clientX - cx) / (rect.width / 2);
             let dy = (e.clientY - cy) / (rect.height / 2);
             
+            // Draw tracking cursor
+            setMouseUI({ x: e.clientX - rect.left, y: e.clientY - rect.top });
+            
             if (Math.abs(dx) < 0.1) dx = 0;
             if (Math.abs(dy) < 0.1) dy = 0;
             
@@ -778,8 +784,9 @@ export function SpaceBomberGame() {
         }
 
         // --- 1. SHIP MOVEMENT (6-DOF) ---
-        let pitch = -mouseDelta.current.y * 0.05 * dt;
-        let yaw = -mouseDelta.current.x * 0.05 * dt;
+        // Slower sensitivity for laptop trackpads
+        let pitch = -mouseDelta.current.y * 0.02 * dt;
+        let yaw = -mouseDelta.current.x * 0.02 * dt;
         let roll = 0;
         
         if (keys.current['a']) roll += 0.06 * dt;
@@ -818,11 +825,7 @@ export function SpaceBomberGame() {
 
         // Shield logic
         if (shieldBubbleMesh.current) {
-            shieldBubbleMesh.current.visible = shieldRef.current > 0;
-            const sScale = 1.0 + (100 - shieldRef.current) / 200;
-            shieldBubbleMesh.current.scale.set(sScale, sScale, sScale);
-            shieldBubbleMesh.current.rotation.y += 0.05 * dt;
-            shieldBubbleMesh.current.rotation.x += 0.03 * dt;
+            shieldBubbleMesh.current.visible = false;
         }
 
         // --- 2. CAMERA UPDATE (Dynamic Chase Cam) ---
@@ -1290,6 +1293,14 @@ export function SpaceBomberGame() {
                 <canvas ref={canvasRef} className="w-full block focus:outline-none" style={{ height: '700px' }} width={1200} height={700} tabIndex={0} />
                 
                 <div ref={floatingTextContainerRef} className="absolute top-0 left-0 w-full h-[700px] pointer-events-none z-10 overflow-hidden" />
+
+                {/* Virtual Joystick Cursor */}
+                {(gameState === 'playing' || gameState === 'hyperspace') && (
+                    <div 
+                        className="absolute w-6 h-6 rounded-full border-2 border-dashed border-cyan-400 pointer-events-none z-20 transition-transform duration-75"
+                        style={{ left: mouseUI.x, top: mouseUI.y, transform: 'translate(-50%, -50%)', opacity: 0.6 }}
+                    />
+                )}
 
                 {/* Adaptive Crosshair */}
                 {(gameState === 'playing' || gameState === 'hyperspace') && (
