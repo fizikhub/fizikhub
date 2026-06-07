@@ -1479,7 +1479,7 @@ export function SpaceBomberGame() {
                 {/* Overlays */}
                 {gameState === 'idle' && (
                     <div className="absolute inset-0 bg-black/90 backdrop-blur-sm flex flex-col items-center justify-center z-30">
-                        <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-cyan-500 via-transparent to-transparent"></div>
+                        <div className="absolute inset-0 opacity-20 pointer-events-none bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-cyan-500 via-transparent to-transparent"></div>
                         <h1 className="text-6xl md:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-br from-indigo-400 via-cyan-300 to-emerald-400 mb-6 tracking-tighter drop-shadow-[0_0_30px_rgba(34,211,238,0.5)] text-center">
                             GRAVITY WARRIOR <br/> <span className="text-rose-500 text-5xl">3D: ASCENSION</span>
                         </h1>
