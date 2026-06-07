@@ -50,6 +50,7 @@ interface Enemy {
     headMesh?: THREE.Group | THREE.Mesh;
     bossRing1?: THREE.Mesh;
     bossRing2?: THREE.Mesh;
+    warningFlare?: THREE.Mesh | null;
 }
 
 interface FuelCrystal {
@@ -64,7 +65,7 @@ interface PowerUp {
     id: number;
     x: number; y: number; z: number;
     vx: number; vy: number; vz: number;
-    type: 'multi' | 'beam';
+    type: 'multi' | 'beam' | 'slowmo';
     active: boolean;
     mesh: THREE.Mesh;
 }
@@ -251,6 +252,24 @@ class SoundSynth {
         } catch (e) {}
     }
 
+    playWarning() {
+        if (!this.enabled || !this.ctx || !this.masterGain) return;
+        try {
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.connect(gain);
+            gain.connect(this.masterGain);
+            
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(880, this.ctx.currentTime); // High alert tone
+            gain.gain.setValueAtTime(0.4, this.ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.15);
+            
+            osc.start();
+            osc.stop(this.ctx.currentTime + 0.15);
+        } catch (e) {}
+    }
+
     playHyperspace() {
         if (!this.enabled || !this.ctx || !this.masterGain) return;
         try {
@@ -429,6 +448,59 @@ const SHIP_CLASSES: ShipClass[] = [
     }
 ];
 
+const createCosmicCruiser = (colorStr: string) => {
+    const group = new THREE.Group();
+    const mat = new THREE.MeshStandardMaterial({ 
+        color: colorStr, 
+        metalness: 0.9, 
+        roughness: 0.1, 
+        emissive: colorStr, 
+        emissiveIntensity: 0.15 
+    });
+    
+    // Main Hull (sleek star destroyer shape)
+    const hullGeo = new THREE.ConeGeometry(15, 60, 4);
+    const hull = new THREE.Mesh(hullGeo, mat);
+    hull.rotation.x = Math.PI / 2;
+    group.add(hull);
+    
+    // Command Bridge
+    const bridgeGeo = new THREE.BoxGeometry(10, 5, 8);
+    const bridge = new THREE.Mesh(bridgeGeo, mat);
+    bridge.position.set(0, 5, 10);
+    group.add(bridge);
+    
+    // Left Wing
+    const leftWingGeo = new THREE.BoxGeometry(25, 2, 20);
+    const leftWing = new THREE.Mesh(leftWingGeo, mat);
+    leftWing.position.set(-18, -2, 5);
+    leftWing.rotation.y = 0.2;
+    group.add(leftWing);
+    
+    // Right Wing
+    const rightWingGeo = new THREE.BoxGeometry(25, 2, 20);
+    const rightWing = new THREE.Mesh(rightWingGeo, mat);
+    rightWing.position.set(18, -2, 5);
+    rightWing.rotation.y = -0.2;
+    group.add(rightWing);
+    
+    // Engines
+    const engGeo = new THREE.CylinderGeometry(4, 4, 10, 8);
+    const engMat = new THREE.MeshBasicMaterial({ color: '#00d2d3' });
+    
+    const engLeft = new THREE.Mesh(engGeo, engMat);
+    engLeft.rotation.x = Math.PI / 2;
+    engLeft.position.set(-6, 0, 30);
+    group.add(engLeft);
+    
+    const engRight = new THREE.Mesh(engGeo, engMat);
+    engRight.rotation.x = Math.PI / 2;
+    engRight.position.set(6, 0, 30);
+    group.add(engRight);
+    
+    return group;
+};
+
 export function SpaceBomberGame() {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
@@ -448,6 +520,8 @@ export function SpaceBomberGame() {
     const hudProximityDangerRef = useRef<HTMLDivElement>(null);
     const hudComboRef = useRef<HTMLDivElement>(null);
     const hudEnemiesRef = useRef<HTMLSpanElement>(null);
+    const hudSlowmoVignetteRef = useRef<HTMLDivElement>(null);
+    const hudLowArmorAlertRef = useRef<HTMLDivElement>(null);
 
     const scoreRef = useRef<number>(0);
     const totalEnemiesRef = useRef<number>(0);
@@ -462,6 +536,11 @@ export function SpaceBomberGame() {
     const proximityDangerRef = useRef<number>(0);
     const bossPhase = useRef<number>(1);
     const hitFlashMap = useRef<Map<number, number>>(new Map());
+    
+    // Time dilation and slow-mo bullet time
+    const timeDilationRef = useRef<number>(1.0);
+    const bulletTimeTimerRef = useRef<number>(0);
+    const lastWarningSoundTime = useRef<number>(0);
 
     // Sound manager ref
     const soundRef = useRef<SoundSynth | null>(null);
@@ -539,6 +618,8 @@ export function SpaceBomberGame() {
     const crystals = useRef<FuelCrystal[]>([]);
     const powerUps = useRef<PowerUp[]>([]);
     const floatingTexts = useRef<FloatingText[]>([]);
+    const cosmicFleet = useRef<{ mesh: THREE.Group; fireTimer: number; fireCooldown: number; }[]>([]);
+    const cosmicLasers = useRef<{ mesh: THREE.Line; life: number; }[]>([]);
     
     const comboMultiplier = useRef<number>(1);
     const comboTimer = useRef<number>(0);
@@ -675,11 +756,17 @@ export function SpaceBomberGame() {
         const scene = sceneRef.current;
         if (!scene) return;
         bullets.current.forEach(b => scene.remove(b.mesh)); bullets.current = [];
-        enemies.current.forEach(e => scene.remove(e.mesh)); enemies.current = [];
+        enemies.current.forEach(e => {
+            scene.remove(e.mesh);
+            if (e.warningFlare) scene.remove(e.warningFlare);
+        });
+        enemies.current = [];
         crystals.current.forEach(c => scene.remove(c.mesh)); crystals.current = [];
         powerUps.current.forEach(p => scene.remove(p.mesh)); powerUps.current = [];
         particles.current.forEach(p => scene.remove(p.mesh)); particles.current = [];
         shockwaves.current.forEach(s => scene.remove(s.mesh)); shockwaves.current = [];
+        cosmicFleet.current.forEach(f => scene.remove(f.mesh)); cosmicFleet.current = [];
+        cosmicLasers.current.forEach(l => scene.remove(l.mesh)); cosmicLasers.current = [];
     }, []);
 
     // Setup 3D Scene structures
@@ -1288,12 +1375,20 @@ export function SpaceBomberGame() {
         }
 
         // 4. Spawn Power-Ups directly in the path
-        const numPowerups = 2;
+        const numPowerups = 3;
         const stepP = (zEnd - zStart) / numPowerups;
         for (let i = 0; i < numPowerups; i++) {
-            const pType = i % 2 === 0 ? 'multi' : 'beam';
+            const pType = i % 3 === 0 ? 'multi' : (i % 3 === 1 ? 'beam' : 'slowmo');
             const pGeo = new THREE.BoxGeometry(4, 4, 4);
-            const pMat = new THREE.MeshStandardMaterial({ color: pType === 'multi' ? '#00d2d3' : '#ff4757', emissive: pType === 'multi' ? '#008b8b' : '#8b0000', emissiveIntensity: 0.5, metalness: 0.8, roughness: 0.2 });
+            const pColor = pType === 'slowmo' ? '#00bfff' : (pType === 'multi' ? '#00d2d3' : '#ff4757');
+            const pEmissive = pType === 'slowmo' ? '#00008b' : (pType === 'multi' ? '#008b8b' : '#8b0000');
+            const pMat = new THREE.MeshStandardMaterial({ 
+                color: pColor, 
+                emissive: pEmissive, 
+                emissiveIntensity: 0.5, 
+                metalness: 0.8, 
+                roughness: 0.2 
+            });
             const pMesh = new THREE.Mesh(pGeo, pMat);
             const px = (Math.random() - 0.5) * 100;
             const py = (Math.random() - 0.5) * 50;
@@ -1349,6 +1444,31 @@ export function SpaceBomberGame() {
             }
         }
         
+        // 6. Spawn Background Cosmic Fleet
+        cosmicFleet.current.forEach(f => scene.remove(f.mesh));
+        cosmicFleet.current = [];
+        cosmicLasers.current.forEach(l => scene.remove(l.mesh));
+        cosmicLasers.current = [];
+        
+        const numCruisers = 8;
+        for (let i = 0; i < numCruisers; i++) {
+            const isLeft = i % 2 === 0;
+            const px = (isLeft ? -1 : 1) * (400 + Math.random() * 400);
+            const py = (Math.random() - 0.5) * 400;
+            const pz = -1500 - Math.random() * 2000;
+            
+            const colorVal = i % 2 === 0 ? '#485460' : '#3c40c6';
+            const cruiser = createCosmicCruiser(colorVal);
+            cruiser.position.set(px, py, pz);
+            cruiser.lookAt(new THREE.Vector3(0, py, pz - 100));
+            scene.add(cruiser);
+            cosmicFleet.current.push({
+                mesh: cruiser,
+                fireTimer: Math.random() * 60,
+                fireCooldown: 60 + Math.random() * 60
+            });
+        }
+
         // Initialize enemy counter refs and DOM element
         const total = enemies.current.length;
         totalEnemiesRef.current = total;
@@ -1446,7 +1566,29 @@ export function SpaceBomberGame() {
 
         const rawDt = (time - lastTime.current) / 1000;
         lastTime.current = time;
-        const dt = Math.min(rawDt * 60, 3.0);
+        const playerDt = Math.min(rawDt * 60, 3.0);
+
+        // Bullet time (Slow-motion) timer updates
+        if (bulletTimeTimerRef.current > 0) {
+            bulletTimeTimerRef.current -= playerDt;
+            if (bulletTimeTimerRef.current <= 0) {
+                timeDilationRef.current = 1.0;
+                addLog("ZAMAN AKIŞI NORMALE DÖNDÜ.");
+            }
+        }
+        
+        // Show/hide slow-mo blue screen vignette directly in DOM
+        if (hudSlowmoVignetteRef.current) {
+            if (bulletTimeTimerRef.current > 0) {
+                hudSlowmoVignetteRef.current.style.display = 'block';
+                const wave = Math.sin(time * 0.05) * 0.05 + 0.65;
+                hudSlowmoVignetteRef.current.style.opacity = wave.toString();
+            } else {
+                hudSlowmoVignetteRef.current.style.display = 'none';
+            }
+        }
+
+        const dt = playerDt * timeDilationRef.current;
 
         const scene = sceneRef.current;
         const camera = cameraRef3D.current;
@@ -1576,7 +1718,7 @@ export function SpaceBomberGame() {
         }
 
         // Steer left/right (A/D) and up/down (W/S)
-        const steerSpeed = 2.8 * dt;
+        const steerSpeed = 2.8 * playerDt;
         if (keys.current['a']) shipPos.current.x -= steerSpeed;
         if (keys.current['d']) shipPos.current.x += steerSpeed;
         if (keys.current['w']) shipPos.current.y += steerSpeed * 0.8;
@@ -1605,9 +1747,9 @@ export function SpaceBomberGame() {
             targetPitch = 0.3;
         }
 
-        ship.rotation.z = THREE.MathUtils.lerp(ship.rotation.z, targetRoll, 0.15 * dt);
-        ship.rotation.x = THREE.MathUtils.lerp(ship.rotation.x, targetPitch, 0.15 * dt);
-        ship.rotation.y = THREE.MathUtils.lerp(ship.rotation.y, targetYaw, 0.15 * dt);
+        ship.rotation.z = THREE.MathUtils.lerp(ship.rotation.z, targetRoll, 0.15 * playerDt);
+        ship.rotation.x = THREE.MathUtils.lerp(ship.rotation.x, targetPitch, 0.15 * playerDt);
+        ship.rotation.y = THREE.MathUtils.lerp(ship.rotation.y, targetYaw, 0.15 * playerDt);
 
         // Update quaternion reference from rotation
         ship.quaternion.setFromEuler(new THREE.Euler(ship.rotation.x, ship.rotation.y, ship.rotation.z));
@@ -1765,6 +1907,55 @@ export function SpaceBomberGame() {
             const eVec = new THREE.Vector3(e.x, e.y, e.z);
             const distToPlayer = eVec.distanceTo(shipPos.current);
             
+            // Namlu Lazer Şarj Efektleri
+            const chargeTime = 30; // 0.5 seconds at 60fps
+            const warningThreshold = e.fireCooldown - chargeTime;
+            if (e.lastFire > warningThreshold && e.z < shipPos.current.z && distToPlayer < 1200) {
+                let spawnP = new THREE.Vector3(e.x, e.y, e.z);
+                if (e.type === 'turret' && e.headMesh) {
+                    const barrelTipLocal = new THREE.Vector3(0, 0, -9);
+                    barrelTipLocal.applyQuaternion(e.headMesh.quaternion);
+                    spawnP.add(barrelTipLocal);
+                } else if (e.type === 'floater') {
+                    const offset = new THREE.Vector3(0, 0, -4).applyQuaternion(e.mesh.quaternion);
+                    spawnP.add(offset);
+                } else if (e.type === 'boss') {
+                    const offset = new THREE.Vector3(0, 0, -15);
+                    spawnP.add(offset);
+                }
+
+                if (!e.warningFlare) {
+                    const flareGeo = new THREE.TorusGeometry(0.8, 0.2, 8, 16);
+                    const flareColor = e.type === 'boss' ? '#8c7ae6' : '#fbc531';
+                    const flareMat = new THREE.MeshBasicMaterial({ 
+                        color: flareColor, 
+                        transparent: true, 
+                        opacity: 0.8, 
+                        blending: THREE.AdditiveBlending 
+                    });
+                    e.warningFlare = new THREE.Mesh(flareGeo, flareMat);
+                    scene.add(e.warningFlare);
+                }
+                
+                e.warningFlare.position.copy(spawnP);
+                if (e.type === 'turret' && e.headMesh) {
+                    e.warningFlare.quaternion.copy(e.headMesh.quaternion);
+                } else {
+                    e.warningFlare.quaternion.copy(e.mesh.quaternion);
+                }
+                
+                const elapsedCharge = e.lastFire - warningThreshold;
+                const progress = Math.min(1.0, elapsedCharge / chargeTime);
+                const scale = progress * 4.0;
+                e.warningFlare.scale.set(scale, scale, scale);
+                e.warningFlare.rotation.z += 0.1 * dt;
+            } else {
+                if (e.warningFlare) {
+                    scene.remove(e.warningFlare);
+                    e.warningFlare = null;
+                }
+            }
+
             // Check crosshair lock (dot product) - ONLY if target is ahead of player
             const dirToEnemy = new THREE.Vector3().subVectors(eVec, shipPos.current).normalize();
             if (e.z < shipPos.current.z && forward.dot(dirToEnemy) > 0.98 && distToPlayer < 2000) {
@@ -1933,6 +2124,10 @@ export function SpaceBomberGame() {
                         if (e.health <= 0) {
                             e.active = false;
                             scene.remove(e.mesh);
+                            if (e.warningFlare) {
+                                scene.remove(e.warningFlare);
+                                e.warningFlare = null;
+                            }
                             hitFlashMap.current.delete(e.id);
                             soundRef.current?.playExplosion();
                             
@@ -1975,7 +2170,19 @@ export function SpaceBomberGame() {
                             });
 
                             // Drops
-                            if (Math.random() > 0.75) {
+                            const randVal = Math.random();
+                            if (randVal < 0.15) { // 15% chance for slowmo
+                                const pGeo = new THREE.BoxGeometry(5, 5, 5);
+                                const pMat = new THREE.MeshBasicMaterial({ color: '#00bfff', wireframe: true });
+                                const pMesh = new THREE.Mesh(pGeo, pMat);
+                                pMesh.position.set(e.x, e.y, e.z);
+                                scene.add(pMesh);
+                                powerUps.current.push({
+                                    id: Math.random(), x: e.x, y: e.y, z: e.z,
+                                    vx: (Math.random() - 0.5) * 4, vy: (Math.random() - 0.5) * 4, vz: (Math.random() - 0.5) * 4,
+                                    type: 'slowmo', active: true, mesh: pMesh
+                                });
+                            } else if (randVal > 0.80) { // 20% chance for other powerups (multi or beam)
                                 const pType = Math.random() > 0.5 ? 'multi' : 'beam';
                                 const pGeo = new THREE.BoxGeometry(5, 5, 5);
                                 const pMat = new THREE.MeshBasicMaterial({ color: pType === 'multi' ? '#00d2d3' : '#ff4757', wireframe: true });
@@ -1987,7 +2194,7 @@ export function SpaceBomberGame() {
                                     vx: (Math.random() - 0.5) * 4, vy: (Math.random() - 0.5) * 4, vz: (Math.random() - 0.5) * 4,
                                     type: pType, active: true, mesh: pMesh
                                 });
-                            } else {
+                            } else { // 65% chance of crystal
                                 const cGeo = new THREE.OctahedronGeometry(3);
                                 const cMat = new THREE.MeshStandardMaterial({ color: '#2ed573', emissive: '#10ac84' });
                                 const cMesh = new THREE.Mesh(cGeo, cMat);
@@ -2050,9 +2257,21 @@ export function SpaceBomberGame() {
             p.active = false;
             scene.remove(p.mesh);
             soundRef.current?.playCollect();
-            weaponType.current = p.type;
-            weaponTimer.current = 400; // ~6-7 secs
-            addLog(`SİSTEM GÜNCELLENDİ: ${p.type.toUpperCase()}`);
+            if (p.type === 'slowmo') {
+                bulletTimeTimerRef.current = 300; // 5 seconds at 60fps (300 frames)
+                timeDilationRef.current = 0.35;
+                addLog("ZAMAN BÜKÜLDÜ!");
+                floatingTexts.current.push({
+                    id: Math.random(),
+                    text: "ZAMAN BÜKÜLDÜ!",
+                    x: p.x, y: p.y + 10, z: p.z,
+                    life: 2.0, color: '#00bfff'
+                });
+            } else {
+                weaponType.current = p.type;
+                weaponTimer.current = 400; // ~6-7 secs
+                addLog(`SİSTEM GÜNCELLENDİ: ${p.type.toUpperCase()}`);
+            }
         });
         powerUps.current = powerUps.current.filter(p => p.active);
 
@@ -2136,6 +2355,69 @@ export function SpaceBomberGame() {
                 return { x: relativePos.x, y: relativePos.z, z: relativePos.y, type: e.type };
             });
             setRadarEntities(radarData);
+        }
+
+        // --- 7. COSMIC FLEET & LASERS ---
+        cosmicFleet.current.forEach((cruiser, index) => {
+            cruiser.fireTimer += dt;
+            if (cruiser.fireTimer >= cruiser.fireCooldown) {
+                cruiser.fireTimer = 0;
+                cruiser.fireCooldown = 60 + Math.random() * 60;
+                
+                const targetIndex = (index + 1 + Math.floor(Math.random() * (cosmicFleet.current.length - 1))) % cosmicFleet.current.length;
+                const targetCruiser = cosmicFleet.current[targetIndex];
+                if (targetCruiser) {
+                    const startP = new THREE.Vector3().copy(cruiser.mesh.position);
+                    const endP = new THREE.Vector3().copy(targetCruiser.mesh.position);
+                    
+                    const points = [startP, endP];
+                    const laserGeo = new THREE.BufferGeometry().setFromPoints(points);
+                    
+                    const colors = ['#00ffff', '#ff4757', '#ffbe0b', '#8338ec'];
+                    const colorStr = colors[Math.floor(Math.random() * colors.length)];
+                    const laserMat = new THREE.LineBasicMaterial({ 
+                        color: colorStr, 
+                        transparent: true,
+                        opacity: 0.8
+                    });
+                    
+                    const laserLine = new THREE.Line(laserGeo, laserMat);
+                    scene.add(laserLine);
+                    
+                    cosmicLasers.current.push({
+                        mesh: laserLine,
+                        life: 15
+                    });
+                }
+            }
+        });
+        
+        cosmicLasers.current.forEach(cl => {
+            cl.life -= dt;
+            const mat = cl.mesh.material as THREE.LineBasicMaterial;
+            if (mat) mat.opacity = Math.max(0, cl.life / 15);
+        });
+        cosmicLasers.current.filter(cl => cl.life <= 0).forEach(cl => scene.remove(cl.mesh));
+        cosmicLasers.current = cosmicLasers.current.filter(cl => cl.life > 0);
+
+        // --- 8. LOW ARMOR WARNING & ALARM BEEP ---
+        const maxArmorVal = currentShipClass.maxArmor;
+        const isLowArmor = armorRef.current < maxArmorVal * 0.3;
+        
+        if (isLowArmor) {
+            if (hudLowArmorAlertRef.current) {
+                hudLowArmorAlertRef.current.style.display = 'block';
+                const alertWave = Math.sin(time * 0.01) * 0.2 + 0.8;
+                hudLowArmorAlertRef.current.style.opacity = alertWave.toString();
+            }
+            if (time - lastWarningSoundTime.current > 1500) {
+                soundRef.current?.playWarning();
+                lastWarningSoundTime.current = time;
+            }
+        } else {
+            if (hudLowArmorAlertRef.current) {
+                hudLowArmorAlertRef.current.style.display = 'none';
+            }
         }
 
         setSpeedVal(Math.round(targetSpeed.current * 100));
@@ -2323,6 +2605,36 @@ export function SpaceBomberGame() {
                         display: 'none'
                     }} 
                 />
+
+                {/* Slow-mo bullet-time vignette overlay */}
+                <div 
+                    ref={hudSlowmoVignetteRef} 
+                    className="absolute inset-0 pointer-events-none z-20 transition-opacity duration-75 mix-blend-screen" 
+                    style={{ 
+                        background: 'radial-gradient(circle, rgba(0,191,255,0) 40%, rgba(0,191,255,0.4) 100%)',
+                        border: '4px solid rgba(0,191,255,0.2)',
+                        opacity: 0,
+                        display: 'none'
+                    }} 
+                >
+                    <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-cyan-400 text-lg font-black tracking-[0.4em] uppercase animate-pulse drop-shadow-[0_0_12px_rgba(0,191,255,0.8)] pointer-events-none select-none text-center">
+                        ZAMAN BÜKÜLDÜ
+                    </div>
+                </div>
+
+                {/* Low Armor warning overlay */}
+                <div 
+                    ref={hudLowArmorAlertRef} 
+                    className="absolute top-24 left-1/2 transform -translate-x-1/2 p-3 rounded-xl border border-rose-500/50 bg-rose-950/80 backdrop-blur-md text-center pointer-events-none z-20 shadow-[0_0_30px_rgba(244,63,94,0.4)] transition-opacity duration-300"
+                    style={{ 
+                        opacity: 0,
+                        display: 'none'
+                    }}
+                >
+                    <div className="text-rose-500 text-sm font-black tracking-[0.3em] uppercase animate-pulse">
+                        KRİTİK DURUM: ZIRH DÜŞÜK
+                    </div>
+                </div>
 
                 {/* Enemies Remaining holographic UI */}
                 {(gameState === 'playing' || gameState === 'hyperspace') && (
