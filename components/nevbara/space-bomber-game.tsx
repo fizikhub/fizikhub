@@ -262,7 +262,7 @@ class SoundSynth {
 
 // --- GAME CONFIG & INTERFACES ---
 const SHIP_SIZE = 15;
-const DRAG = 0.985;
+const DRAG = 0.994; // Realistic space momentum, less air resistance
 
 interface Vector2D {
     x: number;
@@ -389,6 +389,7 @@ export function SpaceBomberGame() {
     const shipPos = useRef<Vector2D>({ x: 100, y: 350 });
     const shipVel = useRef<Vector2D>({ x: 0, y: 0 });
     const shipAngle = useRef<number>(-Math.PI / 2); // Pointing straight up initially
+    const shipAngularVel = useRef<number>(0);
     
     const particles = useRef<Particle[]>([]);
     const bullets = useRef<Bullet[]>([]);
@@ -602,60 +603,111 @@ export function SpaceBomberGame() {
         scene.add(stars);
         backgroundStars.current = stars;
 
-        // Build Player Spaceship Model
+        // Build Player Spaceship Model (Advanced 3D Geometry)
         const shipGroup = new THREE.Group();
         
-        // 1. Fuselage
-        const fuseGeo = new THREE.CylinderGeometry(2, 2.5, 13, 8);
+        // 1. Main Fuselage
+        const fuseGeo = new THREE.CylinderGeometry(2.5, 3.2, 16, 12);
         fuseGeo.rotateZ(Math.PI / 2); // Make it face along X-axis
-        const fuseMat = new THREE.MeshStandardMaterial({ color: '#636e72', metalness: 0.8, roughness: 0.3 });
+        const fuseMat = new THREE.MeshStandardMaterial({ 
+            color: '#dcdde1', 
+            metalness: 0.9, 
+            roughness: 0.2,
+            envMapIntensity: 1.5 
+        });
         const fuselage = new THREE.Mesh(fuseGeo, fuseMat);
         shipGroup.add(fuselage);
 
-        // 2. Cockpit Nose Cone
-        const noseGeo = new THREE.ConeGeometry(2, 6, 8);
+        // 2. Cockpit Nose Cone (Glassy)
+        const noseGeo = new THREE.ConeGeometry(2.5, 8, 12);
         noseGeo.rotateZ(-Math.PI / 2); // Face forward (+X)
-        noseGeo.translate(9.5, 0, 0); // Put at front
-        const noseMat = new THREE.MeshStandardMaterial({ color: '#00d2d3', emissive: '#005f73', roughness: 0.1 });
+        noseGeo.translate(12, 0, 0); // Put at front
+        const noseMat = new THREE.MeshPhysicalMaterial({ 
+            color: '#00d2d3', 
+            emissive: '#003040',
+            transmission: 0.9,
+            opacity: 1,
+            metalness: 0.1,
+            roughness: 0.05,
+            ior: 1.5,
+            thickness: 0.5
+        });
         const nose = new THREE.Mesh(noseGeo, noseMat);
         shipGroup.add(nose);
 
-        // 3. Side Wings
-        const wingLeftGeo = new THREE.BoxGeometry(4, 0.4, 10);
-        wingLeftGeo.translate(0, -0.5, 4); // Extend left
-        const wingRightGeo = new THREE.BoxGeometry(4, 0.4, 10);
-        wingRightGeo.translate(0, -0.5, -4); // Extend right
-        const wingMat = new THREE.MeshStandardMaterial({ color: '#485460', metalness: 0.7 });
-        const wingL = new THREE.Mesh(wingLeftGeo, wingMat);
-        const wingR = new THREE.Mesh(wingRightGeo, wingMat);
-        shipGroup.add(wingL);
-        shipGroup.add(wingR);
+        // 3. Side Wings (Swept back delta wings)
+        const wingShape = new THREE.Shape();
+        wingShape.moveTo(0, 0);
+        wingShape.lineTo(-6, 8);
+        wingShape.lineTo(-10, 8);
+        wingShape.lineTo(-4, 0);
+        wingShape.lineTo(-10, -8);
+        wingShape.lineTo(-6, -8);
+        wingShape.lineTo(0, 0);
 
-        // 4. Exhaust Nozzle
-        const nozzleGeo = new THREE.CylinderGeometry(1.6, 1.1, 2.5, 8);
+        const extrudeSettings = { depth: 0.8, bevelEnabled: true, bevelSegments: 2, steps: 1, bevelSize: 0.2, bevelThickness: 0.2 };
+        const wingGeo = new THREE.ExtrudeGeometry(wingShape, extrudeSettings);
+        wingGeo.rotateX(Math.PI / 2);
+        wingGeo.translate(-2, -0.4, 0);
+        const wingMat = new THREE.MeshStandardMaterial({ color: '#2f3640', metalness: 0.8, roughness: 0.4 });
+        const wings = new THREE.Mesh(wingGeo, wingMat);
+        shipGroup.add(wings);
+        
+        // 4. Vertical Stabilizer (Tail Fin)
+        const finShape = new THREE.Shape();
+        finShape.moveTo(0,0);
+        finShape.lineTo(-4, 6);
+        finShape.lineTo(-7, 6);
+        finShape.lineTo(-2, 0);
+        const finGeo = new THREE.ExtrudeGeometry(finShape, { depth: 0.4, bevelEnabled: true, bevelSize: 0.1, bevelThickness: 0.1 });
+        finGeo.translate(-4, 2.5, -0.2);
+        const finMat = new THREE.MeshStandardMaterial({ color: '#c23616', metalness: 0.6, roughness: 0.3 });
+        const fin = new THREE.Mesh(finGeo, finMat);
+        shipGroup.add(fin);
+
+        // 5. Exhaust Nozzle (Engine block)
+        const nozzleGeo = new THREE.CylinderGeometry(2.0, 1.4, 4.0, 12);
         nozzleGeo.rotateZ(Math.PI / 2);
-        nozzleGeo.translate(-7.7, 0, 0);
-        const nozzleMat = new THREE.MeshStandardMaterial({ color: '#2d3436', metalness: 0.9 });
+        nozzleGeo.translate(-9, 0, 0);
+        const nozzleMat = new THREE.MeshStandardMaterial({ color: '#192a56', metalness: 1.0, roughness: 0.2 });
         const nozzle = new THREE.Mesh(nozzleGeo, nozzleMat);
         shipGroup.add(nozzle);
 
-        // 5. Thruster Flame Cone
-        const flameGeo = new THREE.ConeGeometry(1.2, 5, 8);
+        // 6. Thruster Flame Cone (Dynamic Plume)
+        const flameGeo = new THREE.ConeGeometry(1.6, 7, 12);
         flameGeo.rotateZ(Math.PI / 2);
-        flameGeo.translate(-11.5, 0, 0);
-        const flameMat = new THREE.MeshBasicMaterial({ color: '#ff7675', transparent: true, opacity: 0.0 }); // Starts invisible
+        flameGeo.translate(-14.5, 0, 0);
+        const flameMat = new THREE.MeshBasicMaterial({ 
+            color: '#ff9f43', 
+            transparent: true, 
+            opacity: 0.0,
+            blending: THREE.AdditiveBlending 
+        });
         const flame = new THREE.Mesh(flameGeo, flameMat);
+        
+        // Add inner core to flame
+        const coreGeo = new THREE.ConeGeometry(0.8, 5, 8);
+        coreGeo.rotateZ(Math.PI / 2);
+        coreGeo.translate(-12.5, 0, 0);
+        const coreMat = new THREE.MeshBasicMaterial({ color: '#feca57', transparent: true, opacity: 0.0, blending: THREE.AdditiveBlending });
+        const coreFlame = new THREE.Mesh(coreGeo, coreMat);
+        
+        flame.add(coreFlame); // attach core to outer flame so they scale together
+        
         shipGroup.add(flame);
         thrusterFlameMesh.current = flame;
 
-        // 6. Shield bubble indicator surrounding ship
-        const shieldGeo = new THREE.SphereGeometry(10.5, 16, 16);
-        const shieldMat = new THREE.MeshBasicMaterial({
+        // 7. Shield bubble indicator surrounding ship
+        const shieldGeo = new THREE.SphereGeometry(14, 32, 32);
+        const shieldMat = new THREE.MeshPhysicalMaterial({
             color: '#00d2d3',
-            wireframe: true,
             transparent: true,
-            opacity: 0.05,
-            depthWrite: false
+            opacity: 0.1,
+            depthWrite: false,
+            transmission: 0.9,
+            roughness: 0.1,
+            metalness: 0.1,
+            side: THREE.DoubleSide
         });
         const shieldBubble = new THREE.Mesh(shieldGeo, shieldMat);
         shipGroup.add(shieldBubble);
@@ -707,6 +759,7 @@ export function SpaceBomberGame() {
         shipPos.current = { x: 120, y: 350 };
         shipVel.current = { x: 0, y: 0 };
         shipAngle.current = -Math.PI / 2;
+        shipAngularVel.current = 0;
 
         setFuelLevel(100);
         setShieldLevel(100);
@@ -803,12 +856,20 @@ export function SpaceBomberGame() {
         if (!scene || !camera || !renderer) return;
 
         // --- SHIP CONTROLS & PHYSICS ---
+        // Rotational inertia
         if (keys.current['ArrowLeft'] || keys.current['a'] || keys.current['A']) {
-            shipAngle.current -= config.rotationSpeed * dt;
+            shipAngularVel.current += config.rotationSpeed * 0.1 * dt; // Acceleration
         }
         if (keys.current['ArrowRight'] || keys.current['d'] || keys.current['D']) {
-            shipAngle.current += config.rotationSpeed * dt;
+            shipAngularVel.current -= config.rotationSpeed * 0.1 * dt; // Acceleration
         }
+        
+        // Apply angular damping (friction in rotation)
+        shipAngularVel.current *= 0.95;
+        
+        // Apply angular velocity to angle
+        shipAngle.current += shipAngularVel.current * dt;
+
 
         const isThrusting = keys.current['ArrowUp'] || keys.current['w'] || keys.current['W'];
         soundRef.current?.setThruster(isThrusting && fuelRef.current > 0);
@@ -821,8 +882,13 @@ export function SpaceBomberGame() {
             // Update flame mesh scale & opacity
             if (thrusterFlameMesh.current) {
                 const flMat = thrusterFlameMesh.current.material as THREE.MeshBasicMaterial;
-                flMat.opacity = 0.8 + Math.sin(time * 0.05) * 0.2;
+                flMat.opacity = 0.6 + Math.sin(time * 0.05) * 0.2;
                 thrusterFlameMesh.current.scale.set(1.5 + Math.random() * 0.5, 1.0, 1.0);
+                
+                const innerFlame = thrusterFlameMesh.current.children[0] as THREE.Mesh;
+                if (innerFlame) {
+                    (innerFlame.material as THREE.MeshBasicMaterial).opacity = 0.8 + Math.random() * 0.2;
+                }
             }
 
             // Spawn engine trail particles
@@ -835,6 +901,10 @@ export function SpaceBomberGame() {
             if (thrusterFlameMesh.current) {
                 const flMat = thrusterFlameMesh.current.material as THREE.MeshBasicMaterial;
                 flMat.opacity = 0.0;
+                const innerFlame = thrusterFlameMesh.current.children[0] as THREE.Mesh;
+                if (innerFlame) {
+                    (innerFlame.material as THREE.MeshBasicMaterial).opacity = 0.0;
+                }
             }
         }
 
@@ -1168,11 +1238,11 @@ export function SpaceBomberGame() {
                 c.active = false;
                 scene.remove(c.mesh);
                 soundRef.current?.playCollect();
-                setFuelLevel(Math.min(100, fuelRef.current + 25));
-                setShieldLevel(Math.min(100, shieldRef.current + 15));
-                setScore(s => s + 50);
-                createExplosion(c.x, c.y, '#44bd32', 12, 0.8);
-                addLog("Enerji Kristali Hasat Edildi: +25 Yakıt, +15 Kalkan");
+                setFuelLevel(Math.min(100, fuelRef.current + 50)); // Major fuel boost
+                setShieldLevel(Math.min(100, shieldRef.current + 20));
+                setScore(s => s + 75);
+                createExplosion(c.x, c.y, '#00d8d6', 15, 1.2);
+                addLog("Enerji Çekirdeği Eşitlendi: +50 Yakıt, +20 Kalkan");
             }
         });
 
