@@ -60,6 +60,17 @@ Bu calisma Fizikhub'in teknik SEO, GEO (Generative Engine Optimization), mobil p
 - Ana sayfa icin sonraki buyuk performans hedefi feed ve navigation client boundary'lerini azaltmak: ozellikle framer-motion ve feed kartlari TBT uzerinde etkili.
 - GEO icin `ai-index.json` item kalitesi haftalik kontrol edilmeli: citationText, relatedUrls, clusterSlugs ve answerFormatHints bos kalmamali.
 
+## 2026-06-07 genel kalite, guvenlik ve DB notu
+
+- Google'in AI features dokumani tekrar kontrol edildi: AI Overviews/AI Mode icin ayri bir "GEO hack" yok; indekslenebilirlik, snippet uygunlugu, dahili linkler, metinsel ana icerik, sayfa deneyimi ve gorunen icerikle eslesen structured data temel kalmaya devam ediyor.
+- OpenAI crawler dokumani OAI-SearchBot, GPTBot ve ChatGPT-User ayrimini netlestiriyor. Anthropic ClaudeBot, Claude-User ve Claude-SearchBot; Perplexity de PerplexityBot icin robots.txt uyumlulugunu belgeliyor. Fizikhub robots/AI discovery yuzeyi bu ayrimi bozmadan public egitim icerigini kesfedilebilir tutuyor.
+- Supabase RLS dokumani public schema tablolarinda RLS'in acik olmasini ve service role anahtarinin browser'a hic tasinmamasini vurguluyor. Kod tarafinda public Supabase config tek helper'a alindi; browser/server client'larda direct non-null env kullanimi kaldirildi.
+- Stories storage yazma yolu `<auth.uid()>/...` klasorune tasindi ve yeni migration genis `stories` bucket upload policy'sini kullanici klasoruyle sinirliyor.
+- Server-side markdown renderer icin URL/attribute sanitization eklendi. Markdown linklerinde `javascript:` benzeri protokoller etkisizlestiriliyor; raw script/style/event handler ve guvenilmeyen iframe'ler temizleniyor.
+- Hard-coded seed parolasi ve mock webhook fallback secret kaldirildi. Bu scriptler artik ilgili env yoksa calismayi reddediyor.
+- Email notification HTML'i makale basligi, excerpt, kapak gorseli ve URL'ler icin escape/sanitize kullaniyor.
+- Ana hero semantigi iyilestirildi: dekoratif animasyon H1'i `role="img"` altinda gizlemiyor.
+
 ## Kaynaklar
 
 - Google Search Central - AI features and your website: https://developers.google.com/search/docs/appearance/ai-features
@@ -73,5 +84,8 @@ Bu calisma Fizikhub'in teknik SEO, GEO (Generative Engine Optimization), mobil p
 - Google Search Central - Sitemaps: https://developers.google.com/search/docs/crawling-indexing/sitemaps/build-sitemap
 - web.dev - Web performance/Core Web Vitals: https://web.dev/performance
 - OWASP - HTTP Security Response Headers Cheat Sheet: https://cheatsheetseries.owasp.org/cheatsheets/HTTP_Headers_Cheat_Sheet.html
+- OWASP - Content Security Policy Cheat Sheet: https://cheatsheetseries.owasp.org/cheatsheets/Content_Security_Policy_Cheat_Sheet.html
+- Supabase - Row Level Security: https://supabase.com/docs/guides/database/postgres/row-level-security
 - OpenAI crawlers: https://developers.openai.com/api/docs/bots
 - Anthropic crawler policy: https://support.claude.com/en/articles/8896518-does-anthropic-crawl-data-from-the-web-and-how-can-site-owners-block-the-crawler
+- Perplexity robots.txt policy: https://www.perplexity.ai/help-center/en/articles/10354969-how-does-perplexity-follow-robots-txt

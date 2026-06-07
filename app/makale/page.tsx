@@ -1,10 +1,10 @@
-import { createClient as createBrowserClient } from "@supabase/supabase-js";
 import { ArticleFeed } from "@/components/articles/article-feed";
 import type { Metadata } from "next";
 import { unstable_cache } from "next/cache";
 import { SEO_PRIORITY_ARTICLES } from "@/lib/seo-priority";
 import { buildSafeIlikePattern } from "@/lib/security";
 import { isLikelyIndexableArticle } from "@/lib/seo-utils";
+import { createStaticClient, hasSupabasePublicConfig } from "@/lib/supabase-server";
 
 export const revalidate = 60;
 
@@ -63,12 +63,6 @@ export async function generateMetadata({ searchParams }: PageProps): Promise<Met
     };
 }
 
-// Reusable Supabase client for cached data fetching (no cookies/auth)
-const getPublicClient = () => createBrowserClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
-
 type FeedArticleRow = {
     id: string;
     title: string;
@@ -102,7 +96,9 @@ const NON_ARTICLE_CATEGORIES = ["Kitap İncelemesi", "Deney", "Terim"];
 // Cache articles for better performance
 const getCachedArticles = (category?: string, sort?: string, searchQuery?: string) => unstable_cache(
     async () => {
-        const supabase = getPublicClient();
+        if (!hasSupabasePublicConfig()) return [];
+
+        const supabase = createStaticClient();
         let query = supabase
             .from('articles')
             .select('id, title, slug, excerpt, created_at, category, image_url, cover_url, author_id, status, author:profiles!articles_author_id_fkey(id, full_name, username, avatar_url, is_verified, is_writer)')
@@ -156,7 +152,9 @@ const getCachedArticles = (category?: string, sort?: string, searchQuery?: strin
 // Cache categories to avoid repeated computation
 const getCachedCategories = unstable_cache(
     async () => {
-        const supabase = getPublicClient();
+        if (!hasSupabasePublicConfig()) return [];
+
+        const supabase = createStaticClient();
         const { data: catData, error } = await supabase
             .from('articles')
             .select('category')

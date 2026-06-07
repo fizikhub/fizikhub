@@ -302,18 +302,18 @@ export default async function RootLayout({
               </div>
 
               {/* Text */}
-              <div className="space-y-4">
-                <h1 className="text-4xl sm:text-5xl font-black tracking-tight text-white drop-shadow-lg">
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-amber-600">
-                    Yüksek İhtimalle Sıçtık.
-                  </span>
-                </h1>
+                <div className="space-y-4">
+                  <h1 className="text-4xl sm:text-5xl font-black tracking-tight text-white drop-shadow-lg">
+                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-amber-600">
+                    Bir Şeyler Ters Gitti.
+                    </span>
+                  </h1>
 
-                <div className="space-y-2 text-lg sm:text-xl text-slate-400 font-medium font-mono leading-relaxed max-w-lg mx-auto border-l-2 border-red-900/50 pl-6 text-left">
-                  <p>Bu sayfayı görüyorsan belli ki ciddi bir sorun var.</p>
-                  <p className="text-slate-500">Bu sorunu ya çözmeye çalışıyoruz ya da hiç farkında bile değiliz.</p>
+                  <div className="space-y-2 text-lg sm:text-xl text-slate-400 font-medium font-mono leading-relaxed max-w-lg mx-auto border-l-2 border-red-900/50 pl-6 text-left">
+                  <p>Bu sayfayı görüyorsan sistem kısa bir bakım molasında.</p>
+                  <p className="text-slate-500">Fizikhub'u yeniden yörüngeye almak için çalışıyoruz.</p>
+                  </div>
                 </div>
-              </div>
 
               {/* 500 Background Text */}
               <div className="absolute bottom-[-100px] font-black text-[200px] text-white/5 pointer-events-none select-none">

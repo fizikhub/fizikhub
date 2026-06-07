@@ -2,7 +2,7 @@ import { DeferredMemeCanvas } from "@/components/home/deferred-meme-canvas";
 
 export function CompactHero() {
     return (
-        <div className="mb-1 sm:mb-4" role="img" aria-label="Fizikhub galaksi animasyonu - Bilimi Ti'ye Alıyoruz">
+        <section className="mb-1 sm:mb-4" aria-labelledby="home-hero-title">
             <div className="w-full relative group min-h-[156px] sm:min-h-[220px]">
                 <div
                     className="
@@ -20,8 +20,8 @@ export function CompactHero() {
 
                     <div className="absolute inset-0 z-20 flex flex-col items-center justify-center select-none pointer-events-none p-3 pt-5 pb-5 sm:p-5 sm:pb-8 text-center">
                         <h1
+                            id="home-hero-title"
                             className="font-head py-1 text-[clamp(2.35rem,11.5vw,3.35rem)] min-[390px]:text-[clamp(2.55rem,11vw,3.65rem)] sm:text-[clamp(4rem,7vw,4.75rem)] font-black tracking-normal leading-[1.03] bg-gradient-to-r from-white via-blue-200 to-purple-300 bg-clip-text text-transparent"
-                            aria-label="Fizikhub: Türkçe fizik, uzay ve bilim platformu - Bilimi Ti'ye Alıyoruz"
                             style={{
                                 filter: "drop-shadow(0px 4px 12px rgba(0,0,0,0.9))",
                             }}
@@ -43,6 +43,6 @@ export function CompactHero() {
                     </div>
                 </div>
             </div>
-        </div>
+        </section>
     );
 }

@@ -18,6 +18,73 @@ interface ServerMarkdownRendererProps {
     className?: string;
 }
 
+function escapeHtml(value: string): string {
+    return value
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
+function escapeAttribute(value: string): string {
+    return escapeHtml(value).replace(/`/g, '&#96;');
+}
+
+function sanitizeUrlForAttribute(value: string): string {
+    const trimmed = value.trim();
+
+    if (!trimmed) return "#";
+    if (/^(?:javascript|vbscript|data:text\/html)/i.test(trimmed)) return "#";
+    if (/^(?:https?:|mailto:|\/|#)/i.test(trimmed)) return escapeAttribute(trimmed);
+
+    try {
+        const parsed = new URL(trimmed, "https://www.fizikhub.com");
+        if (parsed.protocol === "http:" || parsed.protocol === "https:") {
+            return escapeAttribute(trimmed);
+        }
+    } catch {
+        return "#";
+    }
+
+    return "#";
+}
+
+function isAllowedEmbedUrl(value: string | null): boolean {
+    if (!value) return false;
+
+    try {
+        const url = new URL(value, "https://www.fizikhub.com");
+        return [
+            "www.youtube.com",
+            "youtube.com",
+            "www.youtube-nocookie.com",
+            "youtube-nocookie.com",
+            "phet.colorado.edu",
+        ].includes(url.hostname);
+    } catch {
+        return false;
+    }
+}
+
+function sanitizeRenderedHtml(html: string): string {
+    return html
+        .replace(/<\s*(script|style|object|embed|form|input|button|textarea|select|meta|link)\b[\s\S]*?<\/\s*\1\s*>/gi, "")
+        .replace(/<\s*(script|style|object|embed|form|input|button|textarea|select|meta|link)\b[^>]*\/?>/gi, "")
+        .replace(/\s+on[a-z]+\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+)/gi, "")
+        .replace(/\s+(href|src)\s*=\s*(["'])(.*?)\2/gi, (_match, attr, quote, rawValue) => {
+            return ` ${attr}=${quote}${sanitizeUrlForAttribute(rawValue)}${quote}`;
+        })
+        .replace(/<iframe\b([^>]*)><\/iframe>/gi, (_match, attrs) => {
+            const src = attrs.match(/\ssrc=(["'])(.*?)\1/i)?.[2] || null;
+            if (!isAllowedEmbedUrl(src)) return "";
+
+            const title = attrs.match(/\stitle=(["'])(.*?)\1/i)?.[2] || "Gömülü fizik içeriği";
+
+            return `<iframe src="${sanitizeUrlForAttribute(src)}" title="${escapeAttribute(title)}" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" sandbox="allow-scripts allow-same-origin allow-popups" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>`;
+        });
+}
+
 /**
  * Preprocesses markdown content:
  * - Strips zero-width characters
@@ -56,7 +123,7 @@ function preprocessContent(content: string): string {
  * 
  * This ensures Google can read the full text content from the HTML source.
  */
-function markdownToHtml(markdown: string): string {
+export function markdownToHtml(markdown: string): string {
     let html = markdown;
 
     // Escape HTML entities first (but preserve existing HTML tags from Tiptap)
@@ -107,17 +174,20 @@ function markdownToHtml(markdown: string): string {
 
     // Images ![alt](src)
     html = html.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, (_match, alt, src) => {
-        const safeAlt = alt || 'Makale görseli';
-        return `<figure><img src="${src}" alt="${safeAlt}" loading="lazy" />${alt ? `<figcaption>${safeAlt}</figcaption>` : ''}</figure>`;
+        const safeAlt = escapeHtml(alt || 'Makale görseli');
+        const safeSrc = sanitizeUrlForAttribute(src);
+        return `<figure><img src="${safeSrc}" alt="${safeAlt}" loading="lazy" />${alt ? `<figcaption>${safeAlt}</figcaption>` : ''}</figure>`;
     });
 
     // Links [text](url)
     html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_match, text, href) => {
         const isExternal = href.startsWith('http') && !href.includes('fizikhub.com');
+        const safeHref = sanitizeUrlForAttribute(href);
+        const safeText = escapeHtml(text);
         if (isExternal) {
-            return `<a href="${href}" target="_blank" rel="noopener noreferrer">${text}</a>`;
+            return `<a href="${safeHref}" target="_blank" rel="noopener noreferrer">${safeText}</a>`;
         }
-        return `<a href="${href}">${text}</a>`;
+        return `<a href="${safeHref}">${safeText}</a>`;
     });
 
     // Unordered lists
@@ -161,7 +231,7 @@ function markdownToHtml(markdown: string): string {
         return `<p>${content.replace(/\n/g, '<br />')}</p>`;
     });
 
-    return html;
+    return sanitizeRenderedHtml(html);
 }
 
 export function ServerMarkdownRenderer({ content, className }: ServerMarkdownRendererProps) {

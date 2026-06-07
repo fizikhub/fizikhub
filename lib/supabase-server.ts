@@ -3,10 +3,15 @@ import { cookies } from 'next/headers'
 
 export async function createClient() {
     const cookieStore = await cookies()
+    const config = getSupabasePublicConfig();
+
+    if (!config) {
+        throw new Error("Missing Supabase public credentials (NEXT_PUBLIC_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_ANON_KEY).");
+    }
 
     return createServerClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+        config.url,
+        config.anonKey,
         {
             cookies: {
                 getAll() {
@@ -30,13 +35,25 @@ export async function createClient() {
 
 import { createClient as createStaticSupabaseClient } from '@supabase/supabase-js';
 
+export function getSupabasePublicConfig() {
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
+    const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim();
+
+    if (!url || !anonKey) return null;
+
+    return { url, anonKey };
+}
+
 export function hasSupabasePublicConfig() {
-    return Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
+    return Boolean(getSupabasePublicConfig());
 }
 
 export function createStaticClient() {
-    return createStaticSupabaseClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-    );
+    const config = getSupabasePublicConfig();
+
+    if (!config) {
+        throw new Error("Missing Supabase public credentials (NEXT_PUBLIC_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_ANON_KEY).");
+    }
+
+    return createStaticSupabaseClient(config.url, config.anonKey);
 }

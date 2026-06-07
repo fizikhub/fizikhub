@@ -1,7 +1,7 @@
 import { notFound, permanentRedirect } from "next/navigation";
 import { ReadingProgress } from "@/components/blog/reading-progress";
 import { NeoArticleHero } from "@/components/articles/neo-article-hero";
-import { createStaticClient } from "@/lib/supabase-server";
+import { createStaticClient, hasSupabasePublicConfig } from "@/lib/supabase-server";
 import { getArticleBySlug } from "@/lib/api";
 import { calculateReadingTime, formatReadingTime } from "@/lib/reading-time";
 import { Metadata } from "next";
@@ -226,16 +226,13 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     };
 }
 
-import { createClient as createSupabaseClient } from "@supabase/supabase-js";
-
 // Enable ISR with 10 minute revalidation
 export const revalidate = 600;
 
 export async function generateStaticParams() {
-    const supabase = createSupabaseClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!.trim(),
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!.trim()
-    );
+    if (!hasSupabasePublicConfig()) return [];
+
+    const supabase = createStaticClient();
     const { data: articles } = await supabase
         .from('articles')
         .select('slug, category')

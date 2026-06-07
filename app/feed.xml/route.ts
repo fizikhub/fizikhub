@@ -1,5 +1,5 @@
-import { createClient } from '@supabase/supabase-js';
 import { getArticleCanonicalPath, getSiteUrl, isLikelyIndexableArticle, toAbsoluteUrl } from '@/lib/seo-utils';
+import { createStaticClient, hasSupabasePublicConfig } from '@/lib/supabase-server';
 
 export const revalidate = 3600; // Revalidate RSS feed every hour
 
@@ -17,20 +17,18 @@ function stripHtml(html: string): string {
 }
 
 export async function GET() {
-    const supabase = createClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!.trim(),
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!.trim()
-    );
-
     const baseUrl = getSiteUrl();
+    const supabase = hasSupabasePublicConfig() ? createStaticClient() : null;
 
     // Fetch latest 50 published articles
-    const { data: articles } = await supabase
-        .from('articles')
-        .select('*, profiles!articles_author_id_fkey(full_name, username)')
-        .eq('status', 'published')
-        .order('created_at', { ascending: false })
-        .limit(50);
+    const { data: articles } = supabase
+        ? await supabase
+            .from('articles')
+            .select('*, profiles!articles_author_id_fkey(full_name, username)')
+            .eq('status', 'published')
+            .order('created_at', { ascending: false })
+            .limit(50)
+        : { data: [] };
 
     // Determine the most recent article date for lastBuildDate
     const lastBuildDate = articles && articles.length > 0

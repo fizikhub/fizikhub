@@ -57,6 +57,7 @@ next-env.d.ts
 bundle_*.json
 smp.json
 current-lint-results.json
+new-lint-results.json
 lint-results*.json
 query-test.ts
 *.log

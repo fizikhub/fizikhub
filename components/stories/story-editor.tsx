@@ -3,7 +3,6 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import Cropper from "react-easy-crop";
 import type { Area } from "react-easy-crop";
-import { createBrowserClient } from "@supabase/ssr";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -15,6 +14,7 @@ import { toast } from "sonner";
 import { AnimatePresence } from "framer-motion";
 import { createStoryGroup, deleteStoryGroup, getStoryGroups, getStoriesByGroup, deleteStory, updateStory } from "@/app/stories/actions";
 import { cn } from "@/lib/utils";
+import { createClient } from "@/lib/supabase";
 import Image from "next/image";
 
 // --- TYPES ---
@@ -91,10 +91,7 @@ interface Story {
 export function StoryEditor() {
     const [activeTab, setActiveTab] = useState<"create" | "manage">("manage");
     const [groups, setGroups] = useState<StoryGroup[]>([]);
-    const [supabase] = useState(() => createBrowserClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-    ));
+    const [supabase] = useState(() => createClient());
 
     // Fetch groups on mount and when tab changes to create/manage
     const fetchGroups = useCallback(async () => {
@@ -216,10 +213,7 @@ function StoryCreator({ groups, onPublish }: { groups: StoryGroup[], onPublish: 
 
     const canvasRef = useRef<HTMLDivElement>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
-    const [supabase] = useState(() => createBrowserClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-    ));
+    const [supabase] = useState(() => createClient());
 
     // ... (Keep existing Canvas Logic helpers: handleImageUpload, etc.)
     const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -302,7 +296,7 @@ function StoryCreator({ groups, onPublish }: { groups: StoryGroup[], onPublish: 
             const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, 'image/jpeg', 0.95));
             if (!blob) throw new Error("Görsel hatası.");
 
-            const fileName = `story-${Date.now()}.jpg`;
+            const fileName = `${user.id}/stories/${Date.now()}-${crypto.randomUUID()}.jpg`;
             const { error: uploadError } = await supabase.storage.from('stories').upload(fileName, blob);
 
             if (uploadError) throw uploadError;
@@ -551,10 +545,7 @@ function StoryManager({ groups, onUpdate }: { groups: StoryGroup[], onUpdate: ()
     const [editStoryContent, setEditStoryContent] = useState("");
     const [editStoryGroupId, setEditStoryGroupId] = useState("");
 
-    const [supabase] = useState(() => createBrowserClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-    ));
+    const [supabase] = useState(() => createClient());
 
     const handleOpenGroup = async (group: StoryGroup) => {
         setSelectedGroup(group);
@@ -585,7 +576,13 @@ function StoryManager({ groups, onUpdate }: { groups: StoryGroup[], onUpdate: ()
 
             // If there is a cover file, upload it first
             if (groupCover) {
-                const fileName = `group-cover-${Date.now()}.jpg`;
+                const { data: { user } } = await supabase.auth.getUser();
+                if (!user) {
+                    toast.error("Giriş yapmalısınız.");
+                    return;
+                }
+
+                const fileName = `${user.id}/story-groups/${Date.now()}-${crypto.randomUUID()}.jpg`;
                 const { error: uploadError } = await supabase.storage.from('stories').upload(fileName, groupCover);
                 if (uploadError) throw uploadError;
                 const { data: { publicUrl } } = supabase.storage.from('stories').getPublicUrl(fileName);

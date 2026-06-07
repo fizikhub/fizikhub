@@ -7,10 +7,15 @@ const __dirname = path.dirname(__filename);
 
 dotenv.config({ path: path.join(__dirname, "..", ".env.local") });
 
-const secret = process.env.SUPABASE_WEBHOOK_SECRET || "fizikhub_test_gizli_sifresi_123";
+const secret = process.env.SUPABASE_WEBHOOK_SECRET;
 const localUrl = "http://localhost:3000/api/webhooks/search-sync";
 
 async function testWebhook() {
+    if (!secret) {
+        console.error("Missing SUPABASE_WEBHOOK_SECRET. Refusing to send a webhook with a hard-coded fallback secret.");
+        process.exit(1);
+    }
+
     console.log("Starting Webhook Eşitleme Testi (Yerel Next.js sunucusu üzerinden)...");
 
     // 1. Test INSERT payload

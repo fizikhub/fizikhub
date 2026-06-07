@@ -2,6 +2,7 @@ import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
 import { ensureUserProfile } from '@/lib/auth-profile'
+import { getSupabasePublicConfig } from '@/lib/supabase-server'
 
 export async function GET(request: Request) {
     const { searchParams, origin } = new URL(request.url)
@@ -12,10 +13,16 @@ export async function GET(request: Request) {
     const isPasswordReset = next.startsWith('/reset-password')
 
     if (code) {
+        const supabaseConfig = getSupabasePublicConfig()
+        if (!supabaseConfig) {
+            console.error('Auth callback missing Supabase public config')
+            return NextResponse.redirect(`${origin}/auth/auth-code-error?error=missing_supabase_config`)
+        }
+
         const cookieStore = await cookies()
         const supabase = createServerClient(
-            process.env.NEXT_PUBLIC_SUPABASE_URL!.trim(),
-            process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!.trim(),
+            supabaseConfig.url,
+            supabaseConfig.anonKey,
             {
                 cookies: {
                     getAll() {

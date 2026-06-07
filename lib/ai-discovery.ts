@@ -13,14 +13,14 @@ export type AiCoreRoute = {
     priority: string;
 };
 
-export const AI_DISCOVERY_LAST_MODIFIED = "2026-06-06T00:00:00.000+03:00";
+export const AI_DISCOVERY_LAST_MODIFIED = "2026-06-07T00:00:00.000+03:00";
 
 export const AI_CONTENT_PROVENANCE = {
     publisherName: "Fizikhub",
     publisherUrl: "https://www.fizikhub.com",
     editorialOwner: "Fizikhub Ekibi",
     contactEmail: "iletisim@fizikhub.com",
-    lastReviewed: "2026-06-06",
+    lastReviewed: "2026-06-07",
     language: "tr-TR",
     geographicFocus: "TR",
     primaryAudience: [
@@ -36,6 +36,7 @@ export const AI_CONTENT_PROVENANCE = {
         "görünür metinle eşleşen structured data",
         "IndexNow destekli taze URL bildirimi",
         "Yandex Clean-param ile parametre kirliliği azaltımı",
+        "AI arama botları için açık robots.txt izinleri",
     ],
 } as const;
 

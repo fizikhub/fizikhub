@@ -9,7 +9,7 @@ import { getArticleCanonicalPath, getSiteUrl, hasUsefulIndexableText, isIndexabl
 
 export const revalidate = 3600; // Revalidate sitemap every hour
 
-const STATIC_LAST_MODIFIED = new Date('2026-06-06T00:00:00.000+03:00');
+const STATIC_LAST_MODIFIED = new Date('2026-06-07T00:00:00.000+03:00');
 
 function toLastModified(value?: string | null) {
     return value ? new Date(value) : STATIC_LAST_MODIFIED;

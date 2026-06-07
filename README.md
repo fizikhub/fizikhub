@@ -50,6 +50,8 @@ Projede kullanılan başlıca değişkenler:
 - `SUPABASE_WEBHOOK_SECRET`
 - `UPSTASH_REDIS_REST_URL`
 - `UPSTASH_REDIS_REST_TOKEN`
+- `SEED_SILGINIM_PASSWORD` (yalnızca `scripts/create-silginim.ts` için)
+- `SEED_SILGINIM_EMAIL`, `SEED_SILGINIM_USERNAME`, `SEED_SILGINIM_FULL_NAME`, `SEED_SILGINIM_AVATAR_URL` (opsiyonel seed override'ları)
 
 Gizli değerleri `.env.local` içinde tutun; `.env*` dosyaları git dışında bırakılır.
 

@@ -6,27 +6,32 @@ dotenv.config({ path: '.env.local' });
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+const email = process.env.SEED_SILGINIM_EMAIL || 'silginim@gmail.com';
+const password = process.env.SEED_SILGINIM_PASSWORD;
+const username = process.env.SEED_SILGINIM_USERNAME || 'silginim';
+const fullName = process.env.SEED_SILGINIM_FULL_NAME || 'Silginim';
+const avatarUrl = process.env.SEED_SILGINIM_AVATAR_URL || 'https://cdn-icons-png.flaticon.com/512/2661/2661282.png';
 
 if (!supabaseUrl || !supabaseKey) {
     console.error('Missing Supabase credentials');
     process.exit(1);
 }
 
+if (!password) {
+    console.error('Missing SEED_SILGINIM_PASSWORD. Refusing to use a hard-coded seed password.');
+    process.exit(1);
+}
+
+const seedPassword = password;
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 async function createUser() {
-    const email = 'silginim@gmail.com';
-    const password = 'SİLGİNİM123.098.';
-    const username = 'silginim';
-    const fullName = 'Silginim';
-    const avatarUrl = 'https://cdn-icons-png.flaticon.com/512/2661/2661282.png'; // Eraser icon
-
     console.log(`Creating user: ${email}`);
 
     // 1. Sign Up
     const { data: authData, error: authError } = await supabase.auth.signUp({
         email,
-        password,
+        password: seedPassword,
     });
 
     if (authError) {

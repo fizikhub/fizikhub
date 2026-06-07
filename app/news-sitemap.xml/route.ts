@@ -1,5 +1,5 @@
-import { createClient } from '@supabase/supabase-js';
 import { getArticleCanonicalPath, getSiteUrl, isLikelyIndexableArticle, toAbsoluteUrl } from '@/lib/seo-utils';
+import { createStaticClient, hasSupabasePublicConfig } from '@/lib/supabase-server';
 
 export const revalidate = 900;
 
@@ -16,13 +16,22 @@ function escapeXml(value: string): string {
 }
 
 export async function GET() {
-    const supabase = createClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!.trim(),
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!.trim()
-    );
-
     const baseUrl = getSiteUrl();
+    const supabase = hasSupabasePublicConfig() ? createStaticClient() : null;
     const twoDaysAgo = new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString();
+
+    if (!supabase) {
+        return new Response(`<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+  xmlns:news="http://www.google.com/schemas/sitemap-news/0.9"
+  xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+</urlset>`, {
+            headers: {
+                'Content-Type': 'application/xml; charset=utf-8',
+                'Cache-Control': 'public, s-maxage=900, stale-while-revalidate=300',
+            },
+        });
+    }
 
     const query = supabase
         .from('articles')

@@ -390,6 +390,7 @@ export default async function AdminDashboard() {
                                                         <Link 
                                                             href={item.canonical_path || "#"} 
                                                             target="_blank"
+                                                            rel="noopener noreferrer"
                                                             className="flex items-center gap-1 font-black text-black dark:text-[#FFE500] uppercase hover:underline"
                                                         >
                                                             İncele <ChevronRight className="h-3 w-3" />

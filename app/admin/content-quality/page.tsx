@@ -71,7 +71,7 @@ export default async function ContentQualityDashboard() {
                                                     <span className="text-destructive font-medium">{row.violation_type}</span>
                                                 </TableCell>
                                                 <TableCell className="text-right">
-                                                    <Link href={getEditLink(row.content_type, row.id)} className="inline-flex items-center text-sm text-primary hover:underline" target="_blank">
+                                                    <Link href={getEditLink(row.content_type, row.id)} className="inline-flex items-center text-sm text-primary hover:underline" target="_blank" rel="noopener noreferrer">
                                                         Düzenle <ExternalLink className="ml-1 h-3 w-3" />
                                                     </Link>
                                                 </TableCell>
@@ -118,7 +118,7 @@ export default async function ContentQualityDashboard() {
                                                     <span className="text-orange-600 dark:text-orange-400 font-medium">{row.issue_reason}</span>
                                                 </TableCell>
                                                 <TableCell className="text-right">
-                                                    <Link href={getEditLink(row.content_type, row.id)} className="inline-flex items-center text-sm text-primary hover:underline" target="_blank">
+                                                    <Link href={getEditLink(row.content_type, row.id)} className="inline-flex items-center text-sm text-primary hover:underline" target="_blank" rel="noopener noreferrer">
                                                         İncele <ExternalLink className="ml-1 h-3 w-3" />
                                                     </Link>
                                                 </TableCell>

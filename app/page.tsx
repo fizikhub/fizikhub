@@ -1,4 +1,3 @@
-import { createClient } from "@supabase/supabase-js";
 import { unstable_cache } from "next/cache";
 import type { Metadata } from "next";
 import dynamic from "next/dynamic";
@@ -10,6 +9,7 @@ import { SEO_PRIORITY_SLUGS } from "@/lib/seo-priority";
 import { LazyDesktopSidebar } from "@/components/home/lazy-desktop-sidebar";
 import { DeferredHomeControls } from "@/components/home/deferred-home-controls";
 import { getSiteUrl, isLikelyIndexableArticle, toAbsoluteUrl } from "@/lib/seo-utils";
+import { createStaticClient, hasSupabasePublicConfig } from "@/lib/supabase-server";
 
 // ─── Supabase Query Result Types ─────────────────────────────────
 interface FeedAuthorRow {
@@ -104,10 +104,17 @@ export const metadata: Metadata = {
 // Cached Data Fetching
 const getCachedFeedData = unstable_cache(
   async () => {
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!.trim(),
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!.trim()
-    );
+    if (!hasSupabasePublicConfig()) {
+      return {
+        articles: [],
+        questions: [],
+        suggestedUsers: [],
+        stories: [],
+        groups: [],
+      };
+    }
+
+    const supabase = createStaticClient();
 
     const articleSelect = HOME_FEED_ARTICLE_SELECT;
 

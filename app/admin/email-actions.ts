@@ -6,6 +6,40 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase-server";
 import { isAdminEmail } from "@/lib/admin";
 
+function escapeHtml(value: string) {
+    return value
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
+function escapeAttribute(value: string) {
+    return escapeHtml(value).replace(/`/g, '&#96;');
+}
+
+function toSafeHttpUrl(value: string | null | undefined) {
+    if (!value) return '';
+
+    try {
+        const url = new URL(value);
+        if (url.protocol !== 'http:' && url.protocol !== 'https:') return '';
+        return url.toString();
+    } catch {
+        return '';
+    }
+}
+
+function getErrorMessage(error: unknown) {
+    if (error instanceof Error) return error.message;
+    if (error && typeof error === 'object' && 'message' in error) {
+        const message = (error as { message?: unknown }).message;
+        if (typeof message === 'string' && message.trim()) return message;
+    }
+    return 'Bilinmeyen bir hata oluştu.';
+}
+
 // Helper to verify admin (same as in actions.ts)
 async function verifyAdmin() {
     const supabase = await createClient();
@@ -31,8 +65,11 @@ async function verifyAdmin() {
 }
 
 function buildArticleEmailHtml(article: { title: string; slug: string; excerpt?: string | null; image_url?: string | null }) {
-    const articleUrl = "https://www.fizikhub.com/makale/" + article.slug;
-    const coverImage = article.image_url && !article.image_url.includes('og-image') ? article.image_url : '';
+    const articleUrl = "https://www.fizikhub.com/makale/" + encodeURIComponent(article.slug);
+    const safeArticleUrl = escapeAttribute(articleUrl);
+    const title = escapeHtml(article.title);
+    const coverImage = article.image_url && !article.image_url.includes('og-image') ? toSafeHttpUrl(article.image_url) : '';
+    const safeCoverImage = escapeAttribute(coverImage);
 
     let coverSection = '';
     if (coverImage) {
@@ -41,8 +78,8 @@ function buildArticleEmailHtml(article: { title: string; slug: string; excerpt?:
             '<tr>',
             '<td class="bg-card" style="padding:0 18px 6px;background-color:#1a1a1a;">',
             '<div class="border-gray" style="border-radius:8px;overflow:hidden;border:2px solid #2a2a2a;">',
-            '<a href="' + articleUrl + '" style="text-decoration:none;">',
-            '<img src="' + coverImage + '" alt="' + article.title + '" width="500" style="display:block;width:100%;height:auto;max-height:220px;object-fit:cover;border:0;" />',
+            '<a href="' + safeArticleUrl + '" style="text-decoration:none;">',
+            '<img src="' + safeCoverImage + '" alt="' + title + '" width="500" style="display:block;width:100%;height:auto;max-height:220px;object-fit:cover;border:0;" />',
             '</a>',
             '</div>',
             '</td>',
@@ -51,7 +88,7 @@ function buildArticleEmailHtml(article: { title: string; slug: string; excerpt?:
     }
 
     const contentPadding = coverImage ? '20px' : '6px';
-    const excerptText = article.excerpt || "FizikHub'da yepyeni bir makale yayınlandı. Hemen okumaya başla!";
+    const excerptText = escapeHtml(article.excerpt || "FizikHub'da yepyeni bir makale yayınlandı. Hemen okumaya başla!");
 
     const parts = [
         '<!DOCTYPE html>',
@@ -143,7 +180,7 @@ function buildArticleEmailHtml(article: { title: string; slug: string; excerpt?:
         '</tr>',
         '</table>',
         '<h2 class="text-white" style="margin:0 0 12px;font-size:23px;font-weight:800;color:#f0f0f0;line-height:1.3;letter-spacing:-0.3px;">',
-        article.title,
+        title,
         '</h2>',
         '<p class="text-gray" style="margin:0 0 26px;font-size:15px;color:#8a8a8a;line-height:1.7;">',
         excerptText,
@@ -151,7 +188,7 @@ function buildArticleEmailHtml(article: { title: string; slug: string; excerpt?:
         '<table border="0" cellpadding="0" cellspacing="0" role="presentation">',
         '<tr>',
         '<td class="bg-yellow border-black" style="border-radius:6px;background-color:#fbbf24;border:2px solid #000000;">',
-        '<a href="' + articleUrl + '" target="_blank" class="text-black" style="display:inline-block;padding:12px 28px;font-size:14px;font-weight:800;color:#000000;text-decoration:none;letter-spacing:0.3px;text-transform:uppercase;">Makaleyi Oku →</a>',
+        '<a href="' + safeArticleUrl + '" target="_blank" rel="noopener noreferrer" class="text-black" style="display:inline-block;padding:12px 28px;font-size:14px;font-weight:800;color:#000000;text-decoration:none;letter-spacing:0.3px;text-transform:uppercase;">Makaleyi Oku →</a>',
         '</td>',
         '</tr>',
         '</table>',
@@ -279,8 +316,8 @@ export async function sendArticleNotificationEmail(articleId: number) {
 
         revalidatePath('/admin/articles');
         return { success: true, count: toAddresses.length };
-    } catch (e: any) {
+    } catch (e: unknown) {
         console.error("sendArticleNotificationEmail error:", e);
-        return { success: false, error: e.message || 'Bilinmeyen bir hata oluştu.' };
+        return { success: false, error: getErrorMessage(e) };
     }
 }
