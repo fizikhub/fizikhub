@@ -48,6 +48,8 @@ interface Enemy {
     mesh: THREE.Group;
     targetQuaternion?: THREE.Quaternion;
     headMesh?: THREE.Group | THREE.Mesh;
+    bossRing1?: THREE.Mesh;
+    bossRing2?: THREE.Mesh;
 }
 
 interface FuelCrystal {
@@ -652,7 +654,7 @@ export function SpaceBomberGame() {
             const filmPass = new FilmPass(0.35, false);
             composer.addPass(filmPass);
 
-            const bloomPass = new UnrealBloomPass(new THREE.Vector2(width, height), 1.5, 0.5, 0.85);
+            const bloomPass = new UnrealBloomPass(new THREE.Vector2(width, height), 0.25, 0.3, 0.9);
             composer.addPass(bloomPass);
             
             const glitchPass = new GlitchPass();
@@ -760,17 +762,17 @@ export function SpaceBomberGame() {
             shipGroup.add(thrusterR);
 
             // Flames
-            const flameGeo = new THREE.ConeGeometry(0.6, 4, 8);
-            const flameMat = new THREE.MeshBasicMaterial({ color: tipColor, transparent: true, opacity: 0.9, blending: THREE.AdditiveBlending });
+            const flameGeo = new THREE.ConeGeometry(0.4, 2.0, 8);
+            const flameMat = new THREE.MeshBasicMaterial({ color: tipColor, transparent: true, opacity: 0.2 });
             const flameL = new THREE.Mesh(flameGeo, flameMat);
             flameL.rotation.x = -Math.PI / 2;
-            flameL.position.set(-1.5, 0, 6.5);
+            flameL.position.set(-1.5, 0, 5.0);
             shipGroup.add(flameL);
             thrusterFlameMeshL.current = flameL;
 
             const flameR = new THREE.Mesh(flameGeo, flameMat);
             flameR.rotation.x = -Math.PI / 2;
-            flameR.position.set(1.5, 0, 6.5);
+            flameR.position.set(1.5, 0, 5.0);
             shipGroup.add(flameR);
             thrusterFlameMeshR.current = flameR;
 
@@ -841,32 +843,7 @@ export function SpaceBomberGame() {
             scene.add(stars);
             starPoints.current = stars;
 
-            // --- 3D ASTEROID FIELD ---
-            const astGeo = new THREE.DodecahedronGeometry(15, 1);
-            const astMat = new THREE.MeshStandardMaterial({ color: 0x444444, roughness: 0.9, metalness: 0.1 });
-            const astCount = 600;
-            const instancedAst = new THREE.InstancedMesh(astGeo, astMat, astCount);
-            
-            const dummy = new THREE.Object3D();
-            for (let i = 0; i < astCount; i++) {
-                dummy.position.set(
-                    (Math.random() - 0.5) * 6000,
-                    (Math.random() - 0.5) * 6000,
-                    (Math.random() - 0.5) * 6000
-                );
-                const scale = Math.random() * 4 + 0.5;
-                dummy.scale.set(scale, scale, scale);
-                dummy.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, Math.random() * Math.PI);
-                dummy.updateMatrix();
-                instancedAst.setMatrixAt(i, dummy.matrix);
-            }
-            
-            const rotSpeeds = new Float32Array(astCount * 3);
-            for (let i=0; i<astCount*3; i++) rotSpeeds[i] = (Math.random() - 0.5) * 0.02;
-            instancedAst.geometry.setAttribute('aRotSpeed', new THREE.InstancedBufferAttribute(rotSpeeds, 3));
 
-            scene.add(instancedAst);
-            asteroidMesh.current = instancedAst;
 
             // --- GLSL WORMHOLE SHADER ---
             const portalGeo = new THREE.PlaneGeometry(6000, 6000);
@@ -953,13 +930,12 @@ export function SpaceBomberGame() {
             warpTunnelMat.current = tunnelMat;
 
             // --- ENGINE PARTICLE GEOMETRY & MATERIAL ---
-            const pSize = 0.4;
+            const pSize = 0.15;
             engineParticleGeo.current = new THREE.BoxGeometry(pSize, pSize, pSize);
             engineParticleMat.current = new THREE.MeshBasicMaterial({ 
                 color: new THREE.Color(currentShipClass.laserColor), 
                 transparent: true, 
-                opacity: 0.8, 
-                blending: THREE.AdditiveBlending 
+                opacity: 0.15
             });
         } catch (e: any) {
             console.error("WebGL Init failed:", e);
@@ -977,36 +953,162 @@ export function SpaceBomberGame() {
     const createTurretMesh = useCallback((color: string) => {
         const group = new THREE.Group();
         
-        // Base - Cylinder
-        const baseGeo = new THREE.CylinderGeometry(6, 8, 12, 12);
-        const baseMat = new THREE.MeshStandardMaterial({ color: 0x333333, metalness: 0.8, roughness: 0.2 });
+        // Base - Heavy octagonal base cylinder
+        const baseGeo = new THREE.CylinderGeometry(8, 10, 4, 8);
+        const baseMat = new THREE.MeshStandardMaterial({ color: 0x2c3e50, metalness: 0.8, roughness: 0.2 });
         const base = new THREE.Mesh(baseGeo, baseMat);
-        base.position.y = -6;
+        base.position.y = -2;
         group.add(base);
         
-        // Head - Sphere (tracks the player)
-        const headGeo = new THREE.SphereGeometry(6, 12, 12);
-        const headMat = new THREE.MeshStandardMaterial({ color: 0x222222, metalness: 0.9, roughness: 0.1 });
-        const head = new THREE.Mesh(headGeo, headMat);
-        head.position.y = 0;
+        // Joint - Sphere swivel
+        const jointGeo = new THREE.SphereGeometry(3, 12, 12);
+        const jointMat = new THREE.MeshStandardMaterial({ color: 0x7f8c8d, metalness: 1.0, roughness: 0.1 });
+        const joint = new THREE.Mesh(jointGeo, jointMat);
+        joint.position.y = 1;
+        group.add(joint);
+        
+        // Head - Sleek cylinder head pointing forward
+        const head = new THREE.Group();
+        head.position.y = 1;
         group.add(head);
         
-        // Barrel - Cylinder pointing forward
-        const barrelGeo = new THREE.CylinderGeometry(1.2, 1.2, 12, 8);
-        barrelGeo.rotateX(Math.PI / 2);
-        const barrelMat = new THREE.MeshStandardMaterial({ color: 0x111111, metalness: 0.9, roughness: 0.3 });
-        const barrel = new THREE.Mesh(barrelGeo, barrelMat);
-        barrel.position.set(0, 0, -6);
-        head.add(barrel);
+        const capGeo = new THREE.CylinderGeometry(4.5, 4.5, 6, 12);
+        capGeo.rotateX(Math.PI / 2);
+        const capMat = new THREE.MeshStandardMaterial({ color: 0x1e272e, metalness: 0.9, roughness: 0.1 });
+        const cap = new THREE.Mesh(capGeo, capMat);
+        head.add(cap);
         
-        // Glowing emitter ring
-        const ringGeo = new THREE.TorusGeometry(1.2, 0.4, 8, 16);
-        const ringMat = new THREE.MeshBasicMaterial({ color: new THREE.Color(color), toneMapped: false });
-        const ring = new THREE.Mesh(ringGeo, ringMat);
-        ring.position.set(0, 0, -12);
-        head.add(ring);
+        // Dual Barrels
+        const barrelGeo = new THREE.CylinderGeometry(0.8, 0.8, 9, 8);
+        barrelGeo.rotateX(Math.PI / 2);
+        const barrelMat = new THREE.MeshStandardMaterial({ color: 0x34495e, metalness: 0.9, roughness: 0.2 });
+        
+        const barrelL = new THREE.Mesh(barrelGeo, barrelMat);
+        barrelL.position.set(-2.2, 0, -4.5);
+        head.add(barrelL);
+        
+        const barrelR = new THREE.Mesh(barrelGeo, barrelMat);
+        barrelR.position.set(2.2, 0, -4.5);
+        head.add(barrelR);
+        
+        // Emitter rings at tips
+        const ringGeo = new THREE.TorusGeometry(0.8, 0.2, 8, 16);
+        const ringMat = new THREE.MeshBasicMaterial({ color: new THREE.Color(color) });
+        
+        const ringL = new THREE.Mesh(ringGeo, ringMat);
+        ringL.position.set(-2.2, 0, -9);
+        head.add(ringL);
+        
+        const ringR = new THREE.Mesh(ringGeo, ringMat);
+        ringR.position.set(2.2, 0, -9);
+        head.add(ringR);
         
         return { group, head };
+    }, []);
+
+    const createFloaterMesh = useCallback((color: string) => {
+        const group = new THREE.Group();
+        
+        // Core Sphere
+        const coreGeo = new THREE.SphereGeometry(4, 16, 16);
+        const coreMat = new THREE.MeshStandardMaterial({ color: 0x1e272e, metalness: 1.0, roughness: 0.1 });
+        const core = new THREE.Mesh(coreGeo, coreMat);
+        group.add(core);
+        
+        // Side wing plates
+        const wingGeo = new THREE.BoxGeometry(6, 1.2, 4);
+        const wingMat = new THREE.MeshStandardMaterial({ color: 0x353b48, metalness: 0.8, roughness: 0.4 });
+        
+        const wingL = new THREE.Mesh(wingGeo, wingMat);
+        wingL.position.set(-5, 0, 0);
+        wingL.rotation.y = 0.3;
+        wingL.rotation.z = 0.2;
+        group.add(wingL);
+        
+        const wingR = new THREE.Mesh(wingGeo, wingMat);
+        wingR.position.set(5, 0, 0);
+        wingR.rotation.y = -0.3;
+        wingR.rotation.z = -0.2;
+        group.add(wingR);
+        
+        // Glowing front eye lens
+        const lensGeo = new THREE.CylinderGeometry(1.2, 1.2, 1.5, 12);
+        lensGeo.rotateX(Math.PI / 2);
+        const lensMat = new THREE.MeshStandardMaterial({ color: new THREE.Color(color), emissive: new THREE.Color(color), emissiveIntensity: 1.5, roughness: 0.1 });
+        const lens = new THREE.Mesh(lensGeo, lensMat);
+        lens.position.set(0, 0, -3.5);
+        group.add(lens);
+        
+        // Antennae
+        const antGeo = new THREE.CylinderGeometry(0.15, 0.3, 4, 8);
+        antGeo.rotateX(-Math.PI / 6);
+        const antMat = new THREE.MeshStandardMaterial({ color: 0x2f3640, metalness: 0.7, roughness: 0.3 });
+        
+        const antL = new THREE.Mesh(antGeo, antMat);
+        antL.position.set(-1.8, 3, 1.5);
+        group.add(antL);
+        
+        const antR = new THREE.Mesh(antGeo, antMat);
+        antR.position.set(1.8, 3, 1.5);
+        group.add(antR);
+        
+        return group;
+    }, []);
+
+    const createBossMesh = useCallback((color: string) => {
+        const group = new THREE.Group();
+        
+        // Core sphere
+        const coreGeo = new THREE.SphereGeometry(18, 32, 32);
+        const coreMat = new THREE.MeshStandardMaterial({ color: 0x2c3e50, metalness: 0.9, roughness: 0.2 });
+        const core = new THREE.Mesh(coreGeo, coreMat);
+        group.add(core);
+        
+        // Glowing energy core inside
+        const heartGeo = new THREE.SphereGeometry(12, 16, 16);
+        const heartMat = new THREE.MeshBasicMaterial({ color: new THREE.Color(color), transparent: true, opacity: 0.8 });
+        const heart = new THREE.Mesh(heartGeo, heartMat);
+        group.add(heart);
+        
+        // Rotating Ring 1
+        const ring1Geo = new THREE.TorusGeometry(26, 2, 8, 32);
+        const ringMat = new THREE.MeshStandardMaterial({ color: new THREE.Color(color), emissive: new THREE.Color(color), emissiveIntensity: 0.8, metalness: 0.8 });
+        const ring1 = new THREE.Mesh(ring1Geo, ringMat);
+        group.add(ring1);
+        
+        // Rotating Ring 2 (rotated)
+        const ring2Geo = new THREE.TorusGeometry(32, 1.5, 8, 32);
+        const ring2 = new THREE.Mesh(ring2Geo, ringMat);
+        ring2.rotation.x = Math.PI / 2;
+        group.add(ring2);
+        
+        // Radial Armor Plates (6 plates)
+        const plateGeo = new THREE.BoxGeometry(8, 24, 4);
+        const plateMat = new THREE.MeshStandardMaterial({ color: 0x1e272e, metalness: 1.0, roughness: 0.3 });
+        
+        for (let i = 0; i < 6; i++) {
+            const angle = (i / 6) * Math.PI * 2;
+            const plate = new THREE.Mesh(plateGeo, plateMat);
+            plate.position.set(Math.cos(angle) * 22, Math.sin(angle) * 22, 0);
+            plate.rotation.z = angle + Math.PI / 2;
+            group.add(plate);
+        }
+        
+        // Giant central barrel pointing forward
+        const barrelGeo = new THREE.CylinderGeometry(4, 5, 20, 16);
+        barrelGeo.rotateX(Math.PI / 2);
+        const barrelMat = new THREE.MeshStandardMaterial({ color: 0x2f3542, metalness: 0.9, roughness: 0.2 });
+        const barrel = new THREE.Mesh(barrelGeo, barrelMat);
+        barrel.position.set(0, 0, -15);
+        group.add(barrel);
+        
+        const tipGeo = new THREE.TorusGeometry(4, 1, 8, 16);
+        const tipMat = new THREE.MeshBasicMaterial({ color: new THREE.Color(color) });
+        const tip = new THREE.Mesh(tipGeo, tipMat);
+        tip.position.set(0, 0, -25);
+        group.add(tip);
+        
+        return { group, ring1, ring2 };
     }, []);
 
     const buildLevelWorld = useCallback(() => {
@@ -1037,29 +1139,23 @@ export function SpaceBomberGame() {
             soundRef.current.startSequencer(level % 3 === 0);
         }
 
-        // Spawn floaters
-        for (let i = 0; i < 20 + level * 6; i++) {
-            const eGeo = new THREE.IcosahedronGeometry(8, 1);
-            const eMat = new THREE.MeshBasicMaterial({ color: '#ff3f34', wireframe: true });
-            const eMesh = new THREE.Group();
-            const core = new THREE.Mesh(eGeo, eMat);
-            eMesh.add(core);
+        const isBossSector = level % 3 === 0;
+        const zStart = -300;
+        const zEnd = isBossSector ? -2100 : -1700;
 
-            // Inner core (Pure glowing red)
-            const iGeo = new THREE.SphereGeometry(4, 8, 8);
-            const iMat = new THREE.MeshBasicMaterial({ color: '#ff0000' });
-            eMesh.add(new THREE.Mesh(iGeo, iMat));
+        // 1. Spawn Floaters (Sleek Drones) distributed along the corridor
+        const numFloaters = 8 + level * 2;
+        const stepFloater = (zEnd - zStart) / numFloaters;
+        for (let i = 0; i < numFloaters; i++) {
+            const floaterColor = '#ff3f34';
+            const fMesh = createFloaterMesh(floaterColor);
 
-            const zDist = -400 - Math.random() * 2000;
-            const radius = Math.random() * 600;
-            const angle = Math.random() * Math.PI * 2;
-            
-            const px = Math.cos(angle) * radius;
-            const py = Math.sin(angle) * radius;
-            const pz = zDist;
+            const pz = zStart + i * stepFloater + (Math.random() - 0.5) * 60;
+            const px = (Math.random() - 0.5) * 120; // X in [-60, 60]
+            const py = (Math.random() - 0.5) * 60;  // Y in [-30, 30]
 
-            eMesh.position.set(px, py, pz);
-            scene.add(eMesh);
+            fMesh.position.set(px, py, pz);
+            scene.add(fMesh);
 
             enemies.current.push({
                 id: Math.random(),
@@ -1068,28 +1164,29 @@ export function SpaceBomberGame() {
                 health: 5 + level,
                 maxHealth: 5 + level,
                 active: true,
-                lastFire: 0,
-                fireCooldown: 90 + Math.random() * 60,
-                mesh: eMesh,
+                lastFire: Math.random() * 120, // stagger initial fire
+                // Fire cooldown: 3.5 to 6 seconds (at 60fps)
+                fireCooldown: 210 + Math.random() * 150,
+                mesh: fMesh,
                 targetQuaternion: new THREE.Quaternion()
             });
         }
 
-        // Spawn Turrets (Space Turrets)
-        const numTurrets = 5 + level * 2;
+        // 2. Spawn Turrets (Dual-barrel Defense Platforms) along the walls
+        const numTurrets = 4 + level;
+        const stepTurret = (zEnd - zStart) / numTurrets;
         for (let i = 0; i < numTurrets; i++) {
             const turretColor = '#ff3f34';
             const { group: tMesh, head: tHead } = createTurretMesh(turretColor);
 
-            const zDist = -400 - Math.random() * 2000;
-            const radius = Math.random() * 500;
-            const angle = Math.random() * Math.PI * 2;
-            
-            const px = Math.cos(angle) * radius;
-            const py = Math.sin(angle) * radius;
-            const pz = zDist;
+            const pz = zStart + (i + 0.5) * stepTurret + (Math.random() - 0.5) * 60;
+            const side = i % 2 === 0 ? -1 : 1;
+            const px = side * 85; // Fixed on left/right walls
+            const py = (Math.random() - 0.5) * 40; // Y in [-20, 20]
 
             tMesh.position.set(px, py, pz);
+            // Rotate turret to face inwards
+            tMesh.rotation.y = side === 1 ? Math.PI / 2 : -Math.PI / 2;
             scene.add(tMesh);
 
             enemies.current.push({
@@ -1100,19 +1197,61 @@ export function SpaceBomberGame() {
                 maxHealth: 8 + level * 2,
                 active: true,
                 lastFire: 0,
-                fireCooldown: 120 + Math.random() * 60,
+                // Fire cooldown: 4 to 6 seconds
+                fireCooldown: 240 + Math.random() * 120,
                 mesh: tMesh,
                 headMesh: tHead
             });
         }
 
-        // Spawn Boss
-        if (level % 3 === 0) {
-            const bossGeo = new THREE.DodecahedronGeometry(35, 2);
-            const bossMat = new THREE.MeshStandardMaterial({ color: '#8c7ae6', emissive: '#4cd137', emissiveIntensity: 0.3, wireframe: true });
-            const bossMesh = new THREE.Group();
-            const bCore = new THREE.Mesh(bossGeo, bossMat);
-            bossMesh.add(bCore);
+        // 3. Spawn Fuel Crystals directly in the path for the player to collect
+        const numCrystals = 6;
+        const stepC = (zEnd - zStart) / numCrystals;
+        for (let i = 0; i < numCrystals; i++) {
+            const cGeo = new THREE.OctahedronGeometry(3);
+            const cMat = new THREE.MeshStandardMaterial({ color: '#2ed573', emissive: '#10ac84', emissiveIntensity: 0.5, metalness: 0.8, roughness: 0.2 });
+            const cMesh = new THREE.Mesh(cGeo, cMat);
+            const px = (Math.random() - 0.5) * 100;
+            const py = (Math.random() - 0.5) * 50;
+            const pz = zStart + (i + 0.2) * stepC;
+            cMesh.position.set(px, py, pz);
+            scene.add(cMesh);
+            crystals.current.push({
+                id: Math.random(),
+                x: px, y: py, z: pz,
+                vx: 0, vy: 0, vz: 0,
+                active: true,
+                mesh: cMesh
+            });
+        }
+
+        // 4. Spawn Power-Ups directly in the path
+        const numPowerups = 2;
+        const stepP = (zEnd - zStart) / numPowerups;
+        for (let i = 0; i < numPowerups; i++) {
+            const pType = i % 2 === 0 ? 'multi' : 'beam';
+            const pGeo = new THREE.BoxGeometry(4, 4, 4);
+            const pMat = new THREE.MeshStandardMaterial({ color: pType === 'multi' ? '#00d2d3' : '#ff4757', emissive: pType === 'multi' ? '#008b8b' : '#8b0000', emissiveIntensity: 0.5, metalness: 0.8, roughness: 0.2 });
+            const pMesh = new THREE.Mesh(pGeo, pMat);
+            const px = (Math.random() - 0.5) * 100;
+            const py = (Math.random() - 0.5) * 50;
+            const pz = zStart + (i + 0.7) * stepP;
+            pMesh.position.set(px, py, pz);
+            scene.add(pMesh);
+            powerUps.current.push({
+                id: Math.random(),
+                x: px, y: py, z: pz,
+                vx: 0, vy: 0, vz: 0,
+                type: pType,
+                active: true,
+                mesh: pMesh
+            });
+        }
+
+        // 5. Spawn Boss
+        if (isBossSector) {
+            const bossColor = '#8c7ae6';
+            const { group: bossMesh, ring1: bRing1, ring2: bRing2 } = createBossMesh(bossColor);
             
             const px = 0;
             const py = 0;
@@ -1130,8 +1269,10 @@ export function SpaceBomberGame() {
                 maxHealth: bossH,
                 active: true,
                 lastFire: 0,
-                fireCooldown: 60,
-                mesh: bossMesh
+                fireCooldown: 120, // 2 seconds fire rate
+                mesh: bossMesh,
+                bossRing1: bRing1,
+                bossRing2: bRing2
             });
             setBossMaxHealth(bossH);
             setBossHealth(bossH);
@@ -1145,8 +1286,7 @@ export function SpaceBomberGame() {
                 wormholeMatRef.current.uniforms.color.value = new THREE.Color(currentShipClass.laserColor);
             }
         }
-
-    }, [clearAllEntities, level, setFuelLevel, setShieldLevel, setArmorLevel, addLog, currentShipClass, createTurretMesh]);
+    }, [clearAllEntities, level, setFuelLevel, setShieldLevel, setArmorLevel, addLog, currentShipClass, createTurretMesh, createFloaterMesh, createBossMesh]);
 
     const spawnBullet = useCallback((offsetX: number, offsetY: number, color: string, speedScale: number = 1.0, isBeam: boolean = false) => {
         if (!sceneRef.current || !playerShipGroup.current) return;
@@ -1154,7 +1294,7 @@ export function SpaceBomberGame() {
         const geo = isBeam ? new THREE.CylinderGeometry(0.8, 0.8, 50) : new THREE.SphereGeometry(1.5, 12, 12);
         if (isBeam) geo.rotateX(Math.PI / 2);
 
-        const mat = new THREE.MeshBasicMaterial({ color, blending: THREE.AdditiveBlending, transparent: true, opacity: 0.9 });
+        const mat = new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.7 });
         const mesh = new THREE.Mesh(geo, mat);
 
         const spawnPos = new THREE.Vector3(offsetX, offsetY, -6);
@@ -1205,7 +1345,6 @@ export function SpaceBomberGame() {
         }
     }, [gameState, spawnBullet, currentShipClass]);
 
-    // Keyboard & Mouse Events
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
             const k = e.key.toLowerCase();
@@ -1217,45 +1356,13 @@ export function SpaceBomberGame() {
         };
         const handleKeyUp = (e: KeyboardEvent) => { keys.current[e.key.toLowerCase()] = false; };
         
-        const handleMouseMove = (e: MouseEvent) => {
-            if (gameState !== 'playing') return;
-            const rect = canvasRef.current?.getBoundingClientRect();
-            if (!rect) return;
-            
-            const cx = rect.left + rect.width / 2;
-            const cy = rect.top + rect.height / 2;
-            
-            let dx = (e.clientX - cx) / (rect.width / 2);
-            let dy = (e.clientY - cy) / (rect.height / 2);
-            
-            // Draw tracking cursor via DOM to avoid React re-renders locking up the browser
-            if (cursorRef.current) {
-                cursorRef.current.style.left = `${e.clientX - rect.left}px`;
-                cursorRef.current.style.top = `${e.clientY - rect.top}px`;
-            }
-            
-            if (Math.abs(dx) < 0.1) dx = 0;
-            if (Math.abs(dy) < 0.1) dy = 0;
-            
-            mouseDelta.current.x = Math.max(-1, Math.min(1, dx));
-            mouseDelta.current.y = Math.max(-1, Math.min(1, dy));
-        };
-
-        const handleMouseDown = (e: MouseEvent) => {
-            if (gameState === 'playing' && e.button === 0) fireWeapon();
-        };
-
         window.addEventListener('keydown', handleKeyDown);
         window.addEventListener('keyup', handleKeyUp);
-        window.addEventListener('mousemove', handleMouseMove);
-        window.addEventListener('mousedown', handleMouseDown);
         return () => {
             window.removeEventListener('keydown', handleKeyDown);
             window.removeEventListener('keyup', handleKeyUp);
-            window.removeEventListener('mousemove', handleMouseMove);
-            window.removeEventListener('mousedown', handleMouseDown);
         };
-    }, [fireWeapon, gameState]);
+    }, [fireWeapon]);
 
     // Main 6-DOF Loop
     tickRef.current = (time: number) => {
@@ -1334,79 +1441,86 @@ export function SpaceBomberGame() {
             warpTunnelMesh.current.visible = false;
         }
 
-        // --- 1. SHIP MOVEMENT (6-DOF) & GAMEPAD ---
-        // Slower sensitivity for laptop trackpads
-        let pitch = -mouseDelta.current.y * currentShipClass.turnSensitivity * dt;
-        let yaw = -mouseDelta.current.x * currentShipClass.turnSensitivity * dt;
-        let roll = 0;
+        // --- 1. SHIP MOVEMENT & KEYBOARD STEERING (Forward Flight) ---
+        const forward = new THREE.Vector3(0, 0, -1).applyQuaternion(shipQuaternion.current);
+        // Automatically move forward along the Z axis
+        const levelDistance = level % 3 === 0 ? -2200 : -1800;
+        const hasReachedEnd = shipPos.current.z <= levelDistance;
         
-        // Gamepad API integration
-        const gamepads = navigator.getGamepads ? navigator.getGamepads() : [];
-        const gp = gamepads[0];
-        if (gp && gp.connected) {
-            const axX = gp.axes[2] || gp.axes[0] || 0; // Right/Left stick X
-            const axY = gp.axes[3] || gp.axes[1] || 0; // Right/Left stick Y
+        let forwardSpeed = 0;
+        if (!hasReachedEnd) {
+            forwardSpeed = (currentShipClass.maxSpeed * 0.45) * dt;
+            shipPos.current.z -= forwardSpeed;
+            targetSpeed.current = currentShipClass.maxSpeed * 0.45;
+        } else {
+            targetSpeed.current = 0;
             
-            if (Math.abs(axX) > 0.1) yaw += -axX * 0.04 * dt;
-            if (Math.abs(axY) > 0.1) pitch += -axY * 0.04 * dt;
-            
-            // Triggers for speed
-            if (gp.buttons[7] && gp.buttons[7].pressed) {
-                targetSpeed.current = Math.min(targetSpeed.current + 0.35 * dt, currentShipClass.maxSpeed);
-                if (fuelRef.current > 0) setFuelLevel(fuelRef.current - 0.05 * dt);
-            } else if (gp.buttons[6] && gp.buttons[6].pressed) {
-                targetSpeed.current = Math.max(targetSpeed.current - 0.5 * dt, 0); 
-            }
-            
-            // Buttons to fire (A, X, or RT)
-            if ((gp.buttons[0]?.pressed || gp.buttons[5]?.pressed)) {
-                if (gameState === 'playing' && time - lastGamepadFire.current > 200) {
-                    fireWeapon();
-                    lastGamepadFire.current = time;
+            // Victory checks
+            if (level % 3 !== 0) {
+                const activeEnemies = enemies.current.filter(en => en.active).length;
+                if (activeEnemies === 0 && gameState === 'playing') {
+                    setGameState('victory');
+                    soundRef.current?.stopSequencer();
+                    soundRef.current?.stopAmbient();
+                    confetti({ particleCount: 200, spread: 100, origin: { y: 0.6 } });
+                }
+            } else {
+                const boss = enemies.current.find(en => en.type === 'boss');
+                if (boss && !boss.active && gameState === 'playing') {
+                    setGameState('victory');
+                    soundRef.current?.stopSequencer();
+                    soundRef.current?.stopAmbient();
+                    confetti({ particleCount: 200, spread: 100, origin: { y: 0.6 } });
                 }
             }
-            
-            // Roll with bumpers
-            if (gp.buttons[4]?.pressed) roll += 0.06 * dt; // LB
-            if (gp.buttons[5]?.pressed) roll -= 0.06 * dt; // RB
         }
-        
-        if (keys.current['a']) roll += 0.06 * dt;
-        if (keys.current['d']) roll -= 0.06 * dt;
+
+        // Steer left/right (A/D) and up/down (W/S)
+        const steerSpeed = 2.8 * dt;
+        if (keys.current['a']) shipPos.current.x -= steerSpeed;
+        if (keys.current['d']) shipPos.current.x += steerSpeed;
+        if (keys.current['w']) shipPos.current.y += steerSpeed * 0.8;
+        if (keys.current['s']) shipPos.current.y -= steerSpeed * 0.8;
+
+        // Clamp positions to stay in the flight corridor
+        shipPos.current.x = Math.max(-80, Math.min(80, shipPos.current.x));
+        shipPos.current.y = Math.max(-45, Math.min(45, shipPos.current.y));
+
+        // Smoothly rotate the ship based on steering keys
+        let targetRoll = 0;
+        let targetPitch = 0;
+        let targetYaw = 0;
+
+        if (keys.current['a']) {
+            targetRoll = 0.5;
+            targetYaw = 0.25;
+        } else if (keys.current['d']) {
+            targetRoll = -0.5;
+            targetYaw = -0.25;
+        }
 
         if (keys.current['w']) {
-            targetSpeed.current = Math.min(targetSpeed.current + 0.25 * dt, currentShipClass.maxSpeed);
-            if (fuelRef.current > 0) setFuelLevel(fuelRef.current - 0.04 * dt);
+            targetPitch = -0.3;
         } else if (keys.current['s']) {
-            targetSpeed.current = Math.max(targetSpeed.current - 0.4 * dt, 0); 
-        } else if (!gp || (!gp.buttons[7]?.pressed && !gp.buttons[6]?.pressed)) {
-            targetSpeed.current = Math.max(targetSpeed.current - 0.015 * dt, MIN_SPEED); 
+            targetPitch = 0.3;
         }
 
-        const qPitch = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1, 0, 0), pitch);
-        const qYaw = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), yaw);
-        const qRoll = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 0, 1), roll);
-        
-        shipQuaternion.current.multiply(qYaw);
-        shipQuaternion.current.multiply(qPitch);
-        shipQuaternion.current.multiply(qRoll);
-        shipQuaternion.current.normalize();
+        ship.rotation.z = THREE.MathUtils.lerp(ship.rotation.z, targetRoll, 0.15 * dt);
+        ship.rotation.x = THREE.MathUtils.lerp(ship.rotation.x, targetPitch, 0.15 * dt);
+        ship.rotation.y = THREE.MathUtils.lerp(ship.rotation.y, targetYaw, 0.15 * dt);
 
-        const forward = new THREE.Vector3(0, 0, -1).applyQuaternion(shipQuaternion.current);
-        
-        shipVel.current.copy(forward).multiplyScalar(targetSpeed.current);
-        shipPos.current.addScaledVector(shipVel.current, dt);
-
+        // Update quaternion reference from rotation
+        ship.quaternion.setFromEuler(new THREE.Euler(ship.rotation.x, ship.rotation.y, ship.rotation.z));
+        shipQuaternion.current.copy(ship.quaternion);
         ship.position.copy(shipPos.current);
-        ship.quaternion.copy(shipQuaternion.current);
-        
+
         // Thruster visual
-        const thrustScale = Math.max(0.3, targetSpeed.current / currentShipClass.maxSpeed * 2.5);
+        const thrustScale = hasReachedEnd ? 0.3 : 1.2;
         if (thrusterFlameMeshL.current) thrusterFlameMeshL.current.scale.set(1, thrustScale, 1);
         if (thrusterFlameMeshR.current) thrusterFlameMeshR.current.scale.set(1, thrustScale, 1);
 
         // Spawn engine particles trailing behind the engines
-        if (gameState === 'playing') {
+        if (gameState === 'playing' && !hasReachedEnd) {
             let thrusterOffset = 1.5;
             let thrusterZ = 4;
             if (currentShipClass.id === 'dreadnought') {
@@ -1420,7 +1534,8 @@ export function SpaceBomberGame() {
             const leftThrusterPos = new THREE.Vector3(-thrusterOffset, 0, thrusterZ).applyQuaternion(shipQuaternion.current).add(shipPos.current);
             const rightThrusterPos = new THREE.Vector3(thrusterOffset, 0, thrusterZ).applyQuaternion(shipQuaternion.current).add(shipPos.current);
             
-            const numParticles = keys.current['w'] ? 3 : 1;
+            // Spawn fewer particles to avoid clutter
+            const numParticles = 1;
             for (let i = 0; i < numParticles; i++) {
                 [leftThrusterPos, rightThrusterPos].forEach(pos => {
                     if (!engineParticleGeo.current || !engineParticleMat.current) return;
@@ -1428,13 +1543,13 @@ export function SpaceBomberGame() {
                     const mat = engineParticleMat.current.clone();
                     const mesh = new THREE.Mesh(engineParticleGeo.current, mat);
                     mesh.position.copy(pos);
-                    mesh.position.x += (Math.random() - 0.5) * 0.5;
-                    mesh.position.y += (Math.random() - 0.5) * 0.5;
-                    mesh.position.z += (Math.random() - 0.5) * 0.5;
+                    mesh.position.x += (Math.random() - 0.5) * 0.2;
+                    mesh.position.y += (Math.random() - 0.5) * 0.2;
+                    mesh.position.z += (Math.random() - 0.5) * 0.2;
                     scene.add(mesh);
 
                     const backward = new THREE.Vector3(0, 0, 1).applyQuaternion(shipQuaternion.current);
-                    const dispersion = 1.5;
+                    const dispersion = 0.5;
                     const pVx = backward.x * (5 + targetSpeed.current * 0.4) + (Math.random() - 0.5) * dispersion;
                     const pVy = backward.y * (5 + targetSpeed.current * 0.4) + (Math.random() - 0.5) * dispersion;
                     const pVz = backward.z * (5 + targetSpeed.current * 0.4) + (Math.random() - 0.5) * dispersion;
@@ -1446,9 +1561,9 @@ export function SpaceBomberGame() {
                         vx: pVx,
                         vy: pVy,
                         vz: pVz,
-                        life: 15 + Math.random() * 10,
+                        life: 12 + Math.random() * 8,
                         color: currentShipClass.laserColor,
-                        size: 0.4,
+                        size: 0.15,
                         mesh
                     });
                 });
@@ -1461,8 +1576,8 @@ export function SpaceBomberGame() {
                 shieldHitLife.current -= 0.08 * dt;
                 shieldBubbleMesh.current.visible = true;
                 const mat = shieldBubbleMesh.current.material as THREE.MeshBasicMaterial;
-                mat.opacity = shieldHitLife.current * 0.5;
-                const bubbleScale = 1.0 + (1.0 - shieldHitLife.current) * 0.05;
+                mat.opacity = shieldHitLife.current * 0.3; // more subtle
+                const bubbleScale = 1.0 + (1.0 - shieldHitLife.current) * 0.03;
                 shieldBubbleMesh.current.scale.set(bubbleScale, bubbleScale, bubbleScale);
             } else {
                 shieldBubbleMesh.current.visible = false;
@@ -1473,7 +1588,7 @@ export function SpaceBomberGame() {
         if (speedLinesGroup.current) {
             const lines = speedLinesGroup.current.children;
             const velocity = targetSpeed.current;
-            const isMovingFast = velocity > 3.0;
+            const isMovingFast = velocity > 1.0;
             
             speedLinesGroup.current.position.copy(shipPos.current);
             speedLinesGroup.current.quaternion.copy(shipQuaternion.current);
@@ -1483,16 +1598,16 @@ export function SpaceBomberGame() {
                 
                 if (line.position.z > 50) {
                     line.position.set(
-                        (Math.random() - 0.5) * 140,
-                        (Math.random() - 0.5) * 140,
+                        (Math.random() - 0.5) * 200,
+                        (Math.random() - 0.5) * 150,
                         -250 - Math.random() * 150
                     );
                 }
                 
                 const mat = line.material as THREE.LineBasicMaterial;
                 if (isMovingFast) {
-                    mat.opacity = Math.min(0.6, (velocity - 3.0) / 5.0) * 0.8;
-                    const stretch = 1.0 + (velocity - 3.0) * 0.8;
+                    mat.opacity = 0.25; // less bright
+                    const stretch = 1.0 + velocity * 0.5;
                     line.scale.set(1, 1, stretch);
                 } else {
                     mat.opacity = 0.0;
@@ -1500,28 +1615,21 @@ export function SpaceBomberGame() {
             });
         }
 
-        // Update procedural engine sound pitch and cutoff
         if (soundRef.current) {
             const speedRatio = Math.min(1.0, targetSpeed.current / currentShipClass.maxSpeed);
             soundRef.current.updateAmbient(speedRatio);
         }
 
-        // --- 2. CAMERA UPDATE (Dynamic Chase Cam) ---
-        // Camera pulls back slightly based on speed
-        const camZ = 15 + (targetSpeed.current / currentShipClass.maxSpeed) * 5;
-        const idealOffset = new THREE.Vector3(0, 4, camZ);
-        idealOffset.applyQuaternion(shipQuaternion.current);
-        idealOffset.add(shipPos.current);
+        // --- 2. CAMERA UPDATE (Smooth Rail Chase Cam) ---
+        // Stays positioned behind the ship and moves smoothly along Z-axis
+        const idealCamPos = new THREE.Vector3(shipPos.current.x, shipPos.current.y + 4, shipPos.current.z + 18);
+        camera.position.lerp(idealCamPos, 0.12 * dt);
         
-        camera.position.lerp(idealOffset, 0.15 * dt);
+        const idealLookAt = new THREE.Vector3(shipPos.current.x, shipPos.current.y, shipPos.current.z - 50);
         
-        const idealLookAt = new THREE.Vector3(0, 0, -50);
-        idealLookAt.applyQuaternion(shipQuaternion.current);
-        idealLookAt.add(shipPos.current);
-        
-        const m = new THREE.Matrix4().lookAt(camera.position, idealLookAt, new THREE.Vector3(0, 1, 0).applyQuaternion(shipQuaternion.current));
+        const m = new THREE.Matrix4().lookAt(camera.position, idealLookAt, new THREE.Vector3(0, 1, 0));
         const targetCamQuat = new THREE.Quaternion().setFromRotationMatrix(m);
-        camera.quaternion.slerp(targetCamQuat, 0.15 * dt);
+        camera.quaternion.slerp(targetCamQuat, 0.12 * dt);
         
         if (screenShakeRef.current > 0) {
             camera.position.x += (Math.random() - 0.5) * screenShakeRef.current;
@@ -1530,29 +1638,7 @@ export function SpaceBomberGame() {
             screenShakeRef.current *= 0.85;
         }
 
-        // --- ASTEROIDS ANIMATION ---
-        if (asteroidMesh.current) {
-            // Rotating instanced meshes
-            const im = asteroidMesh.current;
-            const dummy = new THREE.Object3D();
-            const speeds = im.geometry.attributes.aRotSpeed as THREE.InstancedBufferAttribute;
-            for (let i = 0; i < im.count; i++) {
-                im.getMatrixAt(i, dummy.matrix);
-                dummy.matrix.decompose(dummy.position, dummy.quaternion, dummy.scale);
-                
-                const sx = speeds.getX(i) * dt;
-                const sy = speeds.getY(i) * dt;
-                const sz = speeds.getZ(i) * dt;
-                
-                dummy.rotation.x += sx;
-                dummy.rotation.y += sy;
-                dummy.rotation.z += sz;
-                
-                dummy.updateMatrix();
-                im.setMatrixAt(i, dummy.matrix);
-            }
-            im.instanceMatrix.needsUpdate = true;
-        }
+
 
         if (wormholeMatRef.current) {
             wormholeMatRef.current.uniforms.time.value += dt * 0.8;
@@ -1579,41 +1665,49 @@ export function SpaceBomberGame() {
             const eVec = new THREE.Vector3(e.x, e.y, e.z);
             const distToPlayer = eVec.distanceTo(shipPos.current);
             
-            // Check crosshair lock (dot product)
+            // Check crosshair lock (dot product) - ONLY if target is ahead of player
             const dirToEnemy = new THREE.Vector3().subVectors(eVec, shipPos.current).normalize();
-            if (forward.dot(dirToEnemy) > 0.98 && distToPlayer < 2000) {
+            if (e.z < shipPos.current.z && forward.dot(dirToEnemy) > 0.98 && distToPlayer < 2000) {
                 isTargetInCrosshair = true;
             }
 
             // AI Movement
             if (e.type === 'floater') {
-                const dir = new THREE.Vector3().subVectors(shipPos.current, eVec).normalize();
-                e.x += dir.x * 0.8 * dt;
-                e.y += dir.y * 0.8 * dt;
-                e.z += dir.z * 0.8 * dt;
+                // Bobbing/floating motion in X/Y using sine/cosine wave
+                const targetX = shipPos.current.x;
+                const targetY = shipPos.current.y;
+                
+                // Drift slowly in X/Y to align with player but stay stationary along Z axis
+                e.x += Math.sign(targetX - e.x) * 0.2 * dt;
+                e.y += Math.sign(targetY - e.y) * 0.15 * dt;
+                
+                // Wave bobbing
+                const bobTime = (time * 0.001) + e.id * 100;
+                e.x += Math.sin(bobTime) * 0.1 * dt;
+                e.y += Math.cos(bobTime) * 0.1 * dt;
                 
                 // Rotate floater to look at player
                 const targetRotationMatrix = new THREE.Matrix4().lookAt(eVec, shipPos.current, new THREE.Vector3(0, 1, 0));
                 const targetQuat = new THREE.Quaternion().setFromRotationMatrix(targetRotationMatrix);
                 e.mesh.quaternion.slerp(targetQuat, 0.05 * dt);
 
-                // Add engine trails to floaters occasionally
-                if (Math.random() < 0.2) {
-                    const tGeo = new THREE.BoxGeometry(0.5, 0.5, 0.5);
-                    const tMat = new THREE.MeshBasicMaterial({ color: '#ff3f34', transparent: true, opacity: 0.5 });
+                // Add small engine trails occasionally (subtle)
+                if (Math.random() < 0.1) {
+                    const tGeo = new THREE.BoxGeometry(0.3, 0.3, 0.3);
+                    const tMat = new THREE.MeshBasicMaterial({ color: '#ff3f34', transparent: true, opacity: 0.2 });
                     const tMesh = new THREE.Mesh(tGeo, tMat);
                     tMesh.position.copy(eVec);
                     scene.add(tMesh);
                     particles.current.push({
                         x: e.x, y: e.y, z: e.z,
-                        vx: 0, vy: 0, vz: 0,
-                        life: 10, color: '#ff3f34', size: 0.5, mesh: tMesh
+                        vx: 0, vy: 0, vz: 2.0, // move backwards relative to floater
+                        life: 10, color: '#ff3f34', size: 0.3, mesh: tMesh
                     });
                 }
 
             } else if (e.type === 'turret') {
-                // Aim turret head at player
-                if (e.headMesh) {
+                // Aim turret head at player (only if player is ahead of it)
+                if (e.headMesh && e.z < shipPos.current.z) {
                     const headVec = new THREE.Vector3(e.x, e.y, e.z);
                     const dirToPlayer = new THREE.Vector3().subVectors(shipPos.current, headVec).normalize();
                     const targetRotationMatrix = new THREE.Matrix4().lookAt(new THREE.Vector3(0, 0, 0), dirToPlayer, new THREE.Vector3(0, 1, 0));
@@ -1622,32 +1716,40 @@ export function SpaceBomberGame() {
                 }
             } else if (e.type === 'boss') {
                 const dir = new THREE.Vector3().subVectors(shipPos.current, eVec).normalize();
-                e.x += dir.x * 0.3 * dt;
-                e.y += dir.y * 0.3 * dt;
-                e.z += dir.z * 0.3 * dt;
-                e.mesh.rotation.y += 0.02 * dt;
+                e.x += dir.x * 0.2 * dt;
+                e.y += dir.y * 0.2 * dt;
+                // Boss stays far ahead, drifts in Z very slowly
+                e.z += dir.z * 0.05 * dt;
+
+                // Animate rotating outer armor rings
+                if (e.bossRing1) e.bossRing1.rotation.y += 0.02 * dt;
+                if (e.bossRing2) e.bossRing2.rotation.x -= 0.03 * dt;
+                e.mesh.rotation.z += 0.005 * dt;
             }
 
             e.mesh.position.set(e.x, e.y, e.z);
 
-            // Firing Logic
+            // Firing Logic - ONLY if enemy is ahead of player (e.z < shipPos.current.z)
             e.lastFire += dt;
-            if (e.lastFire > e.fireCooldown && distToPlayer < 1200) {
+            if (e.lastFire > e.fireCooldown && e.z < shipPos.current.z && distToPlayer < 1200) {
                 e.lastFire = 0;
                 let fireDir = new THREE.Vector3().subVectors(shipPos.current, eVec).normalize();
                 let spawnP = new THREE.Vector3(e.x, e.y, e.z);
                 
                 if (e.type === 'turret' && e.headMesh) {
-                    const barrelTipLocal = new THREE.Vector3(0, 0, -12);
+                    const barrelTipLocal = new THREE.Vector3(0, 0, -9);
                     barrelTipLocal.applyQuaternion(e.headMesh.quaternion);
                     spawnP.add(barrelTipLocal);
                     fireDir = new THREE.Vector3(0, 0, -1).applyQuaternion(e.headMesh.quaternion).normalize();
                 }
 
-                const bSpeed = e.type === 'turret' ? 25 : 20;
-                const bColor = e.type === 'turret' ? '#ff9f43' : '#fbc531';
-                const bGeo = new THREE.SphereGeometry(2.0, 8, 8);
-                const bMat = new THREE.MeshBasicMaterial({ color: bColor, blending: THREE.AdditiveBlending });
+                // Balance speeds: turret = 7, floater = 5, boss = 8 (all extremely dodgeable)
+                const bSpeed = e.type === 'turret' ? 7 : (e.type === 'boss' ? 8 : 5);
+                const bColor = e.type === 'turret' ? '#ff9f43' : (e.type === 'boss' ? '#8c7ae6' : '#fbc531');
+                
+                // Sleeker laser spheres (1.2 radius) — visible but dodgeable
+                const bGeo = new THREE.SphereGeometry(1.2, 8, 8);
+                const bMat = new THREE.MeshBasicMaterial({ color: bColor, transparent: true, opacity: 0.85 });
                 const bMesh = new THREE.Mesh(bGeo, bMat);
                 bMesh.position.copy(spawnP);
                 scene.add(bMesh);
@@ -2023,14 +2125,7 @@ export function SpaceBomberGame() {
                 
                 <div ref={floatingTextContainerRef} className="absolute top-0 left-0 w-full h-[700px] pointer-events-none z-10 overflow-hidden" />
 
-                {/* Virtual Joystick Cursor */}
-                {(gameState === 'playing' || gameState === 'hyperspace') && (
-                    <div 
-                        ref={cursorRef}
-                        className="absolute w-6 h-6 rounded-full border-2 border-dashed border-cyan-400 pointer-events-none z-20 transition-transform duration-75"
-                        style={{ left: '-100px', top: '-100px', transform: 'translate(-50%, -50%)', opacity: 0.6 }}
-                    />
-                )}
+
 
                 {/* Adaptive Crosshair */}
                 {(gameState === 'playing' || gameState === 'hyperspace') && (
@@ -2107,7 +2202,7 @@ export function SpaceBomberGame() {
                             GRAVITY WARRIOR <br/> <span className="text-rose-500 text-3xl md:text-4xl">3D: ASCENSION</span>
                         </h1>
                         <p className="text-cyan-100/60 max-w-xl text-center mb-6 text-xs md:text-sm font-light leading-relaxed px-4 select-none">
-                            Tam 6 eksenli (6-DOF) uçuş simülasyonu. Derin uzayda sınırsız manevra kabiliyeti ve hiper gerçekçi savaş mekanikleri. Başlamadan önce gemi sınıfınızı seçin:
+                            Otomatik ilerleyen bir uzay savaş simülasyonu. Klavye ile manevra yap, düşman lazerleri'nden kaç, sektörü temizle!
                         </p>
 
                         {/* Ship Class Selection */}
@@ -2167,6 +2262,16 @@ export function SpaceBomberGame() {
                         >
                             SİMÜLASYONU BAŞLAT
                         </Button>
+
+                        {/* Keyboard Controls Guide */}
+                        <div className="mt-6 grid grid-cols-2 md:grid-cols-5 gap-3 max-w-2xl w-full px-4 text-center select-none">
+                            {[{key:'W', desc:'Yukarı'},{key:'S', desc:'Aşağı'},{key:'A', desc:'Sol'},{key:'D', desc:'Sağ'},{key:'P', desc:'Ateş / Hızlan'}].map(({key,desc}) => (
+                                <div key={key} className="flex flex-col items-center gap-1">
+                                    <div className="w-10 h-10 rounded-lg border border-cyan-500/40 bg-cyan-950/40 flex items-center justify-center text-cyan-300 font-black text-base shadow-[0_0_10px_rgba(34,211,238,0.2)] backdrop-blur-sm">{key}</div>
+                                    <span className="text-[10px] text-cyan-100/50 font-mono uppercase tracking-wider">{desc}</span>
+                                </div>
+            ))}
+                        </div>
                     </div>
                 )}
 
@@ -2206,19 +2311,19 @@ export function SpaceBomberGame() {
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-2">
                 <div className="bg-[#0a0a1a] p-5 rounded-xl border border-cyan-900/50 shadow-lg hover:border-cyan-500/50 transition-colors">
                     <h3 className="text-xs font-bold text-cyan-400 uppercase tracking-widest mb-3 flex items-center gap-2"><Target className="w-4 h-4" /> Uçuş Kontrolü</h3>
-                    <p className="text-xs text-muted-foreground leading-relaxed">Farenizi kullanarak geminin burnunu uzayda özgürce yönlendirin. Yeni nesil <b>Gamepad (Oyun Kolu)</b> takarak konsol deneyimi yaşayabilirsiniz!</p>
+                    <p className="text-xs text-muted-foreground leading-relaxed">Geminiz otomatik olarak ileriye doğru uçar. Fare kontrolleri tamamen devre dışı bırakılmıştır; böylece laptop ve trackpadlerde en rahat oynanışı sunar.</p>
                 </div>
                 <div className="bg-[#0a0a1a] p-5 rounded-xl border border-emerald-900/50 shadow-lg hover:border-emerald-500/50 transition-colors">
-                    <h3 className="text-xs font-bold text-emerald-400 uppercase tracking-widest mb-3 flex items-center gap-2"><Activity className="w-4 h-4" /> İtki & Dönüş</h3>
-                    <p className="text-xs text-muted-foreground leading-relaxed"><kbd className="bg-black text-emerald-300 border border-emerald-500/30 px-1.5 py-0.5 rounded font-mono">W</kbd> / <kbd className="bg-black text-emerald-300 border border-emerald-500/30 px-1.5 py-0.5 rounded font-mono">S</kbd> ile hızlanıp yavaşlayın. <kbd className="bg-black text-emerald-300 border border-emerald-500/30 px-1.5 py-0.5 rounded font-mono">A</kbd> / <kbd className="bg-black text-emerald-300 border border-emerald-500/30 px-1.5 py-0.5 rounded font-mono">D</kbd> tuşlarıyla namlu ekseninde yuvarlanın (Roll).</p>
+                    <h3 className="text-xs font-bold text-emerald-400 uppercase tracking-widest mb-3 flex items-center gap-2"><Activity className="w-4 h-4" /> Yönlendirme</h3>
+                    <p className="text-xs text-muted-foreground leading-relaxed">Manevra yapmak için klavyenizden <kbd className="bg-black text-emerald-300 border border-emerald-500/30 px-1.5 py-0.5 rounded font-mono">A</kbd> / <kbd className="bg-black text-emerald-300 border border-emerald-500/30 px-1.5 py-0.5 rounded font-mono">D</kbd> (Sol / Sağ) ve <kbd className="bg-black text-emerald-300 border border-emerald-500/30 px-1.5 py-0.5 rounded font-mono">W</kbd> / <kbd className="bg-black text-emerald-300 border border-emerald-500/30 px-1.5 py-0.5 rounded font-mono">S</kbd> (Yukarı / Aşağı) tuşlarını kullanın.</p>
                 </div>
                 <div className="bg-[#0a0a1a] p-5 rounded-xl border border-rose-900/50 shadow-lg hover:border-rose-500/50 transition-colors">
                     <h3 className="text-xs font-bold text-rose-400 uppercase tracking-widest mb-3 flex items-center gap-2"><Crosshair className="w-4 h-4" /> Silahlar</h3>
-                    <p className="text-xs text-muted-foreground leading-relaxed"><kbd className="bg-black text-rose-300 border border-rose-500/30 px-1.5 py-0.5 rounded font-mono">SPACE</kbd> tuşu veya Fare Tıklaması ile ateş edin. Lazer ağınız ile düşman filolarını yok edin.</p>
+                    <p className="text-xs text-muted-foreground leading-relaxed">Klavyenizden <kbd className="bg-black text-rose-300 border border-rose-500/30 px-1.5 py-0.5 rounded font-mono">P</kbd> tuşuna veya <kbd className="bg-black text-rose-300 border border-rose-500/30 px-1.5 py-0.5 rounded font-mono">SPACE</kbd> tuşuna basarak ateş edin. Lazer ağınız ile hedefleri imha edin.</p>
                 </div>
                 <div className="bg-[#0a0a1a] p-5 rounded-xl border border-amber-900/50 shadow-lg hover:border-amber-500/50 transition-colors">
                     <h3 className="text-xs font-bold text-amber-400 uppercase tracking-widest mb-3 flex items-center gap-2"><Shield className="w-4 h-4" /> Taktik</h3>
-                    <p className="text-xs text-muted-foreground leading-relaxed">Radarınızı (sağ alt) kullanarak düşman sürüsünün konumunu tespit edin. Yeşil kristalleri toplayarak yakıt takviyesi yapın.</p>
+                    <p className="text-xs text-muted-foreground leading-relaxed">Düşmanlar ve kristaller rotanız üzerinde doğrusal olarak sıralıdır. Gelen lazerlerden kaçınmak için kıvrak manevralar yapın.</p>
                 </div>
             </div>
         </div>
