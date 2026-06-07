@@ -71,6 +71,7 @@ const LOW_VALUE_QUERY_PATHS = new Set([
     '/simulasyonlar',
 ]);
 const TRACKING_PARAM_PATTERN = /^(?:utm_.+|fbclid|gclid|yclid|ysclid|mc_cid|mc_eid|ref|source)$/i;
+const SEARCH_PLACEHOLDER_QUERY = '{search_term_string}';
 const SEARCH_CRAWLER_PATTERN = /Googlebot|Googlebot-Image|Googlebot-News|Bingbot|DuckDuckBot|Yandex|YandexBot|YandexImages|Applebot|Applebot-Extended|Baiduspider|SeznamBot|Naverbot|Sogou|PetalBot|Bytespider|LinkedInBot|Twitterbot|facebookexternalhit|Facebot|WhatsApp|Slackbot|TelegramBot|Instagram|Pinterest|Discordbot/i;
 
 type UpstashPipelineResult = Array<{ result?: unknown; error?: string }>;
@@ -163,6 +164,16 @@ function rateLimitResponse(): NextResponse {
     );
 }
 
+function blockedInternalHeaderResponse(): NextResponse {
+    return new NextResponse(null, {
+        status: 400,
+        headers: {
+            'Cache-Control': 'no-store, max-age=0',
+            'X-Robots-Tag': 'noindex, nofollow',
+        },
+    });
+}
+
 function goneNoindexResponse(): NextResponse {
     return new NextResponse(null, {
         status: 410,
@@ -214,6 +225,17 @@ function normalizeSeoUrl(request: NextRequest) {
         }
     }
 
+    if (url.searchParams.get('page') === '1') {
+        url.searchParams.delete('page');
+        changed = true;
+    }
+
+    const queryValue = url.searchParams.get('q')?.trim();
+    if ((url.pathname === '/ara' || url.pathname === '/forum') && queryValue === SEARCH_PLACEHOLDER_QUERY) {
+        url.searchParams.delete('q');
+        changed = true;
+    }
+
     if (url.pathname === '/index') {
         url.pathname = '/';
         changed = true;
@@ -227,6 +249,9 @@ function normalizeSeoUrl(request: NextRequest) {
 
     if (url.pathname === '/search') {
         url.pathname = '/ara';
+        if (queryValue === SEARCH_PLACEHOLDER_QUERY) {
+            url.searchParams.delete('q');
+        }
         changed = true;
     }
 
@@ -294,6 +319,7 @@ export function isLowValueSeoQuery(pathname: string, searchParams: URLSearchPara
     if (!LOW_VALUE_QUERY_PATHS.has(pathname)) return false;
     if (searchParams.has('q')) return true;
     if (searchParams.has('filter')) return true;
+    if (searchParams.get('page') === '1') return true;
     if (searchParams.get('sort') && searchParams.get('sort') !== 'newest') return true;
     return false;
 }
@@ -319,6 +345,11 @@ export function shouldBypassSession(pathname: string, userAgent: string) {
 export async function proxy(request: NextRequest) {
     const pathname = request.nextUrl.pathname;
     const ip = getClientIP(request);
+
+    if (request.headers.has('x-middleware-subrequest')) {
+        return blockedInternalHeaderResponse();
+    }
+
     const normalizedUrl = normalizeSeoUrl(request);
     if (normalizedUrl) return NextResponse.redirect(normalizedUrl, 301);
 

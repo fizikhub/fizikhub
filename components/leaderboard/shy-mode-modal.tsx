@@ -1,8 +1,8 @@
 "use client";
 
 import { m as motion, AnimatePresence } from "framer-motion";
-import { X, Cat, Crown, Star } from "lucide-react";
-import { useEffect, useState } from "react";
+import { X, Crown, Star } from "lucide-react";
+import { useEffect, useMemo } from "react";
 import Image from "next/image";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
@@ -22,16 +22,13 @@ interface ShyModeModalProps {
 }
 
 export function ShyModeModal({ isOpen, onClose, user }: ShyModeModalProps) {
-    const [cats, setCats] = useState<number[]>([]);
+    const cats = useMemo(() => Array.from({ length: 15 }, (_, i) => i), []);
 
     useEffect(() => {
         if (isOpen) {
-            // Lock body scroll
             document.body.style.overflow = 'hidden';
-            setCats(Array.from({ length: 15 }, (_, i) => i));
         } else {
             document.body.style.overflow = 'unset';
-            setCats([]);
         }
         return () => {
             document.body.style.overflow = 'unset';

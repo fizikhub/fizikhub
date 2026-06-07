@@ -306,6 +306,7 @@ describe("SEO robots and canonical boundaries", () => {
         expect(isLowValueSeoQuery("/forum", new URLSearchParams("q=isik+hizi"))).toBe(true);
         expect(isLowValueSeoQuery("/ara", new URLSearchParams("q=entropi"))).toBe(true);
         expect(isLowValueSeoQuery("/forum", new URLSearchParams("sort=popular"))).toBe(true);
+        expect(isLowValueSeoQuery("/forum", new URLSearchParams("page=1"))).toBe(true);
         expect(isLowValueSeoQuery("/forum", new URLSearchParams("category=Kuantum&page=2"))).toBe(false);
         expect(isLowValueSeoQuery("/makale", new URLSearchParams("category=Astrofizik"))).toBe(false);
     });

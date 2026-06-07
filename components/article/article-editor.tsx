@@ -16,11 +16,11 @@ import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import {
     Bold, Italic, List, ListOrdered, Quote,
-    Heading1, Heading2, Heading3, Undo, Redo,
+    Heading1, Heading2, Undo, Redo,
     ImagePlus, Loader2, Link as LinkIcon, Youtube as YoutubeIcon,
     Underline as UnderlineIcon, Calculator
 } from "lucide-react";
-import { useCallback, useRef, useState, useEffect, useMemo, lazy, Suspense } from "react";
+import { useCallback, useRef, useState, useEffect, lazy, Suspense, type ReactNode } from "react";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from "@/components/ui/dialog";
 import { MathExtension } from '@/components/writer/extensions/math-extension';
@@ -29,26 +29,45 @@ import { ImageCropDialog } from "@/components/shared/image-crop-dialog";
 // Lazy load KaTeX preview (only when math dialog is opened)
 const LazyInlineMath = lazy(() => import('react-katex').then(mod => ({ default: mod.InlineMath })));
 
+type ToolbarButtonProps = {
+    onClick: () => void;
+    isActive?: boolean;
+    children: ReactNode;
+    title: string;
+    disabled?: boolean;
+};
+
+function ToolbarButton({ onClick, isActive, children, title, disabled }: ToolbarButtonProps) {
+    return (
+        <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className={`h-8 w-8 ${isActive ? 'bg-muted text-foreground' : ''}`}
+            onClick={onClick}
+            disabled={disabled}
+            title={title}
+        >
+            {children}
+        </Button>
+    );
+}
+
 // --- Custom Image Node View ---
 const ImageNodeView = (props: NodeViewProps) => {
     const { node, updateAttributes, selected } = props;
-    const [altText, setAltText] = useState(node.attrs.alt || '');
-
-    useEffect(() => {
-        if (node.attrs.alt !== altText) {
-            setAltText(node.attrs.alt || '');
-        }
-    }, [node.attrs.alt]);
+    const altText = typeof node.attrs.alt === "string" ? node.attrs.alt : "";
 
     const handleAltChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const newAlt = e.target.value;
-        setAltText(newAlt);
         updateAttributes({ alt: newAlt });
     };
 
     return (
         <NodeViewWrapper className="my-6 relative group flex flex-col items-center">
             <div className={`relative overflow-hidden rounded-lg transition-all ${selected ? 'ring-2 ring-primary ring-offset-2' : ''}`}>
+                {/* next/image cannot optimize arbitrary editor node-view images. */}
+                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                     src={node.attrs.src}
                     alt={node.attrs.alt}
@@ -251,20 +270,6 @@ export function ArticleEditor({ content, onChange, onUploadImage, className, pla
     if (!editor) {
         return null;
     }
-
-    const ToolbarButton = ({ onClick, isActive, children, title, disabled }: { onClick: () => void; isActive?: boolean; children: React.ReactNode; title: string; disabled?: boolean }) => (
-        <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            className={`h-8 w-8 ${isActive ? 'bg-muted text-foreground' : ''}`}
-            onClick={onClick}
-            disabled={disabled}
-            title={title}
-        >
-            {children}
-        </Button>
-    );
 
     return (
         <div className={cn("border-2 border-dashed border-muted-foreground/20 rounded-xl bg-card shadow-sm overflow-hidden relative", className)}>

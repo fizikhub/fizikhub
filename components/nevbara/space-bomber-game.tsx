@@ -3,7 +3,7 @@
 import { useRef, useEffect, useState, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { RotateCcw, Play, Pause, Volume2, VolumeX, Rocket } from "lucide-react";
+import { RotateCcw, Play, Rocket } from "lucide-react";
 import confetti from "canvas-confetti";
 
 // Game constants
@@ -59,6 +59,8 @@ export function SpaceBomberGame() {
     const [fuel, setFuel] = useState(100);
     const [health, setHealth] = useState(100);
     const [level, setLevel] = useState(1);
+    const fuelRef = useRef(100);
+    const healthRef = useRef(100);
 
     // Physics State Refs
     const shipPos = useRef<Vector2D>({ x: 100, y: 100 });
@@ -70,6 +72,7 @@ export function SpaceBomberGame() {
     const enemies = useRef<Enemy[]>([]);
     const keys = useRef<{ [key: string]: boolean }>({});
     const animationFrameId = useRef<number>(0);
+    const updateRef = useRef<(time: number) => void>(() => {});
     const lastTime = useRef<number>(0);
 
     // Camera
@@ -78,7 +81,20 @@ export function SpaceBomberGame() {
     // Terrain Generation (Simple heightmap for now)
     const terrainPoints = useRef<Vector2D[]>([]);
 
-    const initLevel = useCallback((lvl: number) => {
+    const setFuelLevel = useCallback((value: number) => {
+        const clamped = Math.max(0, Math.min(100, value));
+        fuelRef.current = clamped;
+        setFuel(clamped);
+    }, []);
+
+    const setHealthLevel = useCallback((value: number) => {
+        const clamped = Math.max(0, Math.min(100, value));
+        healthRef.current = clamped;
+        setHealth(clamped);
+        if (clamped <= 0) setGameState('gameover');
+    }, []);
+
+    const resetWorld = useCallback((lvl: number) => {
         // Generate Terrain
         const points: Vector2D[] = [];
         const width = 5000; // Long level
@@ -121,14 +137,18 @@ export function SpaceBomberGame() {
         shipPos.current = { x: 100, y: 300 };
         shipVel.current = { x: 0, y: 0 };
         shipAngle.current = -Math.PI / 2;
-        setFuel(100);
-        setHealth(100);
         bullets.current = [];
         enemyBullets.current = [];
         particles.current = [];
     }, []);
 
-    const createExplosion = (x: number, y: number, color: string, count: number) => {
+    const initLevel = useCallback((lvl: number) => {
+        resetWorld(lvl);
+        setFuelLevel(100);
+        setHealthLevel(100);
+    }, [resetWorld, setFuelLevel, setHealthLevel]);
+
+    const createExplosion = useCallback((x: number, y: number, color: string, count: number) => {
         for (let i = 0; i < count; i++) {
             particles.current.push({
                 x, y,
@@ -140,7 +160,7 @@ export function SpaceBomberGame() {
                 size: Math.random() * 3 + 1
             });
         }
-    };
+    }, []);
 
     // Main Game Loop
     const update = useCallback((time: number) => {
@@ -173,10 +193,10 @@ export function SpaceBomberGame() {
 
         // Ship Thrust
         const thrusting = keys.current['ArrowUp'] || keys.current['w'] || keys.current['W'];
-        if (thrusting && fuel > 0) {
+        if (thrusting && fuelRef.current > 0) {
             shipVel.current.x += Math.cos(shipAngle.current) * THRUST_POWER * dt;
             shipVel.current.y += Math.sin(shipAngle.current) * THRUST_POWER * dt;
-            setFuel(f => Math.max(0, f - 0.1 * dt));
+            setFuelLevel(fuelRef.current - 0.1 * dt);
 
             // Thrust Particles
             particles.current.push({
@@ -219,8 +239,7 @@ export function SpaceBomberGame() {
                     if (speed > 4) {
                         // Crash
                         createExplosion(shipPos.current.x, shipPos.current.y, 'orange', 50);
-                        setHealth(0);
-                        setGameState('gameover');
+                        setHealthLevel(0);
                     } else {
                         // Land / Bounce
                         shipPos.current.y = groundY - SHIP_SIZE;
@@ -228,7 +247,7 @@ export function SpaceBomberGame() {
                         shipVel.current.x *= 0.8; // Friction
 
                         // Slightly damage if bumpy landing
-                        if (speed > 2) setHealth(h => Math.max(0, h - 5));
+                        if (speed > 2) setHealthLevel(healthRef.current - 5);
                     }
                 }
             }
@@ -284,7 +303,7 @@ export function SpaceBomberGame() {
             }
 
             // Check collision with Player Bullets
-            bullets.current.forEach((b, bIdx) => {
+            bullets.current.forEach((b) => {
                 const bdx = b.x - enemy.x;
                 const bdy = b.y - enemy.y;
                 if (Math.sqrt(bdx * bdx + bdy * bdy) < enemy.radius + 5) {
@@ -321,10 +340,10 @@ export function SpaceBomberGame() {
             const dx = b.x - shipPos.current.x;
             const dy = b.y - shipPos.current.y;
             if (Math.sqrt(dx * dx + dy * dy) < SHIP_SIZE) {
-                setHealth(h => Math.max(0, h - 10));
+                const nextHealth = Math.max(0, healthRef.current - 10);
+                setHealthLevel(nextHealth);
                 b.life = 0;
                 createExplosion(shipPos.current.x, shipPos.current.y, 'red', 5);
-                if (health <= 0) setGameState('gameover');
             }
         });
         enemyBullets.current = enemyBullets.current.filter(b => b.life > 0);
@@ -393,7 +412,7 @@ export function SpaceBomberGame() {
         ctx.stroke();
 
         // Draw Player Ship
-        if (health > 0) {
+        if (healthRef.current > 0) {
             ctx.save();
             ctx.translate(shipPos.current.x, shipPos.current.y);
             ctx.rotate(shipAngle.current + Math.PI / 2);
@@ -466,8 +485,12 @@ export function SpaceBomberGame() {
 
         ctx.restore();
 
-        animationFrameId.current = requestAnimationFrame(() => update(performance.now()));
-    }, [gameState]);
+        animationFrameId.current = requestAnimationFrame((nextTime) => updateRef.current(nextTime));
+    }, [createExplosion, gameState, setFuelLevel, setHealthLevel]);
+
+    useEffect(() => {
+        updateRef.current = update;
+    }, [update]);
 
     // Handle Input
     useEffect(() => {
@@ -488,16 +511,23 @@ export function SpaceBomberGame() {
     }, []);
 
     // Handle Start
-    const startGame = () => {
-        // console.log("Starting game...");
-        initLevel(level);
+    const startGame = (nextLevel = level, preserveScore = false) => {
+        if (!preserveScore) setScore(0);
+        setLevel(nextLevel);
+        initLevel(nextLevel);
         setGameState('playing');
         lastTime.current = performance.now();
-        setTimeout(() => {
-            if (animationFrameId.current) cancelAnimationFrame(animationFrameId.current);
-            update(performance.now());
-        }, 50);
     };
+
+    useEffect(() => {
+        if (gameState !== 'playing') return;
+
+        lastTime.current = performance.now();
+        if (animationFrameId.current) cancelAnimationFrame(animationFrameId.current);
+        animationFrameId.current = requestAnimationFrame((time) => updateRef.current(time));
+
+        return () => cancelAnimationFrame(animationFrameId.current);
+    }, [gameState]);
 
     // On Mount Resize
     useEffect(() => {
@@ -511,13 +541,13 @@ export function SpaceBomberGame() {
         window.addEventListener('resize', resize);
 
         // Initial setup for background
-        initLevel(1);
+        resetWorld(1);
 
         return () => {
             window.removeEventListener('resize', resize);
             cancelAnimationFrame(animationFrameId.current);
         }
-    }, [initLevel]);
+    }, [resetWorld]);
 
 
     return (
@@ -563,14 +593,14 @@ export function SpaceBomberGame() {
             {gameState === 'idle' && (
                 <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/80 z-10 p-6 text-center">
                     <Rocket className="w-16 h-16 text-primary mb-4 animate-bounce" />
-                    <h1 className="text-4xl font-black text-white mb-2">GRAVITY WARRIOR</h1>
+                    <p className="text-4xl font-black text-white mb-2">GRAVITY WARRIOR</p>
                     <p className="text-gray-300 mb-8 max-w-md">
                         Gerçek fizik kuralları geçerlidir.<br />
                         <span className="text-primary font-bold">W / YUKARI</span> ile motorları çalıştır.<br />
                         <span className="text-primary font-bold">A / D / YÖN</span> ile gemiyi döndür.<br />
                         <span className="text-primary font-bold">SPACE</span> ile ateş et.
                     </p>
-                    <Button size="lg" className="text-lg font-bold brutalist-button" onClick={startGame}>
+                    <Button size="lg" className="text-lg font-bold brutalist-button" onClick={() => startGame()}>
                         <Play className="mr-2 w-5 h-5" /> GÖREVİ BAŞLAT
                     </Button>
                 </div>
@@ -580,7 +610,7 @@ export function SpaceBomberGame() {
                 <div className="absolute inset-0 flex flex-col items-center justify-center bg-red-900/80 z-10 p-6 text-center">
                     <h2 className="text-5xl font-black text-white mb-4">GÖREV BAŞARISIZ</h2>
                     <p className="text-white mb-8 text-xl">Aracı parçaladın!</p>
-                    <Button size="lg" variant="destructive" className="text-lg font-bold" onClick={startGame}>
+                    <Button size="lg" variant="destructive" className="text-lg font-bold" onClick={() => startGame()}>
                         <RotateCcw className="mr-2 w-5 h-5" /> TEKRAR DENE
                     </Button>
                 </div>
@@ -592,7 +622,7 @@ export function SpaceBomberGame() {
                     <h2 className="text-4xl font-black text-white mb-2">BÖLGE TEMİZLENDİ!</h2>
                     <p className="text-white/80 mb-6">Mükemmel uçuş, pilot.</p>
                     <div className="flex gap-4">
-                        <Button size="lg" className="bg-white text-green-900 hover:bg-gray-200 font-bold" onClick={() => { setLevel(l => l + 1); startGame(); }}>
+                        <Button size="lg" className="bg-white text-green-900 hover:bg-gray-200 font-bold" onClick={() => startGame(level + 1, true)}>
                             SONRAKİ SEVİYE
                         </Button>
                     </div>
