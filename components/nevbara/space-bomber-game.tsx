@@ -189,8 +189,8 @@ export function SpaceBomberGame() {
     const [level, setLevel] = useState(1);
     const [targetLocked, setTargetLocked] = useState(false);
     
-    // Mouse tracker for UI so the player knows where they are steering
-    const [mouseUI, setMouseUI] = useState({ x: -100, y: -100 });
+    // Mouse tracker for UI via DOM ref (fixes performance freeze from React state)
+    const cursorRef = useRef<HTMLDivElement>(null);
     
     // Boss health states
     const [bossHealth, setBossHealth] = useState(0);
@@ -706,8 +706,11 @@ export function SpaceBomberGame() {
             let dx = (e.clientX - cx) / (rect.width / 2);
             let dy = (e.clientY - cy) / (rect.height / 2);
             
-            // Draw tracking cursor
-            setMouseUI({ x: e.clientX - rect.left, y: e.clientY - rect.top });
+            // Draw tracking cursor via DOM to avoid React re-renders locking up the browser
+            if (cursorRef.current) {
+                cursorRef.current.style.left = `${e.clientX - rect.left}px`;
+                cursorRef.current.style.top = `${e.clientY - rect.top}px`;
+            }
             
             if (Math.abs(dx) < 0.1) dx = 0;
             if (Math.abs(dy) < 0.1) dy = 0;
@@ -736,7 +739,7 @@ export function SpaceBomberGame() {
     tickRef.current = (time: number) => {
         if (gameState !== 'playing' && gameState !== 'hyperspace') {
             lastTime.current = time;
-            animationFrameId.current = requestAnimationFrame(tickRef.current);
+            animationFrameId.current = requestAnimationFrame((t) => tickRef.current(t));
             return;
         }
 
@@ -779,7 +782,7 @@ export function SpaceBomberGame() {
             }
 
             composer.render();
-            animationFrameId.current = requestAnimationFrame(tickRef.current);
+            animationFrameId.current = requestAnimationFrame((t) => tickRef.current(t));
             return;
         }
 
@@ -1177,7 +1180,7 @@ export function SpaceBomberGame() {
         setAltitudeVal(Math.round(shipPos.current.length() / 10)); 
 
         composer.render();
-        animationFrameId.current = requestAnimationFrame(tickRef.current);
+        animationFrameId.current = requestAnimationFrame((t) => tickRef.current(t));
     };
 
     useEffect(() => {
@@ -1196,7 +1199,8 @@ export function SpaceBomberGame() {
         setScore(0);
         buildLevelWorld();
         lastTime.current = performance.now();
-        animationFrameId.current = requestAnimationFrame(tickRef.current);
+        if (animationFrameId.current) cancelAnimationFrame(animationFrameId.current);
+        animationFrameId.current = requestAnimationFrame((t) => tickRef.current(t));
         
         if (soundRef.current && soundRef.current.ctx.state === 'suspended') {
             soundRef.current.ctx.resume();
@@ -1297,8 +1301,9 @@ export function SpaceBomberGame() {
                 {/* Virtual Joystick Cursor */}
                 {(gameState === 'playing' || gameState === 'hyperspace') && (
                     <div 
+                        ref={cursorRef}
                         className="absolute w-6 h-6 rounded-full border-2 border-dashed border-cyan-400 pointer-events-none z-20 transition-transform duration-75"
-                        style={{ left: mouseUI.x, top: mouseUI.y, transform: 'translate(-50%, -50%)', opacity: 0.6 }}
+                        style={{ left: '-100px', top: '-100px', transform: 'translate(-50%, -50%)', opacity: 0.6 }}
                     />
                 )}
 
