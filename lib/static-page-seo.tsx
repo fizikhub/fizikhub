@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { BreadcrumbJsonLd } from "@/lib/breadcrumbs";
+import { JsonLd } from "@/components/seo/json-ld";
 
 const SITE_URL = "https://www.fizikhub.com";
 const DEFAULT_IMAGE = "/og-image.jpg";
@@ -105,10 +106,7 @@ export function StaticPageJsonLd({
     return (
         <>
             <BreadcrumbJsonLd items={[{ name: breadcrumbName, href: path }]} />
-            <script
-                type="application/ld+json"
-                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-            />
+            <JsonLd data={jsonLd} />
         </>
     );
 }

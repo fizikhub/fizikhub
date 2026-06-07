@@ -5,6 +5,7 @@ import { ArrowLeft, ArrowRight, BookOpen, Brain, FlaskConical, HelpCircle, Netwo
 import { simulations } from "@/components/simulations/data";
 import { getDictionaryTerms } from "@/lib/api";
 import { BreadcrumbJsonLd } from "@/lib/breadcrumbs";
+import { JsonLd } from "@/components/seo/json-ld";
 import { SEO_PRIORITY_ARTICLES } from "@/lib/seo-priority";
 import { getClusterResourceLinks, getTopicClusterBySlug, getTopicClusterHref, SEO_TOPIC_CLUSTERS, type SeoClusterResourceType, type SeoTopicCluster } from "@/lib/seo-topic-clusters";
 import { getTopicStudyGuide, isThinTopicCluster } from "@/lib/topic-study-guides";
@@ -311,10 +312,7 @@ export default async function TopicClusterPage({ params }: PageProps) {
                 { name: "Konular", href: "/konular" },
                 { name: cluster.title, href: getTopicClusterHref(cluster) },
             ]} />
-            <script
-                type="application/ld+json"
-                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-            />
+            <JsonLd data={jsonLd} />
 
             <main className="min-h-screen bg-background text-foreground">
                 <section className="border-b border-foreground/10 px-4 py-8 sm:px-6 sm:py-12">

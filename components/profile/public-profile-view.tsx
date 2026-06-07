@@ -15,6 +15,7 @@ import { format } from "date-fns";
 import { tr } from "date-fns/locale";
 import { Variants } from "framer-motion";
 import { User } from "@supabase/supabase-js";
+import { externalUrlLabel, safeExternalUrl, socialProfileUrl } from "@/lib/profile-links";
 
 interface ProfileData {
     id: string;
@@ -86,6 +87,12 @@ export function PublicProfileView({
     answersCount,
     user
 }: PublicProfileViewProps) {
+    const websiteUrl = safeExternalUrl(profile.website);
+    const websiteLabel = externalUrlLabel(profile.website);
+    const twitterUrl = socialProfileUrl("twitter", profile.social_links?.twitter);
+    const githubUrl = socialProfileUrl("github", profile.social_links?.github);
+    const linkedinUrl = socialProfileUrl("linkedin", profile.social_links?.linkedin);
+    const instagramUrl = socialProfileUrl("instagram", profile.social_links?.instagram);
 
     const containerVariants = {
         hidden: { opacity: 0 },
@@ -195,11 +202,11 @@ export function PublicProfileView({
                                         <Calendar className="h-3 w-3" />
                                         <span>{format(new Date(profile.created_at || new Date()), 'MMMM yyyy', { locale: tr })} tarihinden beri üye</span>
                                     </div>
-                                    {profile.website && (
+                                    {websiteUrl && (
                                         <div className="flex items-center gap-2">
                                             <LinkIcon className="h-3 w-3" />
-                                            <a href={profile.website.startsWith('http') ? profile.website : `https://${profile.website}`} target="_blank" rel="noopener noreferrer" className="hover:text-foreground truncate max-w-[200px] transition-colors">
-                                                {profile.website.replace(/^https?:\/\//, '')}
+                                            <a href={websiteUrl} target="_blank" rel="noopener noreferrer" className="hover:text-foreground truncate max-w-[200px] transition-colors">
+                                                {websiteLabel}
                                             </a>
                                         </div>
                                     )}
@@ -207,23 +214,23 @@ export function PublicProfileView({
 
                                 {/* Social Links */}
                                 <div className="flex gap-3 mt-4 justify-center">
-                                    {profile.social_links?.twitter && (
-                                        <a href={`https://twitter.com/${profile.social_links.twitter}`} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors">
+                                    {twitterUrl && (
+                                        <a href={twitterUrl} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors">
                                             <Twitter className="h-4 w-4" />
                                         </a>
                                     )}
-                                    {profile.social_links?.github && (
-                                        <a href={`https://github.com/${profile.social_links.github}`} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors">
+                                    {githubUrl && (
+                                        <a href={githubUrl} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors">
                                             <Github className="h-4 w-4" />
                                         </a>
                                     )}
-                                    {profile.social_links?.linkedin && (
-                                        <a href={`https://linkedin.com/in/${profile.social_links.linkedin}`} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors">
+                                    {linkedinUrl && (
+                                        <a href={linkedinUrl} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors">
                                             <Linkedin className="h-4 w-4" />
                                         </a>
                                     )}
-                                    {profile.social_links?.instagram && (
-                                        <a href={`https://instagram.com/${profile.social_links.instagram}`} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors">
+                                    {instagramUrl && (
+                                        <a href={instagramUrl} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors">
                                             <Instagram className="h-4 w-4" />
                                         </a>
                                     )}

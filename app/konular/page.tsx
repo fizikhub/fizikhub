@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, Atom, Orbit, Sigma } from "lucide-react";
 import { BreadcrumbJsonLd } from "@/lib/breadcrumbs";
+import { JsonLd } from "@/components/seo/json-ld";
 import { SEO_PRIORITY_ARTICLES, type SeoIntentArticle } from "@/lib/seo-priority";
 import { getTopicClusterHref, SEO_TOPIC_CLUSTERS } from "@/lib/seo-topic-clusters";
 
@@ -126,10 +127,7 @@ export default function TopicsPage() {
     return (
         <>
             <BreadcrumbJsonLd items={[{ name: "Konular", href: "/konular" }]} />
-            <script
-                type="application/ld+json"
-                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-            />
+            <JsonLd data={jsonLd} />
 
             <main className="min-h-screen bg-background px-4 py-8 text-foreground sm:px-6 sm:py-12">
                 <div className="mx-auto max-w-6xl">

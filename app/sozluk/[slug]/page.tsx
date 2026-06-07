@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { getDictionaryTerms } from "@/lib/api";
 import { BreadcrumbJsonLd } from "@/lib/breadcrumbs";
+import { JsonLd } from "@/components/seo/json-ld";
 import { SEO_PRIORITY_ARTICLES } from "@/lib/seo-priority";
 import { getClustersForTermSlug, getRelatedUrlsForCluster } from "@/lib/seo-topic-clusters";
 import { slugify } from "@/lib/slug";
@@ -276,10 +277,7 @@ export default async function DictionaryTermPage({ params }: PageProps) {
 
     return (
         <>
-            <script
-                type="application/ld+json"
-                dangerouslySetInnerHTML={{ __html: JSON.stringify(combinedJsonLd) }}
-            />
+            <JsonLd data={combinedJsonLd} />
             <BreadcrumbJsonLd items={[
                 { name: "Sözlük", href: "/sozluk" },
                 { name: term.term, href: `/sozluk/${slug}` },

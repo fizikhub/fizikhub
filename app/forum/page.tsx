@@ -5,6 +5,7 @@ import { QuestionList } from "@/components/forum/question-list";
 import { QuestionOfTheWeek } from "@/components/forum/question-of-the-week";
 import { Ghost } from "lucide-react";
 import { BreadcrumbJsonLd } from "@/lib/breadcrumbs";
+import { JsonLd } from "@/components/seo/json-ld";
 import { buildSafeIlikePattern } from "@/lib/security";
 import { buildForumDiscussionPostingItem } from "@/lib/forum-structured-data";
 import type { ForumStructuredDataProfile } from "@/lib/forum-structured-data";
@@ -273,10 +274,7 @@ export default async function ForumPage({ searchParams }: ForumPageProps) {
     return (
         <>
             <BreadcrumbJsonLd items={[{ name: 'Forum', href: '/forum' }]} />
-            <script
-                type="application/ld+json"
-                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-            />
+            <JsonLd data={jsonLd} />
             <div className="bg-background min-h-screen pb-[calc(5.5rem+env(safe-area-inset-bottom))]">
                 <div className="container py-3 md:py-8 px-3 min-[390px]:px-4 md:px-8 max-w-[1600px] mx-auto">
                     <ModernForumHeader />

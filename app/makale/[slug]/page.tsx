@@ -12,6 +12,7 @@ import { ArticleErrorBoundary } from "@/components/blog/article-error-boundary";
 import { MarkdownRenderer } from "@/components/markdown-renderer";
 import { ServerMarkdownRenderer } from "@/components/server-markdown-renderer";
 import { CollapsibleQuickAnswer } from "@/components/articles/collapsible-quick-answer";
+import { JsonLd } from "@/components/seo/json-ld";
 import { getSeoIntentForSlug, SEO_PRIORITY_ARTICLES, SEO_PRIORITY_SLUGS, type SeoIntentArticle } from "@/lib/seo-priority";
 import { getClustersForArticleSlug, getRelatedUrlsForCluster, getTopicClusterHref } from "@/lib/seo-topic-clusters";
 import { buildMetaDescription, getArticleCanonicalPath, getCanonicalOrigin, getSiteUrl, isLikelyIndexableArticle, isLikelyIndexableTitle, toAbsoluteUrl } from "@/lib/seo-utils";
@@ -630,11 +631,7 @@ export default async function ArticlePage({ params }: PageProps) {
     return (
         <>
             {jsonLd.map((schema, i) => (
-                <script
-                    key={i}
-                    type="application/ld+json"
-                    dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
-                />
+                <JsonLd key={i} data={schema} />
             ))}
             <ReadingProgress />
 

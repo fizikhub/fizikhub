@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ArrowRight, Clock3, ListChecks, Sparkles } from "lucide-react";
 import { simulations } from "@/components/simulations/data";
 import { BreadcrumbJsonLd } from "@/lib/breadcrumbs";
+import { JsonLd } from "@/components/seo/json-ld";
 import { getSiteUrl } from "@/lib/seo-utils";
 import { SimulationLearningTracker } from "@/components/simulations/simulation-learning-tracker";
 import { buildSimulationCourseJsonLd } from "@/lib/educational-schema";
@@ -361,11 +362,7 @@ export default async function SimulationPage({ params }: { params: Promise<{ slu
     return (
         <div className="min-h-[100dvh] bg-black">
             {jsonLd.map((schema) => (
-                <script
-                    key={schema["@id"]}
-                    type="application/ld+json"
-                    dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
-                />
+                <JsonLd key={schema["@id"]} data={schema} />
             ))}
             <BreadcrumbJsonLd items={[
                 { name: "Simülasyonlar", href: "/simulasyonlar" },

@@ -261,7 +261,8 @@ export function SpaceBomberGame() {
 
 
         // --- BULLETS ---
-        if (keys.current[' '] && !keys.current['fired']) {
+        const firing = keys.current['p'] || keys.current['P'];
+        if (firing && !keys.current['fired']) {
             bullets.current.push({
                 x: shipPos.current.x + Math.cos(shipAngle.current) * 20,
                 y: shipPos.current.y + Math.sin(shipAngle.current) * 20,
@@ -271,7 +272,7 @@ export function SpaceBomberGame() {
             });
             keys.current['fired'] = true; // Prevent rapid fire, require release
         }
-        if (!keys.current[' ']) keys.current['fired'] = false;
+        if (!firing) keys.current['fired'] = false;
 
         bullets.current.forEach(b => {
             b.x += b.vx * dt;
@@ -495,7 +496,7 @@ export function SpaceBomberGame() {
     // Handle Input
     useEffect(() => {
         const handleDown = (e: KeyboardEvent) => {
-            if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", " "].indexOf(e.code) > -1) {
+            if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "KeyP"].includes(e.code)) {
                 e.preventDefault();
             }
             keys.current[e.key] = true;
@@ -598,7 +599,7 @@ export function SpaceBomberGame() {
                         Gerçek fizik kuralları geçerlidir.<br />
                         <span className="text-primary font-bold">W / YUKARI</span> ile motorları çalıştır.<br />
                         <span className="text-primary font-bold">A / D / YÖN</span> ile gemiyi döndür.<br />
-                        <span className="text-primary font-bold">SPACE</span> ile ateş et.
+                        <span className="text-primary font-bold">P</span> ile ateş et.
                     </p>
                     <Button size="lg" className="text-lg font-bold brutalist-button" onClick={() => startGame()}>
                         <Play className="mr-2 w-5 h-5" /> GÖREVİ BAŞLAT

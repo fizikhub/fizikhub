@@ -10,6 +10,8 @@ import { buildSimulationCourseJsonLd, buildSimulationCourseListJsonLd, type Simu
 import { isKnownAiCrawlerUserAgent } from "@/lib/ai-discovery";
 import { buildForumDiscussionPostingItem } from "@/lib/forum-structured-data";
 import { getVectorUrl } from "@/lib/search-results";
+import { serializeScriptJson } from "@/lib/script-json";
+import { safeExternalUrl, socialProfileUrl } from "@/lib/profile-links";
 import { getClusterResourceLinks, getPrimaryClusterHref, getTopicClusterBySlug, getTopicClusterHref, getTopicClustersForText, normalizeTopicSearchText, SEO_TOPIC_CLUSTERS } from "@/lib/seo-topic-clusters";
 import { getTopicStudyGuide, isThinTopicCluster, weakTopicGuideCoverage } from "@/lib/topic-study-guides";
 import { isForbiddenSitemapUrl, isPrivateSeoPath } from "@/lib/seo-utils";
@@ -253,6 +255,7 @@ describe("SEO robots and canonical boundaries", () => {
         expect(isForbiddenSitemapUrl("https://www.fizikhub.com/paylas")).toBe(false);
         expect(isForbiddenSitemapUrl("https://www.fizikhub.com/yazar/rehber")).toBe(false);
         expect(isForbiddenSitemapUrl("https://www.fizikhub.com/nevbara")).toBe(true);
+        expect(isForbiddenSitemapUrl("https://www.fizikhub.com/nevbara?utm_source=legacy")).toBe(true);
 
         const robotsResponse = robotsTxt();
         const robotsText = await robotsResponse.text();
@@ -315,6 +318,28 @@ describe("SEO robots and canonical boundaries", () => {
         expect(decodeCategorySlug("bilim%20tarihi")).toBe("Bilim Tarihi");
         expect(decodeCategorySlug("par%C3%A7ac%C4%B1k%20fizi%C4%9Fi")).toBe("Parçacık Fiziği");
         expect(decodeCategorySlug("pop%C3%BCler%20bilim")).toBe("Popüler Bilim");
+    });
+
+    it("escapes JSON embedded in script tags for structured data safety", () => {
+        const serialized = serializeScriptJson({
+            headline: "</script><script>alert(1)</script>",
+            summary: "Fizik & bilim > ezber",
+        });
+
+        expect(serialized).not.toContain("</script>");
+        expect(serialized).not.toContain("<script>");
+        expect(serialized).toContain("\\u003c/script\\u003e");
+        expect(serialized).toContain("\\u0026");
+        expect(serialized).toContain("\\u003e");
+    });
+
+    it("normalizes public profile links before rendering external hrefs", () => {
+        expect(safeExternalUrl("fizikhub.com/yazar")).toBe("https://fizikhub.com/yazar");
+        expect(safeExternalUrl("javascript:alert(1)")).toBeNull();
+        expect(socialProfileUrl("twitter", "@fizikhub")).toBe("https://twitter.com/fizikhub");
+        expect(socialProfileUrl("github", "https://github.com/fizikhub")).toBe("https://github.com/fizikhub");
+        expect(socialProfileUrl("github", "https://evil.example/fizikhub")).toBeNull();
+        expect(socialProfileUrl("instagram", "bad/handle")).toBeNull();
     });
 });
 

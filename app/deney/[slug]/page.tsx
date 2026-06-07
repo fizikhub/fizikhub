@@ -5,6 +5,7 @@ import { getArticleBySlug } from "@/lib/api";
 import { calculateReadingTime, formatReadingTime } from "@/lib/reading-time";
 import { Metadata } from "next";
 import { ExperimentViewer } from "@/components/experiment/experiment-viewer";
+import { JsonLd } from "@/components/seo/json-ld";
 import { isAdminEmail } from "@/lib/admin";
 import { buildMetaDescription, getArticleCanonicalPath, getSiteUrl, isLikelyIndexableArticle, isLikelyIndexableTitle, toAbsoluteUrl } from "@/lib/seo-utils";
 
@@ -168,10 +169,7 @@ export default async function ExperimentPage({ params }: PageProps) {
 
     return (
         <>
-            <script
-                type="application/ld+json"
-                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-            />
+            <JsonLd data={jsonLd} />
             <ReadingProgress />
 
             <ExperimentViewer

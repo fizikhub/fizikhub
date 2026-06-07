@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase-server";
 import { redirect } from "next/navigation";
 import { Metadata } from "next";
 import { Suspense } from "react";
+import type { User } from "@supabase/supabase-js";
 import { DarkNeoHeader } from "@/components/profile/dark-neo/dark-neo-header";
 import { DarkNeoFeed } from "@/components/profile/dark-neo/dark-neo-feed";
 import { DarkNeoSidebar } from "@/components/profile/dark-neo/dark-neo-sidebar";
@@ -125,12 +126,11 @@ function FeedSkeleton() {
 
 // --- STREAMING SECTION COMPONENTS ---
 
-async function ProfileHeaderSection({ userId, user }: { userId: string; user: any }) {
+async function ProfileHeaderSection({ userId }: { userId: string }) {
     const { profile, stats } = await getProfileAndStats(userId);
     return (
         <DarkNeoHeader
             profile={profile}
-            user={user}
             stats={stats}
             isOwnProfile={true}
             isFollowing={false}
@@ -138,7 +138,7 @@ async function ProfileHeaderSection({ userId, user }: { userId: string; user: an
     );
 }
 
-async function ProfileSidebarSection({ userId, user }: { userId: string; user: any }) {
+async function ProfileSidebarSection({ userId, user }: { userId: string; user: User }) {
     const { profile, stats } = await getProfileAndStats(userId);
     return (
         <DarkNeoSidebar
@@ -182,7 +182,7 @@ export default async function ProfilePage() {
                 <div className="mb-4 sm:mb-6 lg:mb-8">
                     <ProfileSetupHint />
                     <Suspense fallback={<HeaderSkeleton />}>
-                        <ProfileHeaderSection userId={user.id} user={user} />
+                        <ProfileHeaderSection userId={user.id} />
                     </Suspense>
                 </div>
 

@@ -11,6 +11,7 @@ import { EditProfileButton } from "@/components/profile/edit-profile-button";
 import { SignOutButton } from "@/components/auth/sign-out-button";
 import { ProfileMessagesButton } from "@/components/profile/profile-messages-button";
 import { NotificationBell } from "@/components/notifications/notification-bell";
+import { externalUrlLabel, safeExternalUrl, socialProfileUrl } from "@/lib/profile-links";
 
 import { ReputationDisplay } from "@/components/reputation-display";
 import { CreateArticleDialog } from "@/components/profile/create-article-dialog";
@@ -43,6 +44,14 @@ interface ProfileHeaderProps {
 }
 
 export function ProfileHeader({ profile, user }: ProfileHeaderProps) {
+    const websiteUrl = safeExternalUrl(profile?.website);
+    const websiteLabel = externalUrlLabel(profile?.website);
+    const twitterUrl = socialProfileUrl("twitter", profile?.social_links?.twitter);
+    const githubUrl = socialProfileUrl("github", profile?.social_links?.github);
+    const linkedinUrl = socialProfileUrl("linkedin", profile?.social_links?.linkedin);
+    const instagramUrl = socialProfileUrl("instagram", profile?.social_links?.instagram);
+    const hasSocialLinks = Boolean(twitterUrl || githubUrl || linkedinUrl || instagramUrl);
+
     return (
         <div className="relative mb-8 p-6 rounded-3xl bg-black/40 backdrop-blur-md border border-primary/20 shadow-[0_0_15px_rgba(var(--primary),0.1)]">
             <div className="flex flex-col md:flex-row gap-8 items-start">
@@ -145,38 +154,38 @@ export function ProfileHeader({ profile, user }: ProfileHeaderProps) {
                             <Calendar className="h-3 w-3 text-primary" />
                             <span>KAYIT: {format(new Date(user.created_at), 'MM.yyyy', { locale: tr }).toUpperCase()}</span>
                         </div>
-                        {profile?.website && (
+                        {websiteUrl && (
                             <a
-                                href={profile.website.startsWith('http') ? profile.website : `https://${profile.website}`}
+                                href={websiteUrl}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="flex items-center gap-1.5 hover:text-primary transition-colors"
                             >
                                 <LinkIcon className="h-3 w-3" />
-                                <span>{profile.website.replace(/^https?:\/\//, '').toUpperCase()}</span>
+                                <span>{websiteLabel.toUpperCase()}</span>
                             </a>
                         )}
 
                         {/* Social Links */}
-                        {(profile?.social_links?.twitter || profile?.social_links?.github || profile?.social_links?.linkedin || profile?.social_links?.instagram) && (
+                        {hasSocialLinks && (
                             <div className="flex gap-3 ml-2 pl-2 border-l border-primary/20">
-                                {profile.social_links?.twitter && (
-                                    <a href={`https://twitter.com/${profile.social_links.twitter}`} target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
+                                {twitterUrl && (
+                                    <a href={twitterUrl} target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
                                         <Twitter className="h-3 w-3" />
                                     </a>
                                 )}
-                                {profile.social_links?.github && (
-                                    <a href={`https://github.com/${profile.social_links.github}`} target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
+                                {githubUrl && (
+                                    <a href={githubUrl} target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
                                         <Github className="h-3 w-3" />
                                     </a>
                                 )}
-                                {profile.social_links?.linkedin && (
-                                    <a href={`https://linkedin.com/in/${profile.social_links.linkedin}`} target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
+                                {linkedinUrl && (
+                                    <a href={linkedinUrl} target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
                                         <Linkedin className="h-3 w-3" />
                                     </a>
                                 )}
-                                {profile.social_links?.instagram && (
-                                    <a href={`https://instagram.com/${profile.social_links.instagram}`} target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
+                                {instagramUrl && (
+                                    <a href={instagramUrl} target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
                                         <Instagram className="h-3 w-3" />
                                     </a>
                                 )}

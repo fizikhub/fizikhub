@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { BrainCircuit, ArrowRight, Clock, Trophy } from "lucide-react";
 import { BreadcrumbJsonLd } from "@/lib/breadcrumbs";
+import { JsonLd } from "@/components/seo/json-ld";
 import type { Metadata } from "next";
 
 const SITE_URL = "https://www.fizikhub.com";
@@ -72,10 +73,7 @@ export default async function QuizzesPage() {
 
     return (
         <>
-            <script
-                type="application/ld+json"
-                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-            />
+            <JsonLd data={jsonLd} />
             <BreadcrumbJsonLd items={[{ name: 'Testler', href: '/testler' }]} />
             <div className="container max-w-7xl py-12 px-4 mx-auto min-h-screen">
                 <div className="flex flex-col md:flex-row gap-8 items-end mb-12 border-b-4 border-black dark:border-white pb-8">

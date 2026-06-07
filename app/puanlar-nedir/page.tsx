@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import { BreadcrumbJsonLd } from "@/lib/breadcrumbs";
+import { JsonLd } from "@/components/seo/json-ld";
 
 const POINTS_DESCRIPTION = "FizikHub puan sistemi ve rütbeler hakkında her şey. Soru sorarak, cevap vererek ve makale yazarak puan kazanın, liderlik tablosunda yükselin.";
 
@@ -50,7 +51,7 @@ export default function PointsInfoPage() {
     return (
         <>
             <BreadcrumbJsonLd items={[{ name: 'Puan Sistemi', href: '/puanlar-nedir' }]} />
-            <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageJsonLd) }} />
+            <JsonLd data={webPageJsonLd} />
             <div className="container mx-auto py-12 px-4 max-w-5xl">
                 {/* Header */}
                 <div className="mb-12 border-b-4 border-black dark:border-white pb-8">

@@ -70,6 +70,9 @@ const LOW_VALUE_QUERY_PATHS = new Set([
     '/testler',
     '/simulasyonlar',
 ]);
+const GONE_SEO_PATHS = new Set([
+    '/test-mkn0gnnsixw',
+]);
 const TRACKING_PARAM_PATTERN = /^(?:utm_.+|fbclid|gclid|yclid|ysclid|mc_cid|mc_eid|ref|source)$/i;
 const SEARCH_PLACEHOLDER_QUERY = '{search_term_string}';
 const SEARCH_CRAWLER_PATTERN = /Googlebot|Googlebot-Image|Googlebot-News|Bingbot|DuckDuckBot|Yandex|YandexBot|YandexImages|Applebot|Applebot-Extended|Baiduspider|SeznamBot|Naverbot|Sogou|PetalBot|Bytespider|LinkedInBot|Twitterbot|facebookexternalhit|Facebot|WhatsApp|Slackbot|TelegramBot|Instagram|Pinterest|Discordbot/i;
@@ -353,7 +356,7 @@ export async function proxy(request: NextRequest) {
     const normalizedUrl = normalizeSeoUrl(request);
     if (normalizedUrl) return NextResponse.redirect(normalizedUrl, 301);
 
-    if (pathname.includes('*')) {
+    if (GONE_SEO_PATHS.has(pathname) || pathname.includes('*')) {
         return goneNoindexResponse();
     }
 
@@ -436,10 +439,6 @@ export async function proxy(request: NextRequest) {
         '/matematik-ile-her-seyi-kusursuzca-kanitlayabilir-miyiz-1768299779741':
             '/makale/matematik-ile-her-seyi-kusursuzca-kanitlayabilir-miyiz-1768299779741',
     };
-
-    if (pathname === '/test-mkn0gnnsixw') {
-        return goneNoindexResponse();
-    }
 
     if (rootArticleRedirects[pathname]) {
         const url = canonicalRedirectUrl(request);

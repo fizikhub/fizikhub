@@ -23,13 +23,18 @@ const EasterEggs = dynamic(
   { ssr: false }
 );
 
+type FizikhubWindow = Window & {
+  _fizikhubHello?: boolean;
+};
+
 export function RuntimeEffects() {
   const [loadIdleEffects, setLoadIdleEffects] = useState(false);
   const [loadDesktopEffects, setLoadDesktopEffects] = useState(false);
 
   useEffect(() => {
-    if (typeof window !== "undefined" && !(window as any)._fizikhubHello) {
-      (window as any)._fizikhubHello = true;
+    const fizikhubWindow = window as FizikhubWindow;
+    if (process.env.NODE_ENV === "development" && !fizikhubWindow._fizikhubHello) {
+      fizikhubWindow._fizikhubHello = true;
       console.log(
         `%c
    ███████╗██╗███████╗██╗██╗  ██╗██╗  ██╗██╗   ██╗██████╗ 

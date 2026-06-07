@@ -28,7 +28,7 @@ Bu calisma Fizikhub'in teknik SEO, GEO (Generative Engine Optimization), mobil p
 - Hikaye seridi yalnizca gosterilecek hikaye varsa render ediliyor; bos durumda client chunk cagirilmaz.
 - `/paylas`, `/yazar/rehber`, `/kvkk`, `/gizlilik-politikasi`, `/kullanim-sartlari` icin ortak static metadata ve JSON-LD standardi eklendi.
 - `/kvkk` icin route-level metadata eklendi; client page oldugu icin onceden root metadata'ya fazla bagimliydi.
-- `/nevbara` sitemap disi ve cekirdek SEO disi oldugu icin metadata + header seviyesinde `noindex, follow` yapildi.
+- `/nevbara` oyun yuzeyi aktif tutuldu; core SEO disi oldugu icin sitemap disi ve `noindex, follow` kalir. Gravity Warrior kontrolu P ile ates edecek sekilde guncellendi.
 - CSP'ye `prefetch-src 'self'` eklendi.
 - HSTS `max-age=63072000; includeSubDomains; preload` olarak guclendirildi.
 - Normal root head'e AI discovery linkleri ve Supabase preconnect/dns-prefetch eklendi.

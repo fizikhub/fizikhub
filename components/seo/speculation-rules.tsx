@@ -1,3 +1,5 @@
+import { serializeScriptJson } from "@/lib/script-json";
+
 export function SpeculationRules() {
     // Unsupported browsers ignore unknown script types, so this can be emitted
     // without a client-only mounted state.
@@ -21,7 +23,7 @@ export function SpeculationRules() {
     return (
         <script
             type="speculationrules"
-            dangerouslySetInnerHTML={{ __html: JSON.stringify(rules) }}
+            dangerouslySetInnerHTML={{ __html: serializeScriptJson(rules) }}
         />
     );
 }

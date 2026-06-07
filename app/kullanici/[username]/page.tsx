@@ -6,6 +6,8 @@ import { cache } from "react";
 import { DarkNeoHeader } from "@/components/profile/dark-neo/dark-neo-header";
 import { DarkNeoFeed } from "@/components/profile/dark-neo/dark-neo-feed";
 import { DarkNeoSidebar } from "@/components/profile/dark-neo/dark-neo-sidebar";
+import { JsonLd } from "@/components/seo/json-ld";
+import { safeExternalUrl } from "@/lib/profile-links";
 import { getSiteUrl, isIndexableProfile } from "@/lib/seo-utils";
 
 interface PageProps {
@@ -162,6 +164,7 @@ export default async function PublicProfilePage({ params }: PageProps) {
         profile.is_verified ? "Doğrulanmış FizikHub profili" : null,
         ...(articles || []).slice(0, 4).map((article) => article.category || "Bilim"),
     ].filter(Boolean) as string[];
+    const profileWebsiteUrl = safeExternalUrl(profile.website);
 
 
     // JSON-LD for E-E-A-T Profile
@@ -211,17 +214,13 @@ export default async function PublicProfilePage({ params }: PageProps) {
             ...(profile.is_verified && {
                 award: "Doğrulanmış Bilim Katkıcısı"
             }),
-            // Adding known social links if available in future
-            ...(profile.website && { sameAs: [profile.website] })
+            ...(profileWebsiteUrl && { sameAs: [profileWebsiteUrl] })
         }
     };
 
     return (
         <main className="min-h-screen bg-background relative">
-            <script
-                type="application/ld+json"
-                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-            />
+            <JsonLd data={jsonLd} />
 
             <div className="container max-w-7xl mx-auto px-3 sm:px-4 md:px-6 relative z-10 pt-3 sm:pt-4 lg:pt-8 pb-[calc(6.5rem+env(safe-area-inset-bottom))] sm:pb-32">
 
@@ -229,7 +228,6 @@ export default async function PublicProfilePage({ params }: PageProps) {
                 <div className="mb-4 sm:mb-6 lg:mb-8">
                     <DarkNeoHeader
                         profile={profile}
-                        user={user || { created_at: profile.created_at }} // Fallback
                         isOwnProfile={isOwnProfile}
                         isFollowing={isFollowing}
                         stats={stats}

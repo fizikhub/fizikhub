@@ -8,6 +8,7 @@ import type { FeedArticleData, FeedQuestionData } from "@/components/home/unifie
 import { SEO_PRIORITY_SLUGS } from "@/lib/seo-priority";
 import { LazyDesktopSidebar } from "@/components/home/lazy-desktop-sidebar";
 import { DeferredHomeControls } from "@/components/home/deferred-home-controls";
+import { JsonLd } from "@/components/seo/json-ld";
 import { getSiteUrl, isLikelyIndexableArticle, toAbsoluteUrl } from "@/lib/seo-utils";
 import { createStaticClient, hasSupabasePublicConfig } from "@/lib/supabase-server";
 
@@ -321,10 +322,7 @@ export default async function Home() {
 
   return (
     <main className="min-h-screen bg-background relative pb-[calc(5.75rem+env(safe-area-inset-bottom))] md:pb-0 overflow-x-clip">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
+      <JsonLd data={jsonLd} />
       <DeferredHomeControls />
 
       <div className="mx-auto w-full max-w-[1250px] px-3 sm:px-4 md:px-6 relative z-10 pt-0 lg:pt-8 xl:pt-10">

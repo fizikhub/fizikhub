@@ -14,6 +14,7 @@ import { isAdminEmail } from "@/lib/admin";
 import { AnswerList } from "@/components/forum/answer-list";
 import { DeleteQuestionButton } from "@/components/forum/delete-question-button";
 import { MarkdownRenderer } from "@/components/markdown-renderer";
+import { JsonLd } from "@/components/seo/json-ld";
 import { VoteButton } from "@/components/forum/vote-button";
 import { ViewTracker } from "@/components/forum/view-tracker";
 import { BookmarkButton } from "@/components/bookmark-button";
@@ -407,10 +408,7 @@ export default async function QuestionPage({ params }: PageProps) {
                 { name: 'Forum', href: '/forum' },
                 { name: question.title, href: `/forum/${question.id}` }
             ]} />
-            <script
-                type="application/ld+json"
-                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-            />
+            <JsonLd data={jsonLd} />
 
             <div className="container max-w-7xl mx-auto py-2 sm:py-6 md:py-8 px-0 sm:px-4 md:px-6 relative z-10">
                 <div className="grid grid-cols-1 lg:grid-cols-[1fr_350px] gap-6 lg:gap-8 items-start">

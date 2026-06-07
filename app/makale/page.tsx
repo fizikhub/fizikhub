@@ -2,6 +2,7 @@ import { ArticleFeed } from "@/components/articles/article-feed";
 import type { Metadata } from "next";
 import { unstable_cache } from "next/cache";
 import { SEO_PRIORITY_ARTICLES } from "@/lib/seo-priority";
+import { JsonLd } from "@/components/seo/json-ld";
 import { buildSafeIlikePattern } from "@/lib/security";
 import { isLikelyIndexableArticle } from "@/lib/seo-utils";
 import { createStaticClient, hasSupabasePublicConfig } from "@/lib/supabase-server";
@@ -244,10 +245,7 @@ export default async function MakalePage({ searchParams }: PageProps) {
 
     return (
         <>
-            <script
-                type="application/ld+json"
-                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-            />
+            <JsonLd data={jsonLd} />
             <MakaleArchiveIntro category={category} />
             <ArticleFeed
                 articles={articles || []}

@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import { BreadcrumbJsonLd } from "@/lib/breadcrumbs";
+import { JsonLd } from "@/components/seo/json-ld";
 
 const ABOUT_DESCRIPTION = "Fizikhub, fiziği sevdirmek ve anlaşılır kılmak amacıyla kurulmuş bir bilim platformudur. Güncel bilim haberleri, detaylı fizik makaleleri ve interaktif araçlar.";
 
@@ -37,7 +38,7 @@ export default function AboutPage() {
     return (
         <>
             <BreadcrumbJsonLd items={[{ name: 'Hakkımızda', href: '/hakkimizda' }]} />
-            <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(aboutJsonLd) }} />
+            <JsonLd data={aboutJsonLd} />
             <div className="container max-w-4xl py-10">
                 <h1 className="mb-6 text-3xl font-bold">Hakkımızda</h1>
                 <div className="prose dark:prose-invert">

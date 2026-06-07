@@ -3,6 +3,8 @@
  * Generates BreadcrumbList structured data for Google SERP breadcrumbs.
  */
 
+import { JsonLd } from "@/components/seo/json-ld";
+
 export interface BreadcrumbItem {
     name: string;
     href: string;
@@ -31,10 +33,5 @@ export function generateBreadcrumbJsonLd(items: BreadcrumbItem[]) {
 
 export function BreadcrumbJsonLd({ items }: { items: BreadcrumbItem[] }) {
     const jsonLd = generateBreadcrumbJsonLd(items);
-    return (
-        <script
-            type="application/ld+json"
-            dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-        />
-    );
+    return <JsonLd data={jsonLd} />;
 }

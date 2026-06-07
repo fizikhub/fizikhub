@@ -312,7 +312,7 @@ const redirects = [
   ["/forum?sort=newest", `${expectedRedirectBaseUrl}/forum`],
   ["/sartlar", `${expectedRedirectBaseUrl}/kullanim-sartlari`],
   ["/kurallar", `${expectedRedirectBaseUrl}/kullanim-sartlari`],
-  ["/search?q=%7Bsearch_term_string%7D", `${expectedRedirectBaseUrl}/ara?q=%7Bsearch_term_string%7D`],
+  ["/search?q=%7Bsearch_term_string%7D", `${expectedRedirectBaseUrl}/ara`],
 ];
 
 for (const [source, expected] of redirects) {

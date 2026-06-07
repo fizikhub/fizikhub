@@ -5,6 +5,7 @@ import "./globals.css";
 
 import { ThemeProvider } from "@/components/theme-provider";
 import { FramerMotionProvider } from "@/components/providers/framer-motion-provider";
+import { JsonLd } from "@/components/seo/json-ld";
 import Image from "next/image";
 import Script from "next/script";
 
@@ -379,10 +380,7 @@ export default async function RootLayout({
           shadow="0 0 10px #00F5D4,0 0 5px #00F5D4"
           zIndex={99999}
         />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdGraph) }}
-        />
+        <JsonLd data={jsonLdGraph} />
 
         {/* Skip to content — keyboard accessibility */}
         <a

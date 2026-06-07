@@ -8,11 +8,31 @@ import { FollowButton } from "../follow-button";
 import { formatNumber } from "@/lib/utils";
 import Image from "next/image";
 import { useUiSounds } from "@/hooks/use-ui-sounds";
+import { externalUrlLabel, safeExternalUrl } from "@/lib/profile-links";
+
+interface DarkNeoProfile {
+    id: string;
+    avatar_url?: string | null;
+    cover_url?: string | null;
+    full_name?: string | null;
+    username?: string | null;
+    role?: string | null;
+    is_writer?: boolean | null;
+    bio?: string | null;
+    location?: string | null;
+    website?: string | null;
+    created_at?: string | null;
+}
+
+interface DarkNeoStats {
+    followersCount: number;
+    followingCount: number;
+    reputation: number;
+}
 
 interface DarkNeoHeaderProps {
-    profile: any;
-    user: any;
-    stats: any;
+    profile: DarkNeoProfile;
+    stats: DarkNeoStats;
     isOwnProfile: boolean;
     isFollowing: boolean;
 }
@@ -21,15 +41,13 @@ export function DarkNeoHeader({ profile, stats, isOwnProfile, isFollowing }: Dar
     const initial = profile?.full_name?.[0]?.toUpperCase() || "U";
     const isAdmin = profile?.username === "baranbozkurt" || profile?.role === "admin";
     const isAuthorMode = isAdmin || profile?.role === "editor" || profile?.is_writer === true;
-    const hasCoverPhoto = profile?.cover_url;
+    const coverUrl = profile.cover_url || "";
+    const hasCoverPhoto = Boolean(coverUrl);
     const joinedLabel = profile?.created_at
         ? new Date(profile.created_at).toLocaleDateString('tr-TR', { month: 'long', year: 'numeric' })
         : "Bilinmiyor";
-    const websiteHref = profile?.website
-        ? profile.website.startsWith('http')
-            ? profile.website
-            : `https://${profile.website}`
-        : "";
+    const websiteHref = safeExternalUrl(profile?.website);
+    const websiteLabel = externalUrlLabel(profile?.website);
     const { playInteractSound } = useUiSounds();
 
     const handleActionClick = () => {
@@ -44,7 +62,7 @@ export function DarkNeoHeader({ profile, stats, isOwnProfile, isFollowing }: Dar
                 <div className="relative h-36 overflow-visible border-b border-zinc-200 dark:border-zinc-800 bg-[#27272a] sm:h-52 md:h-60">
                     {hasCoverPhoto ? (
                         <Image
-                            src={profile.cover_url}
+                            src={coverUrl}
                             alt="Kapak fotoğrafı"
                             fill
                             className="object-cover opacity-95 group-hover:scale-105 transition-transform duration-700"
@@ -90,7 +108,7 @@ export function DarkNeoHeader({ profile, stats, isOwnProfile, isFollowing }: Dar
                         >
                             <div className="relative z-10 h-24 w-24 overflow-hidden rounded-2xl border border-zinc-200 bg-background p-1 shadow-md transition-transform group-hover:scale-[1.02] dark:border-zinc-800 sm:h-32 sm:w-32">
                                 <Avatar className="h-full w-full rounded-xl border border-zinc-200 dark:border-zinc-800">
-                                    <AvatarImage src={profile?.avatar_url} className="object-cover scale-110" />
+                                    <AvatarImage src={profile.avatar_url || undefined} className="object-cover scale-110" />
                                     <AvatarFallback className="text-3xl font-black bg-[#EAB308] text-black rounded-none">
                                         {initial}
                                     </AvatarFallback>
@@ -130,10 +148,10 @@ export function DarkNeoHeader({ profile, stats, isOwnProfile, isFollowing }: Dar
                                 <span>{profile.location}</span>
                             </div>
                         )}
-                        {profile?.website && (
+                        {websiteHref && (
                             <a href={websiteHref} target="_blank" rel="noopener noreferrer" className="group flex min-w-0 items-center gap-1.5 transition-colors hover:text-[#EAB308]">
                                 <LinkIcon className="w-3.5 h-3.5 text-zinc-600 group-hover:text-inherit" />
-                                <span className="max-w-full truncate decoration-zinc-600 underline-offset-4 group-hover:underline sm:max-w-[220px]">{profile.website.replace(/^https?:\/\//, '')}</span>
+                                <span className="max-w-full truncate decoration-zinc-600 underline-offset-4 group-hover:underline sm:max-w-[220px]">{websiteLabel}</span>
                             </a>
                         )}
                         <div className="flex items-center gap-1.5 text-zinc-400">

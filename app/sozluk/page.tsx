@@ -4,6 +4,7 @@ import { getDictionaryTerms } from "@/lib/api";
 import { DictionaryList } from "@/components/dictionary/dictionary-list";
 import { Badge } from "@/components/ui/badge";
 import { BreadcrumbJsonLd } from "@/lib/breadcrumbs";
+import { JsonLd } from "@/components/seo/json-ld";
 import { slugify } from "@/lib/slug";
 
 const SITE_URL = "https://www.fizikhub.com";
@@ -128,10 +129,7 @@ export default async function DictionaryPage() {
 
     return (
         <>
-            <script
-                type="application/ld+json"
-                dangerouslySetInnerHTML={{ __html: JSON.stringify(combinedJsonLd) }}
-            />
+            <JsonLd data={combinedJsonLd} />
             <BreadcrumbJsonLd items={[{ name: 'Sözlük', href: '/sozluk' }]} />
             <div className="container mx-auto min-h-screen max-w-7xl px-4 py-8 md:px-6 md:py-10">
                 <section className="group relative mb-8 flex flex-col overflow-hidden rounded-xl border-[3px] border-black bg-white p-5 shadow-[4px_4px_0px_0px_#000] dark:bg-zinc-900 sm:p-6 lg:flex-row lg:items-center lg:justify-between">

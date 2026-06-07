@@ -3,6 +3,7 @@ import { simulations } from "@/components/simulations/data";
 import { SimulationsClient } from "@/components/simulations/simulations-client";
 import { getSiteUrl } from "@/lib/seo-utils";
 import { BreadcrumbJsonLd } from "@/lib/breadcrumbs";
+import { JsonLd } from "@/components/seo/json-ld";
 import { buildSimulationCourseListJsonLd } from "@/lib/educational-schema";
 
 export const metadata: Metadata = {
@@ -112,10 +113,7 @@ export default async function SimulasyonlarPage() {
 
     return (
         <>
-            <script
-                type="application/ld+json"
-                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-            />
+            <JsonLd data={jsonLd} />
             <BreadcrumbJsonLd
                 items={[
                     { name: "Simülasyonlar", href: "/simulasyonlar" }

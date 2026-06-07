@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { BreadcrumbJsonLd } from "@/lib/breadcrumbs";
+import { JsonLd } from "@/components/seo/json-ld";
 import { SEO_PRIORITY_ARTICLES } from "@/lib/seo-priority";
 import { getClusterResourceLinks, getTopicClusterHref, getTopicClustersForText, type SeoTopicCluster } from "@/lib/seo-topic-clusters";
 import { getSiteUrl, hasUsefulIndexableText, isLikelyIndexableTitle, truncateForMeta } from "@/lib/seo-utils";
@@ -276,14 +277,8 @@ export default async function QuizPage({ params }: Props) {
 
     return (
         <div className="min-h-screen bg-transparent">
-            <script
-                type="application/ld+json"
-                dangerouslySetInnerHTML={{ __html: JSON.stringify(quizJsonLd) }}
-            />
-            <script
-                type="application/ld+json"
-                dangerouslySetInnerHTML={{ __html: JSON.stringify(learningResourceJsonLd) }}
-            />
+            <JsonLd data={quizJsonLd} />
+            <JsonLd data={learningResourceJsonLd} />
             <BreadcrumbJsonLd items={[
                 { name: "Testler", href: "/testler" },
                 { name: quiz.title, href: `/testler/${slug}` },
