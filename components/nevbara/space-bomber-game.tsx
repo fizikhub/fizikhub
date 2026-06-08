@@ -7,7 +7,8 @@ import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
 import { GlitchPass } from 'three/examples/jsm/postprocessing/GlitchPass.js';
 import { FilmPass } from 'three/examples/jsm/postprocessing/FilmPass.js';
-import { Activity, Shield, Flame, Target, Volume2, VolumeX, Crosshair, Zap, Navigation, Sparkles, ZapOff } from 'lucide-react';
+import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js';
+import { Activity, Shield, Flame, Target, Volume2, VolumeX, Crosshair, Zap, Navigation, Sparkles, ZapOff, AlertTriangle, ShoppingBag, Sliders, Cpu, ArrowUpRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import confetti from 'canvas-confetti';
 
@@ -35,6 +36,30 @@ interface Bullet {
     isBeam?: boolean;
     isMissile?: boolean;
     mesh: THREE.Mesh;
+}
+
+interface SpaceMine {
+    id: number;
+    x: number; y: number; z: number;
+    active: boolean;
+    mesh: THREE.Group;
+    light: THREE.PointLight | THREE.Mesh;
+    beepTimer: number;
+}
+
+interface ScrapDrop {
+    id: number;
+    x: number; y: number; z: number;
+    vx: number; vy: number; vz: number;
+    active: boolean;
+    mesh: THREE.Mesh;
+}
+
+interface LensFlare {
+    group: THREE.Group;
+    life: number;
+    initialScale: number;
+    mesh: THREE.Sprite;
 }
 
 interface Enemy {
@@ -284,6 +309,53 @@ class SoundSynth {
         } catch (e) {}
     }
 
+    playEMPWave() {
+        if (!this.enabled || !this.ctx || !this.masterGain) return;
+        try {
+            const osc = this.ctx.createOscillator();
+            const filter = this.ctx.createBiquadFilter();
+            const gain = this.ctx.createGain();
+            
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(200, this.ctx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(40, this.ctx.currentTime + 1.2);
+            
+            filter.type = 'lowpass';
+            filter.frequency.setValueAtTime(800, this.ctx.currentTime);
+            filter.frequency.exponentialRampToValueAtTime(100, this.ctx.currentTime + 1.2);
+            
+            gain.gain.setValueAtTime(0.6, this.ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 1.2);
+            
+            osc.connect(filter);
+            filter.connect(gain);
+            gain.connect(this.masterGain);
+            
+            osc.start();
+            osc.stop(this.ctx.currentTime + 1.2);
+        } catch (e) {}
+    }
+
+    playMineWarning() {
+        if (!this.enabled || !this.ctx || !this.masterGain) return;
+        try {
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(1200, this.ctx.currentTime);
+            
+            gain.gain.setValueAtTime(0.3, this.ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.08);
+            
+            osc.connect(gain);
+            gain.connect(this.masterGain);
+            
+            osc.start();
+            osc.stop(this.ctx.currentTime + 0.08);
+        } catch (e) {}
+    }
+
     playHyperspace() {
         if (!this.enabled || !this.ctx || !this.masterGain) return;
         try {
@@ -405,6 +477,115 @@ class SoundSynth {
             this.sequencerTimer = null;
         }
     }
+
+    playTeslaLightning() {
+        if (!this.enabled || !this.ctx || !this.masterGain) return;
+        try {
+            const now = this.ctx.currentTime;
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            const filter = this.ctx.createBiquadFilter();
+            
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(350, now);
+            osc.frequency.linearRampToValueAtTime(120, now + 0.08);
+            osc.frequency.setValueAtTime(400, now + 0.04);
+            
+            filter.type = 'bandpass';
+            filter.frequency.setValueAtTime(1000, now);
+            filter.Q.setValueAtTime(4.0, now);
+            
+            gain.gain.setValueAtTime(0.25, now);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+            
+            osc.connect(filter);
+            filter.connect(gain);
+            gain.connect(this.masterGain);
+            
+            osc.start();
+            osc.stop(now + 0.1);
+        } catch (e) {}
+    }
+
+    playContinuousBeam() {
+        if (!this.enabled || !this.ctx || !this.masterGain) return;
+        try {
+            const now = this.ctx.currentTime;
+            const osc1 = this.ctx.createOscillator();
+            const osc2 = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            const filter = this.ctx.createBiquadFilter();
+            
+            osc1.type = 'sawtooth';
+            osc1.frequency.setValueAtTime(150, now);
+            osc2.type = 'sawtooth';
+            osc2.frequency.setValueAtTime(152, now);
+            
+            filter.type = 'lowpass';
+            filter.frequency.setValueAtTime(500, now);
+            filter.frequency.exponentialRampToValueAtTime(1500, now + 0.15);
+            
+            gain.gain.setValueAtTime(0.35, now);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+            
+            osc1.connect(filter);
+            osc2.connect(filter);
+            filter.connect(gain);
+            gain.connect(this.masterGain);
+            
+            osc1.start();
+            osc2.start();
+            osc1.stop(now + 0.2);
+            osc2.stop(now + 0.2);
+        } catch (e) {}
+    }
+
+    playFlakExplosion() {
+        if (!this.enabled || !this.ctx || !this.masterGain) return;
+        try {
+            const now = this.ctx.currentTime;
+            const bufferSource = this.ctx.createBufferSource();
+            bufferSource.buffer = this.noiseBuffer;
+            
+            const filter = this.ctx.createBiquadFilter();
+            filter.type = 'lowpass';
+            filter.frequency.setValueAtTime(300, now);
+            filter.frequency.exponentialRampToValueAtTime(20, now + 0.45);
+            
+            const gain = this.ctx.createGain();
+            gain.gain.setValueAtTime(0.9, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.45);
+            
+            bufferSource.connect(filter);
+            filter.connect(gain);
+            gain.connect(this.masterGain);
+            
+            bufferSource.start();
+            bufferSource.stop(now + 0.45);
+        } catch (e) {}
+    }
+
+    playShieldRipple() {
+        if (!this.enabled || !this.ctx || !this.masterGain) return;
+        try {
+            const now = this.ctx.currentTime;
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(220, now);
+            osc.frequency.exponentialRampToValueAtTime(880, now + 0.15);
+            
+            gain.gain.setValueAtTime(0.4, now);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.18);
+            
+            osc.connect(gain);
+            gain.connect(this.masterGain);
+            
+            osc.start();
+            osc.stop(now + 0.18);
+        } catch (e) {}
+    }
 }
 
 // Global Consts & Ship Specs
@@ -515,6 +696,341 @@ const createCosmicCruiser = (colorStr: string) => {
     return group;
 };
 
+// --- v5.0 Quantum Interfaces ---
+interface GalaxyNode {
+    id: string;
+    name: string;
+    type: 'combat' | 'asteroid' | 'anomaly' | 'boss';
+    description: string;
+    threat: number;
+    hazard: 'solar_storm' | 'mine_field' | 'magnetic_dust' | 'none';
+    x: number;
+    y: number;
+    completed: boolean;
+    adjacent: string[];
+}
+
+interface DefenseDrone {
+    id: number;
+    mesh: THREE.Group;
+    orbitAngle: number;
+    fireCooldown: number;
+    droneType: 'laser' | 'shield' | 'missile';
+    targetId: number | null;
+}
+
+const CRTShader = {
+    uniforms: {
+        tDiffuse: { value: null },
+        time: { value: 0.0 },
+        aberrationScale: { value: 0.0 },
+        noiseScale: { value: 0.04 },
+        scanlineStrength: { value: 0.06 }
+    },
+    vertexShader: `
+        varying vec2 vUv;
+        void main() {
+            vUv = uv;
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+    `,
+    fragmentShader: `
+        uniform sampler2D tDiffuse;
+        uniform float time;
+        uniform float aberrationScale;
+        uniform float noiseScale;
+        uniform float scanlineStrength;
+        varying vec2 vUv;
+
+        float hash(vec2 p) {
+            return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453123);
+        }
+
+        void main() {
+            vec2 uv = vUv;
+            vec2 centered = uv - 0.5;
+            float dist = dot(centered, centered);
+            uv = 0.5 + centered * (1.0 + dist * 0.04);
+
+            if (uv.x < 0.0 || uv.x > 1.0 || uv.y < 0.0 || uv.y > 1.0) {
+                gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
+                return;
+            }
+
+            float shift = 0.0025 + aberrationScale * 0.012;
+            vec4 col;
+            col.r = texture2D(tDiffuse, uv + vec2(shift, 0.0)).r;
+            col.g = texture2D(tDiffuse, uv).g;
+            col.b = texture2D(tDiffuse, uv - vec2(shift, 0.0)).b;
+            col.a = 1.0;
+
+            float scanline = sin(uv.y * 700.0 + time * 4.0) * scanlineStrength;
+            col.rgb -= vec3(scanline);
+
+            float flicker = sin(time * 24.0) * 0.004;
+            col.rgb += vec3(flicker);
+
+            float vig = uv.x * uv.y * (1.0 - uv.x) * (1.0 - uv.y);
+            col.rgb *= clamp(15.0 * vig, 0.65, 1.0);
+
+            float n = hash(uv + time) * noiseScale;
+            col.rgb += vec3(n);
+
+            gl_FragColor = col;
+        }
+    `
+};
+
+const LensingShader = {
+    uniforms: {
+        tDiffuse: { value: null },
+        uBlackHoleScreen: { value: new THREE.Vector2(0.5, 0.5) },
+        uActive: { value: 0.0 },
+        uRadius: { value: 0.055 },
+        uLensScale: { value: 0.08 }
+    },
+    vertexShader: `
+        varying vec2 vUv;
+        void main() {
+            vUv = uv;
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+    `,
+    fragmentShader: `
+        uniform sampler2D tDiffuse;
+        uniform vec2 uBlackHoleScreen;
+        uniform float uActive;
+        uniform float uRadius;
+        uniform float uLensScale;
+        varying vec2 vUv;
+        void main() {
+            if (uActive < 0.5) {
+                gl_FragColor = texture2D(tDiffuse, vUv);
+                return;
+            }
+            vec2 uv = vUv;
+            vec2 diff = uv - uBlackHoleScreen;
+            float dist = length(diff);
+            if (dist < uRadius) {
+                gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
+            } else {
+                float distortion = uLensScale * uRadius / (dist - uRadius * 0.94);
+                vec2 lensUv = uBlackHoleScreen + diff * (1.0 + distortion);
+                vec4 col = texture2D(tDiffuse, lensUv);
+                float redShift = smoothstep(uRadius * 1.25, uRadius, dist);
+                col.rgb = mix(col.rgb, vec3(col.r * 1.6, col.g * 0.2, col.b * 0.05), redShift * 0.6);
+                gl_FragColor = col;
+            }
+        }
+    `
+};
+
+const PlanetSurfaceShader = {
+    uniforms: {
+        time: { value: 0.0 },
+        color1: { value: new THREE.Color('#2c3e50') },
+        color2: { value: new THREE.Color('#e74c3c') },
+        color3: { value: new THREE.Color('#f39c12') }
+    },
+    vertexShader: `
+        varying vec2 vUv;
+        varying vec3 vNormal;
+        varying vec3 vViewPosition;
+        void main() {
+            vUv = uv;
+            vNormal = normalize(normalMatrix * normal);
+            vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+            vViewPosition = -mvPosition.xyz;
+            gl_Position = projectionMatrix * mvPosition;
+        }
+    `,
+    fragmentShader: `
+        uniform float time;
+        uniform vec3 color1;
+        uniform vec3 color2;
+        uniform vec3 color3;
+        varying vec2 vUv;
+        varying vec3 vNormal;
+        varying vec3 vViewPosition;
+
+        float hash(vec2 p) {
+            return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453123);
+        }
+        float noise(vec2 p) {
+            vec2 i = floor(p);
+            vec2 f = fract(p);
+            vec2 u = f*f*(3.0-2.0*f);
+            return mix(mix(hash(i + vec2(0.0,0.0)), hash(i + vec2(1.0,0.0)), u.x),
+                       mix(hash(i + vec2(0.0,1.0)), hash(i + vec2(1.0,1.0)), u.x), u.y);
+        }
+        float fbm(vec2 p) {
+            float v = 0.0;
+            float a = 0.5;
+            vec2 shift = vec2(100.0);
+            mat2 rot = mat2(cos(0.5), sin(0.5), -sin(0.5), cos(0.5));
+            for (int i = 0; i < 4; ++i) {
+                v += a * noise(p);
+                p = rot * p * 2.0 + shift;
+                a *= 0.5;
+            }
+            return v;
+        }
+
+        void main() {
+            vec2 p = vUv * 8.0;
+            p.y += sin(vUv.x * 2.0) * 0.15;
+            float speed = 0.08 * time;
+            if (vUv.y > 0.4 && vUv.y < 0.6) speed = -0.12 * time;
+            p.x += speed;
+
+            float n = fbm(p);
+            vec3 col = mix(color1, color2, n);
+            col = mix(col, color3, fbm(p + vec2(n * 2.0, time * 0.02)));
+
+            vec2 spotCenter = vec2(0.3, 0.35);
+            float d = distance(vUv, spotCenter);
+            if (d < 0.075) {
+                float spotFactor = smoothstep(0.075, 0.0, d);
+                col = mix(col, vec3(0.58, 0.11, 0.11), spotFactor * 0.85);
+            }
+
+            vec3 normal = normalize(vNormal);
+            vec3 lightDir = normalize(vec3(1.0, 1.0, 0.8));
+            float diff = max(0.12, dot(normal, lightDir));
+            
+            vec3 viewDir = normalize(vViewPosition);
+            float rim = 1.0 - max(0.0, dot(normal, viewDir));
+            rim = pow(rim, 4.0) * 0.35;
+            
+            gl_FragColor = vec4(col * diff + vec3(0.3, 0.45, 0.6) * rim, 1.0);
+        }
+    `
+};
+
+const AtmosphereShader = {
+    uniforms: {
+        color: { value: new THREE.Color('#3498db') }
+    },
+    vertexShader: `
+        varying vec3 vNormal;
+        varying vec3 vViewPosition;
+        void main() {
+            vNormal = normalize(normalMatrix * normal);
+            vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+            vViewPosition = -mvPosition.xyz;
+            gl_Position = projectionMatrix * mvPosition;
+        }
+    `,
+    fragmentShader: `
+        uniform vec3 color;
+        varying vec3 vNormal;
+        varying vec3 vViewPosition;
+        void main() {
+            vec3 normal = normalize(vNormal);
+            vec3 viewDir = normalize(vViewPosition);
+            float intensity = pow(1.0 - max(0.0, dot(normal, viewDir)), 3.0);
+            gl_FragColor = vec4(color * intensity, intensity * 0.8);
+        }
+    `
+};
+
+const PlanetRingsShader = {
+    uniforms: {
+        time: { value: 0.0 },
+        color: { value: new THREE.Color('#95a5a6') }
+    },
+    vertexShader: `
+        varying vec2 vUv;
+        varying vec3 vLocalPosition;
+        void main() {
+            vUv = uv;
+            vLocalPosition = position;
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+    `,
+    fragmentShader: `
+        uniform float time;
+        uniform vec3 color;
+        varying vec2 vUv;
+        varying vec3 vLocalPosition;
+
+        void main() {
+            float dist = length(vLocalPosition.xy);
+            float inner = 320.0;
+            float outer = 580.0;
+            
+            if (dist < inner || dist > outer) {
+                discard;
+            }
+
+            float ringLines = sin(dist * 0.8) * cos(dist * 0.35) * 0.5 + 0.5;
+            ringLines += sin(dist * 3.5) * 0.15;
+            
+            float alpha = smoothstep(inner, inner + 25.0, dist) * smoothstep(outer, outer - 25.0, dist);
+            alpha *= (0.2 + ringLines * 0.8) * 0.65;
+            
+            gl_FragColor = vec4(color * (0.85 + ringLines * 0.15), alpha);
+        }
+    `
+};
+
+const ShieldRippleShader = {
+    uniforms: {
+        time: { value: 0.0 },
+        color: { value: new THREE.Color(0.0, 0.8, 1.0) },
+        uHitPositions: { value: [new THREE.Vector3(), new THREE.Vector3(), new THREE.Vector3(), new THREE.Vector3()] },
+        uHitTimes: { value: [-9999.0, -9999.0, -9999.0, -9999.0] },
+        uHitStrengths: { value: [0.0, 0.0, 0.0, 0.0] },
+        shieldStrength: { value: 1.0 }
+    },
+    vertexShader: `
+        varying vec3 vPosition;
+        varying vec3 vNormal;
+        void main() {
+            vPosition = position;
+            vNormal = normalize(normalMatrix * normal);
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+    `,
+    fragmentShader: `
+        uniform float time;
+        uniform vec3 color;
+        uniform vec3 uHitPositions[4];
+        uniform float uHitTimes[4];
+        uniform float uHitStrengths[4];
+        uniform float shieldStrength;
+        varying vec3 vPosition;
+        varying vec3 vNormal;
+        void main() {
+            float rim = 1.0 - max(0.0, dot(vNormal, vec3(0.0, 0.0, 1.0)));
+            rim = pow(rim, 3.5) * 0.45;
+            
+            float grid = sin(vPosition.x * 2.5) * sin(vPosition.y * 2.5) * sin(vPosition.z * 2.5);
+            grid = step(0.92, grid) * 0.14;
+            
+            float totalRipple = 0.0;
+            for (int i = 0; i < 4; i++) {
+                float timeSinceHit = time - uHitTimes[i];
+                if (timeSinceHit > 0.0 && timeSinceHit < 2.0 && uHitStrengths[i] > 0.0) {
+                    float distToHit = distance(vPosition, uHitPositions[i]);
+                    float rippleSpeed = 18.0;
+                    float rippleWidth = 1.6;
+                    float waveFront = timeSinceHit * rippleSpeed;
+                    if (distToHit < waveFront) {
+                        float w = sin((distToHit - waveFront) * 3.0) * 0.5 + 0.5;
+                        w *= smoothstep(0.0, -rippleWidth, distToHit - waveFront);
+                        w *= (1.0 - (timeSinceHit / 2.0)) * uHitStrengths[i];
+                        totalRipple += w;
+                    }
+                }
+            }
+            
+            float alpha = (rim + totalRipple * 0.98 + grid) * shieldStrength * 0.8;
+            gl_FragColor = vec4(color + vec3(totalRipple * 0.35), alpha);
+        }
+    `
+};
+
 export function SpaceBomberGame() {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
@@ -537,6 +1053,82 @@ export function SpaceBomberGame() {
     const hudSlowmoVignetteRef = useRef<HTMLDivElement>(null);
     const hudLowArmorAlertRef = useRef<HTMLDivElement>(null);
 
+    // New v4.0 Direct DOM refs
+    const hudScrapTextRef = useRef<HTMLSpanElement>(null);
+    const hudWeaponsSliderRef = useRef<HTMLInputElement>(null);
+    const hudShieldsSliderRef = useRef<HTMLInputElement>(null);
+    const hudEnginesSliderRef = useRef<HTMLInputElement>(null);
+    const hudWeaponsValRef = useRef<HTMLSpanElement>(null);
+    const hudShieldsValRef = useRef<HTMLSpanElement>(null);
+    const hudEnginesValRef = useRef<HTMLSpanElement>(null);
+    const hudSolarStormAlertRef = useRef<HTMLDivElement>(null);
+
+    // New v5.0 instrument panel & radar refs
+    const oscilloscopeCanvasRef = useRef<HTMLCanvasElement>(null);
+    const hudCoreTempTextRef = useRef<HTMLSpanElement>(null);
+    const hudCoreTempBarRef = useRef<HTMLDivElement>(null);
+    const hudGForceTextRef = useRef<HTMLSpanElement>(null);
+    const hudRollYawTextRef = useRef<HTMLSpanElement>(null);
+    
+    // v6.0 Weapon telemetry refs
+    const hudWeaponHeatTextRef = useRef<HTMLSpanElement>(null);
+    const hudWeaponHeatBarRef = useRef<HTMLDivElement>(null);
+    
+    // v5.0 State Refs
+    const crtPassRef = useRef<any>(null);
+    const quantumDustPointsRef = useRef<THREE.Points | null>(null);
+    const dronesRef = useRef<DefenseDrone[]>([]);
+    const galaxyNodesRef = useRef<GalaxyNode[]>([]);
+    const activeSectorHazardRef = useRef<'solar_storm' | 'mine_field' | 'magnetic_dust' | 'anomaly_field' | 'none'>('none');
+    
+    const hangarUpgradesRef = useRef<{
+        weapons: number;
+        shields: number;
+        engines: number;
+        maxDrones: number;
+    }>({
+        weapons: 0,
+        shields: 0,
+        engines: 0,
+        maxDrones: 1
+    });
+    
+    const coreTemperatureRef = useRef<number>(40);
+
+    // v6.0 Singularity Edition Refs and States
+    const activeWeaponTypeRef = useRef<'laser' | 'beam' | 'tesla' | 'flak'>('laser');
+    const [activeWeaponType, setActiveWeaponType] = useState<'laser' | 'beam' | 'tesla' | 'flak'>('laser');
+    const weaponHeatRef = useRef<number>(0);
+    
+    // Planet refs
+    const planetGroupRef = useRef<THREE.Group | null>(null);
+    const planetMeshRef = useRef<THREE.Mesh | null>(null);
+    const planetAtmosphereRef = useRef<THREE.Mesh | null>(null);
+    const planetRingsRef = useRef<THREE.Mesh | null>(null);
+    
+    // Black Hole refs
+    const blackHolePosRef = useRef<THREE.Vector3>(new THREE.Vector3(0, 0, -1000));
+    const blackHoleMeshRef = useRef<THREE.Group | null>(null);
+    const accretionDiskMeshRef = useRef<THREE.Points | null>(null);
+    const lensingPassRef = useRef<any>(null);
+    
+    // Ship Wing tilt groups
+    const wingLGroupRef = useRef<THREE.Group | null>(null);
+    const wingRGroupRef = useRef<THREE.Group | null>(null);
+    
+    // Shield Hits ripples (multi-impact)
+    const shieldHitsRef = useRef<Array<{ position: THREE.Vector3; time: number; strength: number }>>([]);
+    const lightningLinesRef = useRef<THREE.Line[]>([]);
+    const flakShellsRef = useRef<any[]>([]);
+
+    // v5.0 React States for pausetime overlays
+    const [selectedMapNodeId, setSelectedMapNodeId] = useState<string>('');
+    const [hangarWeapons, setHangarWeapons] = useState(0);
+    const [hangarShields, setHangarShields] = useState(0);
+    const [hangarEngines, setHangarEngines] = useState(0);
+    const [hangarMaxDrones, setHangarMaxDrones] = useState(1);
+    const [ownedDrones, setOwnedDrones] = useState<string[]>([]);
+
     const scoreRef = useRef<number>(0);
     const totalEnemiesRef = useRef<number>(0);
     const enemiesRemainingRef = useRef<number>(0);
@@ -556,6 +1148,39 @@ export function SpaceBomberGame() {
     const bulletTimeTimerRef = useRef<number>(0);
     const lastWarningSoundTime = useRef<number>(0);
 
+    // Scrap & Module Refs
+    const scrapCountRef = useRef<number>(0);
+    const activeModulesRef = useRef<{
+        empShock: boolean;
+        nanobots: boolean;
+        magnetizer: boolean;
+        reactorOvercharge: boolean;
+    }>({
+        empShock: false,
+        nanobots: false,
+        magnetizer: false,
+        reactorOvercharge: false
+    });
+    
+    // Energy Settings Refs (Total = 10 allocated)
+    const energyWeaponsRef = useRef<number>(3);
+    const energyShieldsRef = useRef<number>(3);
+    const energyEnginesRef = useRef<number>(4);
+    
+    // Solar Storm Refs
+    const solarStormActiveRef = useRef<boolean>(false);
+    const solarStormTimerRef = useRef<number>(800); 
+    const solarStormDurationRef = useRef<number>(0); 
+    const solarStormWarningRef = useRef<number>(0); 
+    
+    // Space Hazards & Scrap Refs
+    const spaceMines = useRef<SpaceMine[]>([]);
+    const scrapDrops = useRef<ScrapDrop[]>([]);
+    const lensFlares = useRef<LensFlare[]>([]);
+    
+    const [shopUpdateTrigger, setShopUpdateTrigger] = useState(0);
+    const [marketOpen, setMarketOpen] = useState(false);
+
     // Sound manager ref
     const soundRef = useRef<SoundSynth | null>(null);
     const [soundEnabled, setSoundEnabled] = useState(true);
@@ -569,7 +1194,7 @@ export function SpaceBomberGame() {
     }, [selectedShipId]);
 
     // Game states
-    const [gameState, setGameState] = useState<'idle' | 'hyperspace' | 'playing' | 'paused' | 'gameover' | 'victory'>('idle');
+    const [gameState, setGameState] = useState<'idle' | 'hyperspace' | 'playing' | 'paused' | 'gameover' | 'victory' | 'galaxymap'>('idle');
     const [score, setScore] = useState(0);
     const [fuel, setFuel] = useState(100);
     const [shield, setShield] = useState(100);
@@ -720,18 +1345,53 @@ export function SpaceBomberGame() {
         }
     }, []);
 
-    const setShieldLevel = useCallback((value: number) => {
+    const setShieldLevel = useCallback((value: number, relativeHitPos?: THREE.Vector3) => {
+        const maxShieldCapacity = currentShipClass.maxShield * (activeModulesRef.current.reactorOvercharge ? 0.7 : 1.0);
         if (value < shieldRef.current) {
             shieldHitLife.current = 1.0;
+            soundRef.current?.playShieldRipple();
+            
+            const hitPos = relativeHitPos ? relativeHitPos.clone() : new THREE.Vector3(0, 0, -5);
+            shieldHitsRef.current.push({
+                position: hitPos,
+                time: performance.now() * 0.001,
+                strength: Math.min(1.0, (shieldRef.current - value) / 10.0 + 0.3)
+            });
+            if (shieldHitsRef.current.length > 4) {
+                shieldHitsRef.current.shift();
+            }
+            
+            // EMP Shock Module Check: trigger when shield collapses to zero
+            if (activeModulesRef.current.empShock && value <= 0 && shieldRef.current > 0) {
+                addLog("SİSTEM KORUMASI: EMP ŞOKU ATEŞLENDİ!");
+                soundRef.current?.playEMPWave();
+                createShockwave(shipPos.current.x, shipPos.current.y, shipPos.current.z, '#a855f7');
+                createExplosion(shipPos.current.x, shipPos.current.y, shipPos.current.z, '#a855f7', 35, 1.5);
+                screenShakeRef.current = Math.max(screenShakeRef.current, 6.0);
+                
+                // Destroy enemy bullets nearby
+                bullets.current.forEach(b => {
+                    if (b.isEnemy) {
+                        const dist = new THREE.Vector3(b.x, b.y, b.z).distanceTo(shipPos.current);
+                        if (dist < 280) {
+                            b.life = 0;
+                            createExplosion(b.x, b.y, b.z, '#a855f7', 3, 0.3);
+                        }
+                    }
+                });
+            }
         }
-        const clamped = Math.max(0, Math.min(currentShipClass.maxShield, value));
+        const clamped = Math.max(0, Math.min(maxShieldCapacity, value));
         shieldRef.current = clamped;
-        const pct = Math.round((clamped / currentShipClass.maxShield) * 100);
+        const pct = Math.round((clamped / maxShieldCapacity) * 100);
         if (hudShieldBarRef.current) {
             hudShieldBarRef.current.style.width = `${pct}%`;
         }
         if (hudShieldTextRef.current) {
             hudShieldTextRef.current.textContent = `${pct}%`;
+        }
+        if (shieldBubbleMesh.current && shieldBubbleMesh.current.material instanceof THREE.ShaderMaterial) {
+            shieldBubbleMesh.current.material.uniforms.shieldStrength.value = clamped / maxShieldCapacity;
         }
     }, [currentShipClass]);
 
@@ -772,6 +1432,16 @@ export function SpaceBomberGame() {
         const scene = sceneRef.current;
         if (!scene) return;
         bullets.current.forEach(b => scene.remove(b.mesh)); bullets.current = [];
+        if (lightningLinesRef.current) {
+            lightningLinesRef.current.forEach(l => scene.remove(l));
+            lightningLinesRef.current = [];
+        }
+        if (flakShellsRef.current) {
+            flakShellsRef.current.forEach(fs => {
+                if (fs.mesh) scene.remove(fs.mesh);
+            });
+            flakShellsRef.current = [];
+        }
         enemies.current.forEach(e => {
             scene.remove(e.mesh);
             if (e.warningFlare) scene.remove(e.warningFlare);
@@ -786,10 +1456,600 @@ export function SpaceBomberGame() {
         cosmicFleet.current.forEach(f => scene.remove(f.mesh)); cosmicFleet.current = [];
         cosmicLasers.current.forEach(l => scene.remove(l.mesh)); cosmicLasers.current = [];
         debrisAsteroids.current.forEach(a => scene.remove(a.mesh)); debrisAsteroids.current = [];
+        spaceMines.current.forEach(m => {
+            scene.remove(m.mesh);
+            if (m.light) scene.remove(m.light);
+        });
+        spaceMines.current = [];
+        scrapDrops.current.forEach(s => scene.remove(s.mesh)); scrapDrops.current = [];
+        lensFlares.current.forEach(lf => scene.remove(lf.group)); lensFlares.current = [];
         if (nebulaPoints.current) {
             scene.remove(nebulaPoints.current);
             nebulaPoints.current = null;
         }
+    }, []);
+
+    // --- HELPER FUNCTIONS FOR V4.0 (Energy, Modules, Hazards) ---
+    const updateEnergyHUD = useCallback(() => {
+        if (hudWeaponsSliderRef.current) hudWeaponsSliderRef.current.value = energyWeaponsRef.current.toString();
+        if (hudShieldsSliderRef.current) hudShieldsSliderRef.current.value = energyShieldsRef.current.toString();
+        if (hudEnginesSliderRef.current) hudEnginesSliderRef.current.value = energyEnginesRef.current.toString();
+        
+        if (hudWeaponsValRef.current) hudWeaponsValRef.current.textContent = energyWeaponsRef.current.toString();
+        if (hudShieldsValRef.current) hudShieldsValRef.current.textContent = energyShieldsRef.current.toString();
+        if (hudEnginesValRef.current) hudEnginesValRef.current.textContent = energyEnginesRef.current.toString();
+    }, []);
+
+    const setEnergyAllocation = useCallback((type: 'weapons' | 'shields' | 'engines', val: number) => {
+        const target = Math.max(0, Math.min(10, val));
+        let currentVal = 0;
+        if (type === 'weapons') currentVal = energyWeaponsRef.current;
+        else if (type === 'shields') currentVal = energyShieldsRef.current;
+        else currentVal = energyEnginesRef.current;
+        
+        const diff = target - currentVal;
+        if (diff === 0) return;
+        
+        const otherTypes = (['weapons', 'shields', 'engines'] as const).filter(t => t !== type);
+        const other1 = otherTypes[0];
+        const other2 = otherTypes[1];
+        
+        let otherVal1 = other1 === 'weapons' ? energyWeaponsRef.current : (other1 === 'shields' ? energyShieldsRef.current : energyEnginesRef.current);
+        let otherVal2 = other2 === 'weapons' ? energyWeaponsRef.current : (other2 === 'shields' ? energyShieldsRef.current : energyEnginesRef.current);
+        
+        const steps = Math.abs(diff);
+        const sign = Math.sign(diff);
+        
+        for (let i = 0; i < steps; i++) {
+            if (sign > 0) {
+                if (otherVal1 > otherVal2 && otherVal1 > 0) {
+                    otherVal1--;
+                } else if (otherVal2 > 0) {
+                    otherVal2--;
+                } else if (otherVal1 > 0) {
+                    otherVal1--;
+                }
+            } else {
+                if (otherVal1 < otherVal2 && otherVal1 < 10) {
+                    otherVal1++;
+                } else if (otherVal2 < 10) {
+                    otherVal2++;
+                } else if (otherVal1 < 10) {
+                    otherVal1++;
+                }
+            }
+        }
+        
+        if (type === 'weapons') energyWeaponsRef.current = target;
+        else if (type === 'shields') energyShieldsRef.current = target;
+        else energyEnginesRef.current = target;
+        
+        if (other1 === 'weapons') energyWeaponsRef.current = otherVal1;
+        else if (other1 === 'shields') energyShieldsRef.current = otherVal1;
+        else energyEnginesRef.current = otherVal1;
+        
+        if (other2 === 'weapons') energyWeaponsRef.current = otherVal2;
+        else if (other2 === 'shields') energyShieldsRef.current = otherVal2;
+        else energyEnginesRef.current = otherVal2;
+        
+        updateEnergyHUD();
+        
+        // Force React update for UI sync
+        setShopUpdateTrigger(prev => prev + 1);
+    }, [updateEnergyHUD]);
+
+    const toggleMarket = useCallback(() => {
+        setGameState(prev => {
+            if (prev === 'playing') {
+                soundRef.current?.stopAmbient();
+                setMarketOpen(true);
+                return 'paused';
+            } else if (prev === 'paused') {
+                soundRef.current?.startAmbient();
+                lastTime.current = performance.now();
+                setMarketOpen(false);
+                return 'playing';
+            }
+            return prev;
+        });
+    }, []);
+
+    const buyModule = useCallback((moduleKey: 'empShock' | 'nanobots' | 'magnetizer' | 'reactorOvercharge') => {
+        const prices = {
+            empShock: 20,
+            nanobots: 25,
+            magnetizer: 15,
+            reactorOvercharge: 30
+        };
+        const price = prices[moduleKey];
+        if (scrapCountRef.current >= price && !activeModulesRef.current[moduleKey]) {
+            scrapCountRef.current -= price;
+            activeModulesRef.current[moduleKey] = true;
+            
+            if (hudScrapTextRef.current) {
+                hudScrapTextRef.current.textContent = scrapCountRef.current.toString();
+            }
+            
+            if (moduleKey === 'reactorOvercharge') {
+                const maxShieldVal = currentShipClass.maxShield * 0.7;
+                setShieldLevel(Math.min(shieldRef.current, maxShieldVal));
+            }
+            
+            addLog(`MODÜL SATIN ALINDI: ${moduleKey.toUpperCase()}`);
+            soundRef.current?.playCollect();
+            
+            setShopUpdateTrigger(prev => prev + 1);
+        } else {
+            soundRef.current?.playWarning();
+        }
+    }, [currentShipClass, setShieldLevel, addLog]);
+
+    const buyHangarDrone = useCallback((type: 'laser' | 'shield' | 'missile') => {
+        const prices = { laser: 20, shield: 25, missile: 30 };
+        const price = prices[type];
+        
+        if (scrapCountRef.current >= price && dronesRef.current.length < hangarUpgradesRef.current.maxDrones) {
+            scrapCountRef.current -= price;
+            if (hudScrapTextRef.current) {
+                hudScrapTextRef.current.textContent = scrapCountRef.current.toString();
+            }
+            
+            const droneGroup = new THREE.Group();
+            let dGeo;
+            let dCol;
+            if (type === 'laser') {
+                dGeo = new THREE.SphereGeometry(1.0, 8, 8);
+                dCol = 0xffa500;
+                const wing = new THREE.Mesh(new THREE.BoxGeometry(3, 0.2, 0.8), new THREE.MeshStandardMaterial({ color: 0x333333 }));
+                droneGroup.add(wing);
+            } else if (type === 'shield') {
+                dGeo = new THREE.CylinderGeometry(0.8, 0.8, 1.8, 8);
+                dCol = 0x3b82f6;
+            } else {
+                dGeo = new THREE.ConeGeometry(0.8, 2.0, 8);
+                dCol = 0xef4444;
+            }
+            
+            const dMat = new THREE.MeshStandardMaterial({ color: dCol, emissive: dCol, emissiveIntensity: 0.8 });
+            const dMesh = new THREE.Mesh(dGeo, dMat);
+            droneGroup.add(dMesh);
+            
+            sceneRef.current?.add(droneGroup);
+            
+            dronesRef.current.push({
+                id: Math.random(),
+                mesh: droneGroup,
+                orbitAngle: Math.random() * Math.PI * 2,
+                fireCooldown: 0,
+                droneType: type,
+                targetId: null
+            });
+            
+            setOwnedDrones(dronesRef.current.map(d => d.droneType));
+            addLog(`SAVUNMA DRONU AKTİFLEŞTİRİLDİ: ${type.toUpperCase()}`);
+            soundRef.current?.playCollect();
+            setShopUpdateTrigger(prev => prev + 1);
+        } else {
+            soundRef.current?.playWarning();
+        }
+    }, [addLog]);
+
+    const upgradeHangarSystem = useCallback((sys: 'weapons' | 'shields' | 'engines' | 'maxDrones') => {
+        const currentLvl = hangarUpgradesRef.current[sys];
+        if (currentLvl >= 3) {
+            soundRef.current?.playWarning();
+            return;
+        }
+        
+        const price = (currentLvl + 1) * 15;
+        if (scrapCountRef.current >= price) {
+            scrapCountRef.current -= price;
+            hangarUpgradesRef.current[sys]++;
+            
+            if (hudScrapTextRef.current) {
+                hudScrapTextRef.current.textContent = scrapCountRef.current.toString();
+            }
+            
+            if (sys === 'weapons') setHangarWeapons(hangarUpgradesRef.current.weapons);
+            else if (sys === 'shields') {
+                setHangarShields(hangarUpgradesRef.current.shields);
+                currentShipClass.maxShield += 25;
+                setShieldLevel(shieldRef.current + 25);
+            }
+            else if (sys === 'engines') setHangarEngines(hangarUpgradesRef.current.engines);
+            else if (sys === 'maxDrones') setHangarMaxDrones(hangarUpgradesRef.current.maxDrones);
+            
+            addLog(`GEMİ YÜKSELTMESİ: ${sys.toUpperCase()} +${hangarUpgradesRef.current[sys]}`);
+            soundRef.current?.playCollect();
+            setShopUpdateTrigger(prev => prev + 1);
+        } else {
+            soundRef.current?.playWarning();
+        }
+    }, [currentShipClass, setShieldLevel, addLog]);
+
+    const generateGalaxyMap = useCallback((currentLevel: number) => {
+        const nodes: GalaxyNode[] = [];
+        
+        nodes.push({
+            id: 'node_start',
+            name: `Mevcut Sektör (Sektör ${currentLevel})`,
+            type: 'combat',
+            description: 'Güvenli bölgeye geçiş tamamlandı.',
+            threat: 1,
+            hazard: 'none',
+            x: 10,
+            y: 50,
+            completed: true,
+            adjacent: ['node_opt1', 'node_opt2']
+        });
+        
+        const nextLvl = currentLevel + 1;
+        if (nextLvl % 3 === 0) {
+            nodes.push({
+                id: 'node_opt1',
+                name: `X-X1 Sektör Merceği (BOSS)`,
+                type: 'boss',
+                description: 'Yüksek tehdit içeren anormal yerçekimi imzası.',
+                threat: 5,
+                hazard: 'none',
+                x: 80,
+                y: 50,
+                completed: false,
+                adjacent: []
+            });
+            nodes[0].adjacent = ['node_opt1'];
+        } else {
+            const names1 = ['Nötron Yıldızı Koronası', 'Karanlık Madde Bulutu', 'Korsan Savaş Ağı', 'Kuvars Asteroid Kemeri'];
+            const name1 = names1[Math.floor(Math.random() * names1.length)];
+            const hazard1: GalaxyNode['hazard'] = Math.random() > 0.5 ? 'solar_storm' : 'none';
+            nodes.push({
+                id: 'node_opt1',
+                name: name1,
+                type: 'asteroid',
+                description: hazard1 === 'solar_storm' ? 'Yoğun güneş fırtınaları kalkanı aşındırır. Asteroidlerin arkasına saklanın!' : 'Zengin kristal yatakları ve bol miktarda metal hurda.',
+                threat: Math.min(5, Math.max(1, Math.floor(Math.random() * 2) + currentLevel)),
+                hazard: hazard1,
+                x: 50,
+                y: 25,
+                completed: false,
+                adjacent: ['node_final']
+            });
+            
+            const names2 = ['Anomali Sıfır Noktası', 'Kritik Mayın Alanı', 'EMP Nebula Çekirdeği'];
+            const name2 = names2[Math.floor(Math.random() * names2.length)];
+            const hazard2: GalaxyNode['hazard'] = Math.random() > 0.5 ? 'mine_field' : 'none';
+            nodes.push({
+                id: 'node_opt2',
+                name: name2,
+                type: 'anomaly',
+                description: hazard2 === 'mine_field' ? 'Yoğun aktif uzay mayınları tespit edildi. Yakınlık sensörlerine dikkat edin!' : 'Düşük görünürlük ve anormal radyo dalgaları.',
+                threat: Math.min(5, Math.max(1, Math.floor(Math.random() * 2) + currentLevel)),
+                hazard: hazard2,
+                x: 50,
+                y: 75,
+                completed: false,
+                adjacent: ['node_final']
+            });
+            
+            nodes.push({
+                id: 'node_final',
+                name: `Sektör Kapısı ${nextLvl}`,
+                type: 'combat',
+                description: 'Sektörden çıkış kapısı öncesi son engeller.',
+                threat: currentLevel + 1,
+                hazard: 'none',
+                x: 90,
+                y: 50,
+                completed: false,
+                adjacent: []
+            });
+        }
+        
+        galaxyNodesRef.current = nodes;
+        setSelectedMapNodeId('node_opt1');
+        setShopUpdateTrigger(prev => prev + 1);
+    }, []);
+
+    const jumpToSector = useCallback((node: GalaxyNode) => {
+        activeSectorHazardRef.current = node.hazard;
+        setLevel(prev => prev + 1);
+        setGameState('hyperspace');
+        
+        if (hudSolarStormAlertRef.current) {
+            hudSolarStormAlertRef.current.style.display = 'none';
+        }
+        
+        if (soundRef.current) {
+            if (soundRef.current.ctx && soundRef.current.ctx.state === 'suspended') {
+                soundRef.current.ctx.resume();
+            }
+            soundRef.current.playHyperspace();
+            soundRef.current.startAmbient();
+        }
+        
+        hyperspaceTimer.current = 100;
+        addLog(`HİPER UZAY ATLAYIŞI BAŞLATILDI: ${node.name.toUpperCase()}`);
+    }, [addLog]);
+
+    const updateDefenseDrones = useCallback((dt: number) => {
+        const scene = sceneRef.current;
+        const ship = playerShipGroup.current;
+        if (!scene || !ship) return;
+        
+        const numDrones = dronesRef.current.length;
+        if (numDrones === 0) return;
+        
+        const time = performance.now() * 0.0015;
+        
+        dronesRef.current.forEach((drone, idx) => {
+            const orbitRadius = 13 + Math.sin(time * 2.5 + idx) * 1.5;
+            const speed = 2.0 + idx * 0.3;
+            const angle = time * speed + (idx * Math.PI * 2) / numDrones;
+            
+            const dx = Math.cos(angle) * orbitRadius;
+            const dy = Math.sin(angle * 0.6) * 3.5;
+            const dz = Math.sin(angle) * orbitRadius;
+            
+            const droneTargetPos = new THREE.Vector3(dx, dy, dz);
+            droneTargetPos.applyQuaternion(shipQuaternion.current);
+            droneTargetPos.add(shipPos.current);
+            
+            drone.mesh.position.lerp(droneTargetPos, 0.18);
+            drone.mesh.rotation.y += 0.04;
+            
+            drone.fireCooldown -= dt;
+            
+            if (drone.droneType === 'laser') {
+                let nearestEnemy: Enemy | null = null;
+                let minDist = 350;
+                enemies.current.forEach(e => {
+                    if (e.active && e.z < shipPos.current.z) {
+                        const dist = new THREE.Vector3(e.x, e.y, e.z).distanceTo(drone.mesh.position);
+                        if (dist < minDist) {
+                            minDist = dist;
+                            nearestEnemy = e;
+                        }
+                    }
+                });
+                
+                if (nearestEnemy && drone.fireCooldown <= 0) {
+                    drone.fireCooldown = 65;
+                    
+                    const points = [
+                        drone.mesh.position.clone(),
+                        new THREE.Vector3((nearestEnemy as Enemy).x, (nearestEnemy as Enemy).y, (nearestEnemy as Enemy).z)
+                    ];
+                    const beamGeo = new THREE.BufferGeometry().setFromPoints(points);
+                    const beamMat = new THREE.LineBasicMaterial({ color: 0x22c55e, transparent: true, opacity: 0.8 });
+                    const beamLine = new THREE.Line(beamGeo, beamMat);
+                    scene.add(beamLine);
+                    
+                    setTimeout(() => { scene.remove(beamLine); }, 80);
+                    
+                    const damage = 3 + hangarUpgradesRef.current.weapons * 1.5;
+                    (nearestEnemy as Enemy).health -= damage;
+                    createExplosion((nearestEnemy as Enemy).x, (nearestEnemy as Enemy).y, (nearestEnemy as Enemy).z, '#22c55e', 4, 0.4);
+                    soundRef.current?.playShoot();
+                }
+            } else if (drone.droneType === 'shield') {
+                const maxShieldVal = currentShipClass.maxShield * (activeModulesRef.current.reactorOvercharge ? 0.7 : 1.0);
+                if (shieldRef.current < maxShieldVal) {
+                    const regen = 0.06 * (1 + hangarUpgradesRef.current.shields * 0.5) * dt;
+                    setShieldLevel(Math.min(maxShieldVal, shieldRef.current + regen));
+                    
+                    if (Math.random() < 0.1) {
+                        const points = [drone.mesh.position.clone(), shipPos.current.clone()];
+                        const lineGeo = new THREE.BufferGeometry().setFromPoints(points);
+                        const lineMat = new THREE.LineBasicMaterial({ color: 0x3b82f6, transparent: true, opacity: 0.3 });
+                        const line = new THREE.Line(lineGeo, lineMat);
+                        scene.add(line);
+                        setTimeout(() => { scene.remove(line); }, 50);
+                    }
+                }
+            } else if (drone.droneType === 'missile') {
+                let nearestAsteroid: DebrisAsteroid | null = null;
+                let minDist = 300;
+                debrisAsteroids.current.forEach(a => {
+                    if (a.active && a.z < shipPos.current.z) {
+                        const dist = new THREE.Vector3(a.x, a.y, a.z).distanceTo(drone.mesh.position);
+                        if (dist < minDist) {
+                            minDist = dist;
+                            nearestAsteroid = a;
+                        }
+                    }
+                });
+                
+                if (nearestAsteroid && drone.fireCooldown <= 0) {
+                    drone.fireCooldown = 180;
+                    
+                    const mGeo = new THREE.ConeGeometry(0.5, 1.8, 8);
+                    mGeo.rotateX(Math.PI / 2);
+                    const mMat = new THREE.MeshBasicMaterial({ color: 0xef4444 });
+                    const mMesh = new THREE.Mesh(mGeo, mMat);
+                    mMesh.position.copy(drone.mesh.position);
+                    scene.add(mMesh);
+                    
+                    const direction = new THREE.Vector3((nearestAsteroid as DebrisAsteroid).x, (nearestAsteroid as DebrisAsteroid).y, (nearestAsteroid as DebrisAsteroid).z)
+                        .sub(drone.mesh.position).normalize();
+                    const missileSpeed = 15;
+                    
+                    bullets.current.push({
+                        id: Math.random(),
+                        x: drone.mesh.position.x,
+                        y: drone.mesh.position.y,
+                        z: drone.mesh.position.z,
+                        vx: direction.x * missileSpeed,
+                        vy: direction.y * missileSpeed,
+                        vz: direction.z * missileSpeed,
+                        life: 120,
+                        isEnemy: false,
+                        isMissile: true,
+                        mesh: mMesh
+                    });
+                }
+            }
+        });
+    }, [currentShipClass, setShieldLevel, createExplosion]);
+
+    const updateOscilloscope = useCallback(() => {
+        const canvas = oscilloscopeCanvasRef.current;
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+        
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        ctx.strokeStyle = '#22d3ee';
+        ctx.lineWidth = 1.5;
+        ctx.shadowColor = '#22d3ee';
+        ctx.shadowBlur = 4;
+        
+        ctx.beginPath();
+        const width = canvas.width;
+        const height = canvas.height;
+        const stepCount = soundRef.current?.currentStep || 0;
+        
+        for (let x = 0; x < width; x++) {
+            const stepFactor = Math.sin(x * 0.05 + stepCount * 0.5) * 12.0;
+            const noiseFactor = (Math.random() - 0.5) * (soundRef.current?.isPlayingMusic ? 6.0 : 1.0);
+            const y = height / 2 + stepFactor + noiseFactor;
+            
+            if (x === 0) ctx.moveTo(x, y);
+            else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+        ctx.shadowBlur = 0;
+    }, []);
+
+    const fractureAsteroid = useCallback((asteroid: DebrisAsteroid) => {
+        const scene = sceneRef.current;
+        if (!scene) return;
+        
+        const numPieces = 3;
+        const newSize = asteroid.size * 0.45;
+        
+        if (asteroid.size < 4.0) {
+            return;
+        }
+        
+        for (let i = 0; i < numPieces; i++) {
+            const size = newSize * (0.8 + Math.random() * 0.4);
+            const aGeo = new THREE.DodecahedronGeometry(size, 0);
+            const aMat = new THREE.MeshStandardMaterial({ 
+                color: 0x5a5a6a, 
+                roughness: 0.95, 
+                metalness: 0.05 
+            });
+            const aMesh = new THREE.Mesh(aGeo, aMat);
+            aMesh.castShadow = true;
+            aMesh.receiveShadow = true;
+            
+            const scatterDir = new THREE.Vector3(
+                (Math.random() - 0.5) * 8.0,
+                (Math.random() - 0.5) * 8.0,
+                (Math.random() - 0.5) * 8.0
+            );
+            
+            const px = asteroid.x + (Math.random() - 0.5) * size * 2.0;
+            const py = asteroid.y + (Math.random() - 0.5) * size * 2.0;
+            const pz = asteroid.z + (Math.random() - 0.5) * size * 2.0;
+            
+            aMesh.position.set(px, py, pz);
+            scene.add(aMesh);
+            
+            debrisAsteroids.current.push({
+                id: Math.random(),
+                x: px, y: py, z: pz,
+                vx: asteroid.vx + scatterDir.x,
+                vy: asteroid.vy + scatterDir.y,
+                vz: asteroid.vz + scatterDir.z,
+                rx: (Math.random() - 0.5) * 0.05,
+                ry: (Math.random() - 0.5) * 0.05,
+                rz: (Math.random() - 0.5) * 0.05,
+                size,
+                health: 5 + level * 1.5,
+                active: true,
+                mesh: aMesh
+            });
+        }
+    }, [level]);
+
+    const spawnScrap = useCallback((x: number, y: number, z: number) => {
+        if (!sceneRef.current) return;
+        const sGeo = new THREE.OctahedronGeometry(1.2);
+        const sMat = new THREE.MeshStandardMaterial({
+            color: 0xffd700,
+            emissive: 0xb58900,
+            emissiveIntensity: 0.8,
+            metalness: 0.9,
+            roughness: 0.1
+        });
+        const mesh = new THREE.Mesh(sGeo, sMat);
+        mesh.position.set(x, y, z);
+        sceneRef.current.add(mesh);
+        
+        scrapDrops.current.push({
+            id: Math.random(),
+            x, y, z,
+            vx: (Math.random() - 0.5) * 6,
+            vy: (Math.random() - 0.5) * 6,
+            vz: (Math.random() - 0.5) * 6,
+            active: true,
+            mesh
+        });
+    }, []);
+
+    const createLensFlare = useCallback((x: number, y: number, z: number, colorStr: string, size: number = 30) => {
+        if (!sceneRef.current) return;
+        const group = new THREE.Group();
+        group.position.set(x, y, z);
+        
+        const col = new THREE.Color(colorStr);
+        
+        const canvas = document.createElement('canvas');
+        canvas.width = 64;
+        canvas.height = 64;
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+            const grad = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
+            grad.addColorStop(0, 'rgba(255, 255, 255, 1.0)');
+            grad.addColorStop(0.2, `rgba(${Math.floor(col.r * 255)}, ${Math.floor(col.g * 255)}, ${Math.floor(col.b * 255)}, 0.6)`);
+            grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, 64, 64);
+        }
+        const tex = new THREE.CanvasTexture(canvas);
+        const mat = new THREE.SpriteMaterial({ map: tex, blending: THREE.AdditiveBlending, transparent: true, depthWrite: false });
+        const sprite = new THREE.Sprite(mat);
+        sprite.scale.set(size, size, 1);
+        group.add(sprite);
+        
+        const streakCanvas = document.createElement('canvas');
+        streakCanvas.width = 128;
+        streakCanvas.height = 16;
+        const sCtx = streakCanvas.getContext('2d');
+        if (sCtx) {
+            const grad = sCtx.createRadialGradient(64, 8, 0, 64, 8, 64);
+            grad.addColorStop(0, 'rgba(255, 255, 255, 1.0)');
+            grad.addColorStop(0.3, `rgba(${Math.floor(col.r * 255)}, ${Math.floor(col.g * 255)}, ${Math.floor(col.b * 255)}, 0.4)`);
+            grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+            sCtx.fillStyle = grad;
+            sCtx.fillRect(0, 0, 128, 16);
+        }
+        const streakTex = new THREE.CanvasTexture(streakCanvas);
+        const streakMat = new THREE.SpriteMaterial({ map: streakTex, blending: THREE.AdditiveBlending, transparent: true, depthWrite: false });
+        const streakSprite = new THREE.Sprite(streakMat);
+        streakSprite.scale.set(size * 4.5, size * 0.35, 1);
+        group.add(streakSprite);
+        
+        sceneRef.current.add(group);
+        
+        lensFlares.current.push({
+            group,
+            life: 1.0,
+            initialScale: 1.0,
+            mesh: sprite
+        });
     }, []);
 
     // Setup 3D Scene structures
@@ -817,6 +2077,8 @@ export function SpaceBomberGame() {
             const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
             renderer.setSize(width, height);
             renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
             rendererRef.current = renderer;
 
             const composer = new EffectComposer(renderer);
@@ -834,14 +2096,35 @@ export function SpaceBomberGame() {
             glitchPass.goWild = false;
             composer.addPass(glitchPass);
             
+            // Custom CRT scanline & Chromatic Aberration Shader Pass
+            const crtPass = new ShaderPass(CRTShader);
+            composer.addPass(crtPass);
+            crtPassRef.current = crtPass;
+
+            // Custom Lensing Shader Pass
+            const lensingPass = new ShaderPass(LensingShader);
+            composer.addPass(lensingPass);
+            lensingPassRef.current = lensingPass;
+            
             composerRef.current = composer;
             glitchPassRef.current = glitchPass;
 
             // Lighting
-            const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.35);
             scene.add(ambientLight);
-            const dirLight = new THREE.DirectionalLight(0xa29bfe, 2.0);
-            dirLight.position.set(100, 200, 50);
+            
+            const dirLight = new THREE.DirectionalLight(0xa29bfe, 2.5);
+            dirLight.position.set(120, 200, 60);
+            dirLight.castShadow = true;
+            dirLight.shadow.mapSize.width = 1024;
+            dirLight.shadow.mapSize.height = 1024;
+            dirLight.shadow.camera.near = 0.5;
+            dirLight.shadow.camera.far = 1000;
+            const d = 150;
+            dirLight.shadow.camera.left = -d;
+            dirLight.shadow.camera.right = d;
+            dirLight.shadow.camera.top = d;
+            dirLight.shadow.camera.bottom = -d;
             scene.add(dirLight);
 
             // --- SHIP MESH (Advanced Starfighter) ---
@@ -896,29 +2179,41 @@ export function SpaceBomberGame() {
             const wingGeoL = new THREE.ExtrudeGeometry(wingShape, extrudeSettings);
             const wingMat = new THREE.MeshStandardMaterial({ color: 0x111111, roughness: 0.5, metalness: 0.8 });
             
+            // Wingtips Glow
+            const wingTipGeo = new THREE.BoxGeometry(0.4, 1.5, 3);
+            const tipColor = new THREE.Color(currentShipClass.laserColor);
+            const wingTipMat = new THREE.MeshStandardMaterial({ color: tipColor, emissive: tipColor, emissiveIntensity: 1.5 });
+            const tipX = currentShipClass.id === 'interceptor' ? -9 : (currentShipClass.id === 'dreadnought' ? -7 : -8);
+
+            // Left Wing Group
+            const wingLGroup = new THREE.Group();
+            wingLGroupRef.current = wingLGroup;
+            shipGroup.add(wingLGroup);
+
             const wingL = new THREE.Mesh(wingGeoL, wingMat);
             wingL.rotation.x = Math.PI / 2;
             wingL.position.set(0, -0.2, 2);
-            shipGroup.add(wingL);
+            wingLGroup.add(wingL);
+
+            const wingTipL = new THREE.Mesh(wingTipGeo, wingTipMat);
+            wingTipL.position.set(tipX, 0.2, 5);
+            wingLGroup.add(wingTipL);
+
+            // Right Wing Group
+            const wingRGroup = new THREE.Group();
+            wingRGroupRef.current = wingRGroup;
+            shipGroup.add(wingRGroup);
 
             const wingGeoR = wingGeoL.clone();
             wingGeoR.applyMatrix4(new THREE.Matrix4().makeScale(-1, 1, 1));
             const wingR = new THREE.Mesh(wingGeoR, wingMat);
             wingR.rotation.x = Math.PI / 2;
             wingR.position.set(0, -0.2, 2);
-            shipGroup.add(wingR);
-            
-            // Wingtips Glow
-            const wingTipGeo = new THREE.BoxGeometry(0.4, 1.5, 3);
-            const tipColor = new THREE.Color(currentShipClass.laserColor);
-            const wingTipMat = new THREE.MeshStandardMaterial({ color: tipColor, emissive: tipColor, emissiveIntensity: 1.5 });
-            const wingTipL = new THREE.Mesh(wingTipGeo, wingTipMat);
-            const tipX = currentShipClass.id === 'interceptor' ? -9 : (currentShipClass.id === 'dreadnought' ? -7 : -8);
-            wingTipL.position.set(tipX, 0.2, 5);
-            shipGroup.add(wingTipL);
+            wingRGroup.add(wingR);
+
             const wingTipR = new THREE.Mesh(wingTipGeo, wingTipMat);
             wingTipR.position.set(-tipX, 0.2, 5);
-            shipGroup.add(wingTipR);
+            wingRGroup.add(wingTipR);
 
             // Thrusters
             const thrusterGeo = new THREE.CylinderGeometry(0.6, 0.9, 2, 8);
@@ -933,36 +2228,190 @@ export function SpaceBomberGame() {
             thrusterR.position.set(1.5, 0, 4);
             shipGroup.add(thrusterR);
 
-            // Flames
-            const flameGeo = new THREE.ConeGeometry(0.4, 2.0, 8);
-            const flameMat = new THREE.MeshBasicMaterial({ color: tipColor, transparent: true, opacity: 0.2 });
-            const flameL = new THREE.Mesh(flameGeo, flameMat);
-            flameL.rotation.x = -Math.PI / 2;
+            // Flames (Exhaust Plume Shaders)
+            const flameGeo = new THREE.CylinderGeometry(0.1, 0.7, 4.0, 16, 16, true);
+            flameGeo.rotateX(Math.PI / 2);
+            
+            const flameMatL = new THREE.ShaderMaterial({
+                uniforms: {
+                    time: { value: 0.0 },
+                    color: { value: tipColor },
+                    thrust: { value: 1.0 }
+                },
+                vertexShader: `
+                    varying vec2 vUv;
+                    varying vec3 vPosition;
+                    void main() {
+                        vUv = uv;
+                        vPosition = position;
+                        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+                    }
+                `,
+                fragmentShader: `
+                    uniform float time;
+                    uniform vec3 color;
+                    uniform float thrust;
+                    varying vec2 vUv;
+                    varying vec3 vPosition;
+                    void main() {
+                        float flameNoise = sin(vUv.x * 12.0 + time * 25.0) * cos(vUv.y * 8.0 - time * 20.0) * 0.22;
+                        float centerDist = abs(vUv.x - 0.5) * 2.0;
+                        float shape = 1.0 - smoothstep(0.0, 1.0 - flameNoise, centerDist);
+                        float lengthFade = smoothstep(1.0, 0.0, vUv.y);
+                        vec3 flameColor = mix(color, vec3(1.0, 0.35, 0.0), thrust * 0.45);
+                        float intensity = shape * lengthFade * thrust * 1.8;
+                        gl_FragColor = vec4(flameColor * intensity, intensity * 0.6);
+                    }
+                `,
+                transparent: true,
+                blending: THREE.AdditiveBlending,
+                depthWrite: false,
+                side: THREE.DoubleSide
+            });
+            const flameMatR = flameMatL.clone();
+            
+            const flameL = new THREE.Mesh(flameGeo, flameMatL);
             flameL.position.set(-1.5, 0, 5.0);
             shipGroup.add(flameL);
             thrusterFlameMeshL.current = flameL;
 
-            const flameR = new THREE.Mesh(flameGeo, flameMat);
-            flameR.rotation.x = -Math.PI / 2;
+            const flameR = new THREE.Mesh(flameGeo, flameMatR);
             flameR.position.set(1.5, 0, 5.0);
             shipGroup.add(flameR);
             thrusterFlameMeshR.current = flameR;
 
-            // Shield Bubble
-            const shieldGeo = new THREE.SphereGeometry(currentShipClass.id === 'dreadnought' ? 8.5 : 7, 16, 16);
-            const sMat = new THREE.MeshBasicMaterial({ 
-                color: tipColor, 
-                wireframe: true, 
-                transparent: true, 
-                opacity: 0.0,
-                blending: THREE.AdditiveBlending 
+            // Shield Bubble (Advanced Multi-Impact Ripple Shader)
+            const shieldGeo = new THREE.SphereGeometry(currentShipClass.id === 'dreadnought' ? 8.5 : 7, 32, 32);
+            const sMat = new THREE.ShaderMaterial({
+                uniforms: THREE.UniformsUtils.clone(ShieldRippleShader.uniforms),
+                vertexShader: ShieldRippleShader.vertexShader,
+                fragmentShader: ShieldRippleShader.fragmentShader,
+                transparent: true,
+                blending: THREE.AdditiveBlending,
+                depthWrite: false
             });
+            sMat.uniforms.color.value.copy(tipColor);
             const shieldBubble = new THREE.Mesh(shieldGeo, sMat);
             shipGroup.add(shieldBubble);
             shieldBubbleMesh.current = shieldBubble;
 
+            shipGroup.traverse(child => {
+                if (child instanceof THREE.Mesh && child !== shieldBubble) {
+                    child.castShadow = true;
+                    child.receiveShadow = true;
+                }
+            });
+
             scene.add(shipGroup);
             playerShipGroup.current = shipGroup;
+
+            // --- v6.0 BACKGROUND PROCEDURAL PLANET & ATMO & RINGS ---
+            const planetGroup = new THREE.Group();
+            planetGroup.position.set(-450, 250, -3200);
+            scene.add(planetGroup);
+            planetGroupRef.current = planetGroup;
+
+            const planetGeo = new THREE.SphereGeometry(250, 64, 64);
+            const planetMat = new THREE.ShaderMaterial({
+                uniforms: THREE.UniformsUtils.clone(PlanetSurfaceShader.uniforms),
+                vertexShader: PlanetSurfaceShader.vertexShader,
+                fragmentShader: PlanetSurfaceShader.fragmentShader
+            });
+            planetMat.uniforms.color1.value.set('#0f2027');
+            planetMat.uniforms.color2.value.set('#203a43');
+            planetMat.uniforms.color3.value.set('#2c5364');
+            const planetMesh = new THREE.Mesh(planetGeo, planetMat);
+            planetMesh.castShadow = true;
+            planetMesh.receiveShadow = true;
+            planetGroup.add(planetMesh);
+            planetMeshRef.current = planetMesh;
+
+            const atmoGeo = new THREE.SphereGeometry(260, 32, 32);
+            const atmoMat = new THREE.ShaderMaterial({
+                uniforms: THREE.UniformsUtils.clone(AtmosphereShader.uniforms),
+                vertexShader: AtmosphereShader.vertexShader,
+                fragmentShader: AtmosphereShader.fragmentShader,
+                blending: THREE.AdditiveBlending,
+                side: THREE.BackSide,
+                transparent: true
+            });
+            atmoMat.uniforms.color.value.set('#00bfff');
+            const atmoMesh = new THREE.Mesh(atmoGeo, atmoMat);
+            planetGroup.add(atmoMesh);
+            planetAtmosphereRef.current = atmoMesh;
+
+            const ringGeo = new THREE.RingGeometry(320, 580, 64);
+            ringGeo.rotateX(Math.PI / 2.3);
+            const ringMat = new THREE.ShaderMaterial({
+                uniforms: THREE.UniformsUtils.clone(PlanetRingsShader.uniforms),
+                vertexShader: PlanetRingsShader.vertexShader,
+                fragmentShader: PlanetRingsShader.fragmentShader,
+                transparent: true,
+                side: THREE.DoubleSide,
+                depthWrite: false
+            });
+            ringMat.uniforms.color.value.set('#bdc3c7');
+            const ringMesh = new THREE.Mesh(ringGeo, ringMat);
+            planetGroup.add(ringMesh);
+            planetRingsRef.current = ringMesh;
+
+            // --- v6.0 BLACK HOLE SINGULARITY ---
+            const blackHoleGroup = new THREE.Group();
+            blackHoleGroup.position.copy(blackHolePosRef.current);
+            scene.add(blackHoleGroup);
+            blackHoleMeshRef.current = blackHoleGroup;
+
+            const bhLight = new THREE.PointLight('#a855f7', 8, 400);
+            blackHoleGroup.add(bhLight);
+
+            const horizonGeo = new THREE.SphereGeometry(24, 32, 32);
+            const horizonMat = new THREE.MeshBasicMaterial({ color: 0x000000 });
+            const horizon = new THREE.Mesh(horizonGeo, horizonMat);
+            blackHoleGroup.add(horizon);
+
+            const discGeo = new THREE.BufferGeometry();
+            const discParticleCount = 2000;
+            const discPos = new Float32Array(discParticleCount * 3);
+            const discColors = new Float32Array(discParticleCount * 3);
+            const discSpeeds = new Float32Array(discParticleCount);
+            const discRadii = new Float32Array(discParticleCount);
+            
+            for (let i = 0; i < discParticleCount; i++) {
+                const r = 38.0 + Math.random() * 110.0;
+                const theta = Math.random() * Math.PI * 2.0;
+                discPos[i * 3] = Math.cos(theta) * r;
+                discPos[i * 3 + 1] = (Math.random() - 0.5) * 4.0;
+                discPos[i * 3 + 2] = Math.sin(theta) * r;
+
+                const t = (r - 38.0) / 110.0;
+                const c = new THREE.Color().lerpColors(new THREE.Color('#ffffff'), new THREE.Color('#a855f7'), t);
+                if (Math.random() > 0.6) c.lerp(new THREE.Color('#ff3f34'), 0.5);
+                
+                discColors[i * 3] = c.r;
+                discColors[i * 3 + 1] = c.g;
+                discColors[i * 3 + 2] = c.b;
+                
+                discSpeeds[i] = 1.2 + (1.0 / Math.sqrt(r)) * 15.0;
+                discRadii[i] = r;
+            }
+            discGeo.setAttribute('position', new THREE.BufferAttribute(discPos, 3));
+            discGeo.setAttribute('color', new THREE.BufferAttribute(discColors, 3));
+            
+            const discMat = new THREE.PointsMaterial({
+                size: 2.8,
+                vertexColors: true,
+                transparent: true,
+                opacity: 0.85,
+                blending: THREE.AdditiveBlending,
+                depthWrite: false
+            });
+            const accretionDisk = new THREE.Points(discGeo, discMat);
+            blackHoleGroup.add(accretionDisk);
+            accretionDiskMeshRef.current = accretionDisk;
+            
+            (accretionDisk as any).speeds = discSpeeds;
+            (accretionDisk as any).radii = discRadii;
+            (accretionDisk as any).angles = new Float32Array(discParticleCount);
 
             // --- WARP / SPEED LINES ---
             const linesGroup = new THREE.Group();
@@ -1068,7 +2517,74 @@ export function SpaceBomberGame() {
             scene.add(nebCloud);
             nebulaPoints.current = nebCloud;
 
-
+            // --- QUANTUM SPACE DUST ---
+            const dustGeo = new THREE.BufferGeometry();
+            const dustCount = 1200;
+            const dustPositions = new Float32Array(dustCount * 3);
+            const dustSpeeds = new Float32Array(dustCount);
+            
+            for (let i = 0; i < dustCount; i++) {
+                dustPositions[i * 3] = (Math.random() - 0.5) * 600;
+                dustPositions[i * 3 + 1] = (Math.random() - 0.5) * 300;
+                dustPositions[i * 3 + 2] = -Math.random() * 2000;
+                dustSpeeds[i] = 2.0 + Math.random() * 5.0;
+            }
+            
+            dustGeo.setAttribute('position', new THREE.BufferAttribute(dustPositions, 3));
+            dustGeo.setAttribute('speed', new THREE.BufferAttribute(dustSpeeds, 1));
+            
+            const dustMat = new THREE.ShaderMaterial({
+                uniforms: {
+                    time: { value: 0.0 },
+                    shipPos: { value: new THREE.Vector3(0, 0, 0) },
+                    magnetActive: { value: 0.0 },
+                    color: { value: tipColor }
+                },
+                vertexShader: `
+                    uniform float time;
+                    uniform vec3 shipPos;
+                    uniform float magnetActive;
+                    attribute float speed;
+                    varying vec3 vColor;
+                    varying float vAlpha;
+                    
+                    void main() {
+                        vec3 pos = position;
+                        pos.z = mod(pos.z - time * speed * 12.0, 2000.0) - 1000.0 + shipPos.z;
+                        
+                        vec3 toShip = shipPos - pos;
+                        float dist = length(toShip);
+                        if (dist < 350.0 && magnetActive > 0.5) {
+                            float strength = (1.0 - (dist / 350.0)) * magnetActive * 30.0;
+                            pos += normalize(toShip) * strength;
+                        }
+                        
+                        vAlpha = smoothstep(1000.0, 200.0, abs(pos.z - shipPos.z)) * 0.5;
+                        vColor = mix(vec3(0.5, 0.8, 1.0), vec3(1.0, 0.9, 0.5), magnetActive * 0.5);
+                        
+                        vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
+                        gl_PointSize = (15.0 / -mvPosition.z) * (1.0 + magnetActive * 1.5);
+                        gl_Position = projectionMatrix * mvPosition;
+                    }
+                `,
+                fragmentShader: `
+                    varying vec3 vColor;
+                    varying float vAlpha;
+                    void main() {
+                        float dist = length(gl_PointCoord - vec2(0.5));
+                        if (dist > 0.5) discard;
+                        float intensity = 1.0 - (dist * 2.0);
+                        gl_FragColor = vec4(vColor, intensity * vAlpha);
+                    }
+                `,
+                transparent: true,
+                blending: THREE.AdditiveBlending,
+                depthWrite: false
+            });
+            
+            const dustPoints = new THREE.Points(dustGeo, dustMat);
+            scene.add(dustPoints);
+            quantumDustPointsRef.current = dustPoints;
 
             // --- GLSL WORMHOLE SHADER ---
             const portalGeo = new THREE.PlaneGeometry(6000, 6000);
@@ -1340,8 +2856,43 @@ export function SpaceBomberGame() {
         clearAllEntities();
         if (warpTunnelMesh.current) warpTunnelMesh.current.visible = false;
 
+        // Reset Modules, Drones & Hangar upgrades on sector 1 restart
+        if (level === 1 && gameState === 'playing' && scoreRef.current === 0) {
+            scrapCountRef.current = 0;
+            activeModulesRef.current = {
+                empShock: false,
+                nanobots: false,
+                magnetizer: false,
+                reactorOvercharge: false
+            };
+            energyWeaponsRef.current = 3;
+            energyShieldsRef.current = 3;
+            energyEnginesRef.current = 4;
+            updateEnergyHUD();
+            if (hudScrapTextRef.current) hudScrapTextRef.current.textContent = '0';
+            
+            // Clear defense drones
+            dronesRef.current.forEach(d => sceneRef.current?.remove(d.mesh));
+            dronesRef.current = [];
+            setOwnedDrones([]);
+            
+            // Reset hangar
+            hangarUpgradesRef.current = { weapons: 0, shields: 0, engines: 0, maxDrones: 1 };
+            setHangarWeapons(0);
+            setHangarShields(0);
+            setHangarEngines(0);
+            setHangarMaxDrones(1);
+        }
+
+        // Configure Sector Hazard
+        if (activeSectorHazardRef.current === 'solar_storm') {
+            solarStormActiveRef.current = true;
+            solarStormTimerRef.current = 150; // Warning triggers in 2.5s
+            addLog("UYARI: BU SEKTÖRDE ANOMALİ GÜNEŞ FIRTINASI AKTİF!");
+        }
+
         setFuelLevel(100);
-        setShieldLevel(currentShipClass.maxShield);
+        setShieldLevel(currentShipClass.maxShield * (activeModulesRef.current.reactorOvercharge ? 0.7 : 1.0));
         setArmorLevel(currentShipClass.maxArmor);
         setBossHealth(40);
         
@@ -1349,6 +2900,32 @@ export function SpaceBomberGame() {
         shipVel.current = new THREE.Vector3(0, 0, 0);
         shipQuaternion.current = new THREE.Quaternion();
         targetSpeed.current = MIN_SPEED;
+
+        // Reset Solar Storms & Space Hazards
+        solarStormActiveRef.current = false;
+        solarStormTimerRef.current = 800 + Math.random() * 600; 
+        solarStormDurationRef.current = 0;
+        solarStormWarningRef.current = 0;
+        if (hudSolarStormAlertRef.current) {
+            hudSolarStormAlertRef.current.style.display = 'none';
+        }
+        if (hudDamageVignetteRef.current) {
+            hudDamageVignetteRef.current.style.display = 'none';
+            hudDamageVignetteRef.current.style.opacity = '0';
+        }
+        
+        // Remove space mines & scrap drops
+        spaceMines.current.forEach(m => {
+            sceneRef.current?.remove(m.mesh);
+            if (m.light) sceneRef.current?.remove(m.light);
+        });
+        spaceMines.current = [];
+        
+        scrapDrops.current.forEach(s => sceneRef.current?.remove(s.mesh));
+        scrapDrops.current = [];
+        
+        lensFlares.current.forEach(lf => sceneRef.current?.remove(lf.group));
+        lensFlares.current = [];
 
         if (playerShipGroup.current) {
             playerShipGroup.current.position.set(0, 0, 0);
@@ -1380,6 +2957,7 @@ export function SpaceBomberGame() {
             const py = (Math.random() - 0.5) * 60;  // Y in [-30, 30]
 
             fMesh.position.set(px, py, pz);
+            fMesh.traverse(c => { if (c instanceof THREE.Mesh) { c.castShadow = true; c.receiveShadow = true; } });
             scene.add(fMesh);
 
             enemies.current.push({
@@ -1412,6 +2990,7 @@ export function SpaceBomberGame() {
             tMesh.position.set(px, py, pz);
             // Rotate turret to face inwards
             tMesh.rotation.y = side === 1 ? Math.PI / 2 : -Math.PI / 2;
+            tMesh.traverse(c => { if (c instanceof THREE.Mesh) { c.castShadow = true; c.receiveShadow = true; } });
             scene.add(tMesh);
 
             enemies.current.push({
@@ -1491,6 +3070,7 @@ export function SpaceBomberGame() {
             const pz = -2500;
 
             bossMesh.position.set(px, py, pz);
+            bossMesh.traverse(c => { if (c instanceof THREE.Mesh) { c.castShadow = true; c.receiveShadow = true; } });
             scene.add(bossMesh);
 
             const bossH = 60 + level * 15;
@@ -1577,6 +3157,8 @@ export function SpaceBomberGame() {
             const py = (Math.random() - 0.5) * 50;
             
             aMesh.position.set(px, py, pz);
+            aMesh.castShadow = true;
+            aMesh.receiveShadow = true;
             scene.add(aMesh);
             
             debrisAsteroids.current.push({
@@ -1595,6 +3177,55 @@ export function SpaceBomberGame() {
             });
         }
 
+        // Spawn Space Mines
+        const numMines = 8 + level * 2;
+        const stepM = (zEnd - zStart) / numMines;
+        for (let i = 0; i < numMines; i++) {
+            const mineGroup = new THREE.Group();
+            
+            // Central core mine geometry - spikey dodecahedron
+            const mineGeo = new THREE.DodecahedronGeometry(2.5, 1);
+            const posAttr = mineGeo.attributes.position;
+            for (let j = 0; j < posAttr.count; j++) {
+                if (j % 3 === 0) {
+                    posAttr.setXYZ(j, posAttr.getX(j) * 1.5, posAttr.getY(j) * 1.5, posAttr.getZ(j) * 1.5);
+                }
+            }
+            mineGeo.computeVertexNormals();
+            
+            const mineMat = new THREE.MeshStandardMaterial({ color: 0x333333, metalness: 0.9, roughness: 0.2 });
+            const mineMesh = new THREE.Mesh(mineGeo, mineMat);
+            mineGroup.add(mineMesh);
+            
+            // Blinking light sphere
+            const lightGeo = new THREE.SphereGeometry(0.8, 8, 8);
+            const lightMat = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+            const lightMesh = new THREE.Mesh(lightGeo, lightMat);
+            lightMesh.position.set(0, 0, 0);
+            mineGroup.add(lightMesh);
+            
+            const px = (Math.random() - 0.5) * 130;
+            const py = (Math.random() - 0.5) * 60;
+            const pz = zStart + i * stepM + (Math.random() - 0.5) * 50;
+            
+            mineGroup.position.set(px, py, pz);
+            mineGroup.traverse(c => { if (c instanceof THREE.Mesh) { c.castShadow = true; c.receiveShadow = true; } });
+            scene.add(mineGroup);
+            
+            const minePointLight = new THREE.PointLight(0xff0000, 0, 25);
+            minePointLight.position.copy(mineGroup.position);
+            scene.add(minePointLight);
+            
+            spaceMines.current.push({
+                id: Math.random(),
+                x: px, y: py, z: pz,
+                active: true,
+                mesh: mineGroup,
+                light: minePointLight,
+                beepTimer: 0
+            });
+        }
+
         // Initialize enemy counter refs and DOM element
         const total = enemies.current.length;
         totalEnemiesRef.current = total;
@@ -1602,7 +3233,7 @@ export function SpaceBomberGame() {
         if (hudEnemiesRef.current) {
             hudEnemiesRef.current.textContent = `${total} / ${total}`;
         }
-    }, [clearAllEntities, level, setFuelLevel, setShieldLevel, setArmorLevel, addLog, currentShipClass, createTurretMesh, createFloaterMesh, createBossMesh]);
+    }, [clearAllEntities, level, setFuelLevel, setShieldLevel, setArmorLevel, addLog, currentShipClass, createTurretMesh, createFloaterMesh, createBossMesh, gameState]);
 
     const spawnBullet = useCallback((offsetX: number, offsetY: number, color: string, speedScale: number = 1.0, isBeam: boolean = false) => {
         if (!sceneRef.current || !playerShipGroup.current) return;
@@ -1676,34 +3307,202 @@ export function SpaceBomberGame() {
         });
     }, []);
 
+    const drawTeslaLightning = useCallback((start: THREE.Vector3, end: THREE.Vector3) => {
+        const scene = sceneRef.current;
+        if (!scene) return null;
+        
+        const points = [];
+        points.push(start);
+        
+        const segments = 8;
+        const dir = new THREE.Vector3().subVectors(end, start);
+        const len = dir.length();
+        const step = len / segments;
+        dir.normalize();
+        
+        const perp = new THREE.Vector3(1, 0, 0).cross(dir).normalize();
+        if (perp.lengthSq() < 0.01) {
+            perp.copy(new THREE.Vector3(0, 1, 0).cross(dir).normalize());
+        }
+        
+        for (let i = 1; i < segments; i++) {
+            const pt = start.clone().addScaledVector(dir, step * i);
+            const displacementStrength = 4.5 + Math.random() * 6.0;
+            const angle = Math.random() * Math.PI * 2;
+            const disp = perp.clone()
+                .applyAxisAngle(dir, angle)
+                .multiplyScalar((Math.random() - 0.5) * displacementStrength);
+            
+            pt.add(disp);
+            points.push(pt);
+        }
+        points.push(end);
+        
+        const geo = new THREE.BufferGeometry().setFromPoints(points);
+        const mat = new THREE.LineBasicMaterial({
+            color: '#00e5ff',
+            transparent: true,
+            opacity: 0.9,
+            blending: THREE.AdditiveBlending
+        });
+        const line = new THREE.Line(geo, mat);
+        scene.add(line);
+        if (lightningLinesRef.current) {
+            lightningLinesRef.current.push(line);
+        }
+        
+        createExplosion(end.x, end.y, end.z, '#00e5ff', 4, 0.4);
+        return line;
+    }, [createExplosion]);
+
     const fireWeapon = useCallback(() => {
         if (gameState !== 'playing' || fuelRef.current <= 0) return;
         
-        const activeWeaponPattern = weaponTimer.current > 0 ? weaponType.current : currentShipClass.weaponPattern;
         const activeLaserColor = weaponTimer.current > 0 
             ? (weaponType.current === 'beam' ? '#ff4757' : (weaponType.current === 'missile' ? '#ff9f43' : '#00d2d3')) 
             : currentShipClass.laserColor;
 
-        if (activeWeaponPattern === 'beam') {
-            spawnBullet(0, 0, activeLaserColor, 3.0, true);
-            soundRef.current?.playShoot(true);
+        const weaponMode = activeWeaponTypeRef.current;
+        
+        if (weaponMode === 'beam') {
+            if (weaponHeatRef.current > 95) {
+                soundRef.current?.playWarning();
+                addLog("UYARI: SİLAH AŞIRI ISINDI! SOĞUMA BEKLENİYOR.");
+                return;
+            }
+            
+            weaponHeatRef.current = Math.min(100, weaponHeatRef.current + 3.2);
+            spawnBullet(0, 0, '#ff4757', 2.8, true);
+            soundRef.current?.playContinuousBeam();
             screenShakeRef.current = Math.max(screenShakeRef.current, 1.2);
-        } else if (activeWeaponPattern === 'multi') {
-            spawnBullet(-4, 0, activeLaserColor, 1.0);
-            spawnBullet(4, 0, activeLaserColor, 1.0);
-            spawnBullet(0, 3, activeLaserColor, 1.0);
+            setFuelLevel(fuelRef.current - 0.09);
+            
+        } else if (weaponMode === 'tesla') {
+            if (!sceneRef.current || !playerShipGroup.current) return;
+            
+            const nosePos = new THREE.Vector3(0, 0, -6.5);
+            nosePos.applyQuaternion(shipQuaternion.current);
+            nosePos.add(shipPos.current);
+            
+            let nearestEnemy: Enemy | null = null;
+            let minDist = 350;
+            enemies.current.forEach(e => {
+                if (e.active) {
+                    const eVec = e.mesh.position;
+                    const d = nosePos.distanceTo(eVec);
+                    if (d < minDist) {
+                        minDist = d;
+                        nearestEnemy = e;
+                    }
+                }
+            });
+            
+            if (nearestEnemy) {
+                const targetPos = (nearestEnemy as Enemy).mesh.position;
+                drawTeslaLightning(nosePos, targetPos);
+                
+                (nearestEnemy as Enemy).health = Math.max(0, (nearestEnemy as Enemy).health - 0.4);
+                if ((nearestEnemy as Enemy).health <= 0) {
+                    handleEnemyDefeat(nearestEnemy);
+                }
+                
+                let chainEnemy: Enemy | null = null;
+                let minChainDist = 150;
+                enemies.current.forEach(e => {
+                    if (e.active && e !== nearestEnemy) {
+                        const d = targetPos.distanceTo(e.mesh.position);
+                        if (d < minChainDist) {
+                            minChainDist = d;
+                            chainEnemy = e;
+                        }
+                    }
+                });
+                
+                if (chainEnemy) {
+                    drawTeslaLightning(targetPos, (chainEnemy as Enemy).mesh.position);
+                    (chainEnemy as Enemy).health = Math.max(0, (chainEnemy as Enemy).health - 0.2);
+                    if ((chainEnemy as Enemy).health <= 0) {
+                        handleEnemyDefeat(chainEnemy);
+                    }
+                }
+            } else {
+                const forward = new THREE.Vector3(0, 0, -1).applyQuaternion(shipQuaternion.current);
+                const spacePoint = nosePos.clone().addScaledVector(forward, 250);
+                spacePoint.x += (Math.random() - 0.5) * 80;
+                spacePoint.y += (Math.random() - 0.5) * 80;
+                
+                drawTeslaLightning(nosePos, spacePoint);
+            }
+            
+            soundRef.current?.playTeslaLightning();
+            setFuelLevel(fuelRef.current - 0.08);
+            
+        } else if (weaponMode === 'flak') {
+            if (!sceneRef.current || !playerShipGroup.current) return;
+            
+            if (weaponHeatRef.current > 90) {
+                soundRef.current?.playWarning();
+                addLog("UYARI: ŞARAPNEL YÜKLEME HAZNESİ DOLUYOR!");
+                return;
+            }
+            weaponHeatRef.current = Math.min(100, weaponHeatRef.current + 20.0);
+            
+            const spawnPos = new THREE.Vector3(0, 0, -6.5);
+            spawnPos.applyQuaternion(shipQuaternion.current);
+            spawnPos.add(shipPos.current);
+            
+            const forward = new THREE.Vector3(0, 0, -1).applyQuaternion(shipQuaternion.current);
+            const flakSpeed = 22;
+            const bVx = forward.x * flakSpeed;
+            const bVy = forward.y * flakSpeed;
+            const bVz = forward.z * flakSpeed;
+            
+            const geo = new THREE.CylinderGeometry(0.9, 0.9, 4, 8);
+            geo.rotateX(Math.PI / 2);
+            const mat = new THREE.MeshBasicMaterial({ color: '#ff9f43', transparent: true, opacity: 0.9 });
+            const mesh = new THREE.Mesh(geo, mat);
+            mesh.position.copy(spawnPos);
+            mesh.quaternion.copy(shipQuaternion.current);
+            sceneRef.current.add(mesh);
+            
+            createExplosion(spawnPos.x, spawnPos.y, spawnPos.z, '#ff9f43', 5, 0.4);
+            
+            if (flakShellsRef.current) {
+                flakShellsRef.current.push({
+                    id: Math.random(),
+                    position: spawnPos,
+                    vx: bVx, vy: bVy, vz: bVz,
+                    life: 45,
+                    mesh
+                });
+            }
+            
             soundRef.current?.playShoot();
-        } else if (activeWeaponPattern === 'missile') {
-            spawnMissile(-5, -2);
-            spawnMissile(5, -2);
-            soundRef.current?.playShoot();
-            screenShakeRef.current = Math.max(screenShakeRef.current, 2.0);
+            setFuelLevel(fuelRef.current - 0.25);
+            
         } else {
-            spawnBullet(-2, 0, activeLaserColor);
-            spawnBullet(2, 0, activeLaserColor);
-            soundRef.current?.playShoot();
+            const activeWeaponPattern = weaponTimer.current > 0 ? weaponType.current : currentShipClass.weaponPattern;
+            if (activeWeaponPattern === 'beam') {
+                spawnBullet(0, 0, activeLaserColor, 3.0, true);
+                soundRef.current?.playShoot(true);
+                screenShakeRef.current = Math.max(screenShakeRef.current, 1.2);
+            } else if (activeWeaponPattern === 'multi') {
+                spawnBullet(-4, 0, activeLaserColor, 1.0);
+                spawnBullet(4, 0, activeLaserColor, 1.0);
+                spawnBullet(0, 3, activeLaserColor, 1.0);
+                soundRef.current?.playShoot();
+            } else if (activeWeaponPattern === 'missile') {
+                spawnMissile(-5, -2);
+                spawnMissile(5, -2);
+                soundRef.current?.playShoot();
+                screenShakeRef.current = Math.max(screenShakeRef.current, 2.0);
+            } else {
+                spawnBullet(-2, 0, activeLaserColor);
+                spawnBullet(2, 0, activeLaserColor);
+                soundRef.current?.playShoot();
+            }
         }
-    }, [gameState, spawnBullet, spawnMissile, currentShipClass]);
+    }, [gameState, spawnBullet, spawnMissile, currentShipClass, drawTeslaLightning, addLog]);
 
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
@@ -1711,6 +3510,30 @@ export function SpaceBomberGame() {
             keys.current[k] = true;
             if (k === ' ' || k === 'p') {
                 e.preventDefault();
+            }
+            if (k === 'm') {
+                e.preventDefault();
+                toggleMarket();
+            }
+            if (k === '1') {
+                activeWeaponTypeRef.current = 'laser';
+                setActiveWeaponType('laser');
+                addLog("SİLAH: COLAZ PLAZMA AKTİF.");
+            }
+            if (k === '2') {
+                activeWeaponTypeRef.current = 'beam';
+                setActiveWeaponType('beam');
+                addLog("SİLAH: KONTİNU PLAZMA LAZERİ AKTİF.");
+            }
+            if (k === '3') {
+                activeWeaponTypeRef.current = 'tesla';
+                setActiveWeaponType('tesla');
+                addLog("SİLAH: TESLA ELEKTRİK AKIMI AKTİF.");
+            }
+            if (k === '4') {
+                activeWeaponTypeRef.current = 'flak';
+                setActiveWeaponType('flak');
+                addLog("SİLAH: FLAK ŞARAPNEL TOPU AKTİF.");
             }
         };
         const handleKeyUp = (e: KeyboardEvent) => { keys.current[e.key.toLowerCase()] = false; };
@@ -1721,7 +3544,7 @@ export function SpaceBomberGame() {
             window.removeEventListener('keydown', handleKeyDown);
             window.removeEventListener('keyup', handleKeyUp);
         };
-    }, [fireWeapon]);
+    }, [fireWeapon, toggleMarket]);
 
     const launchBossHomingProbe = useCallback((boss: Enemy) => {
         const scene = sceneRef.current;
@@ -1891,12 +3714,125 @@ export function SpaceBomberGame() {
         }
     }, []);
 
+    const handleEnemyDefeat = useCallback((e: Enemy) => {
+        const scene = sceneRef.current;
+        if (!scene) return;
+        
+        e.active = false;
+        scene.remove(e.mesh);
+        if (e.warningFlare) {
+            scene.remove(e.warningFlare);
+            e.warningFlare = null;
+        }
+        if (e.type === 'boss') {
+            clearBossSweepMeshes(e);
+        }
+        hitFlashMap.current.delete(e.id);
+        soundRef.current?.playExplosion();
+        
+        const isBoss = e.type === 'boss';
+        const expColor1 = isBoss ? '#ff6b6b' : '#ff9f43';
+        const expColor2 = isBoss ? '#8c7ae6' : '#00ffff';
+        
+        createShockwave(e.x, e.y, e.z, expColor2);
+        createExplosion(e.x, e.y, e.z, expColor1, isBoss ? 60 : 20, isBoss ? 4.0 : 1.5);
+        createExplosion(e.x, e.y, e.z, '#ffffff', isBoss ? 30 : 8, isBoss ? 2.0 : 0.8);
+        createLensFlare(e.x, e.y, e.z, expColor1, isBoss ? 75 : 30);
+        
+        // Drop scrap drops
+        const numScrap = e.type === 'boss' ? 10 + Math.floor(Math.random() * 5) : 2 + Math.floor(Math.random() * 3);
+        for (let s = 0; s < numScrap; s++) {
+            spawnScrap(e.x, e.y, e.z);
+        }
+        
+        if (isBoss) {
+            setTimeout(() => createShockwave(e.x, e.y, e.z, '#ff6b6b'), 150);
+            setTimeout(() => {
+                createShockwave(e.x, e.y, e.z, '#ffffff');
+                createExplosion(e.x, e.y, e.z, expColor1, 40, 3.0);
+            }, 300);
+            screenShakeRef.current = 8.0;
+        }
+        
+        comboMultiplier.current = Math.min(comboMultiplier.current + 1, 10);
+        comboTimer.current = 180;
+        const scoreGained = (e.type === 'boss' ? 20000 : 500) * comboMultiplier.current;
+        scoreRef.current += scoreGained;
+        if (hudScoreRef.current) {
+            hudScoreRef.current.textContent = scoreRef.current.toString();
+        }
+        
+        const comboLabel = comboMultiplier.current > 1 ? ` ×${comboMultiplier.current} COMBO!` : '';
+        addLog(`HEDEF İMHA! +${scoreGained}${comboLabel}`);
+        
+        const floatColor = comboMultiplier.current >= 5 ? '#ff3f34' : (comboMultiplier.current >= 3 ? '#ff9f43' : '#ffffff');
+        floatingTexts.current.push({
+            id: Math.random(),
+            text: comboMultiplier.current > 1 ? `+${scoreGained} ×${comboMultiplier.current}` : `+${scoreGained}`,
+            x: e.x, y: e.y + 15, z: e.z,
+            life: 2.0, color: floatColor
+        });
+        
+        const randVal = Math.random();
+        if (randVal < 0.15) { 
+            const pGeo = new THREE.BoxGeometry(5, 5, 5);
+            const pMat = new THREE.MeshBasicMaterial({ color: '#00bfff', wireframe: true });
+            const pMesh = new THREE.Mesh(pGeo, pMat);
+            pMesh.position.set(e.x, e.y, e.z);
+            scene.add(pMesh);
+            powerUps.current.push({
+                id: Math.random(), x: e.x, y: e.y, z: e.z,
+                vx: (Math.random() - 0.5) * 4, vy: (Math.random() - 0.5) * 4, vz: (Math.random() - 0.5) * 4,
+                type: 'slowmo', active: true, mesh: pMesh
+            });
+        } else if (randVal > 0.80) { 
+            const roll = Math.random();
+            const pType = roll < 0.33 ? 'multi' : (roll < 0.66 ? 'beam' : 'missile');
+            const pGeo = new THREE.BoxGeometry(5, 5, 5);
+            const pColor = pType === 'multi' ? '#00d2d3' : (pType === 'beam' ? '#ff4757' : '#ff9f43');
+            const pMat = new THREE.MeshBasicMaterial({ color: pColor, wireframe: true });
+            const pMesh = new THREE.Mesh(pGeo, pMat);
+            pMesh.position.set(e.x, e.y, e.z);
+            scene.add(pMesh);
+            powerUps.current.push({
+                id: Math.random(), x: e.x, y: e.y, z: e.z,
+                vx: (Math.random() - 0.5) * 4, vy: (Math.random() - 0.5) * 4, vz: (Math.random() - 0.5) * 4,
+                type: pType, active: true, mesh: pMesh
+            });
+        } else { 
+            const cGeo = new THREE.OctahedronGeometry(3);
+            const cMat = new THREE.MeshStandardMaterial({ color: '#2ed573', emissive: '#10ac84' });
+            const cMesh = new THREE.Mesh(cGeo, cMat);
+            cMesh.position.set(e.x, e.y, e.z);
+            scene.add(cMesh);
+            crystals.current.push({
+                id: Math.random(), x: e.x, y: e.y, z: e.z,
+                vx: (Math.random() - 0.5) * 3, vy: (Math.random() - 0.5) * 3, vz: (Math.random() - 0.5) * 3,
+                active: true, mesh: cMesh
+            });
+        }
+        
+        if (enemies.current.filter(en => en.active).length === 0) {
+            setScore(scoreRef.current);
+            setGameState('victory');
+            soundRef.current?.stopSequencer();
+            soundRef.current?.stopAmbient();
+            confetti({ particleCount: 200, spread: 100, origin: { y: 0.6 } });
+        }
+    }, [clearBossSweepMeshes, createExplosion, createShockwave, createLensFlare, spawnScrap, addLog, setScore, setGameState]);
+
     // Main 6-DOF Loop
     tickRef.current = (time: number) => {
         if (gameState !== 'playing' && gameState !== 'hyperspace') {
             lastTime.current = time;
             animationFrameId.current = requestAnimationFrame((t) => tickRef.current(t));
             return;
+        }
+
+        // v6.0 CLEAN UP LIGHTNING LINES (brief 1-frame electric arcs)
+        if (lightningLinesRef.current) {
+            lightningLinesRef.current.forEach(l => sceneRef.current?.remove(l));
+            lightningLinesRef.current = [];
         }
 
         const rawDt = (time - lastTime.current) / 1000;
@@ -1924,6 +3860,222 @@ export function SpaceBomberGame() {
         }
 
         const dt = playerDt * timeDilationRef.current;
+
+        // --- CRT & Chromatic Aberration Shader pass update ---
+        if (crtPassRef.current) {
+            crtPassRef.current.uniforms.time.value = time * 0.0015;
+            crtPassRef.current.uniforms.aberrationScale.value = damageVignetteRef.current;
+        }
+
+        // --- v6.0 BACKGROUND PLANET PARALLAX AND ROTATION ---
+        if (planetMeshRef.current && planetMeshRef.current.material instanceof THREE.ShaderMaterial) {
+            planetMeshRef.current.material.uniforms.time.value = time * 0.001;
+            planetMeshRef.current.rotation.y += 0.00015 * dt;
+        }
+        if (planetRingsRef.current) {
+            planetRingsRef.current.rotation.z -= 0.00008 * dt;
+        }
+        if (planetGroupRef.current) {
+            planetGroupRef.current.position.z = -3200 + shipPos.current.z * 0.15;
+            planetGroupRef.current.position.x = -450 + shipPos.current.x * 0.15;
+            planetGroupRef.current.position.y = 250 + shipPos.current.y * 0.15;
+        }
+
+        // --- v6.0 BLACK HOLE SINGULARITY & GRAVITATIONAL LENSING ---
+        const isAnomalyField = activeSectorHazardRef.current === 'anomaly_field';
+        if (blackHoleMeshRef.current) {
+            blackHoleMeshRef.current.visible = isAnomalyField;
+            if (isAnomalyField) {
+                if (accretionDiskMeshRef.current) {
+                    const speeds = (accretionDiskMeshRef.current as any).speeds;
+                    const radii = (accretionDiskMeshRef.current as any).radii;
+                    const angles = (accretionDiskMeshRef.current as any).angles;
+                    const posAttr = accretionDiskMeshRef.current.geometry.getAttribute('position') as THREE.BufferAttribute;
+                    const count = posAttr.count;
+                    for (let i = 0; i < count; i++) {
+                        angles[i] += speeds[i] * 0.003 * dt;
+                        const r = radii[i];
+                        const x = Math.cos(angles[i]) * r;
+                        const z = Math.sin(angles[i]) * r;
+                        posAttr.setXYZ(i, x, posAttr.getY(i), z);
+                    }
+                    posAttr.needsUpdate = true;
+                }
+                
+                const bhPos = blackHolePosRef.current;
+                const dist = shipPos.current.distanceTo(bhPos);
+                if (dist < 320) {
+                    const forceDir = new THREE.Vector3().subVectors(bhPos, shipPos.current).normalize();
+                    const pullStrength = (350 / (dist + 30)) * dt * 0.65;
+                    shipPos.current.addScaledVector(forceDir, pullStrength);
+                    
+                    if (dist < 32) {
+                        setShieldLevel(shieldRef.current - 1.2 * dt);
+                        setArmorLevel(armorRef.current - 0.8 * dt);
+                        screenShakeRef.current = Math.max(screenShakeRef.current, 3.5);
+                        if (Math.random() > 0.96) addLog("TEHLİKE: KARA DELİK OLAY UFUKU! ZIRH ERİYOR!");
+                    }
+                }
+
+                debrisAsteroids.current.forEach(a => {
+                    if (a.active) {
+                        const aPos = new THREE.Vector3(a.x, a.y, a.z);
+                        const d = aPos.distanceTo(bhPos);
+                        if (d < 350) {
+                            const force = new THREE.Vector3().subVectors(bhPos, aPos).normalize();
+                            const pull = (180 / (d + 20)) * dt;
+                            a.vx += force.x * pull * 0.04;
+                            a.vy += force.y * pull * 0.04;
+                            a.vz += force.z * pull * 0.04;
+                            
+                            if (d < 35) {
+                                a.health = 0;
+                                fractureAsteroid(a);
+                                createExplosion(a.x, a.y, a.z, '#a855f7', 15, 1.0);
+                            }
+                        }
+                    }
+                });
+
+                if (lensingPassRef.current && cameraRef3D.current) {
+                    const p2d = bhPos.clone().project(cameraRef3D.current);
+                    const inFront = p2d.z < 1.0;
+                    lensingPassRef.current.uniforms.uBlackHoleScreen.value.set((p2d.x + 1) / 2, (p2d.y + 1) / 2);
+                    lensingPassRef.current.uniforms.uActive.value = inFront ? 1.0 : 0.0;
+                }
+            } else {
+                if (lensingPassRef.current) {
+                    lensingPassRef.current.uniforms.uActive.value = 0.0;
+                }
+            }
+        }
+
+        // --- v6.0 SHIELD MULTI-IMPACT RIPPLE DECAY ---
+        if (shieldBubbleMesh.current && shieldBubbleMesh.current.material instanceof THREE.ShaderMaterial) {
+            const mat = shieldBubbleMesh.current.material;
+            const now = time * 0.001;
+            mat.uniforms.time.value = now;
+            
+            shieldHitsRef.current = shieldHitsRef.current.filter(h => now - h.time < 2.0);
+            
+            const positions = mat.uniforms.uHitPositions.value;
+            const times = mat.uniforms.uHitTimes.value;
+            const strengths = mat.uniforms.uHitStrengths.value;
+            
+            for (let i = 0; i < 4; i++) {
+                positions[i].set(0, 0, 0);
+                times[i] = -9999.0;
+                strengths[i] = 0.0;
+            }
+            
+            shieldHitsRef.current.forEach((hit, idx) => {
+                if (idx < 4) {
+                    positions[idx].copy(hit.position);
+                    times[idx] = hit.time;
+                    strengths[idx] = hit.strength;
+                }
+            });
+        }
+
+        // --- v6.0 WING TILT MANEUVER ARTICULATION ---
+        if (wingLGroupRef.current && wingRGroupRef.current) {
+            let targetL = 0;
+            let targetR = 0;
+            if (keys.current['a']) {
+                targetL = -0.32;
+                targetR = -0.32;
+            } else if (keys.current['d']) {
+                targetL = 0.32;
+                targetR = 0.32;
+            }
+            
+            wingLGroupRef.current.rotation.z += (targetL - wingLGroupRef.current.rotation.z) * 0.12 * dt;
+            wingRGroupRef.current.rotation.z += (targetR - wingRGroupRef.current.rotation.z) * 0.12 * dt;
+            
+            let targetPitch = 0;
+            if (keys.current['w']) targetPitch = -0.15;
+            else if (keys.current['s']) targetPitch = 0.15;
+            
+            wingLGroupRef.current.rotation.x += (targetPitch - wingLGroupRef.current.rotation.x) * 0.12 * dt;
+            wingRGroupRef.current.rotation.x += (targetPitch - wingRGroupRef.current.rotation.x) * 0.12 * dt;
+        }
+
+        // --- v6.0 WEAPON HEAT DISCHARGE ---
+        if (weaponHeatRef.current > 0) {
+            weaponHeatRef.current = Math.max(0, weaponHeatRef.current - 15.0 * dt / 60);
+        }
+
+        // --- Quantum Space Dust Drift ---
+        if (quantumDustPointsRef.current && quantumDustPointsRef.current.material instanceof THREE.ShaderMaterial) {
+            const mat = quantumDustPointsRef.current.material;
+            mat.uniforms.time.value = time * 0.001;
+            mat.uniforms.shipPos.value.copy(shipPos.current);
+            mat.uniforms.magnetActive.value = activeModulesRef.current.magnetizer ? 1.0 : 0.0;
+        }
+
+        // --- Defense Drones update ---
+        updateDefenseDrones(dt);
+
+        // --- Sound Scope instrument drawing ---
+        updateOscilloscope();
+
+        // --- Cockpit Instrument Dashboard values updates ---
+        if (hudCoreTempTextRef.current) {
+            hudCoreTempTextRef.current.textContent = `${Math.round(coreTemperatureRef.current)}°C`;
+            if (coreTemperatureRef.current > 85) {
+                hudCoreTempTextRef.current.classList.add('text-rose-500', 'animate-pulse');
+            } else {
+                hudCoreTempTextRef.current.classList.remove('text-rose-500', 'animate-pulse');
+            }
+        }
+        if (hudCoreTempBarRef.current) {
+            hudCoreTempBarRef.current.style.width = `${Math.round(coreTemperatureRef.current)}%`;
+            if (coreTemperatureRef.current > 85) {
+                hudCoreTempBarRef.current.style.backgroundColor = '#f43f5e';
+            } else {
+                hudCoreTempBarRef.current.style.backgroundColor = '#22d3ee';
+            }
+        }
+        
+        // Weapon Heat DOM update
+        if (hudWeaponHeatTextRef.current) {
+            hudWeaponHeatTextRef.current.textContent = `${Math.round(weaponHeatRef.current)}%`;
+            if (weaponHeatRef.current > 75) {
+                hudWeaponHeatTextRef.current.classList.add('text-rose-500', 'animate-pulse');
+            } else {
+                hudWeaponHeatTextRef.current.classList.remove('text-rose-500', 'animate-pulse');
+            }
+        }
+        if (hudWeaponHeatBarRef.current) {
+            hudWeaponHeatBarRef.current.style.width = `${Math.round(weaponHeatRef.current)}%`;
+            if (weaponHeatRef.current > 75) {
+                hudWeaponHeatBarRef.current.style.backgroundColor = '#f43f5e';
+            } else {
+                hudWeaponHeatBarRef.current.style.backgroundColor = '#f97316';
+            }
+        }
+
+        // G-Force computation
+        const acc = shipVel.current.length();
+        const gForce = 1.0 + (acc / 10) + (Math.random() - 0.5) * 0.04;
+        if (hudGForceTextRef.current) {
+            hudGForceTextRef.current.textContent = `${gForce.toFixed(2)} G`;
+        }
+        
+        // Roll & Pitch angles
+        const euler = new THREE.Euler().setFromQuaternion(shipQuaternion.current, 'YXZ');
+        const pitchDeg = Math.round(euler.x * (180 / Math.PI));
+        const rollDeg = Math.round(euler.z * (180 / Math.PI));
+        if (hudRollYawTextRef.current) {
+            hudRollYawTextRef.current.textContent = `P: ${pitchDeg}° R: ${rollDeg}°`;
+        }
+
+        // Core temperature cooldown
+        if (keys.current['p'] || keys.current['P']) {
+            coreTemperatureRef.current = Math.min(100, coreTemperatureRef.current + 0.20 * dt);
+        } else {
+            coreTemperatureRef.current = Math.max(35, coreTemperatureRef.current - 0.35 * dt);
+        }
 
         const scene = sceneRef.current;
         const camera = cameraRef3D.current;
@@ -1992,16 +4144,18 @@ export function SpaceBomberGame() {
 
         // --- 1. SHIP MOVEMENT & KEYBOARD STEERING (Forward Flight) ---
         const forward = new THREE.Vector3(0, 0, -1).applyQuaternion(shipQuaternion.current);
-        // Automatically move forward along the Z axis
         const levelDistance = level % 3 === 0 ? -2200 : -1800;
         const hasReachedEnd = shipPos.current.z <= levelDistance;
         
+        const energyEngines = energyEnginesRef.current;
+        const engineSpeedFactor = 0.5 + (energyEngines / 10) * 1.0; 
+        
         let forwardSpeed = 0;
         if (!hasReachedEnd) {
-            const speedMultiplier = fuelRef.current > 0 ? 0.45 : 0.08; // Heavy engine crawling if out of fuel
-            forwardSpeed = (currentShipClass.maxSpeed * speedMultiplier) * dt;
+            const speedMultiplier = fuelRef.current > 0 ? 0.45 : 0.08; 
+            forwardSpeed = (currentShipClass.maxSpeed * speedMultiplier * engineSpeedFactor) * dt;
             shipPos.current.z -= forwardSpeed;
-            targetSpeed.current = currentShipClass.maxSpeed * speedMultiplier;
+            targetSpeed.current = currentShipClass.maxSpeed * speedMultiplier * engineSpeedFactor;
         } else {
             targetSpeed.current = 0;
             
@@ -2027,33 +4181,48 @@ export function SpaceBomberGame() {
             }
         }
 
-        // Auto-fire when P or Space held down
+        // Auto-fire weapons scale
         const fireInterval = currentShipClass.weaponPattern === 'beam' ? 18 : (currentShipClass.weaponPattern === 'multi' ? 10 : 8);
+        const energyWeapons = energyWeaponsRef.current;
+        // Weapons energy modifier: 0 -> slow, 10 -> extremely fast
+        const weaponsFireRateFactor = 1.6 - (energyWeapons / 10) * 1.1; 
+        const adjustedFireInterval = fireInterval * weaponsFireRateFactor;
+        
         if (keys.current['p'] || keys.current[' ']) {
             autoFireTimer.current += dt;
-            if (autoFireTimer.current >= fireInterval) {
+            if (autoFireTimer.current >= adjustedFireInterval) {
                 autoFireTimer.current = 0;
                 fireWeapon();
             }
         } else {
-            autoFireTimer.current = fireInterval; // Ready to fire immediately on next press
+            autoFireTimer.current = adjustedFireInterval;
         }
 
         // Fuel consumption: slowly decrease fuel, faster if boosting/firing
-        let fuelDepletion = 0.04 * dt; // Base rate
+        let fuelDepletion = 0.04 * dt; 
         if (keys.current['p'] || keys.current[' ']) {
-            fuelDepletion = 0.09 * dt; // Firing/boosting costs more fuel
+            fuelDepletion = 0.09 * dt; 
         }
         setFuelLevel(fuelRef.current - fuelDepletion);
 
-        // Shield slow regen (5 seconds without damage)
+        // Shield slow regen
         shieldRegenTimer.current += dt;
-        if (shieldRegenTimer.current > 300 && shieldRef.current < currentShipClass.maxShield * 0.3) {
-            setShieldLevel(shieldRef.current + 0.08 * dt);
+        const energyShields = energyShieldsRef.current;
+        // Shields energy multiplier: 0 -> 0x regen, 10 -> 2.5x regen
+        const shieldRegenMultiplier = (energyShields / 10) * 2.5;
+        const maxShieldCapacity = currentShipClass.maxShield * (activeModulesRef.current.reactorOvercharge ? 0.7 : 1.0);
+        if (shieldRegenTimer.current > 300 && shieldRef.current < maxShieldCapacity) {
+            setShieldLevel(shieldRef.current + 0.08 * dt * shieldRegenMultiplier);
+        }
+        
+        // Nanobots module slow zırh yenileme
+        if (activeModulesRef.current.nanobots && shieldRegenTimer.current > 300 && armorRef.current < currentShipClass.maxArmor) {
+            setArmorLevel(armorRef.current + 0.05 * dt);
         }
 
         // Steer left/right (A/D) and up/down (W/S)
-        const steerSpeed = 2.8 * playerDt;
+        const steerSpeedMultiplier = 0.4 + (energyEngines / 10) * 1.4;
+        const steerSpeed = 2.8 * playerDt * steerSpeedMultiplier;
         if (keys.current['a']) shipPos.current.x -= steerSpeed;
         if (keys.current['d']) shipPos.current.x += steerSpeed;
         if (keys.current['w']) shipPos.current.y += steerSpeed * 0.8;
@@ -2091,10 +4260,21 @@ export function SpaceBomberGame() {
         shipQuaternion.current.copy(ship.quaternion);
         ship.position.copy(shipPos.current);
 
-        // Thruster visual
+        // Thruster visual (Exhaust Plume Shaders)
         const thrustScale = hasReachedEnd ? 0.3 : 1.2;
-        if (thrusterFlameMeshL.current) thrusterFlameMeshL.current.scale.set(1, thrustScale, 1);
-        if (thrusterFlameMeshR.current) thrusterFlameMeshR.current.scale.set(1, thrustScale, 1);
+        const currentThrust = thrustScale * (0.5 + (energyEnginesRef.current / 10) * 1.5);
+        if (thrusterFlameMeshL.current && thrusterFlameMeshL.current.material instanceof THREE.ShaderMaterial) {
+            const mat = thrusterFlameMeshL.current.material;
+            mat.uniforms.time.value = time * 0.001;
+            mat.uniforms.thrust.value = currentThrust;
+            thrusterFlameMeshL.current.scale.set(1.0 + energyEnginesRef.current * 0.05, currentThrust, 1.0 + energyEnginesRef.current * 0.05);
+        }
+        if (thrusterFlameMeshR.current && thrusterFlameMeshR.current.material instanceof THREE.ShaderMaterial) {
+            const mat = thrusterFlameMeshR.current.material;
+            mat.uniforms.time.value = time * 0.001;
+            mat.uniforms.thrust.value = currentThrust;
+            thrusterFlameMeshR.current.scale.set(1.0 + energyEnginesRef.current * 0.05, currentThrust, 1.0 + energyEnginesRef.current * 0.05);
+        }
 
         // Spawn engine particles trailing behind the engines
         if (gameState === 'playing' && !hasReachedEnd) {
@@ -2111,7 +4291,6 @@ export function SpaceBomberGame() {
             const leftThrusterPos = new THREE.Vector3(-thrusterOffset, 0, thrusterZ).applyQuaternion(shipQuaternion.current).add(shipPos.current);
             const rightThrusterPos = new THREE.Vector3(thrusterOffset, 0, thrusterZ).applyQuaternion(shipQuaternion.current).add(shipPos.current);
             
-            // Spawn fewer particles to avoid clutter
             const numParticles = 1;
             for (let i = 0; i < numParticles; i++) {
                 [leftThrusterPos, rightThrusterPos].forEach(pos => {
@@ -2147,17 +4326,24 @@ export function SpaceBomberGame() {
             }
         }
 
-        // Shield Bubble Flash Animation
+        // Shield Ripple Shader animation
         if (shieldBubbleMesh.current) {
+            const mat = shieldBubbleMesh.current.material;
+            if (mat instanceof THREE.ShaderMaterial) {
+                mat.uniforms.time.value = time * 0.001;
+            }
             if (shieldHitLife.current > 0) {
                 shieldHitLife.current -= 0.08 * dt;
                 shieldBubbleMesh.current.visible = true;
-                const mat = shieldBubbleMesh.current.material as THREE.MeshBasicMaterial;
-                mat.opacity = shieldHitLife.current * 0.3; // more subtle
-                const bubbleScale = 1.0 + (1.0 - shieldHitLife.current) * 0.03;
+                const bubbleScale = 1.0 + (1.0 - shieldHitLife.current) * 0.04;
                 shieldBubbleMesh.current.scale.set(bubbleScale, bubbleScale, bubbleScale);
             } else {
-                shieldBubbleMesh.current.visible = false;
+                if (shieldRef.current > 0) {
+                    shieldBubbleMesh.current.visible = true;
+                    shieldBubbleMesh.current.scale.set(1.0, 1.0, 1.0);
+                } else {
+                    shieldBubbleMesh.current.visible = false;
+                }
             }
         }
 
@@ -2278,6 +4464,158 @@ export function SpaceBomberGame() {
         bullets.current.filter(b => b.life <= 0).forEach(b => scene.remove(b.mesh));
         bullets.current = bullets.current.filter(b => b.life > 0);
 
+        // --- 3.5 FLAK SHELLS ---
+        if (flakShellsRef.current) {
+            flakShellsRef.current.forEach(fs => {
+                if (fs.life <= 0) return;
+                
+                // Update position
+                fs.position.x += fs.vx * dt;
+                fs.position.y += fs.vy * dt;
+                fs.position.z += fs.vz * dt;
+                fs.life -= dt;
+                fs.mesh.position.copy(fs.position);
+                
+                // Check if near any active enemy
+                let nearEnemy = false;
+                for (let i = 0; i < enemies.current.length; i++) {
+                    const e = enemies.current[i];
+                    if (!e.active) continue;
+                    
+                    const dist = fs.position.distanceTo(e.mesh.position);
+                    const detonateRadius = e.type === 'boss' ? 70 : 35;
+                    if (dist < detonateRadius) {
+                        nearEnemy = true;
+                        break;
+                    }
+                }
+                
+                // Detonate if lifetime expired or near an enemy
+                if (fs.life <= 0 || nearEnemy) {
+                    fs.life = 0; // mark for removal
+                    
+                    // Detonation effects
+                    soundRef.current?.playFlakExplosion();
+                    createExplosion(fs.position.x, fs.position.y, fs.position.z, '#ff9f43', 25, 2.0);
+                    createShockwave(fs.position.x, fs.position.y, fs.position.z, '#ff5500');
+                    createLensFlare(fs.position.x, fs.position.y, fs.position.z, '#ff9f43', 45);
+                    
+                    // Radial splash damage to all active enemies
+                    enemies.current.forEach(e => {
+                        if (!e.active) return;
+                        
+                        const dist = new THREE.Vector3(e.x, e.y, e.z).distanceTo(fs.position);
+                        const splashRadius = 140; // radial splash radius
+                        if (dist < splashRadius) {
+                            const isOvercharge = activeModulesRef.current.reactorOvercharge;
+                            const dmgMultiplier = (0.5 + (energyWeaponsRef.current / 10) * 1.5) * (isOvercharge ? 1.5 : 1.0);
+                            
+                            // Linear damage falloff
+                            const falloff = 1.0 - (dist / splashRadius);
+                            const splashDmg = 35 * falloff * dmgMultiplier;
+                            e.health -= splashDmg;
+                            
+                            // Hit flash effect
+                            const currentFlash = hitFlashMap.current.get(e.id) || 0;
+                            hitFlashMap.current.set(e.id, Math.max(currentFlash, 1.0));
+                            
+                            if (e.type === 'boss') {
+                                setBossHealth(Math.max(0, e.health));
+                                const ratio = e.health / e.maxHealth;
+                                if (ratio < 0.35 && bossPhase.current < 3) {
+                                    bossPhase.current = 3;
+                                    addLog("BOSS SİSTEM AŞAMASI 3: KRİTİK SEVİYE! SÜREKLİ YÜKSEK ATEŞ GÜCÜ!");
+                                    e.fireCooldown = 45; 
+                                } else if (ratio < 0.7 && bossPhase.current < 2) {
+                                    bossPhase.current = 2;
+                                    addLog("BOSS SİSTEM AŞAMASI 2: ZIRH KIRILDI! HIZLI ATEŞ MODU AKTİF!");
+                                    e.fireCooldown = 80; 
+                                }
+                            }
+                            
+                            if (e.health <= 0) {
+                                handleEnemyDefeat(e);
+                            }
+                        }
+                    });
+
+                    // Radial splash damage to debris asteroids
+                    debrisAsteroids.current.forEach(a => {
+                        if (!a.active) return;
+                        
+                        const dist = new THREE.Vector3(a.x, a.y, a.z).distanceTo(fs.position);
+                        const splashRadius = 140;
+                        if (dist < splashRadius) {
+                            const isOvercharge = activeModulesRef.current.reactorOvercharge;
+                            const dmgMultiplier = (0.5 + (energyWeaponsRef.current / 10) * 1.5) * (isOvercharge ? 1.5 : 1.0);
+                            
+                            const falloff = 1.0 - (dist / splashRadius);
+                            const splashDmg = 45 * falloff * dmgMultiplier;
+                            a.health -= splashDmg;
+                            
+                            if (a.health <= 0) {
+                                a.active = false;
+                                scene.remove(a.mesh);
+                                fractureAsteroid(a);
+                                soundRef.current?.playExplosion();
+                                createExplosion(a.x, a.y, a.z, '#a5b1c2', 20, 1.8);
+                                createShockwave(a.x, a.y, a.z, '#778ca3');
+                                createLensFlare(a.x, a.y, a.z, '#ffffff', 25);
+                                
+                                const numScrap = 1 + Math.floor(Math.random() * 2);
+                                for (let s = 0; s < numScrap; s++) {
+                                    spawnScrap(a.x, a.y, a.z);
+                                }
+                                
+                                scoreRef.current += 150 * comboMultiplier.current;
+                                if (hudScoreRef.current) {
+                                    hudScoreRef.current.textContent = scoreRef.current.toString();
+                                }
+                                addLog("ASTEROİD FLAŞ PATLAMASIYLA PARÇALANDI!");
+                            }
+                        }
+                    });
+                    
+                    // Trigger shrapnel bullets flying in radial directions
+                    const shrapnelCount = 10;
+                    const shrapnelGeo = new THREE.SphereGeometry(0.4, 4, 4);
+                    const shrapnelMat = new THREE.MeshBasicMaterial({ color: '#ffcc80', transparent: true, opacity: 0.85 });
+                    
+                    for (let i = 0; i < shrapnelCount; i++) {
+                        const theta = Math.random() * Math.PI * 2;
+                        const phi = Math.acos((Math.random() * 2) - 1);
+                        const dir = new THREE.Vector3(
+                            Math.sin(phi) * Math.cos(theta),
+                            Math.sin(phi) * Math.sin(theta),
+                            Math.cos(phi)
+                        ).normalize();
+                        
+                        const speed = 12 + Math.random() * 8;
+                        const vx = dir.x * speed;
+                        const vy = dir.y * speed;
+                        const vz = dir.z * speed;
+                        
+                        const mesh = new THREE.Mesh(shrapnelGeo, shrapnelMat);
+                        mesh.position.copy(fs.position);
+                        scene.add(mesh);
+                        
+                        bullets.current.push({
+                            id: Math.random(),
+                            x: fs.position.x, y: fs.position.y, z: fs.position.z,
+                            vx, vy, vz,
+                            life: 35 + Math.random() * 15,
+                            isEnemy: false,
+                            mesh
+                        });
+                    }
+                }
+            });
+            
+            // Clean up detonated shells from scene
+            flakShellsRef.current.filter(fs => fs.life <= 0).forEach(fs => scene.remove(fs.mesh));
+            flakShellsRef.current = flakShellsRef.current.filter(fs => fs.life > 0);
+        }
+
         // --- 4. ENEMIES & COMBAT ---
         let isTargetInCrosshair = false;
 
@@ -2344,23 +4682,77 @@ export function SpaceBomberGame() {
 
             // AI Movement
             if (e.type === 'floater') {
-                // Bobbing/floating motion in X/Y using sine/cosine wave
-                const targetX = shipPos.current.x;
-                const targetY = shipPos.current.y;
-                
-                // Drift slowly in X/Y to align with player but stay stationary along Z axis
-                e.x += Math.sign(targetX - e.x) * 0.2 * dt;
-                e.y += Math.sign(targetY - e.y) * 0.15 * dt;
-                
                 // Wave bobbing
                 const bobTime = (time * 0.001) + e.id * 100;
-                e.x += Math.sin(bobTime) * 0.1 * dt;
-                e.y += Math.cos(bobTime) * 0.1 * dt;
+
+                // Boids flocking forces
+                const cohesion = new THREE.Vector3(0, 0, 0);
+                const separation = new THREE.Vector3(0, 0, 0);
+                const alignment = new THREE.Vector3(0, 0, 0);
+                let swarmCount = 0;
+                
+                enemies.current.forEach(other => {
+                    if (other.active && other.id !== e.id && other.type === 'floater') {
+                        const otherVec = new THREE.Vector3(other.x, other.y, other.z);
+                        const d = eVec.distanceTo(otherVec);
+                        if (d < 120) {
+                            cohesion.add(otherVec);
+                            
+                            if (d < 35) {
+                                const diff = new THREE.Vector3().subVectors(eVec, otherVec).normalize().divideScalar(d);
+                                separation.add(diff);
+                            }
+                            
+                            const otherForward = new THREE.Vector3(0, 0, -1).applyQuaternion(other.mesh.quaternion);
+                            alignment.add(otherForward);
+                            
+                            swarmCount++;
+                        }
+                    }
+                });
+                
+                const force = new THREE.Vector3(0, 0, 0);
+                if (swarmCount > 0) {
+                    cohesion.divideScalar(swarmCount).sub(eVec).normalize().multiplyScalar(0.15);
+                    separation.normalize().multiplyScalar(0.45);
+                    alignment.divideScalar(swarmCount).normalize().multiplyScalar(0.1);
+                    
+                    force.add(cohesion).add(separation).add(alignment);
+                }
+                
+                // Avoidance: push away from nearby asteroids
+                debrisAsteroids.current.forEach(a => {
+                    if (a.active) {
+                        const aPos = new THREE.Vector3(a.x, a.y, a.z);
+                        const distToAsteroid = eVec.distanceTo(aPos);
+                        if (distToAsteroid < a.size + 45) {
+                            const avoid = new THREE.Vector3().subVectors(eVec, aPos).normalize().multiplyScalar((a.size + 45 - distToAsteroid) * 0.12);
+                            force.add(avoid);
+                        }
+                    }
+                });
+
+                // Seek: drift towards player flanking offset target ahead of the ship
+                const targetPos = shipPos.current.clone();
+                const indexOffset = Math.sin(e.id) * 70;
+                targetPos.x += Math.cos(bobTime) * 45 + indexOffset;
+                targetPos.y += Math.sin(bobTime) * 25 + Math.cos(e.id) * 20;
+                targetPos.z -= 180 + Math.sin(bobTime * 0.4) * 80;
+                
+                const seek = new THREE.Vector3().subVectors(targetPos, eVec).normalize().multiplyScalar(0.32);
+                force.add(seek);
+                
+                // Update floater velocities inside the enemy object
+                e.targetQuaternion = e.targetQuaternion || new THREE.Quaternion();
+                
+                e.x += force.x * dt * 2.0;
+                e.y += force.y * dt * 2.0;
+                e.z += (force.z * dt * 1.5) + (Math.sign(targetPos.z - e.z) * 0.15 * dt); // slow matching forward Z
                 
                 // Rotate floater to look at player
                 const targetRotationMatrix = new THREE.Matrix4().lookAt(eVec, shipPos.current, new THREE.Vector3(0, 1, 0));
                 const targetQuat = new THREE.Quaternion().setFromRotationMatrix(targetRotationMatrix);
-                e.mesh.quaternion.slerp(targetQuat, 0.05 * dt);
+                e.mesh.quaternion.slerp(targetQuat, 0.06 * dt);
 
                 // Add small engine trails occasionally (subtle)
                 if (Math.random() < 0.1) {
@@ -2371,7 +4763,7 @@ export function SpaceBomberGame() {
                     scene.add(tMesh);
                     particles.current.push({
                         x: e.x, y: e.y, z: e.z,
-                        vx: 0, vy: 0, vz: 2.0, // move backwards relative to floater
+                        vx: 0, vy: 0, vz: 2.0,
                         life: 10, color: '#ff3f34', size: 0.3, mesh: tMesh
                     });
                 }
@@ -2484,7 +4876,6 @@ export function SpaceBomberGame() {
 
             if (b.isEnemy) {
                 const distToPlayer = bVec.distanceTo(shipPos.current);
-                // Proximity warning: enemy bullet within 35 units
                 if (distToPlayer < 35 && distToPlayer > 12) {
                     proximityDangerRef.current = Math.max(proximityDangerRef.current, (35 - distToPlayer) / 35);
                 }
@@ -2494,15 +4885,17 @@ export function SpaceBomberGame() {
                     soundRef.current?.playExplosion();
                     createExplosion(shipPos.current.x, shipPos.current.y, shipPos.current.z, '#fbc531', 20, 1.5);
                     createShockwave(shipPos.current.x, shipPos.current.y, shipPos.current.z, '#ff3f34');
+                    createLensFlare(shipPos.current.x, shipPos.current.y, shipPos.current.z, '#fbc531', 25);
                     
                     comboMultiplier.current = 1;
-                    shieldRegenTimer.current = 0; // Reset regen timer
-                    damageVignetteRef.current = 1.0; // Full vignette flash
+                    shieldRegenTimer.current = 0; 
+                    damageVignetteRef.current = 1.0; 
                     
                     const dmg = 20;
+                    const relativeHitDir = bVec.clone().sub(shipPos.current).normalize().multiplyScalar(7);
                     if (shieldRef.current > 0) {
                         shieldHitLife.current = 1.0;
-                        setShieldLevel(shieldRef.current - dmg * 0.7);
+                        setShieldLevel(shieldRef.current - dmg * 0.7, relativeHitDir);
                         setArmorLevel(armorRef.current - dmg * 0.3);
                         addLog(`KALKAN HASARI! Kalkan: %${Math.round(shieldRef.current)}`);
                     } else {
@@ -2516,15 +4909,25 @@ export function SpaceBomberGame() {
                     const dist = bVec.distanceTo(new THREE.Vector3(a.x, a.y, a.z));
                     if (dist < a.size + 2) {
                         b.life = 0;
-                        a.health -= b.isBeam ? 25 : 8;
+                        const isOvercharge = activeModulesRef.current.reactorOvercharge;
+                        const dmgMultiplier = (0.5 + (energyWeaponsRef.current / 10) * 1.5) * (isOvercharge ? 1.5 : 1.0);
+                        a.health -= (b.isBeam ? 25 : 8) * dmgMultiplier;
                         createExplosion(bVec.x, bVec.y, bVec.z, '#ffffff', 4, 0.4);
                         
                         if (a.health <= 0) {
                             a.active = false;
                             scene.remove(a.mesh);
+                            fractureAsteroid(a);
                             soundRef.current?.playExplosion();
                             createExplosion(a.x, a.y, a.z, '#a5b1c2', 20, 1.8);
                             createShockwave(a.x, a.y, a.z, '#778ca3');
+                            createLensFlare(a.x, a.y, a.z, '#ffffff', 25);
+                            
+                            // Drop metal scrap drops
+                            const numScrap = 1 + Math.floor(Math.random() * 2);
+                            for (let s = 0; s < numScrap; s++) {
+                                spawnScrap(a.x, a.y, a.z);
+                            }
                             
                             const fragmentCount = 5 + Math.floor(Math.random() * 4);
                             for (let f = 0; f < fragmentCount; f++) {
@@ -2561,7 +4964,9 @@ export function SpaceBomberGame() {
                     
                     if (bVec.distanceTo(eVec) < radius) {
                         if (!b.isBeam) b.life = 0;
-                        const dmgAmt = b.isBeam ? 2 : 1;
+                        const isOvercharge = activeModulesRef.current.reactorOvercharge;
+                        const dmgMultiplier = (0.5 + (energyWeaponsRef.current / 10) * 1.5) * (isOvercharge ? 1.5 : 1.0);
+                        const dmgAmt = (b.isBeam ? 2 : 1) * dmgMultiplier;
                         e.health -= dmgAmt;
                         
                         // Hit flash effect
@@ -2574,116 +4979,18 @@ export function SpaceBomberGame() {
                             if (ratio < 0.35 && bossPhase.current < 3) {
                                 bossPhase.current = 3;
                                 addLog("BOSS SİSTEM AŞAMASI 3: KRİTİK SEVİYE! SÜREKLİ YÜKSEK ATEŞ GÜCÜ!");
-                                e.fireCooldown = 45; // 0.75 seconds fire rate
+                                e.fireCooldown = 45; 
                             } else if (ratio < 0.7 && bossPhase.current < 2) {
                                 bossPhase.current = 2;
                                 addLog("BOSS SİSTEM AŞAMASI 2: ZIRH KIRILDI! HIZLI ATEŞ MODU AKTİF!");
-                                e.fireCooldown = 80; // 1.33 seconds fire rate
+                                e.fireCooldown = 80; 
                             }
                         }
                         
-                        // Small hit sparks
                         createExplosion(bVec.x, bVec.y, bVec.z, '#ffffff', 4, 0.4);
 
                         if (e.health <= 0) {
-                            e.active = false;
-                            scene.remove(e.mesh);
-                            if (e.warningFlare) {
-                                scene.remove(e.warningFlare);
-                                e.warningFlare = null;
-                            }
-                            if (e.type === 'boss') {
-                                clearBossSweepMeshes(e);
-                            }
-                            hitFlashMap.current.delete(e.id);
-                            soundRef.current?.playExplosion();
-                            
-                            // Multi-phase death explosion
-                            const isBoss = e.type === 'boss';
-                            const expColor1 = isBoss ? '#ff6b6b' : '#ff9f43';
-                            const expColor2 = isBoss ? '#8c7ae6' : '#00ffff';
-                            
-                            createShockwave(e.x, e.y, e.z, expColor2);
-                            createExplosion(e.x, e.y, e.z, expColor1, isBoss ? 60 : 20, isBoss ? 4.0 : 1.5);
-                            createExplosion(e.x, e.y, e.z, '#ffffff', isBoss ? 30 : 8, isBoss ? 2.0 : 0.8);
-                            
-                            if (isBoss) {
-                                // Second and third shockwave rings
-                                setTimeout(() => createShockwave(e.x, e.y, e.z, '#ff6b6b'), 150);
-                                setTimeout(() => {
-                                    createShockwave(e.x, e.y, e.z, '#ffffff');
-                                    createExplosion(e.x, e.y, e.z, expColor1, 40, 3.0);
-                                }, 300);
-                                screenShakeRef.current = 8.0;
-                            }
-                            
-                            comboMultiplier.current = Math.min(comboMultiplier.current + 1, 10);
-                            comboTimer.current = 180;
-                            const scoreGained = (e.type === 'boss' ? 20000 : 500) * comboMultiplier.current;
-                            scoreRef.current += scoreGained;
-                            if (hudScoreRef.current) {
-                                hudScoreRef.current.textContent = scoreRef.current.toString();
-                            }
-                            
-                            const comboLabel = comboMultiplier.current > 1 ? ` ×${comboMultiplier.current} COMBO!` : '';
-                            addLog(`HEDEF İMHA! +${scoreGained}${comboLabel}`);
-                            
-                            const floatColor = comboMultiplier.current >= 5 ? '#ff3f34' : (comboMultiplier.current >= 3 ? '#ff9f43' : '#ffffff');
-                            floatingTexts.current.push({
-                                id: Math.random(),
-                                text: comboMultiplier.current > 1 ? `+${scoreGained} ×${comboMultiplier.current}` : `+${scoreGained}`,
-                                x: e.x, y: e.y + 15, z: e.z,
-                                life: 2.0, color: floatColor
-                            });
-
-                            // Drops
-                            const randVal = Math.random();
-                            if (randVal < 0.15) { // 15% chance for slowmo
-                                const pGeo = new THREE.BoxGeometry(5, 5, 5);
-                                const pMat = new THREE.MeshBasicMaterial({ color: '#00bfff', wireframe: true });
-                                const pMesh = new THREE.Mesh(pGeo, pMat);
-                                pMesh.position.set(e.x, e.y, e.z);
-                                scene.add(pMesh);
-                                powerUps.current.push({
-                                    id: Math.random(), x: e.x, y: e.y, z: e.z,
-                                    vx: (Math.random() - 0.5) * 4, vy: (Math.random() - 0.5) * 4, vz: (Math.random() - 0.5) * 4,
-                                    type: 'slowmo', active: true, mesh: pMesh
-                                });
-                            } else if (randVal > 0.80) { // 20% chance for other powerups (multi, beam, missile)
-                                const roll = Math.random();
-                                const pType = roll < 0.33 ? 'multi' : (roll < 0.66 ? 'beam' : 'missile');
-                                const pGeo = new THREE.BoxGeometry(5, 5, 5);
-                                const pColor = pType === 'multi' ? '#00d2d3' : (pType === 'beam' ? '#ff4757' : '#ff9f43');
-                                const pMat = new THREE.MeshBasicMaterial({ color: pColor, wireframe: true });
-                                const pMesh = new THREE.Mesh(pGeo, pMat);
-                                pMesh.position.set(e.x, e.y, e.z);
-                                scene.add(pMesh);
-                                powerUps.current.push({
-                                    id: Math.random(), x: e.x, y: e.y, z: e.z,
-                                    vx: (Math.random() - 0.5) * 4, vy: (Math.random() - 0.5) * 4, vz: (Math.random() - 0.5) * 4,
-                                    type: pType, active: true, mesh: pMesh
-                                });
-                            } else { // 65% chance of crystal
-                                const cGeo = new THREE.OctahedronGeometry(3);
-                                const cMat = new THREE.MeshStandardMaterial({ color: '#2ed573', emissive: '#10ac84' });
-                                const cMesh = new THREE.Mesh(cGeo, cMat);
-                                cMesh.position.set(e.x, e.y, e.z);
-                                scene.add(cMesh);
-                                crystals.current.push({
-                                    id: Math.random(), x: e.x, y: e.y, z: e.z,
-                                    vx: (Math.random() - 0.5) * 3, vy: (Math.random() - 0.5) * 3, vz: (Math.random() - 0.5) * 3,
-                                    active: true, mesh: cMesh
-                                });
-                            }
-
-                            // Victory Check
-                            if (enemies.current.filter(en => en.active).length === 0) {
-                                setScore(scoreRef.current);
-                                setGameState('victory');
-                                soundRef.current?.stopSequencer();
-                                soundRef.current?.stopAmbient();
-                                confetti({ particleCount: 200, spread: 100, origin: { y: 0.6 } });
-                            }
+                            handleEnemyDefeat(e);
                         }
                     }
                 });
@@ -2936,6 +5243,276 @@ export function SpaceBomberGame() {
             nebulaPoints.current.rotation.z += 0.0003 * dt;
         }
 
+        // --- 11. LENS FLARES UPDATES ---
+        lensFlares.current.forEach(lf => {
+            lf.life -= 0.03 * dt;
+            const currentScale = lf.initialScale * lf.life;
+            lf.group.scale.set(currentScale, currentScale, currentScale);
+            lf.group.children.forEach(child => {
+                if (child instanceof THREE.Sprite) {
+                    child.material.opacity = lf.life;
+                }
+            });
+        });
+        lensFlares.current.filter(lf => lf.life <= 0).forEach(lf => scene.remove(lf.group));
+        lensFlares.current = lensFlares.current.filter(lf => lf.life > 0);
+
+        // --- 12. SPACE MINES LOOP ---
+        spaceMines.current.forEach(m => {
+            if (!m.active) return;
+            m.mesh.rotation.x += 0.015 * dt;
+            m.mesh.rotation.y += 0.02 * dt;
+            
+            const mVec = new THREE.Vector3(m.x, m.y, m.z);
+            const dist = mVec.distanceTo(shipPos.current);
+            
+            const blinkFreq = dist < 120 ? (dist < 50 ? 6 : 16) : 36;
+            const isBlinkOn = Math.floor(time / blinkFreq) % 2 === 0;
+            const lightColor = isBlinkOn ? 0xff0000 : 0x000000;
+            
+            if (m.light instanceof THREE.PointLight) {
+                m.light.intensity = isBlinkOn ? 1.5 : 0.0;
+            }
+            const lightMesh = m.mesh.children[1];
+            if (lightMesh instanceof THREE.Mesh && lightMesh.material instanceof THREE.MeshBasicMaterial) {
+                lightMesh.material.color.setHex(lightColor);
+            }
+            
+            if (dist < 150) {
+                m.beepTimer += dt;
+                const beepRate = dist < 70 ? (dist < 35 ? 10 : 25) : 55;
+                if (m.beepTimer >= beepRate) {
+                    m.beepTimer = 0;
+                    soundRef.current?.playMineWarning();
+                }
+            }
+            
+            if (dist < 20) {
+                m.active = false;
+                scene.remove(m.mesh);
+                if (m.light) scene.remove(m.light);
+                
+                soundRef.current?.playExplosion();
+                createExplosion(m.x, m.y, m.z, '#ff3300', 45, 2.5);
+                createExplosion(m.x, m.y, m.z, '#ffcc00', 20, 1.2);
+                createShockwave(m.x, m.y, m.z, '#ff5500');
+                createLensFlare(m.x, m.y, m.z, '#ff3300', 60);
+                
+                screenShakeRef.current = Math.max(screenShakeRef.current, 7.0);
+                damageVignetteRef.current = 1.0;
+                shieldRegenTimer.current = 0;
+                
+                const dmg = 45;
+                if (shieldRef.current > 0) {
+                    shieldHitLife.current = 1.0;
+                    setShieldLevel(shieldRef.current - dmg * 0.7, new THREE.Vector3(0, 0, -5));
+                    setArmorLevel(armorRef.current - dmg * 0.3);
+                    addLog("MAYIN PATLADI! KALKAN HASARI!");
+                } else {
+                    setArmorLevel(armorRef.current - dmg);
+                    addLog("MAYIN PATLADI! KRİTİK ZIRH HASARI!");
+                }
+            }
+        });
+        spaceMines.current = spaceMines.current.filter(m => m.active);
+
+        // --- 13. SOLAR STORM SYSTEM ---
+        if (!solarStormActiveRef.current) {
+            solarStormTimerRef.current -= dt;
+            if (solarStormTimerRef.current <= 180) {
+                solarStormWarningRef.current = 180;
+                solarStormActiveRef.current = true;
+                addLog("TEHLİKE: GÜNEŞ FIRTINASI RÜZGARI YAKLAŞIYOR!");
+            }
+        } else {
+            if (solarStormWarningRef.current > 0) {
+                solarStormWarningRef.current -= dt;
+                if (hudSolarStormAlertRef.current) {
+                    hudSolarStormAlertRef.current.style.display = 'block';
+                    hudSolarStormAlertRef.current.style.opacity = (Math.sin(time * 0.02) * 0.3 + 0.7).toString();
+                    hudSolarStormAlertRef.current.textContent = `UYARI: GÜNEŞ FIRTINASI ATLAYIŞI - ${Math.ceil(solarStormWarningRef.current / 60)}s`;
+                }
+                if (solarStormWarningRef.current <= 0) {
+                    solarStormDurationRef.current = 360; 
+                    addLog("GÜNEŞ FIRTINASI ETKİN! ZIRH SÜPÜRÜLÜYOR!");
+                    soundRef.current?.playWarning();
+                    screenShakeRef.current = Math.max(screenShakeRef.current, 3.5);
+                }
+            } else if (solarStormDurationRef.current > 0) {
+                solarStormDurationRef.current -= dt;
+                if (hudSolarStormAlertRef.current) {
+                    hudSolarStormAlertRef.current.style.display = 'block';
+                    hudSolarStormAlertRef.current.style.opacity = '0.9';
+                    hudSolarStormAlertRef.current.textContent = `FIRTIÑA ETKİN: DEVRİM HASARI!`;
+                }
+                if (hudDamageVignetteRef.current) {
+                    hudDamageVignetteRef.current.style.display = 'block';
+                    hudDamageVignetteRef.current.style.opacity = '0.5';
+                    hudDamageVignetteRef.current.style.background = 'radial-gradient(circle, rgba(249,115,22,0) 30%, rgba(249,115,22,0.65) 100%)';
+                }
+                
+                if (Math.random() < 0.4) {
+                    const pGeo = new THREE.BoxGeometry(1.2, 1.2, 1.2);
+                    const pMat = new THREE.MeshBasicMaterial({ color: '#f97316', transparent: true, opacity: 0.8, blending: THREE.AdditiveBlending });
+                    for (let i = 0; i < 4; i++) {
+                        const px = shipPos.current.x + (Math.random() - 0.5) * 200;
+                        const py = shipPos.current.y + (Math.random() - 0.5) * 120;
+                        const pz = shipPos.current.z - 250 - Math.random() * 200;
+                        const mesh = new THREE.Mesh(pGeo, pMat);
+                        mesh.position.set(px, py, pz);
+                        scene.add(mesh);
+                        particles.current.push({
+                            x: px, y: py, z: pz,
+                            vx: (Math.random() - 0.5) * 3,
+                            vy: (Math.random() - 0.5) * 3,
+                            vz: 28 + Math.random() * 12,
+                            life: 25,
+                            color: '#f97316',
+                            size: 1.2,
+                            mesh
+                        });
+                    }
+                }
+                
+                let isPlayerProtected = false;
+                let nearestAsteroidName = "";
+                for (let i = 0; i < debrisAsteroids.current.length; i++) {
+                    const a = debrisAsteroids.current[i];
+                    if (!a.active) continue;
+                    if (a.z < shipPos.current.z && a.z > shipPos.current.z - 120) {
+                        const dx = Math.abs(shipPos.current.x - a.x);
+                        const dy = Math.abs(shipPos.current.y - a.y);
+                        if (dx < a.size * 1.5 && dy < a.size * 1.5) {
+                            isPlayerProtected = true;
+                            nearestAsteroidName = `Asteroid-${Math.round(a.id * 100)}`;
+                            break;
+                        }
+                    }
+                }
+                
+                if (isPlayerProtected) {
+                    if (Math.random() < 0.05) {
+                        addLog(`GÜVENLİ: ${nearestAsteroidName} Arkasında Korunuyorsunuz.`);
+                    }
+                } else {
+                    const stormDmg = 0.18 * dt;
+                    shieldRegenTimer.current = 0;
+                    if (shieldRef.current > 0) {
+                        shieldHitLife.current = 1.0;
+                        setShieldLevel(shieldRef.current - stormDmg * 0.7, new THREE.Vector3(0, 0, -5));
+                        setArmorLevel(armorRef.current - stormDmg * 0.3);
+                    } else {
+                        setArmorLevel(armorRef.current - stormDmg);
+                    }
+                    if (Math.random() < 0.05) {
+                        addLog("TEHLİKE: RADYASYON HASARI ALINIYOR! ASTEROİD ARKASINA KORUNUN!");
+                        soundRef.current?.playWarning();
+                        screenShakeRef.current = Math.max(screenShakeRef.current, 1.0);
+                    }
+                }
+                
+                if (solarStormDurationRef.current <= 0) {
+                    solarStormActiveRef.current = false;
+                    solarStormTimerRef.current = 1500 + Math.random() * 800; 
+                    addLog("GÜNEŞ FIRTINASI GEÇTİ. SİSTEMLER YENİDEN DENGELENDİ.");
+                    if (hudSolarStormAlertRef.current) hudSolarStormAlertRef.current.style.display = 'none';
+                    if (hudDamageVignetteRef.current) {
+                        hudDamageVignetteRef.current.style.display = 'none';
+                        hudDamageVignetteRef.current.style.opacity = '0';
+                    }
+                }
+            }
+        }
+
+        // --- 14. SCRAP DROPS LOOP ---
+        scrapDrops.current.forEach(item => {
+            if (!item.active) return;
+            item.vx *= 0.95; item.vy *= 0.95; item.vz *= 0.95;
+            item.x += item.vx * dt; item.y += item.vy * dt; item.z += item.vz * dt;
+            item.mesh.position.set(item.x, item.y, item.z);
+            item.mesh.rotation.x += 0.05 * dt;
+            item.mesh.rotation.y += 0.03 * dt;
+            
+            const dVec = new THREE.Vector3(item.x, item.y, item.z);
+            const dist = dVec.distanceTo(shipPos.current);
+            const magnetRadius = activeModulesRef.current.magnetizer ? 350 : 100;
+            if (dist < magnetRadius) {
+                const dir = new THREE.Vector3().subVectors(shipPos.current, dVec).normalize();
+                const pullForce = activeModulesRef.current.magnetizer ? 4.5 : 2.0;
+                item.vx += dir.x * pullForce * dt;
+                item.vy += dir.y * pullForce * dt;
+                item.vz += dir.z * pullForce * dt;
+            }
+            
+            if (dist < 18) {
+                item.active = false;
+                scene.remove(item.mesh);
+                soundRef.current?.playCollect();
+                scrapCountRef.current += 1;
+                if (hudScrapTextRef.current) {
+                    hudScrapTextRef.current.textContent = scrapCountRef.current.toString();
+                }
+                createExplosion(item.x, item.y, item.z, '#ffd700', 5, 0.4);
+            }
+        });
+        scrapDrops.current = scrapDrops.current.filter(item => item.active);
+
+        // --- 15. ASTEROID-TO-ASTEROID COLLISION PHYSICS ---
+        const asterList = debrisAsteroids.current;
+        for (let i = 0; i < asterList.length; i++) {
+            const a = asterList[i];
+            if (!a.active) continue;
+            for (let j = i + 1; j < asterList.length; j++) {
+                const b = asterList[j];
+                if (!b.active) continue;
+                
+                const posA = new THREE.Vector3(a.x, a.y, a.z);
+                const posB = new THREE.Vector3(b.x, b.y, b.z);
+                const dist = posA.distanceTo(posB);
+                const minDist = a.size + b.size;
+                
+                if (dist < minDist) {
+                    const normal = new THREE.Vector3().subVectors(posB, posA).normalize();
+                    const velA = new THREE.Vector3(a.vx, a.vy, a.vz);
+                    const velB = new THREE.Vector3(b.vx, b.vy, b.vz);
+                    const relVel = new THREE.Vector3().subVectors(velA, velB);
+                    const velAlongNormal = relVel.dot(normal);
+                    
+                    if (velAlongNormal < 0) {
+                        const restitution = 0.75;
+                        const impulseScalar = -(1 + restitution) * velAlongNormal / 2;
+                        const impulse = normal.clone().multiplyScalar(impulseScalar);
+                        a.vx += impulse.x; a.vy += impulse.y; a.vz += impulse.z;
+                        b.vx -= impulse.x; b.vy -= impulse.y; b.vz -= impulse.z;
+                        
+                        const overlap = minDist - dist;
+                        const separation = normal.clone().multiplyScalar(overlap * 0.51);
+                        a.x -= separation.x; a.y -= separation.y; a.z -= separation.z;
+                        b.x += separation.x; b.y += separation.y; b.z += separation.z;
+                        
+                        if (Math.random() < 0.3) {
+                            const midPoint = new THREE.Vector3().addVectors(posA, posB).multiplyScalar(0.5);
+                            createExplosion(midPoint.x, midPoint.y, midPoint.z, '#a5b1c2', 8, 0.5);
+                            const dmg = Math.abs(velAlongNormal) * 4;
+                            a.health -= dmg;
+                            b.health -= dmg;
+                            
+                            if (a.health <= 0 && a.active) {
+                                a.active = false;
+                                scene.remove(a.mesh);
+                                fractureAsteroid(a);
+                            }
+                            if (b.health <= 0 && b.active) {
+                                b.active = false;
+                                scene.remove(b.mesh);
+                                fractureAsteroid(b);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         setSpeedVal(Math.round(targetSpeed.current * 100));
         setAltitudeVal(Math.round(shipPos.current.length() / 10)); 
 
@@ -3013,8 +5590,8 @@ export function SpaceBomberGame() {
     };
 
     const nextLevel = () => {
-        setLevel(l => l + 1);
-        triggerHyperspace();
+        generateGalaxyMap(level);
+        setGameState('galaxymap');
     };
 
     if (webglError) {
@@ -3024,7 +5601,7 @@ export function SpaceBomberGame() {
                 <h2 className="text-3xl font-black text-rose-500 mb-4 tracking-tighter drop-shadow-[0_0_20px_rgba(244,63,94,0.5)]">SİMÜLASYON BAŞLATILAMIYOR</h2>
                 <p className="text-cyan-100/70 max-w-md mb-8 leading-relaxed font-light">{webglError}</p>
                 <div className="p-4 border border-white/10 rounded-xl bg-white/5 text-xs text-cyan-200/50 max-w-lg leading-relaxed">
-                    Sisteminiz veya tarayıcınız WebGL / Donanım İvmesini desteklemiyor olabilir. Lütfen tarayıcı ayarlarından <b>"Kullanılabilir olduğunda donanım ivmesini kullan"</b> (Hardware Acceleration) seçeneğinin açık olduğundan emin olun.
+                    Sisteminiz veya tarayıcınız WebGL / Donanım İvmesini desteklemiyor olabilir. Lütfen tarayıcı ayarlarından <b>"Kullanılabilir olduğunda donanım ivmesini kullan"</b> seçeneğini etkinleştirin.
                 </div>
             </div>
         );
@@ -3047,7 +5624,11 @@ export function SpaceBomberGame() {
                         <span ref={hudDistanceRef} className="text-2xl font-black text-emerald-400 font-mono tracking-tighter drop-shadow-[0_0_8px_rgba(16,185,129,0.5)]">{altitudeVal} <span className="text-xs text-emerald-700 font-normal">ly</span></span>
                     </div>
                     <div className="flex flex-col">
-                        <span className="text-[10px] text-amber-500/70 uppercase font-black tracking-[0.2em] mb-1"><Zap className="inline w-3 h-3 mr-1" />Skor</span>
+                        <span className="text-[10px] text-yellow-500/70 uppercase font-black tracking-[0.2em] mb-1"><ShoppingBag className="inline w-3 h-3 mr-1" />Hurda</span>
+                        <span className="text-2xl font-black text-yellow-400 font-mono tracking-tighter drop-shadow-[0_0_8px_rgba(234,179,8,0.5)]"><span ref={hudScrapTextRef}>0</span></span>
+                    </div>
+                    <div className="flex flex-col">
+                        <span className="text-[10px] text-zap-500/70 uppercase font-black tracking-[0.2em] mb-1"><Zap className="inline w-3 h-3 mr-1" />Skor</span>
                         <span ref={hudScoreRef} className="text-2xl font-black text-amber-400 font-mono tracking-tighter drop-shadow-[0_0_8px_rgba(251,191,36,0.5)]">{score}</span>
                     </div>
                 </div>
@@ -3090,6 +5671,9 @@ export function SpaceBomberGame() {
                     </Button>
                     <Button size="icon" variant="ghost" className="h-10 w-10 bg-black/40 hover:bg-white/10 text-muted-foreground rounded-full border border-white/5 transition-all" onClick={toggleQuality} title="Grafik Kalitesi">
                         {graphicsQuality === 'high' ? <Sparkles className="w-5 h-5 text-amber-400 animate-pulse" /> : <ZapOff className="w-5 h-5 text-zinc-500" />}
+                    </Button>
+                    <Button size="icon" variant="ghost" className={`h-10 w-10 bg-black/40 hover:bg-white/10 text-muted-foreground rounded-full border border-white/5 transition-all ${marketOpen ? 'ring-2 ring-yellow-400 text-yellow-400' : ''}`} onClick={toggleMarket} title="Holografik Market [M]">
+                        <ShoppingBag className={`w-5 h-5 ${marketOpen ? 'text-yellow-400' : 'text-cyan-400'}`} />
                     </Button>
                     <div className="px-4 py-2 bg-gradient-to-br from-indigo-900/50 to-purple-900/50 rounded-lg border border-indigo-500/30 font-black text-indigo-200 tracking-[0.2em] uppercase text-xs shadow-[0_0_15px_rgba(99,102,241,0.3)]">
                         SEKTÖR <span className="text-white text-sm">{level}</span>
@@ -3152,6 +5736,26 @@ export function SpaceBomberGame() {
                     </div>
                 </div>
 
+                {/* Solar Storm Alert */}
+                <div 
+                    ref={hudSolarStormAlertRef}
+                    className="absolute top-36 left-1/2 transform -translate-x-1/2 p-4 rounded-xl border border-orange-500/50 bg-orange-950/80 backdrop-blur-md text-center pointer-events-none z-20 shadow-[0_0_35px_rgba(249,115,22,0.5)] transition-all duration-300 animate-pulse"
+                    style={{
+                        display: 'none',
+                        opacity: 0
+                    }}
+                >
+                    <div className="flex flex-col items-center gap-1.5">
+                        <AlertTriangle className="w-6 h-6 text-orange-400 animate-bounce" />
+                        <div className="text-orange-400 text-sm font-black tracking-[0.25em] uppercase">
+                            UYARI: RADYASYON FIRTINASI
+                        </div>
+                        <div className="text-xs text-orange-200/70 font-light">
+                            Hasar almamak için derhal bir astreoid arkasına saklanın!
+                        </div>
+                    </div>
+                </div>
+
                 {/* Enemies Remaining holographic UI */}
                 {(gameState === 'playing' || gameState === 'hyperspace') && (
                     <div className="absolute top-6 left-6 p-3 rounded-xl border border-cyan-500/30 bg-black/60 backdrop-blur-md pointer-events-none z-10 flex flex-col gap-0.5 shadow-lg select-none">
@@ -3188,8 +5792,6 @@ export function SpaceBomberGame() {
                 <canvas ref={canvasRef} className="w-full block focus:outline-none" style={{ height: '700px' }} width={1200} height={700} tabIndex={0} />
                 
                 <div ref={floatingTextContainerRef} className="absolute top-0 left-0 w-full h-[700px] pointer-events-none z-10 overflow-hidden" />
-
-
 
                 {/* Adaptive Crosshair */}
                 {(gameState === 'playing' || gameState === 'hyperspace') && (
@@ -3247,7 +5849,7 @@ export function SpaceBomberGame() {
                 {(gameState === 'playing' || gameState === 'hyperspace') && (
                     <div className="absolute bottom-6 left-6 p-4 rounded-xl border border-white/10 bg-black/60 backdrop-blur-md max-w-sm w-full text-[11px] text-emerald-400 font-mono tracking-wide pointer-events-none z-10 flex flex-col gap-1.5 shadow-[0_10px_30px_rgba(0,0,0,0.5)]">
                         <div className="text-[10px] text-emerald-500/60 border-b border-emerald-500/20 pb-1 mb-1.5 uppercase font-black flex items-center gap-2">
-                            <Activity className="w-3.5 h-3.5" /> Sistem Kayıtları (v2.4)
+                            <Activity className="w-3.5 h-3.5" /> Sistem Kayıtları (v4.0)
                         </div>
                         {logMessages.map((log, idx) => (
                             <div key={idx} className={`transition-all duration-300 ${idx === 0 ? 'text-emerald-300 font-bold scale-100 opacity-100' : 'text-emerald-500/70 scale-95 origin-left opacity-70'}`}>
@@ -3257,16 +5859,521 @@ export function SpaceBomberGame() {
                     </div>
                 )}
 
+                {/* Energy Allocation Panel */}
+                {(gameState === 'playing' || gameState === 'paused') && (
+                    <div className="absolute bottom-6 left-[25rem] p-4 rounded-xl border border-cyan-500/20 bg-black/75 backdrop-blur-md max-w-xs w-full text-xs text-cyan-400 font-sans pointer-events-auto z-10 flex flex-col gap-3 shadow-[0_10px_30px_rgba(0,0,0,0.6)] select-none hidden md:flex">
+                        <div className="text-[10px] text-cyan-400/80 border-b border-cyan-500/20 pb-1 mb-1 font-black uppercase tracking-widest flex items-center gap-2">
+                            <Sliders className="w-3.5 h-3.5" /> REAKTÖR ENERJİ DAĞILIMI (10 TOPLAM)
+                        </div>
+                        
+                        <div className="flex flex-col gap-1">
+                            <div className="flex justify-between font-mono text-[10px] font-bold">
+                                <span>SİLAH SİSTEMLERİ</span>
+                                <span className="text-cyan-300"><span ref={hudWeaponsValRef}>3</span> / 10</span>
+                            </div>
+                            <input 
+                                ref={hudWeaponsSliderRef}
+                                type="range" 
+                                min="0" 
+                                max="10" 
+                                defaultValue="3"
+                                className="w-full accent-cyan-400 h-1.5 bg-black rounded-lg cursor-pointer appearance-none"
+                                onChange={(e) => setEnergyAllocation('weapons', parseInt(e.target.value))}
+                            />
+                        </div>
+                        
+                        <div className="flex flex-col gap-1">
+                            <div className="flex justify-between font-mono text-[10px] font-bold">
+                                <span>KALKAN HÜCRELERİ</span>
+                                <span className="text-cyan-300"><span ref={hudShieldsValRef}>3</span> / 10</span>
+                            </div>
+                            <input 
+                                ref={hudShieldsSliderRef}
+                                type="range" 
+                                min="0" 
+                                max="10" 
+                                defaultValue="3"
+                                className="w-full accent-cyan-400 h-1.5 bg-black rounded-lg cursor-pointer appearance-none"
+                                onChange={(e) => setEnergyAllocation('shields', parseInt(e.target.value))}
+                            />
+                        </div>
+                        
+                        <div className="flex flex-col gap-1">
+                            <div className="flex justify-between font-mono text-[10px] font-bold">
+                                <span>İTİCİ MOTORLAR</span>
+                                <span className="text-cyan-300"><span ref={hudEnginesValRef}>4</span> / 10</span>
+                            </div>
+                            <input 
+                                ref={hudEnginesSliderRef}
+                                type="range" 
+                                min="0" 
+                                max="10" 
+                                defaultValue="4"
+                                className="w-full accent-cyan-400 h-1.5 bg-black rounded-lg cursor-pointer appearance-none"
+                                onChange={(e) => setEnergyAllocation('engines', parseInt(e.target.value))}
+                            />
+                        </div>
+                    </div>
+                )}
+
+                {/* Cockpit Instrument Dashboard Panel */}
+                {(gameState === 'playing' || gameState === 'paused') && (
+                    <div className="absolute bottom-6 left-[46rem] p-4 rounded-xl border border-cyan-500/20 bg-black/75 backdrop-blur-md max-w-xs w-full text-xs text-cyan-400 font-sans pointer-events-none z-10 flex flex-col gap-3 shadow-[0_10px_30px_rgba(0,0,0,0.6)] select-none hidden lg:flex">
+                        <div className="text-[10px] text-cyan-400/80 border-b border-cyan-500/20 pb-1 mb-1 font-black uppercase tracking-widest flex items-center gap-2">
+                            <Cpu className="w-3.5 h-3.5" /> KOKPİT TELEMETRİ GÖSTERGELERİ
+                        </div>
+                        
+                        {/* canvas oscilloscope */}
+                        <div className="flex flex-col gap-1">
+                            <span className="text-[8px] font-mono font-bold tracking-widest text-cyan-500">REAKTÖR DALGA ANALİZİ</span>
+                            <canvas ref={oscilloscopeCanvasRef} width={250} height={45} className="w-full h-11 bg-black/50 rounded border border-cyan-950/60" />
+                        </div>
+                        
+                        {/* Core temperature and G-force */}
+                        <div className="grid grid-cols-2 gap-3 mt-1 font-mono text-[9px] font-bold">
+                            <div className="flex flex-col gap-1 bg-black/40 p-2 rounded border border-cyan-950/30">
+                                <span className="text-[7px] text-cyan-500/60">GÖVDE SICAKLIĞI</span>
+                                <span ref={hudCoreTempTextRef} className="text-sm font-black tracking-tighter text-cyan-300">40°C</span>
+                                <div className="w-full h-1 bg-cyan-950/50 rounded overflow-hidden mt-1">
+                                    <div ref={hudCoreTempBarRef} className="h-full bg-cyan-400 transition-all duration-150" style={{ width: '40%' }}></div>
+                                </div>
+                            </div>
+                            
+                            <div className="flex flex-col gap-1 bg-black/40 p-2 rounded border border-cyan-950/30">
+                                <span className="text-[7px] text-cyan-500/60">G-KUVVETİ İVMESİ</span>
+                                <span ref={hudGForceTextRef} className="text-sm font-black tracking-tighter text-amber-400">1.00 G</span>
+                                <span ref={hudRollYawTextRef} className="text-[8px] text-cyan-500/40 mt-1">P: 0° R: 0°</span>
+                            </div>
+                        </div>
+
+                        {/* Weapon systems and Heat bar */}
+                        <div className="grid grid-cols-2 gap-3 mt-1 font-mono text-[9px] font-bold">
+                            <div className="flex flex-col gap-1 bg-black/40 p-2 rounded border border-cyan-950/30">
+                                <span className="text-[7px] text-cyan-500/60">AKTİF SİLAH [1-4]</span>
+                                <span className="text-[11px] font-black uppercase tracking-tighter text-cyan-300">
+                                    {activeWeaponType === 'laser' && 'COLAZ PLAZMA'}
+                                    {activeWeaponType === 'beam' && 'KONTİNU BEAM'}
+                                    {activeWeaponType === 'tesla' && 'TESLA YILDIRIM'}
+                                    {activeWeaponType === 'flak' && 'FLAK ŞARAPNEL'}
+                                </span>
+                            </div>
+                            
+                            <div className="flex flex-col gap-1 bg-black/40 p-2 rounded border border-cyan-950/30">
+                                <span className="text-[7px] text-cyan-500/60">SİLAH SICAKLIĞI</span>
+                                <span ref={hudWeaponHeatTextRef} className="text-sm font-black tracking-tighter text-orange-400">0%</span>
+                                <div className="w-full h-1 bg-cyan-950/50 rounded overflow-hidden mt-1">
+                                    <div ref={hudWeaponHeatBarRef} className="h-full bg-orange-500 transition-all duration-150" style={{ width: '0%' }}></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* Holographic Market Overlay */}
+                {marketOpen && (
+                    <div className="absolute inset-0 bg-black/95 backdrop-blur-md flex flex-col items-center justify-center z-30 pointer-events-auto cursor-default p-6 select-none animate-in fade-in zoom-in duration-200">
+                        <div className="absolute inset-0 opacity-20 pointer-events-none bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-yellow-500 via-transparent to-transparent"></div>
+                        
+                        <div className="max-w-4xl w-full flex flex-col gap-6 bg-gradient-to-b from-[#0e0e18] to-black border border-yellow-500/30 p-8 rounded-3xl shadow-[0_0_50px_rgba(234,179,8,0.15)] relative overflow-hidden">
+                            <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-yellow-400 to-transparent opacity-40"></div>
+                            
+                            <button 
+                                onClick={toggleMarket}
+                                className="absolute top-4 right-4 text-cyan-400/60 hover:text-cyan-400 font-mono text-sm tracking-widest hover:scale-105 transition-all p-2 rounded-lg border border-white/5 bg-white/5"
+                            >
+                                [ X ] KAPAT
+                            </button>
+                            
+                            <div className="flex justify-between items-center border-b border-white/5 pb-4">
+                                <div className="flex flex-col">
+                                    <h2 className="text-3xl font-black text-yellow-400 tracking-tighter flex items-center gap-3 drop-shadow-[0_0_15px_rgba(234,179,8,0.4)]">
+                                        <ShoppingBag className="w-8 h-8 animate-pulse text-yellow-400" /> HOLOGRAFİK MODÜL MARKETİ
+                                    </h2>
+                                    <p className="text-[11px] text-cyan-100/50 uppercase tracking-widest font-bold mt-1">Sektör arası taktik takviye ünitesi</p>
+                                </div>
+                                <div className="flex items-center gap-3 bg-yellow-950/30 border border-yellow-500/20 px-5 py-3 rounded-2xl">
+                                    <span className="text-[10px] text-yellow-500/80 font-black tracking-widest uppercase">MEVCUT HURDA:</span>
+                                    <span className="text-3xl font-black text-yellow-400 font-mono tracking-tighter drop-shadow-[0_0_8px_rgba(234,179,8,0.5)] text-center">
+                                        {scrapCountRef.current}
+                                    </span>
+                                </div>
+                            </div>
+                            
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-2">
+                                <div className={`p-5 rounded-2xl border transition-all duration-300 flex flex-col justify-between ${activeModulesRef.current.empShock ? 'bg-purple-950/20 border-purple-500/50 shadow-[0_0_15px_rgba(168,85,247,0.25)]' : 'bg-black/40 border-white/5 hover:border-yellow-500/30'}`}>
+                                    <div className="flex flex-col gap-2">
+                                        <div className="flex justify-between items-center">
+                                            <span className="text-xs font-black uppercase tracking-wider text-purple-400">EMP Şok Koruması</span>
+                                            <span className="text-xs font-mono text-yellow-400 font-bold bg-yellow-400/10 px-2 py-0.5 rounded">20 Hurda</span>
+                                        </div>
+                                        <p className="text-[11px] text-cyan-100/50 leading-relaxed font-light">
+                                            Kalkanınız tamamen çöktüğünde (sıfıra ulaştığında) otomatik olarak tetiklenerek 280 metre yarıçapındaki tüm düşman mermilerini anında siler.
+                                        </p>
+                                    </div>
+                                    <div className="mt-4">
+                                        {activeModulesRef.current.empShock ? (
+                                            <div className="w-full text-center text-xs text-purple-400 font-black uppercase tracking-widest py-2 bg-purple-500/10 rounded-xl border border-purple-500/30">ETKİN / SATIN ALINDI</div>
+                                        ) : (
+                                            <Button 
+                                                onClick={() => buyModule('empShock')}
+                                                disabled={scrapCountRef.current < 20}
+                                                className="w-full bg-yellow-500 text-black hover:bg-yellow-400 font-black text-xs uppercase tracking-widest py-2 rounded-xl transition-all"
+                                            >
+                                                SATIN AL
+                                            </Button>
+                                        )}
+                                    </div>
+                                </div>
+
+                                <div className={`p-5 rounded-2xl border transition-all duration-300 flex flex-col justify-between ${activeModulesRef.current.nanobots ? 'bg-emerald-950/20 border-emerald-500/50 shadow-[0_0_15px_rgba(16,185,129,0.25)]' : 'bg-black/40 border-white/5 hover:border-yellow-500/30'}`}>
+                                    <div className="flex flex-col gap-2">
+                                        <div className="flex justify-between items-center">
+                                            <span className="text-xs font-black uppercase tracking-wider text-emerald-400">Nanobot Bakım Kiti</span>
+                                            <span className="text-xs font-mono text-yellow-400 font-bold bg-yellow-400/10 px-2 py-0.5 rounded">25 Hurda</span>
+                                        </div>
+                                        <p className="text-[11px] text-cyan-100/50 leading-relaxed font-light">
+                                            Savaş dışındayken (5 saniye hasar alınmadığında) geminizin zırhını saniyede 3 zırh puanı hızında yavaşça tamir eder.
+                                        </p>
+                                    </div>
+                                    <div className="mt-4">
+                                        {activeModulesRef.current.nanobots ? (
+                                            <div className="w-full text-center text-xs text-emerald-400 font-black uppercase tracking-widest py-2 bg-emerald-500/10 rounded-xl border border-emerald-500/30">ETKİN / SATIN ALINDI</div>
+                                        ) : (
+                                            <Button 
+                                                onClick={() => buyModule('nanobots')}
+                                                disabled={scrapCountRef.current < 25}
+                                                className="w-full bg-yellow-500 text-black hover:bg-yellow-400 font-black text-xs uppercase tracking-widest py-2 rounded-xl transition-all"
+                                            >
+                                                SATIN AL
+                                            </Button>
+                                        )}
+                                    </div>
+                                </div>
+
+                                <div className={`p-5 rounded-2xl border transition-all duration-300 flex flex-col justify-between ${activeModulesRef.current.magnetizer ? 'bg-cyan-950/20 border-cyan-500/50 shadow-[0_0_15px_rgba(6,182,212,0.25)]' : 'bg-black/40 border-white/5 hover:border-yellow-500/30'}`}>
+                                    <div className="flex flex-col gap-2">
+                                        <div className="flex justify-between items-center">
+                                            <span className="text-xs font-black uppercase tracking-wider text-cyan-400">Mıknatıs Alanı</span>
+                                            <span className="text-xs font-mono text-yellow-400 font-bold bg-yellow-400/10 px-2 py-0.5 rounded">15 Hurda</span>
+                                        </div>
+                                        <p className="text-[11px] text-cyan-100/50 leading-relaxed font-light">
+                                            Kristal, hurda ve güçlendiricileri çekme menzilini 3 katından fazlaya (350 metreye) çıkartır ve çekim hızını artırır.
+                                        </p>
+                                    </div>
+                                    <div className="mt-4">
+                                        {activeModulesRef.current.magnetizer ? (
+                                            <div className="w-full text-center text-xs text-cyan-400 font-black uppercase tracking-widest py-2 bg-cyan-500/10 rounded-xl border border-cyan-500/30">ETKİN / SATIN ALINDI</div>
+                                        ) : (
+                                            <Button 
+                                                onClick={() => buyModule('magnetizer')}
+                                                disabled={scrapCountRef.current < 15}
+                                                className="w-full bg-yellow-500 text-black hover:bg-yellow-400 font-black text-xs uppercase tracking-widest py-2 rounded-xl transition-all"
+                                            >
+                                                SATIN AL
+                                            </Button>
+                                        )}
+                                    </div>
+                                </div>
+
+                                <div className={`p-5 rounded-2xl border transition-all duration-300 flex flex-col justify-between ${activeModulesRef.current.reactorOvercharge ? 'bg-orange-950/20 border-orange-500/50 shadow-[0_0_15px_rgba(249,115,22,0.25)]' : 'bg-black/40 border-white/5 hover:border-yellow-500/30'}`}>
+                                    <div className="flex flex-col gap-2">
+                                        <div className="flex justify-between items-center">
+                                            <span className="text-xs font-black uppercase tracking-wider text-orange-400">Aşırı Yükleme Reaktörü</span>
+                                            <span className="text-xs font-mono text-yellow-400 font-bold bg-yellow-400/10 px-2 py-0.5 rounded">30 Hurda</span>
+                                        </div>
+                                        <p className="text-[11px] text-cyan-100/50 leading-relaxed font-light">
+                                            Kalkan azami kapasitesini %30 düşürür, fakat silahlarınızın hasarını %50 artırır (hem asteroidler hem düşmanlar üzerinde etkilidir).
+                                        </p>
+                                    </div>
+                                    <div className="mt-4">
+                                        {activeModulesRef.current.reactorOvercharge ? (
+                                            <div className="w-full text-center text-xs text-orange-400 font-black uppercase tracking-widest py-2 bg-orange-500/10 rounded-xl border border-orange-500/30">ETKİN / SATIN ALINDI</div>
+                                        ) : (
+                                            <Button 
+                                                onClick={() => buyModule('reactorOvercharge')}
+                                                disabled={scrapCountRef.current < 30}
+                                                className="w-full bg-yellow-500 text-black hover:bg-yellow-400 font-black text-xs uppercase tracking-widest py-2 rounded-xl transition-all"
+                                            >
+                                                SATIN AL
+                                            </Button>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div className="flex justify-center border-t border-white/5 pt-4">
+                                <Button 
+                                    onClick={toggleMarket} 
+                                    className="bg-yellow-500 hover:bg-yellow-400 text-black font-black px-12 py-5 rounded-xl transition-all hover:scale-105 shadow-[0_0_25px_rgba(234,179,8,0.3)]"
+                                >
+                                    MARKETİ KAPAT VE SEKTÖRE GİR
+                                </Button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* Galaxy Navigator Map & Hangar Overlay */}
+                {gameState === 'galaxymap' && (
+                    <div className="absolute inset-0 bg-black/95 backdrop-blur-md flex flex-col items-center justify-center z-30 pointer-events-auto cursor-default p-6 select-none animate-in fade-in duration-300">
+                        <div className="absolute inset-0 opacity-15 pointer-events-none bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-cyan-950 via-transparent to-transparent"></div>
+                        
+                        <div className="max-w-6xl w-full grid grid-cols-1 lg:grid-cols-12 gap-6 bg-gradient-to-b from-[#0b0b14] to-black border border-cyan-500/20 p-8 rounded-3xl shadow-[0_0_60px_rgba(6,182,212,0.15)] relative overflow-hidden">
+                            <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-cyan-400 to-transparent opacity-35"></div>
+                            
+                            {/* Title banner */}
+                            <div className="lg:col-span-12 flex justify-between items-center border-b border-white/5 pb-4 mb-2">
+                                <div className="flex flex-col">
+                                    <h2 className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-indigo-400 tracking-tighter flex items-center gap-3 drop-shadow-[0_0_15px_rgba(6,182,212,0.4)] font-mono">
+                                        SEKTÖR GEÇİŞ TERMİNALİ
+                                    </h2>
+                                    <p className="text-[10px] text-cyan-100/50 uppercase tracking-widest font-bold mt-1">Gemi bakımı ve seyrüsefer yönlendirmesi</p>
+                                </div>
+                                <div className="flex items-center gap-3 bg-cyan-950/20 border border-cyan-500/20 px-5 py-3 rounded-2xl">
+                                    <span className="text-[10px] text-cyan-400/80 font-black tracking-widest uppercase">MEVCUT HURDA:</span>
+                                    <span className="text-3xl font-black text-yellow-400 font-mono tracking-tighter drop-shadow-[0_0_8px_rgba(234,179,8,0.5)]">
+                                        {scrapCountRef.current}
+                                    </span>
+                                </div>
+                            </div>
+                            
+                            {/* Left Column: Hangar Upgrades */}
+                            <div className="lg:col-span-5 flex flex-col gap-4 bg-black/45 p-5 rounded-2xl border border-white/5">
+                                <h3 className="text-xs font-bold text-cyan-400 tracking-widest uppercase pb-2 border-b border-white/5 flex items-center gap-2 font-mono">
+                                    <Cpu className="w-4 h-4" /> QUANTUM HANGAR Geliştirmeleri
+                                </h3>
+                                
+                                <div className="flex flex-col gap-3">
+                                    {/* Upgrade System stats */}
+                                    <div className="flex justify-between items-center bg-white/5 p-3 rounded-xl border border-white/5">
+                                        <div className="flex flex-col gap-0.5">
+                                            <span className="text-[10px] text-white font-bold">Aşırı Yüklenmiş Lazerler</span>
+                                            <span className="text-[9px] text-cyan-400/60 font-mono">Silah Hasarı ve Hızı +%20 / Seviye</span>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-xs font-mono font-bold text-cyan-300">SEV {hangarWeapons}</span>
+                                            <Button 
+                                                onClick={() => upgradeHangarSystem('weapons')}
+                                                disabled={hangarWeapons >= 3 || scrapCountRef.current < (hangarWeapons + 1) * 15}
+                                                size="sm"
+                                                className="bg-cyan-500 text-black hover:bg-cyan-400 text-[9px] font-black py-1 px-2.5 rounded-lg"
+                                            >
+                                                {hangarWeapons >= 3 ? 'MAX' : `${(hangarWeapons + 1) * 15} H`}
+                                            </Button>
+                                        </div>
+                                    </div>
+                                    
+                                    <div className="flex justify-between items-center bg-white/5 p-3 rounded-xl border border-white/5">
+                                        <div className="flex flex-col gap-0.5">
+                                            <span className="text-[10px] text-white font-bold">Kalkan Güçlendirici</span>
+                                            <span className="text-[9px] text-cyan-400/60 font-mono">Azami Kalkan Kapasitesi +25</span>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-xs font-mono font-bold text-cyan-300">SEV {hangarShields}</span>
+                                            <Button 
+                                                onClick={() => upgradeHangarSystem('shields')}
+                                                disabled={hangarShields >= 3 || scrapCountRef.current < (hangarShields + 1) * 15}
+                                                size="sm"
+                                                className="bg-cyan-500 text-black hover:bg-cyan-400 text-[9px] font-black py-1 px-2.5 rounded-lg"
+                                            >
+                                                {hangarShields >= 3 ? 'MAX' : `${(hangarShields + 1) * 15} H`}
+                                            </Button>
+                                        </div>
+                                    </div>
+                                    
+                                    <div className="flex justify-between items-center bg-white/5 p-3 rounded-xl border border-white/5">
+                                        <div className="flex flex-col gap-0.5">
+                                            <span className="text-[10px] text-white font-bold">İtici Ayarı</span>
+                                            <span className="text-[9px] text-cyan-400/60 font-mono">Manevra ve Azami Hız Katsayısı</span>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-xs font-mono font-bold text-cyan-300">SEV {hangarEngines}</span>
+                                            <Button 
+                                                onClick={() => upgradeHangarSystem('engines')}
+                                                disabled={hangarEngines >= 3 || scrapCountRef.current < (hangarEngines + 1) * 15}
+                                                size="sm"
+                                                className="bg-cyan-500 text-black hover:bg-cyan-400 text-[9px] font-black py-1 px-2.5 rounded-lg"
+                                            >
+                                                {hangarEngines >= 3 ? 'MAX' : `${(hangarEngines + 1) * 15} H`}
+                                            </Button>
+                                        </div>
+                                    </div>
+                                    
+                                    <div className="flex justify-between items-center bg-white/5 p-3 rounded-xl border border-white/5">
+                                        <div className="flex flex-col gap-0.5">
+                                            <span className="text-[10px] text-white font-bold">Dron Yuvası</span>
+                                            <span className="text-[9px] text-cyan-400/60 font-mono">Maksimum Savunma Dronu Sınırı</span>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-xs font-mono font-bold text-cyan-300">MAX {hangarMaxDrones}</span>
+                                            <Button 
+                                                onClick={() => upgradeHangarSystem('maxDrones')}
+                                                disabled={hangarMaxDrones >= 3 || scrapCountRef.current < (hangarMaxDrones + 1) * 15}
+                                                size="sm"
+                                                className="bg-cyan-500 text-black hover:bg-cyan-400 text-[9px] font-black py-1 px-2.5 rounded-lg"
+                                            >
+                                                {hangarMaxDrones >= 3 ? 'MAX' : `${(hangarMaxDrones + 1) * 15} H`}
+                                            </Button>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <h3 className="text-xs font-bold text-cyan-400 tracking-widest uppercase pb-2 border-b border-white/5 mt-2 font-mono">
+                                    SAVUNMA DRONLARI ({ownedDrones.length} / {hangarMaxDrones})
+                                </h3>
+                                
+                                <div className="grid grid-cols-3 gap-2 text-center text-[10px]">
+                                    <div className="flex flex-col gap-1.5 p-2 rounded-xl border border-white/5 bg-white/5">
+                                        <span className="font-bold text-orange-400">Lazer Dronu</span>
+                                        <span className="text-[8px] text-zinc-500">20 Hurda</span>
+                                        <Button 
+                                            onClick={() => buyHangarDrone('laser')}
+                                            disabled={ownedDrones.length >= hangarMaxDrones || scrapCountRef.current < 20}
+                                            className="w-full bg-cyan-500 text-black hover:bg-cyan-400 text-[8px] font-bold py-1 px-1.5 rounded-md"
+                                        >
+                                            AKTİF ET
+                                        </Button>
+                                    </div>
+                                    <div className="flex flex-col gap-1.5 p-2 rounded-xl border border-white/5 bg-white/5">
+                                        <span className="font-bold text-blue-400">Kalkan Dronu</span>
+                                        <span className="text-[8px] text-zinc-500">25 Hurda</span>
+                                        <Button 
+                                            onClick={() => buyHangarDrone('shield')}
+                                            disabled={ownedDrones.length >= hangarMaxDrones || scrapCountRef.current < 25}
+                                            className="w-full bg-cyan-500 text-black hover:bg-cyan-400 text-[8px] font-bold py-1 px-1.5 rounded-md"
+                                        >
+                                            AKTİF ET
+                                        </Button>
+                                    </div>
+                                    <div className="flex flex-col gap-1.5 p-2 rounded-xl border border-white/5 bg-white/5">
+                                        <span className="font-bold text-red-400">Füze Dronu</span>
+                                        <span className="text-[8px] text-zinc-500">30 Hurda</span>
+                                        <Button 
+                                            onClick={() => buyHangarDrone('missile')}
+                                            disabled={ownedDrones.length >= hangarMaxDrones || scrapCountRef.current < 30}
+                                            className="w-full bg-cyan-500 text-black hover:bg-cyan-400 text-[8px] font-bold py-1 px-1.5 rounded-md"
+                                        >
+                                            AKTİF ET
+                                        </Button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            {/* Right Column: Galaxy Navigation Map */}
+                            <div className="lg:col-span-7 flex flex-col gap-4 bg-black/45 p-5 rounded-2xl border border-white/5 min-h-[350px] justify-between">
+                                <h3 className="text-xs font-bold text-cyan-400 tracking-widest uppercase pb-2 border-b border-white/5 flex items-center gap-2 font-mono">
+                                    <ArrowUpRight className="w-4 h-4" /> KARTOGRAFİK SEYRÜSEFER HARİTASI
+                                </h3>
+                                
+                                {/* map visualizer area */}
+                                <div className="relative w-full h-[220px] bg-black/50 border border-white/5 rounded-xl overflow-hidden flex items-center justify-center">
+                                    <div className="absolute inset-0 bg-[linear-gradient(rgba(18,100,128,0.08)_1px,transparent_1px),linear-gradient(90deg,rgba(18,100,128,0.08)_1px,transparent_1px)] bg-[size:20px_20px] pointer-events-none"></div>
+                                    
+                                    <svg className="absolute inset-0 w-full h-full pointer-events-none">
+                                        {/* Draw connecting paths */}
+                                        {galaxyNodesRef.current.map((n) => {
+                                            return n.adjacent.map((adjId) => {
+                                                const target = galaxyNodesRef.current.find(o => o.id === adjId);
+                                                if (!target) return null;
+                                                return (
+                                                    <line 
+                                                        key={`${n.id}-${adjId}`}
+                                                        x1={`${n.x}%`} 
+                                                        y1={`${n.y}%`} 
+                                                        x2={`${target.x}%`} 
+                                                        y2={`${target.y}%`} 
+                                                        stroke="#0ea5e9" 
+                                                        strokeWidth="1.5" 
+                                                        strokeDasharray="4 4" 
+                                                        opacity="0.45"
+                                                    />
+                                                );
+                                            });
+                                        })}
+                                    </svg>
+                                    
+                                    {/* Draw nodes */}
+                                    {galaxyNodesRef.current.map((node) => {
+                                        const isSelected = selectedMapNodeId === node.id;
+                                        const isStart = node.id === 'node_start';
+                                        
+                                        return (
+                                            <button
+                                                key={node.id}
+                                                disabled={isStart || node.completed}
+                                                onClick={() => {
+                                                    setSelectedMapNodeId(node.id);
+                                                }}
+                                                style={{ left: `${node.x}%`, top: `${node.y}%` }}
+                                                className={`absolute transform -translate-x-1/2 -translate-y-1/2 p-2 rounded-full border transition-all duration-300 z-10 flex flex-col items-center group cursor-pointer focus:outline-none ${
+                                                    isStart 
+                                                        ? 'bg-zinc-800 border-zinc-700 cursor-default scale-95 opacity-60' 
+                                                        : (node.completed 
+                                                            ? 'bg-emerald-950/40 border-emerald-500/50 cursor-default scale-90' 
+                                                            : (isSelected 
+                                                                ? 'bg-cyan-950/80 border-cyan-400 scale-125 shadow-[0_0_15px_#06b6d4]' 
+                                                                : 'bg-black/80 border-cyan-800/40 hover:border-cyan-500 hover:scale-110'))
+                                                }`}
+                                            >
+                                                <div className={`w-2.5 h-2.5 rounded-full ${isStart ? 'bg-zinc-500' : (node.completed ? 'bg-emerald-400' : (node.type === 'boss' ? 'bg-rose-500 animate-ping' : 'bg-cyan-400'))}`} />
+                                                <span className="absolute top-7 bg-black/90 px-1.5 py-0.5 rounded border border-white/5 text-[8px] font-bold text-white whitespace-nowrap opacity-60 group-hover:opacity-100 transition-opacity">
+                                                    {node.name}
+                                                </span>
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                                
+                                {/* Selected node details */}
+                                {(() => {
+                                    const node = galaxyNodesRef.current.find(n => n.id === selectedMapNodeId);
+                                    if (!node) return <div className="text-center text-zinc-500 text-[10px]">Seyrüsefer için haritadan bir hedef seçin.</div>;
+                                    return (
+                                        <div className="bg-[#10101f]/80 p-4 rounded-xl border border-cyan-800/20 flex flex-col gap-1.5">
+                                            <div className="flex justify-between items-center border-b border-white/5 pb-1">
+                                                <span className="font-bold text-cyan-400 uppercase tracking-widest text-[11px] flex items-center gap-1.5 font-mono">
+                                                    <span className="w-1.5 h-1.5 rounded-full bg-cyan-400"></span> {node.name}
+                                                </span>
+                                                <span className="font-mono text-[9px] text-zinc-400 font-semibold bg-white/5 px-2 py-0.5 rounded uppercase">Tehlike Derecesi: {node.threat} / 5</span>
+                                            </div>
+                                            <p className="text-[10px] text-zinc-300 font-light leading-relaxed">{node.description}</p>
+                                            {node.hazard !== 'none' && (
+                                                <div className="text-[9px] text-orange-400 font-bold bg-orange-950/20 border border-orange-500/20 rounded px-2 py-1 flex items-center gap-1.5">
+                                                    <AlertTriangle className="w-3.5 h-3.5" /> KRİTİK SEKTÖR TEHLİKESİ: {node.hazard.replace('_', ' ').toUpperCase()}
+                                                </div>
+                                            )}
+                                        </div>
+                                    );
+                                })()}
+                                
+                                {/* Jump Action Button */}
+                                <div className="flex justify-center mt-2 border-t border-white/5 pt-4">
+                                    <Button 
+                                        onClick={() => {
+                                            const node = galaxyNodesRef.current.find(n => n.id === selectedMapNodeId);
+                                            if (node) jumpToSector(node);
+                                        }}
+                                        disabled={!selectedMapNodeId}
+                                        className="bg-cyan-500 hover:bg-cyan-400 text-black font-black px-12 py-5 rounded-xl transition-all hover:scale-105 shadow-[0_0_25px_rgba(6,182,212,0.3)] text-xs uppercase tracking-widest font-mono"
+                                    >
+                                        HİPER UZAY ATLAYIŞINI BAŞLAT
+                                    </Button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
                 {/* Overlays */}
                 {gameState === 'idle' && (
-                    <div className="absolute inset-0 bg-black/95 backdrop-blur-sm flex flex-col items-center justify-center z-30 pointer-events-auto cursor-default p-4 select-none">
+                    <div className="absolute inset-0 bg-black/95 backdrop-blur-sm flex flex-col items-center justify-center z-30 pointer-events-auto cursor-default p-4 select-none animate-in fade-in duration-300">
                         <div className="absolute inset-0 opacity-20 pointer-events-none bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-cyan-500 via-transparent to-transparent"></div>
                         
                         <h1 className="text-4xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-br from-indigo-400 via-cyan-300 to-emerald-400 mb-2 tracking-tighter drop-shadow-[0_0_30px_rgba(34,211,238,0.5)] text-center select-none">
-                            GRAVITY WARRIOR <br/> <span className="text-rose-500 text-3xl md:text-4xl">3D: ASCENSION</span>
+                            GRAVITY WARRIOR <br/> <span className="text-rose-500 text-3xl md:text-4xl">v4.0: UNREAL ASCENSION</span>
                         </h1>
                         <p className="text-cyan-100/60 max-w-xl text-center mb-6 text-xs md:text-sm font-light leading-relaxed px-4 select-none">
-                            Otomatik ilerleyen bir uzay savaş simülasyonu. Klavye ile manevra yap, düşman lazerleri'nden kaç, sektörü temizle!
+                            Hiper gerçekçi shader ve efekte sahip uzay simülasyonu. Reaktör enerjini dağıt, hurda topla, modüller satın al, mayın alanlarından ve güneş fırtınalarından sağ kurtul!
                         </p>
 
                         {/* Ship Class Selection */}
@@ -3328,25 +6435,25 @@ export function SpaceBomberGame() {
                         </Button>
 
                         {/* Keyboard Controls Guide */}
-                        <div className="mt-6 grid grid-cols-2 md:grid-cols-5 gap-3 max-w-2xl w-full px-4 text-center select-none">
-                            {[{key:'W', desc:'Yukarı'},{key:'S', desc:'Aşağı'},{key:'A', desc:'Sol'},{key:'D', desc:'Sağ'},{key:'P', desc:'Ateş / Hızlan'}].map(({key,desc}) => (
+                        <div className="mt-6 grid grid-cols-2 md:grid-cols-6 gap-3 max-w-3xl w-full px-4 text-center select-none">
+                            {[{key:'W', desc:'Yukarı'},{key:'S', desc:'Aşağı'},{key:'A', desc:'Sol'},{key:'D', desc:'Sağ'},{key:'P', desc:'Ateş / Hız'},{key:'M', desc:'Market'}].map(({key,desc}) => (
                                 <div key={key} className="flex flex-col items-center gap-1">
                                     <div className="w-10 h-10 rounded-lg border border-cyan-500/40 bg-cyan-950/40 flex items-center justify-center text-cyan-300 font-black text-base shadow-[0_0_10px_rgba(34,211,238,0.2)] backdrop-blur-sm">{key}</div>
                                     <span className="text-[10px] text-cyan-100/50 font-mono uppercase tracking-wider">{desc}</span>
                                 </div>
-            ))}
+                            ))}
                         </div>
                     </div>
                 )}
 
                 {gameState === 'hyperspace' && (
-                    <div className="absolute inset-0 bg-transparent flex flex-col items-center justify-center z-30 pointer-events-none">
-                        <h2 className="text-5xl font-black text-white tracking-[0.5em] drop-shadow-[0_0_20px_#00ffff] animate-pulse">HİPER UZAY ATLAYIŞI</h2>
+                    <div className="absolute inset-0 bg-transparent flex flex-col items-center justify-center z-30 pointer-events-none animate-pulse">
+                        <h2 className="text-5xl font-black text-white tracking-[0.5em] drop-shadow-[0_0_20px_#00ffff]">HİPER UZAY ATLAYIŞI</h2>
                     </div>
                 )}
 
                 {gameState === 'gameover' && (
-                    <div className="absolute inset-0 bg-rose-950/95 backdrop-blur-xl flex flex-col items-center justify-center z-30">
+                    <div className="absolute inset-0 bg-rose-950/95 backdrop-blur-xl flex flex-col items-center justify-center z-30 animate-in fade-in duration-300">
                         <div className="p-10 rounded-3xl border border-rose-500/30 bg-black/50 flex flex-col items-center shadow-[0_0_100px_rgba(244,63,94,0.3)]">
                             <h2 className="text-5xl font-black text-rose-500 mb-4 tracking-widest drop-shadow-[0_0_20px_#f43f5e]">SİSTEM ÇÖKTÜ</h2>
                             <p className="text-rose-200 mb-2 font-mono text-xl">Ulaşılan Sektör: <span className="text-white font-black">{level}</span></p>
@@ -3359,7 +6466,7 @@ export function SpaceBomberGame() {
                 )}
 
                 {gameState === 'victory' && (
-                    <div className="absolute inset-0 bg-emerald-950/95 backdrop-blur-xl flex flex-col items-center justify-center z-30">
+                    <div className="absolute inset-0 bg-emerald-950/95 backdrop-blur-xl flex flex-col items-center justify-center z-30 animate-in fade-in duration-300">
                         <div className="p-10 rounded-3xl border border-emerald-500/30 bg-black/50 flex flex-col items-center shadow-[0_0_100px_rgba(16,185,129,0.3)]">
                             <h2 className="text-5xl font-black text-emerald-400 mb-4 tracking-widest drop-shadow-[0_0_20px_#10b981]">SEKTÖR TEMİZLENDİ</h2>
                             <p className="text-emerald-200 mb-10 font-mono text-xl">Mevcut Skor: <span className="text-white font-black">{score}</span></p>
@@ -3375,19 +6482,19 @@ export function SpaceBomberGame() {
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-2">
                 <div className="bg-[#0a0a1a] p-5 rounded-xl border border-cyan-900/50 shadow-lg hover:border-cyan-500/50 transition-colors">
                     <h3 className="text-xs font-bold text-cyan-400 uppercase tracking-widest mb-3 flex items-center gap-2"><Target className="w-4 h-4" /> Uçuş Kontrolü</h3>
-                    <p className="text-xs text-muted-foreground leading-relaxed">Geminiz otomatik olarak ileriye doğru uçar. Fare kontrolleri tamamen devre dışı bırakılmıştır; böylece laptop ve trackpadlerde en rahat oynanışı sunar.</p>
+                    <p className="text-xs text-muted-foreground leading-relaxed">Geminiz otomatik olarak ileriye doğru uçar. Klavye kontrolleri laptop ve trackpadlerde en rahat oynanışı sunar. 'M' tuşu marketi açar.</p>
                 </div>
                 <div className="bg-[#0a0a1a] p-5 rounded-xl border border-emerald-900/50 shadow-lg hover:border-emerald-500/50 transition-colors">
-                    <h3 className="text-xs font-bold text-emerald-400 uppercase tracking-widest mb-3 flex items-center gap-2"><Activity className="w-4 h-4" /> Yönlendirme</h3>
-                    <p className="text-xs text-muted-foreground leading-relaxed">Manevra yapmak için klavyenizden <kbd className="bg-black text-emerald-300 border border-emerald-500/30 px-1.5 py-0.5 rounded font-mono">A</kbd> / <kbd className="bg-black text-emerald-300 border border-emerald-500/30 px-1.5 py-0.5 rounded font-mono">D</kbd> (Sol / Sağ) ve <kbd className="bg-black text-emerald-300 border border-emerald-500/30 px-1.5 py-0.5 rounded font-mono">W</kbd> / <kbd className="bg-black text-emerald-300 border border-emerald-500/30 px-1.5 py-0.5 rounded font-mono">S</kbd> (Yukarı / Aşağı) tuşlarını kullanın.</p>
+                    <h3 className="text-xs font-bold text-emerald-400 uppercase tracking-widest mb-3 flex items-center gap-2"><Activity className="w-4 h-4" /> Reaktör Ayarı</h3>
+                    <p className="text-xs text-muted-foreground leading-relaxed">Kokpit altındaki reaktör panelinden 10 enerjiyi dağıtın. Silah atış hızını, kalkan yenilemesini veya motor manevra kabiliyetini optimize edin.</p>
                 </div>
                 <div className="bg-[#0a0a1a] p-5 rounded-xl border border-rose-900/50 shadow-lg hover:border-rose-500/50 transition-colors">
-                    <h3 className="text-xs font-bold text-rose-400 uppercase tracking-widest mb-3 flex items-center gap-2"><Crosshair className="w-4 h-4" /> Silahlar</h3>
-                    <p className="text-xs text-muted-foreground leading-relaxed">Klavyenizden <kbd className="bg-black text-rose-300 border border-rose-500/30 px-1.5 py-0.5 rounded font-mono">P</kbd> tuşuna veya <kbd className="bg-black text-rose-300 border border-rose-500/30 px-1.5 py-0.5 rounded font-mono">SPACE</kbd> tuşuna basarak ateş edin. Lazer ağınız ile hedefleri imha edin.</p>
+                    <h3 className="text-xs font-bold text-rose-400 uppercase tracking-widest mb-3 flex items-center gap-2"><Crosshair className="w-4 h-4" /> Modüller & Market</h3>
+                    <p className="text-xs text-muted-foreground leading-relaxed">Asteroidlerden ve düşmanlardan düşen altın hurda parçalarını toplayın. Marketten EMP, Nanobot zırh tamiri veya mıknatıs alanları satın alın.</p>
                 </div>
                 <div className="bg-[#0a0a1a] p-5 rounded-xl border border-amber-900/50 shadow-lg hover:border-amber-500/50 transition-colors">
-                    <h3 className="text-xs font-bold text-amber-400 uppercase tracking-widest mb-3 flex items-center gap-2"><Shield className="w-4 h-4" /> Taktik</h3>
-                    <p className="text-xs text-muted-foreground leading-relaxed">Düşmanlar ve kristaller rotanız üzerinde doğrusal olarak sıralıdır. Gelen lazerlerden kaçınmak için kıvrak manevralar yapın.</p>
+                    <h3 className="text-xs font-bold text-amber-400 uppercase tracking-widest mb-3 flex items-center gap-2"><Shield className="w-4 h-4" /> Uzay Tehlikeleri</h3>
+                    <p className="text-xs text-muted-foreground leading-relaxed">Güneş Fırtınası sırasında radyoaktif dalgalardan kaçınmak için bir asteroid arkasına saklanın. Kırmızı yanıp sönen uzay mayınlarından uzak durun.</p>
                 </div>
             </div>
         </div>
