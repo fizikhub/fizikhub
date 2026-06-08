@@ -19,9 +19,7 @@ const PRIVATE_SEO_PATH_PREFIXES = [
     "/yazar-paneli",
     "/yonetim",
 ];
-const PUBLIC_NOINDEX_PATHS = new Set([
-    "/nevbara",
-]);
+const PUBLIC_NOINDEX_PATHS = new Set<string>([]);
 
 function normalizeProductionSiteUrl(url: string) {
     const cleanUrl = url.replace(/\/+$/, "");

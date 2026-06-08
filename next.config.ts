@@ -64,9 +64,7 @@ const privateNoindexRoutes = [
   '/kitap-inceleme/yeni',
 ];
 
-const publicNoindexRoutes = [
-  '/nevbara',
-];
+const publicNoindexRoutes: string[] = [];
 
 const scriptSrc = [
   "'self'",
