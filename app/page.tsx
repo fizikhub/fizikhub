@@ -321,7 +321,7 @@ export default async function Home() {
   };
 
   return (
-    <main className="min-h-screen bg-background relative pb-[calc(6.75rem+env(safe-area-inset-bottom))] md:pb-0 overflow-x-clip">
+    <main className="min-h-screen bg-background relative pb-[calc(5.75rem+env(safe-area-inset-bottom))] md:pb-0 overflow-x-clip">
       <JsonLd data={jsonLd} />
       <DeferredHomeControls />
 

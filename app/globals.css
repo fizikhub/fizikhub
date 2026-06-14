@@ -694,19 +694,6 @@ select,
     filter: blur(2px);
 }
 
-.scrollbar-hide,
-.no-scrollbar,
-.hide-scrollbar {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-}
-
-.scrollbar-hide::-webkit-scrollbar,
-.no-scrollbar::-webkit-scrollbar,
-.hide-scrollbar::-webkit-scrollbar {
-    display: none;
-}
-
 /* Cards and interactive containers
    NOTE: 'article' and 'section>div' removed — they match article body content,
    forcing the browser to set up transition tracking on every paragraph/heading
