@@ -262,6 +262,7 @@ const resourcePaths = [
   "/feed.xml",
   "/robots.txt",
   "/ai-index.json",
+  "/.well-known/security.txt",
 ];
 
 const resources = await Promise.all(resourcePaths.map((resource) => fetchText(resource)));
@@ -294,6 +295,10 @@ assert(badAiUrls.length === 0, `/ai-index.json contains forbidden URLs: ${JSON.s
 const badAiDiscoveryItems = aiIndex.items
   .filter((item) => !item.citationText || !item.answerPriority || !Array.isArray(item.answerFormatHints) || item.answerFormatHints.length === 0);
 assert(badAiDiscoveryItems.length === 0, `/ai-index.json has weak AI discovery items: ${JSON.stringify(badAiDiscoveryItems.slice(0, 5))}`);
+
+const securityTxt = byPath.get("/.well-known/security.txt");
+assert(securityTxt.text.includes("Contact: mailto:iletisim@fizikhub.com"), "/.well-known/security.txt is missing contact");
+assert(securityTxt.xRobotsTag?.includes("noindex"), "/.well-known/security.txt should be noindex");
 
 const feedText = byPath.get("/feed.xml").text;
 assert((feedText.match(/<item>/g) || []).length > 0, "/feed.xml has no RSS items");

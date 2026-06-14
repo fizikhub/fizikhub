@@ -1,4 +1,4 @@
-import { createStaticClient } from "@/lib/supabase-server";
+import { createStaticClient, hasSupabasePublicConfig } from "@/lib/supabase-server";
 import { simulations } from "@/components/simulations/data";
 import { AI_CONTENT_PROVENANCE, AI_DISCOVERY_LAST_MODIFIED, AI_DISCOVERY_ROUTES } from "@/lib/ai-discovery";
 import { SEO_PRIORITY_ARTICLES } from "@/lib/seo-priority";
@@ -8,25 +8,60 @@ import { getArticleCanonicalPath, getSiteUrl, isIndexableForumQuestion, isLikely
 // ISR: Cache for 1 hour to keep it fresh for AI crawlers without hitting DB every request
 export const revalidate = 3600;
 
+type LlmsArticleRow = {
+    slug?: string | null;
+    title?: string | null;
+    category?: string | null;
+    excerpt?: string | null;
+    summary?: string | null;
+    content?: string | null;
+    created_at?: string | null;
+    updated_at?: string | null;
+    profiles?: { username?: string | null } | Array<{ username?: string | null }> | null;
+};
+
+type LlmsQuestionRow = {
+    id?: string | number | null;
+    title?: string | null;
+    content?: string | null;
+    category?: string | null;
+    votes?: number | null;
+    status?: string | null;
+    created_at?: string | null;
+    answers?: Array<{ count?: number | null }> | null;
+};
+
 export async function GET() {
-    const supabase = createStaticClient();
     const baseUrl = getSiteUrl();
+    let latestArticles: LlmsArticleRow[] = [];
+    let topQuestions: LlmsQuestionRow[] = [];
 
-    // Fetch latest 5 published articles
-    const { data: latestArticles } = await supabase
-        .from('articles')
-        .select('*, profiles!articles_author_id_fkey(username)')
-        .eq('status', 'published')
-        .order('created_at', { ascending: false })
-        .limit(20);
+    if (hasSupabasePublicConfig()) {
+        try {
+            const supabase = createStaticClient();
 
-    // Fetch top 5 forum questions
-    const { data: topQuestions } = await supabase
-        .from('questions')
-        .select('id, title, content, category, votes, status, created_at, answers(count)')
-        .eq('status', 'published')
-        .order('votes', { ascending: false })
-        .limit(20);
+            // Fetch latest 5 published articles
+            const [latestArticlesResult, topQuestionsResult] = await Promise.all([
+                supabase
+                    .from('articles')
+                    .select('*, profiles!articles_author_id_fkey(username)')
+                    .eq('status', 'published')
+                    .order('created_at', { ascending: false })
+                    .limit(20),
+                supabase
+                    .from('questions')
+                    .select('id, title, content, category, votes, status, created_at, answers(count)')
+                    .eq('status', 'published')
+                    .order('votes', { ascending: false })
+                    .limit(20),
+            ]);
+
+            latestArticles = (latestArticlesResult.data || []) as LlmsArticleRow[];
+            topQuestions = (topQuestionsResult.data || []) as LlmsQuestionRow[];
+        } catch (error) {
+            console.error("llms.txt dynamic content error:", error);
+        }
+    }
 
     // Construct the LLM plaintext Markdown representation
     let text = `# Fizikhub - Türkçe Bilim & Fizik Platformu\n\n`;
@@ -96,7 +131,8 @@ export async function GET() {
         indexableArticles.forEach(article => {
             const authorName = Array.isArray(article.profiles) ? article.profiles[0]?.username : (article.profiles as { username?: string })?.username;
             const canonicalPath = getArticleCanonicalPath(article) || `/makale/${article.slug}`;
-            text += `- [${article.title}](${baseUrl}${canonicalPath}) (Yazar: ${authorName || 'Fizikhub Eğitmeni'} | Tarih: ${new Date(article.updated_at || article.created_at).toLocaleDateString('tr-TR')})\n`;
+            const articleDate = article.updated_at || article.created_at || AI_DISCOVERY_LAST_MODIFIED;
+            text += `- [${article.title}](${baseUrl}${canonicalPath}) (Yazar: ${authorName || 'Fizikhub Eğitmeni'} | Tarih: ${new Date(articleDate).toLocaleDateString('tr-TR')})\n`;
             if (article.excerpt) text += `  Özet: ${article.excerpt}\n`;
         });
         text += `\n`;
@@ -134,6 +170,7 @@ export async function GET() {
         headers: {
             'Content-Type': 'text/plain; charset=utf-8',
             'Cache-Control': 'public, max-age=3600, s-maxage=3600, stale-while-revalidate=86400',
+            'X-Robots-Tag': 'noindex, follow',
         },
     });
 }

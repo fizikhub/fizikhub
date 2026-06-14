@@ -150,7 +150,7 @@ export function BottomNav() {
             )}
         >
             <nav aria-label="Mobil navigasyon" className={cn(
-                "w-full h-[calc(64px+env(safe-area-inset-bottom))] bg-white/94 dark:bg-[#121212]/94 backdrop-blur-md border-t border-black/10 dark:border-white/10 flex items-start justify-around px-2 pt-1 pb-[env(safe-area-inset-bottom)] relative shadow-[0_-6px_18px_rgba(0,0,0,0.12)]"
+                "w-full h-[calc(60px+env(safe-area-inset-bottom))] bg-white/94 dark:bg-[#121212]/94 backdrop-blur-md border-t border-black/10 dark:border-white/10 flex items-start justify-around px-2 pt-0.5 pb-[env(safe-area-inset-bottom)] relative shadow-[0_-6px_18px_rgba(0,0,0,0.12)]"
             )}>
                 <div className="flex items-center justify-around w-full">
                     <NavItem
@@ -181,7 +181,7 @@ export function BottomNav() {
                         }}
                     />
 
-                    <div className="relative -top-3.5 z-20">
+                    <div className="relative -top-2.5 z-20">
                         <Link
                             id="nav-item-share"
                             href="/paylas"
@@ -194,7 +194,7 @@ export function BottomNav() {
                             <div
                                 className="
                                     flex items-center justify-center
-                                    w-14 h-14
+                                    w-[52px] h-[52px]
                                     bg-[#EAB308]
                                     border-2 border-black dark:border-white
                                     rounded-full
@@ -297,7 +297,7 @@ function NavItem({
             aria-label={label}
             aria-current={isActive ? 'page' : undefined}
             className={cn(
-                "flex flex-col items-center justify-center min-w-[56px] min-h-[56px] relative group z-10 touch-manipulation rounded-[8px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#EAB308]",
+                "flex flex-col items-center justify-center min-w-[54px] min-h-[54px] relative group z-10 touch-manipulation rounded-[8px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#EAB308]",
                 isActive ? "text-black dark:text-white" : "text-zinc-700 dark:text-zinc-300"
             )}
         >

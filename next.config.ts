@@ -43,6 +43,7 @@ const aiDiscoveryLinkHeader = [
   '<https://www.fizikhub.com/simulation-learning.json>; rel="alternate"; type="application/json"; title="Fizikhub simulation learning graph"',
   '<https://www.fizikhub.com/ai-sitemap.xml>; rel="sitemap"; type="application/xml"; title="Fizikhub AI sitemap"',
   '<https://www.fizikhub.com/author-sitemap.xml>; rel="sitemap"; type="application/xml"; title="Fizikhub author sitemap"',
+  '<https://www.fizikhub.com/.well-known/security.txt>; rel="security"; type="text/plain"; title="Fizikhub security contact"',
 ].join(', ');
 
 const privateNoindexRoutes = [
@@ -143,6 +144,7 @@ const nextConfig: NextConfig = {
 
   // Performance optimizations
   experimental: {
+    webVitalsAttribution: ['CLS', 'LCP', 'INP'],
     staleTimes: {
       dynamic: 30, // Client-side cache for dynamic pages (seconds)
       static: 300, // Client-side cache for static pages (seconds)
@@ -245,6 +247,16 @@ const nextConfig: NextConfig = {
       {
         source: '/indexnow-key.txt',
         headers: noindexHeader,
+      },
+      {
+        source: '/.well-known/security.txt',
+        headers: [
+          ...noindexHeader,
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=86400, s-maxage=86400, stale-while-revalidate=604800',
+          },
+        ],
       },
       // Prevent indexing of font/media assets to clean up GSC "Crawled - not indexed" warnings
       {

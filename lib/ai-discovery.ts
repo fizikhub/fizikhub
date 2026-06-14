@@ -13,14 +13,14 @@ export type AiCoreRoute = {
     priority: string;
 };
 
-export const AI_DISCOVERY_LAST_MODIFIED = "2026-06-07T00:00:00.000+03:00";
+export const AI_DISCOVERY_LAST_MODIFIED = "2026-06-14T00:00:00.000+03:00";
 
 export const AI_CONTENT_PROVENANCE = {
     publisherName: "Fizikhub",
     publisherUrl: "https://www.fizikhub.com",
     editorialOwner: "Fizikhub Ekibi",
     contactEmail: "iletisim@fizikhub.com",
-    lastReviewed: "2026-06-07",
+    lastReviewed: "2026-06-14",
     language: "tr-TR",
     geographicFocus: "TR",
     primaryAudience: [
@@ -37,6 +37,8 @@ export const AI_CONTENT_PROVENANCE = {
         "IndexNow destekli taze URL bildirimi",
         "Yandex Clean-param ile parametre kirliliği azaltımı",
         "AI arama botları için açık robots.txt izinleri",
+        "OpenAI, Claude, Perplexity ve Google crawler/fetcher ayrımlarını tanıyan keşif politikası",
+        "security.txt ile güvenlik iletişim yüzeyi",
     ],
 } as const;
 
@@ -58,12 +60,21 @@ export function buildAiCitationText(title: string, url: string) {
 export const AI_CRAWLER_USER_AGENTS = [
     "GPTBot",
     "OAI-SearchBot",
+    "OAI-AdsBot",
     "ChatGPT-User",
     "ClaudeBot",
     "Claude-SearchBot",
     "Claude-User",
     "PerplexityBot",
     "Perplexity-User",
+    "GoogleOther",
+    "GoogleOther-Image",
+    "GoogleOther-Video",
+    "Google-InspectionTool",
+    "Google-Read-Aloud",
+    "Google-Agent",
+    "Google-NotebookLM",
+    "Google-Pinpoint",
     "Google-Extended",
     "CCBot",
     "Amazonbot",

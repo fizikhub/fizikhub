@@ -80,8 +80,31 @@ Bu calisma Fizikhub'in teknik SEO, GEO (Generative Engine Optimization), mobil p
 - Akademik atif bloklari tarayicinin anlik `window.location.href` degeri yerine canonical `https://www.fizikhub.com/makale/{slug}` URL'sini kullanir. Query string veya paylasim parametreleri kaynakcalara karismaz.
 - Ana sayfadaki dekoratif 3D canvas icin varsayilan particle sayilari, DPR tavan degeri ve bloom multisampling dusuruldu. Gorsel kimlik korunurken mobil ana-thread/GPU maliyeti azaltildi.
 
+## 2026-06-14 genis kapsamli SEO/GEO, guvenlik ve performans bakimi
+
+- Google'in 2026-06-05 tarihli generative AI rehberi tekrar kontrol edildi. Karar degismedi: Google icin GEO/AEO "hack" degil; indexlenebilir, snippet'a uygun, faydali, gorunur metinli ve teknik olarak temiz SEO'nun AI Overviews/AI Mode tarafina yansimasidir.
+- Google ayni rehberde `llms.txt` veya ozel AI markup'in Google generative AI gorunurlugu icin gerekli olmadigini belirtiyor. Bu nedenle Fizikhub `llms.txt`, `ai-index.json`, `simulation-learning.json` ve `ai-sitemap.xml` yuzeylerini ranking vaadi olarak degil; OpenAI/Claude/Perplexity/agentic tarayicilar icin kanonik kaynak ve citation manifesti olarak tutar.
+- OpenAI crawler dokumani `OAI-SearchBot`, `GPTBot`, `OAI-AdsBot` ve `ChatGPT-User` ayrimini guncel olarak dogruluyor. Fizikhub robots/AI discovery listeleri bu ayrimi taniyacak sekilde genisletildi.
+- Google crawler dokumanlarinda `GoogleOther`, `Google-InspectionTool`, `Google-Agent`, `Google-NotebookLM`, `Google-Pinpoint`, `GoogleMessages`, `GoogleProducer`, `FeedFetcher-Google` ve `Google-Read-Aloud` gibi agent/fetcher yuzeyleri kontrol edildi. Public egitim sayfalari bu ajanlar icin session yenileme maliyeti olmadan yanit verecek sekilde proxy bypass listesi guncellendi.
+- Eski `/blog` allow sinyali robots.txt'den kaldirildi. URL ailesi proxy tarafinda `/makale`ye 301 ile tasinmaya devam eder; robots tarafinda yeni crawl butcesi kanonik `/makale`, `/konular`, `/sozluk`, `/forum`, `/simulasyonlar` ve `/testler` yuzeylerine odaklanir.
+- `ai-index.json` ve `llms.txt` Supabase env veya DB gecici arizalarinda 500 yerine statik topic/simulasyon/core kaynaklariyla 200 fallback doner. Bu, AI crawler ve sitemap sagligi icin kesintisiz kesif saglar.
+- AI manifest dosyalari `X-Robots-Tag: noindex, follow` aldi. Google icin bu dosyalar arama sonucu sayfasi olmak zorunda degil; public HTML sayfalari indexlenebilir kalirken manifestler crawler/agent yardimci kaynagi olarak kalir.
+- `.well-known/security.txt` eklendi. Guvenlik bildirimi icin `iletisim@fizikhub.com` kanonik temas noktasi saglandi ve SEO saglik scripti bu dosyanin 200/noindex/contact durumunu kontrol eder.
+- Next.js `experimental.webVitalsAttribution` LCP, INP ve CLS icin acildi. Mevcut Web Vitals toplama pipeline'i artik attribution alanlarini daha zengin yakalayabilir; admin Page Experience panelinde route bazli sorunun kaynagini bulmak kolaylasir.
+
+## 2026-06-14 mobil ana sayfa olcek audit notu
+
+- iPhone 14 Pro Max pratik test viewport'u 430 x 932 CSS px olarak alindi. Bu sinif cihazlarda hedef, ilk ekranda marka/hero etkisini korurken feed'in "tek dev kart" hissine dusmemesi ve yatay kaydirma elemanlarinin sayfa genisligini tasirmamasidir.
+- Touch target karari: kritik nav ve aksiyonlarda 44 CSS px altina inilmedi; ana mobil nav item'lari 54 px, header butonlari 44 px, feed aksiyonlari 44 px tutuldu. Bu, Apple'in 44x44 pt pratik alt siniri, Android/Material'in 48dp onerisi ve WCAG 2.2'nin 24x24 CSS px minimumu arasinda Fizikhub'un yogun sosyal feed yapisina uygun denge saglar.
+- Hero mobilde 430px genislikte daha kontrollu yukseklik ve baslik cap'ine alindi. H1 hala LCP/marka sinyali olarak guclu, fakat ekranin ilk bolumunu gereksizce kaplamiyor.
+- Populer yazilar karuselinde kart genisligi 76vw'den 68vw'ye indirildi, 16:9 oran kullanildi ve eksik `scrollbar-hide` CSS'i global tanimlandi. Boylece sagdan kirpilmis/kaydirma cubugu gorunen hissi azalir.
+- Ana feed kartlari mobilde daha dusuk padding, 18-19px baslik ve iki satir excerpt ile daha okunabilir yogunluga alindi. 420px altinda paylas/kaydet ikonlari `more` menusune tasinmaya devam eder; 430px iPhone Pro Max sinifinda dort ana aksiyon gorunur kalir.
+- Bottom nav toplam yuksekligi ve merkez paylas butonunun tasmasi azaltildi. Sayfa alt padding'i artirildi; icerik sabit nav tarafindan daha az ezilir.
+- Performans acisindan bu degisiklikler yeni client boundary veya paket eklemiyor. Yapilanlar CSS/markup olcegi oldugu icin INP riskini buyutmeden LCP sonrasindaki feed okunabilirligini iyilestirir.
+
 ## Kaynaklar
 
+- Google Search Central - Optimizing for generative AI features on Google Search: https://developers.google.com/search/docs/fundamentals/ai-optimization-guide
 - Google Search Central - AI features and your website: https://developers.google.com/search/docs/appearance/ai-features
 - Google Search Central - Helpful, reliable, people-first content: https://developers.google.com/search/docs/fundamentals/creating-helpful-content
 - Google Search Central - Robots meta tag and X-Robots-Tag: https://developers.google.com/search/docs/crawling-indexing/robots-meta-tag
@@ -91,9 +114,19 @@ Bu calisma Fizikhub'in teknik SEO, GEO (Generative Engine Optimization), mobil p
 - Google Search Central - Developer's guide to Search: https://developers.google.com/search/docs/fundamentals/get-started-developers
 - Google Search Central - Canonicalization: https://developers.google.com/search/docs/crawling-indexing/canonicalization
 - Google Search Central - Sitemaps: https://developers.google.com/search/docs/crawling-indexing/sitemaps/build-sitemap
+- Google Crawling Infrastructure - Common crawlers: https://developers.google.com/crawling/docs/crawlers-fetchers/google-common-crawlers
+- Google Crawling Infrastructure - User-triggered fetchers: https://developers.google.com/crawling/docs/crawlers-fetchers/google-user-triggered-fetchers
 - web.dev - Web performance/Core Web Vitals: https://web.dev/performance
+- web.dev - Web Vitals: https://web.dev/articles/vitals
+- web.dev - Interaction to Next Paint: https://web.dev/articles/inp
+- Google Search Central - Introducing INP to Core Web Vitals: https://developers.google.com/search/blog/2023/05/introducing-inp
+- W3C WAI - WCAG 2.2 Target Size Minimum: https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum.html
+- Android Accessibility Help - Touch target size: https://support.google.com/accessibility/android/answer/7101858
+- Apple Human Interface Guidelines - Buttons: https://developer.apple.com/design/human-interface-guidelines/buttons
+- Blisk - iPhone 14 Pro Max viewport/device metrics: https://blisk.io/devices/details/iphone-14-pro-max
 - OWASP - HTTP Security Response Headers Cheat Sheet: https://cheatsheetseries.owasp.org/cheatsheets/HTTP_Headers_Cheat_Sheet.html
 - OWASP - Content Security Policy Cheat Sheet: https://cheatsheetseries.owasp.org/cheatsheets/Content_Security_Policy_Cheat_Sheet.html
+- OWASP - Secure Headers Project: https://owasp.org/www-project-secure-headers/
 - Supabase - Row Level Security: https://supabase.com/docs/guides/database/postgres/row-level-security
 - OpenAI crawlers: https://developers.openai.com/api/docs/bots
 - Anthropic crawler policy: https://support.claude.com/en/articles/8896518-does-anthropic-crawl-data-from-the-web-and-how-can-site-owners-block-the-crawler

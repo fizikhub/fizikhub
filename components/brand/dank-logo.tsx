@@ -15,7 +15,7 @@ export function DankLogo() {
                     width="220"
                     height="80"
                     viewBox="0 0 220 80"
-                    className="w-[120px] h-[44px] sm:w-[160px] sm:h-[58px] overflow-visible drop-shadow-[0_4px_6px_rgba(0,0,0,0.3)]"
+                    className="w-[114px] h-[42px] min-[390px]:w-[120px] min-[390px]:h-[44px] sm:w-[160px] sm:h-[58px] overflow-visible drop-shadow-[0_4px_6px_rgba(0,0,0,0.3)]"
                     fill="none"
                     xmlns="http://www.w3.org/2000/svg"
                     aria-hidden="true"

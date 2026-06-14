@@ -30,6 +30,7 @@ const SEO_METADATA_PATHS = new Set([
     '/llms.txt',
     '/ai-index.json',
     '/simulation-learning.json',
+    '/.well-known/security.txt',
     '/indexnow-key.txt',
     '/opensearch.xml',
     '/opengraph-image',
@@ -75,7 +76,7 @@ const GONE_SEO_PATHS = new Set([
 ]);
 const TRACKING_PARAM_PATTERN = /^(?:utm_.+|fbclid|gclid|yclid|ysclid|mc_cid|mc_eid|ref|source)$/i;
 const SEARCH_PLACEHOLDER_QUERY = '{search_term_string}';
-const SEARCH_CRAWLER_PATTERN = /Googlebot|Googlebot-Image|Googlebot-News|Bingbot|DuckDuckBot|Yandex|YandexBot|YandexImages|Applebot|Applebot-Extended|Baiduspider|SeznamBot|Naverbot|Sogou|PetalBot|Bytespider|LinkedInBot|Twitterbot|facebookexternalhit|Facebot|WhatsApp|Slackbot|TelegramBot|Instagram|Pinterest|Discordbot/i;
+const SEARCH_CRAWLER_PATTERN = /Googlebot|Googlebot-Image|Googlebot-Video|Googlebot-News|GoogleOther|GoogleOther-Image|GoogleOther-Video|Google-InspectionTool|Google-Read-Aloud|Google-Agent|Google-NotebookLM|Google-Pinpoint|GoogleMessages|GoogleProducer|FeedFetcher-Google|Bingbot|BingPreview|DuckDuckBot|Yandex|YandexBot|YandexImages|Applebot|Applebot-Extended|Baiduspider|SeznamBot|Naverbot|Sogou|PetalBot|Bytespider|LinkedInBot|Twitterbot|facebookexternalhit|Facebot|WhatsApp|Slackbot|TelegramBot|Instagram|Pinterest|Discordbot|OAI-SearchBot|GPTBot|OAI-AdsBot|ChatGPT-User|ClaudeBot|Claude-SearchBot|Claude-User|PerplexityBot|Perplexity-User|Meta-ExternalAgent|Meta-ExternalFetcher|CCBot|Amazonbot/i;
 
 type UpstashPipelineResult = Array<{ result?: unknown; error?: string }>;
 

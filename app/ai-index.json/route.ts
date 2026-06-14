@@ -1,7 +1,7 @@
 import { simulations } from "@/components/simulations/data";
 import { AI_CITATION_POLICY, AI_CONTENT_PROVENANCE, AI_CRAWLER_USER_AGENTS, AI_DISCOVERY_LAST_MODIFIED, AI_DISCOVERY_ROUTES, AI_PUBLIC_CONTENT_PREFIXES, buildAiCitationText } from "@/lib/ai-discovery";
 import { getDictionaryTerms } from "@/lib/api";
-import { createStaticClient } from "@/lib/supabase-server";
+import { createStaticClient, hasSupabasePublicConfig } from "@/lib/supabase-server";
 import { slugify } from "@/lib/slug";
 import { getRelatedUrlsForCluster, getTopicClusterHref, getTopicClustersForText, SEO_TOPIC_CLUSTERS } from "@/lib/seo-topic-clusters";
 import { getArticleCanonicalPath, getSiteUrl, hasUsefulIndexableText, isIndexableForumQuestion, isIndexableProfile, isLikelyIndexableArticle, isLikelyIndexableTitle, truncateForMeta } from "@/lib/seo-utils";
@@ -27,6 +27,53 @@ type AiIndexItem = {
     citationText: string;
     answerPriority: "high" | "standard";
     answerFormatHints: string[];
+};
+
+type QueryResult<T> = {
+    data: T[] | null;
+};
+
+type AiArticleRow = {
+    slug?: string | null;
+    title?: string | null;
+    category?: string | null;
+    excerpt?: string | null;
+    summary?: string | null;
+    content?: string | null;
+    created_at?: string | null;
+    updated_at?: string | null;
+};
+
+type AiQuestionRow = {
+    id?: string | number | null;
+    title?: string | null;
+    content?: string | null;
+    category?: string | null;
+    tags?: unknown;
+    created_at?: string | null;
+    votes?: number | null;
+    status?: string | null;
+    answers?: Array<{ count?: number | null }> | null;
+};
+
+type AiQuizRow = {
+    id?: string | null;
+    title?: string | null;
+    slug?: string | null;
+    description?: string | null;
+    created_at?: string | null;
+};
+
+type AiProfileRow = {
+    id?: string | null;
+    username?: string | null;
+    full_name?: string | null;
+    bio?: string | null;
+    is_writer?: boolean | null;
+    is_verified?: boolean | null;
+    created_at?: string | null;
+    updated_at?: string | null;
+    reputation?: number | null;
 };
 
 function unique(values: Array<string | null | undefined>) {
@@ -100,49 +147,72 @@ function getAnswerCount(question: { answers?: Array<{ count?: number | null }> |
 }
 
 export async function GET() {
-    const supabase = createStaticClient();
     const baseUrl = getSiteUrl();
+    let supabase: ReturnType<typeof createStaticClient> | null = null;
+    let articlesResult: QueryResult<AiArticleRow> = { data: [] };
+    let questionsResult: QueryResult<AiQuestionRow> = { data: [] };
+    let quizzesResult: QueryResult<AiQuizRow> = { data: [] };
+    let profilesResult: QueryResult<AiProfileRow> = { data: [] };
+    let terms: Awaited<ReturnType<typeof getDictionaryTerms>> = [];
 
-    const [articlesResult, questionsResult, quizzesResult, profilesResult, terms] = await Promise.all([
-        supabase
-            .from("articles")
-            .select("*")
-            .eq("status", "published")
-            .not("slug", "is", null)
-            .order("created_at", { ascending: false })
-            .limit(500),
-        supabase
-            .from("questions")
-            .select("id, title, content, category, tags, created_at, votes, status, answers(count)")
-            .eq("status", "published")
-            .order("created_at", { ascending: false })
-            .limit(300),
-        supabase
-            .from("quizzes")
-            .select("id, title, slug, description, created_at")
-            .order("created_at", { ascending: false })
-            .limit(200),
-        supabase
-            .from("profiles")
-            .select("id, username, full_name, bio, is_writer, is_verified, created_at, updated_at, reputation")
-            .not("username", "is", null)
-            .order("updated_at", { ascending: false, nullsFirst: false })
-            .limit(200),
-        getDictionaryTerms(),
-    ]);
+    if (hasSupabasePublicConfig()) {
+        try {
+            supabase = createStaticClient();
+
+            const [articles, questions, quizzes, profiles, dictionaryTerms] = await Promise.all([
+                supabase
+                    .from("articles")
+                    .select("*")
+                    .eq("status", "published")
+                    .not("slug", "is", null)
+                    .order("created_at", { ascending: false })
+                    .limit(500),
+                supabase
+                    .from("questions")
+                    .select("id, title, content, category, tags, created_at, votes, status, answers(count)")
+                    .eq("status", "published")
+                    .order("created_at", { ascending: false })
+                    .limit(300),
+                supabase
+                    .from("quizzes")
+                    .select("id, title, slug, description, created_at")
+                    .order("created_at", { ascending: false })
+                    .limit(200),
+                supabase
+                    .from("profiles")
+                    .select("id, username, full_name, bio, is_writer, is_verified, created_at, updated_at, reputation")
+                    .not("username", "is", null)
+                    .order("updated_at", { ascending: false, nullsFirst: false })
+                    .limit(200),
+                getDictionaryTerms(),
+            ]);
+
+            articlesResult = articles as QueryResult<AiArticleRow>;
+            questionsResult = questions as QueryResult<AiQuestionRow>;
+            quizzesResult = quizzes as QueryResult<AiQuizRow>;
+            profilesResult = profiles as QueryResult<AiProfileRow>;
+            terms = dictionaryTerms;
+        } catch (error) {
+            console.error("ai-index dynamic content error:", error);
+        }
+    }
 
     const quizIds = (quizzesResult.data || []).map((quiz) => quiz.id).filter(Boolean);
     const questionCounts = new Map<string, number>();
 
-    if (quizIds.length > 0) {
-        const { data: quizQuestions } = await supabase
-            .from("quiz_questions")
-            .select("quiz_id")
-            .in("quiz_id", quizIds);
+    if (quizIds.length > 0 && supabase) {
+        try {
+            const { data: quizQuestions } = await supabase
+                .from("quiz_questions")
+                .select("quiz_id")
+                .in("quiz_id", quizIds);
 
-        for (const question of quizQuestions || []) {
-            if (!question.quiz_id) continue;
-            questionCounts.set(question.quiz_id, (questionCounts.get(question.quiz_id) || 0) + 1);
+            for (const question of quizQuestions || []) {
+                if (!question.quiz_id) continue;
+                questionCounts.set(question.quiz_id, (questionCounts.get(question.quiz_id) || 0) + 1);
+            }
+        } catch (error) {
+            console.error("ai-index quiz question count error:", error);
         }
     }
 
@@ -246,14 +316,15 @@ export async function GET() {
     const quizItems: AiIndexItem[] = (quizzesResult.data || [])
         .flatMap((quiz) => {
             const count = quiz.id ? questionCounts.get(quiz.id) || 0 : 0;
-            if (!quiz.slug || !isLikelyIndexableTitle(quiz.title) || (count < 3 && !hasUsefulIndexableText(quiz.description, 40))) return [];
+            const quizTitle = quiz.title || quiz.slug;
+            if (!quiz.slug || !quizTitle || !isLikelyIndexableTitle(quizTitle) || (count < 3 && !hasUsefulIndexableText(quiz.description, 40))) return [];
 
             return [{
                 type: "quiz",
                 url: `${baseUrl}/testler/${quiz.slug}`,
                 canonicalPath: `/testler/${quiz.slug}`,
-                title: quiz.title,
-                description: truncateForMeta(quiz.description || `${quiz.title} testiyle fizik bilgini ölç.`, 220),
+                title: quizTitle,
+                description: truncateForMeta(quiz.description || `${quizTitle} testiyle fizik bilgini ölç.`, 220),
                 topics: topicsFor("quiz", quiz.slug, ["Fizik testi", "TYT AYT YKS fizik"]),
                 intentQuestions: intentQuestionsForResource("quiz", quiz.slug),
                 entityType: "quiz",
@@ -263,7 +334,7 @@ export async function GET() {
                 schemaTypes: ["Quiz", "LearningResource", "BreadcrumbList"],
                 clusterSlugs: clusterSlugsForResource("quiz", quiz.slug),
                 relatedUrls: relatedUrlsFor("quiz", quiz.slug, baseUrl),
-                citationText: buildAiCitationText(quiz.title, `${baseUrl}/testler/${quiz.slug}`),
+                citationText: buildAiCitationText(quizTitle, `${baseUrl}/testler/${quiz.slug}`),
                 answerPriority: count >= 5 || clusterSlugsForResource("quiz", quiz.slug).length > 0 ? "high" : "standard",
                 answerFormatHints: answerHintsFor("quiz"),
             }];
@@ -395,6 +466,7 @@ export async function GET() {
     }, {
         headers: {
             "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=86400",
+            "X-Robots-Tag": "noindex, follow",
         },
     });
 }

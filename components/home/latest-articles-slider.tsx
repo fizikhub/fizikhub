@@ -23,10 +23,10 @@ export function LatestArticlesSlider({ articles }: LatestArticlesSliderProps) {
     if (!articles || articles.length === 0) return null;
 
     return (
-        <section className="w-full pt-1 pb-1 sm:pb-2 mb-0">
+        <section className="w-full pt-0.5 pb-0 sm:pb-2 mb-0">
             {/* Section Header */}
-            <div className="flex items-center justify-between gap-3 mb-3 px-0.5">
-                <h2 className="text-sm sm:text-base font-black uppercase tracking-tight flex items-center gap-2 min-w-0">
+            <div className="flex items-center justify-between gap-3 mb-2.5 px-0.5">
+                <h2 className="text-[13px] sm:text-base font-black uppercase tracking-tight flex items-center gap-2 min-w-0">
                     <span className="w-1.5 h-5 bg-yellow-400 rounded-sm border border-yellow-500 shrink-0" />
                     Popüler Yazılar
                 </h2>
@@ -37,7 +37,7 @@ export function LatestArticlesSlider({ articles }: LatestArticlesSliderProps) {
             </div>
 
             {/* Horizontal Scroll */}
-            <div className="flex touch-pan-x overscroll-x-contain overflow-x-auto gap-3 pb-3 scrollbar-hide snap-x snap-mandatory -mx-3 px-3 sm:mx-0 sm:px-0" role="region" aria-label="Popüler yazılar karusel">
+            <div className="flex touch-pan-x overscroll-x-contain overflow-x-auto gap-2.5 pb-2.5 scrollbar-hide snap-x snap-mandatory -mx-2.5 px-2.5 min-[390px]:-mx-3 min-[390px]:px-3 sm:mx-0 sm:px-0" role="region" aria-label="Popüler yazılar karusel">
                 {articles.slice(0, 6).map((article, index) => {
                     const isNew = new Date().getTime() - new Date(article.created_at).getTime() < 3 * 24 * 60 * 60 * 1000;
                     const isAboveFold = index < 2;
@@ -45,10 +45,10 @@ export function LatestArticlesSlider({ articles }: LatestArticlesSliderProps) {
                     return (
                         <article
                             key={article.id}
-                            className="flex-shrink-0 w-[76vw] min-w-[248px] max-w-[300px] sm:w-[300px] snap-start"
+                            className="flex-shrink-0 w-[64vw] min-w-[226px] max-w-[260px] min-[420px]:w-[68vw] min-[420px]:max-w-[284px] sm:w-[300px] snap-start"
                         >
                             <Link href={`/makale/${article.slug}`} prefetch={false} className="block rounded-[8px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#EAB308] focus-visible:ring-offset-2 focus-visible:ring-offset-background">
-                                <div className="group relative bg-zinc-950 border-2 border-zinc-800 hover:border-yellow-400/60 shadow-[3px_3px_0px_0px_rgba(39,39,42,0.8)] hover:shadow-[4px_4px_0px_0px_rgba(250,204,21,0.4)] active:shadow-none active:translate-x-[2px] active:translate-y-[2px] transition-all duration-150 rounded-[8px] overflow-hidden aspect-[16/10] flex flex-col">
+                                <div className="group relative bg-zinc-950 border-2 border-zinc-800 hover:border-yellow-400/60 shadow-[3px_3px_0px_0px_rgba(39,39,42,0.8)] hover:shadow-[4px_4px_0px_0px_rgba(250,204,21,0.4)] active:shadow-none active:translate-x-[2px] active:translate-y-[2px] transition-all duration-150 rounded-[8px] overflow-hidden aspect-[16/9] flex flex-col">
                                     {/* Image Container */}
                                     <div className="absolute inset-0 z-0">
                                         {article.image ? (
@@ -56,7 +56,7 @@ export function LatestArticlesSlider({ articles }: LatestArticlesSliderProps) {
                                                 src={article.image}
                                                 alt={article.title}
                                                 fill
-                                                sizes="(max-width: 640px) 76vw, 300px"
+                                                sizes="(max-width: 419px) 64vw, (max-width: 640px) 68vw, 300px"
                                                 className="object-cover group-hover:scale-[1.03] transition-transform duration-300 ease-out"
                                                 priority={isAboveFold}
                                                 loading={isAboveFold ? "eager" : "lazy"}
@@ -71,7 +71,7 @@ export function LatestArticlesSlider({ articles }: LatestArticlesSliderProps) {
                                     </div>
 
                                     {/* Content Overlay */}
-                                    <div className="absolute inset-0 z-10 p-3.5 sm:p-4 flex flex-col justify-end">
+                                    <div className="absolute inset-0 z-10 p-3 sm:p-4 flex flex-col justify-end">
                                         {/* Category Badge + New Indicator */}
                                         <div className="flex items-center gap-2 mb-1.5 min-w-0">
                                             <span className="max-w-[72%] truncate px-2 py-1 bg-yellow-400 text-zinc-900 text-[8px] font-black uppercase tracking-wider rounded-[6px] border border-yellow-500/50 shadow-[1px_1px_0px_0px_rgba(0,0,0,0.3)]">
@@ -86,7 +86,7 @@ export function LatestArticlesSlider({ articles }: LatestArticlesSliderProps) {
                                         </div>
 
                                         {/* Title */}
-                                        <h3 className="text-[15px] sm:text-base font-black text-white leading-snug mb-1.5 group-hover:text-yellow-300 transition-colors line-clamp-2">
+                                        <h3 className="text-[14px] min-[390px]:text-[15px] sm:text-base font-black text-white leading-snug mb-1.5 group-hover:text-yellow-300 transition-colors line-clamp-2">
                                             {article.title}
                                         </h3>
 
