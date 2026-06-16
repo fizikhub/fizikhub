@@ -1,8 +1,10 @@
 "use client";
 
+import Link from "next/link";
 import { ViewTransitionLink } from "@/components/ui/view-transition-link";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { Search, Zap } from "lucide-react";
+import { AuthButton } from "@/components/auth/auth-button";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { DankLogo } from "@/components/brand/dank-logo";
@@ -25,26 +27,20 @@ const physicsTicker = [
 export function Navbar() {
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [isFactOpen, setIsFactOpen] = useState(false);
-    const [isHidden, setIsHidden] = useState(false);
+    const [mounted, setMounted] = useState(false);
     const pathname = usePathname();
-    const isArticleDetail = /^\/makale\/[^/]+/.test(pathname || "");
-    const lastScrollYRef = useRef(0);
-    const frameRef = useRef<number | null>(null);
 
     const [raindrops, setRaindrops] = useState<{ left: number; duration: number; delay: number; formula: string; scale: number; opacity?: number }[]>([]);
 
     useEffect(() => {
-        let idleId: number | null = null;
-        let timeoutId: ReturnType<typeof setTimeout> | null = null;
+        setMounted(true);
 
         const generateRain = () => {
-            if (window.matchMedia("(hover: none) and (pointer: coarse)").matches) return;
-
             const isMobile = window.innerWidth < 768;
-            const laneCount = isMobile ? 4 : 12;
-            const dropCount = isMobile ? 6 : 30;
+            const laneCount = isMobile ? 6 : 12;
+            const dropCount = isMobile ? 12 : 30;
 
-            const drops = Array.from({ length: dropCount }).map(() => {
+            const drops = Array.from({ length: dropCount }).map((_, i) => {
                 const lane = Math.floor(Math.random() * laneCount);
                 const laneWidth = 80 / laneCount;
                 const left = 10 + (lane * laneWidth) + (Math.random() * (laneWidth * 0.8));
@@ -63,64 +59,10 @@ export function Navbar() {
 
         // Defer rain generation to avoid blocking initial hydration
         if ('requestIdleCallback' in window) {
-            idleId = window.requestIdleCallback(generateRain, { timeout: 2000 });
+            window.requestIdleCallback(generateRain, { timeout: 2000 });
         } else {
-            timeoutId = setTimeout(generateRain, 500);
+            setTimeout(generateRain, 500);
         }
-
-        return () => {
-            if (idleId !== null) window.cancelIdleCallback(idleId);
-            if (timeoutId !== null) clearTimeout(timeoutId);
-        };
-    }, []);
-
-    useEffect(() => {
-        if (!isArticleDetail) {
-            return;
-        }
-
-        const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-        if (motionQuery.matches) return;
-
-        const onScroll = () => {
-            if (frameRef.current !== null) return;
-
-            frameRef.current = window.requestAnimationFrame(() => {
-                frameRef.current = null;
-                const latest = window.scrollY;
-                const diff = latest - lastScrollYRef.current;
-                lastScrollYRef.current = latest;
-
-                if (latest < 80) {
-                    setIsHidden(false);
-                    return;
-                }
-
-                if (diff > 6) setIsHidden(true);
-                if (diff < -6) setIsHidden(false);
-            });
-        };
-
-        lastScrollYRef.current = window.scrollY;
-        window.addEventListener("scroll", onScroll, { passive: true });
-
-        return () => {
-            window.removeEventListener("scroll", onScroll);
-            if (frameRef.current !== null) window.cancelAnimationFrame(frameRef.current);
-        };
-    }, [isArticleDetail]);
-
-    useEffect(() => {
-        const onKeyDown = (event: KeyboardEvent) => {
-            if (event.key.toLocaleLowerCase("en-US") !== "k") return;
-            if (!event.metaKey && !event.ctrlKey) return;
-
-            event.preventDefault();
-            setIsSearchOpen(true);
-        };
-
-        document.addEventListener("keydown", onKeyDown);
-        return () => document.removeEventListener("keydown", onKeyDown);
     }, []);
 
     const navItems = [
@@ -137,23 +79,18 @@ export function Navbar() {
                 - Height: h-14 (56px) - Optimized for Mobile
                 - Style: Dark Glass Neo-Brutalist
             */}
-            <header
-                className={cn(
-                    "fixed top-0 left-0 right-0 z-50 h-[60px] md:hidden transform-gpu transition-[transform,opacity,filter] duration-300 mobile-bottom-nav-transition",
-                    isArticleDetail && isHidden && "-translate-y-[calc(100%+0.5rem)] opacity-0 blur-[2px]"
-                )}
-                role="banner"
-            >
+            <header className="fixed top-0 left-0 right-0 z-50 h-[53px] sm:h-16 md:hidden" role="banner">
                 <div
                     className={cn(
                         "h-full",
-                        "flex items-center justify-between px-3 min-[390px]:px-4 sm:px-6",
-                        isArticleDetail ? "bg-[#09090b]/68 backdrop-blur-md border-b border-white/[0.07] shadow-md" : "bg-[#09090b]/80 backdrop-blur-xl border-b border-white/10 shadow-lg",
+                        "flex items-center justify-between px-4 sm:px-6",
+                        "bg-[#09090b]/80 backdrop-blur-xl border-b border-white/10",
+                        "shadow-lg",
                         "w-full relative"
                     )}
                 >
                     {/* PHYSICS RAIN BACKGROUND (FLOWING UP) - REDUCED OPACITY & CLIPPED */}
-                    <div className={cn("absolute inset-0 overflow-hidden pointer-events-none select-none rounded-b-xl", isArticleDetail ? "opacity-18" : "opacity-30")}>
+                    <div className="absolute inset-0 overflow-hidden pointer-events-none select-none opacity-30 rounded-b-xl">
                         {raindrops.map((drop, i) => (
                             <div
                                 key={i}
@@ -162,6 +99,7 @@ export function Navbar() {
                                     left: `${drop.left}%`,
                                     fontSize: `${13 * drop.scale}px`,
                                     color: `rgba(255,255,255,${drop.opacity || 0.3})`,
+                                    filter: 'blur(0.3px)',
                                     animation: `physicsRainUp ${drop.duration}s linear ${drop.delay}s infinite`,
                                 }}
                             >
@@ -170,26 +108,22 @@ export function Navbar() {
                         ))}
                     </div>
 
-                    {/* RULER TICKS - CSS ONLY (0 DOM Elements) */}
-                    <div 
-                        className="absolute bottom-0 left-0 right-0 h-1.5 pointer-events-none opacity-20 mix-blend-overlay"
-                        style={{
-                            background: `
-                                repeating-linear-gradient(to right, white 0px, white 1px, transparent 1px, transparent 1.666%) bottom / 100% 50% no-repeat,
-                                repeating-linear-gradient(to right, white 0px, white 1px, transparent 1px, transparent 16.666%) bottom / 100% 100% no-repeat
-                            `
-                        }}
-                    />
+                    {/* RULER TICKS - SHARPER */}
+                    <div className="absolute bottom-0 left-0 right-0 h-1.5 flex justify-between px-1 pointer-events-none opacity-20 mix-blend-overlay">
+                        {[...Array(60)].map((_, i) => (
+                            <div key={i} className="w-[1px] bg-white h-full" style={{ height: i % 10 === 0 ? '100%' : '50%' }} />
+                        ))}
+                    </div>
 
                     {/* LEFT: BRAND */}
                     <div className="relative z-50 flex-shrink-0 pt-0.5 hover:scale-105 transition-transform duration-300">
-                        <ViewTransitionLink href="/" aria-label="FizikHub ana sayfa">
+                        <ViewTransitionLink href="/" aria-label="Ana Sayfa">
                             <DankLogo />
                         </ViewTransitionLink>
                     </div>
 
                     {/* RIGHT: COMPACT CONTROLS */}
-                    <div className="relative z-50 flex items-center gap-2 min-[390px]:gap-2.5">
+                    <div className="relative z-50 flex items-center gap-2">
 
                         {/* Desktop Links (Will be hidden anyway since parent is md:hidden, but kept for structural purity) */}
                         <nav className="hidden md:flex items-center gap-2 mr-6" aria-label="Ana navigasyon">
@@ -214,9 +148,9 @@ export function Navbar() {
                             id="desktop-search-trigger"
                             onClick={() => setIsSearchOpen(true)}
                             aria-label="Ara"
-                            className="flex items-center justify-center w-11 h-11 box-border bg-white border-2 border-black rounded-[8px] shadow-[2px_2px_0px_0px_#000] cursor-pointer hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_0px_#000] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all p-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#EAB308]"
+                            className="no-min-size flex items-center justify-center w-8 h-8 box-border bg-white border-2 border-black rounded-lg shadow-[2px_2px_0px_0px_#000] cursor-pointer hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_0px_#000] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all p-0"
                         >
-                            <Search className="w-5 h-5 text-black stroke-[3px]" />
+                            <Search className="w-4 h-4 text-black stroke-[3px]" />
                         </button>
 
                         {/* 2. ZAP - OPTIMIZED (32px) */}
@@ -224,9 +158,9 @@ export function Navbar() {
                             id="desktop-zap-trigger"
                             onClick={() => setIsFactOpen(true)}
                             aria-label="Günün Hap Bilgisi"
-                            className="flex items-center justify-center w-11 h-11 box-border bg-[#EAB308] border-2 border-black rounded-[8px] shadow-[2px_2px_0px_0px_#000] cursor-pointer hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_0px_#000] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all p-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+                            className="no-min-size flex items-center justify-center w-8 h-8 box-border bg-[#FACC15] border-2 border-black rounded-lg shadow-[2px_2px_0px_0px_#000] cursor-pointer hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_0px_#000] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all mr-1 p-0"
                         >
-                            <Zap className="w-5 h-5 text-black fill-black stroke-[3px]" />
+                            <Zap className="w-4 h-4 text-black fill-black stroke-[3px]" />
                         </button>
 
                         {/* 3. MOBILE MENU (FULLSCREEN REBOOT) */}
@@ -237,9 +171,9 @@ export function Navbar() {
                 </div>
             </header >
 
-            <div className="h-[60px] md:hidden" />
-            {isSearchOpen && <CommandPalette isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />}
-            {isFactOpen && <PhysicsFactModal open={isFactOpen} onOpenChange={setIsFactOpen} />}
+            <div className="h-[53px] sm:h-[64px] md:hidden" />
+            <CommandPalette isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
+            <PhysicsFactModal open={isFactOpen} onOpenChange={setIsFactOpen} />
         </>
     );
 }
