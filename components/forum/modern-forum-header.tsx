@@ -165,14 +165,6 @@ export function ModernForumHeader() {
         pushForumParams(params);
     };
 
-    const heroTitle = currentCategory !== "Tümü"
-        ? `${formatCategoryLabel(currentCategory)} Forumu`
-        : "Fizikhub Bilim ve Fizik Forumu";
-
-    const heroDescription = currentCategory !== "Tümü"
-        ? `${formatCategoryLabel(currentCategory)} sorularını paylaş, açıklamalı cevapları incele ve topluluk tartışmalarına katıl.`
-        : "TYT, AYT ve YKS fizik sorularını sor; kuantum, mekanik, astrofizik ve genel bilim konularında topluluktan açıklamalı cevaplar al.";
-
     return (
         <div className="flex flex-col gap-4 sm:gap-6 mb-6 sm:mb-8">
             {/* CHALKBOARD HERO CARD */}
@@ -260,15 +252,6 @@ export function ModernForumHeader() {
 
                 {/* Content Container */}
                 <div className="relative z-10 w-full max-w-4xl flex flex-col items-center justify-between gap-4 sm:gap-5">
-                    <div className="max-w-3xl text-center">
-                        <h1 className="text-sm min-[390px]:text-base sm:text-xl font-black uppercase tracking-wider text-[#f4c20d] drop-shadow-[1px_1px_0_rgba(0,0,0,0.75)]">
-                            {heroTitle}
-                        </h1>
-                        <p className="mt-1 hidden min-[390px]:block text-[11px] sm:text-sm font-semibold leading-relaxed text-white/72">
-                            {heroDescription}
-                        </p>
-                    </div>
-
                     {/* Animated Chalk Text */}
                     <div className="text-center relative">
                         {/* Define SVG Filter for Chalk Distortion */}
@@ -279,7 +262,8 @@ export function ModernForumHeader() {
                             </filter>
                         </svg>
 
-                        <motion.div
+                        <motion.h1
+                            aria-label="Aklında ne var?"
                             className="text-[1.9rem] min-[390px]:text-4xl sm:text-6xl font-black tracking-tighter text-white/90 uppercase leading-none font-mono relative"
                             initial="hidden"
                             whileInView="visible"
@@ -381,7 +365,7 @@ export function ModernForumHeader() {
                                     }}
                                 />
                             </span>
-                        </motion.div>
+                        </motion.h1>
                     </div>
 
                     {/* Input Trigger (Chalk Panel Style) */}

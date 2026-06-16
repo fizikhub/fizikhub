@@ -24,9 +24,13 @@ export function BottomNav() {
     const isAtBottomRef = useRef(false);
     const animationRef = useRef<ReturnType<typeof animate> | null>(null);
     const frameRef = useRef<number | null>(null);
+    const prefetchedRoutesRef = useRef(new Set<string>());
+    const lastScrollYRef = useRef(0);
 
     const warmRoute = useCallback((href: string) => {
         if (typeof href !== "string" || !href.startsWith("/")) return;
+        if (prefetchedRoutesRef.current.has(href)) return;
+        prefetchedRoutesRef.current.add(href);
         router.prefetch(href);
     }, [router]);
 
@@ -52,26 +56,27 @@ export function BottomNav() {
 
         frameRef.current = requestAnimationFrame(() => {
             const velocity = scrollVelocity.get();
-            const previous = scrollY.getPrevious() || 0;
+            const previous = lastScrollYRef.current;
             const diff = latest - previous;
+            lastScrollYRef.current = latest;
             let targetY = targetYRef.current;
 
             // Detect if at bottom using scrollYProgress to avoid layout thrashing
             // (document.body.offsetHeight triggers forced reflow)
-            const isNearBottom = scrollYProgress.get() > 0.95;
-            const shouldShowBottomState = isNearBottom;
+            const progress = scrollYProgress.get();
+            const shouldShowBottomState = isAtBottomRef.current ? progress > 0.92 : progress > 0.97;
 
             if (isAtBottomRef.current !== shouldShowBottomState) {
                 isAtBottomRef.current = shouldShowBottomState;
                 setIsAtBottom(shouldShowBottomState);
             }
 
-            if (isNearBottom) {
+            if (shouldShowBottomState) {
                 targetY = 0;
             } else {
                 if (latest < 50) {
                     targetY = 0;
-                } else if (diff > 7 && velocity > 180) {
+                } else if (diff > 7 || velocity > 180) {
                     targetY = 120;
                 } else if (diff < -5 || velocity < -120) {
                     targetY = 0;
@@ -94,11 +99,11 @@ export function BottomNav() {
     });
 
     // Haptic feedback helper
-    const vibrate = () => {
+    const vibrate = useCallback(() => {
         if (typeof navigator !== "undefined" && navigator.vibrate) {
             navigator.vibrate(10); // Ultra light vibration
         }
-    };
+    }, []);
 
     return (
         <m.div
@@ -109,10 +114,10 @@ export function BottomNav() {
             <nav aria-label="Mobil navigasyon" className={cn(
                 "w-full transition-all duration-500 overflow-visible",
                 isAtBottom
-                    ? "h-[70px] bg-black/70"
-                    : "h-[50px] bg-white/86 dark:bg-[#121212]/86",
+                    ? "h-[70px] bg-black/72"
+                    : "h-[50px] bg-white/88 dark:bg-[#121212]/88",
                 "backdrop-blur-xl border-t border-black/10 dark:border-white/10 flex items-center justify-around px-2 pb-safe relative",
-                "shadow-[0_-6px_18px_rgba(0,0,0,0.12)] dark:shadow-[0_-8px_24px_rgba(0,0,0,0.45)]"
+                "shadow-[0_-6px_18px_rgba(0,0,0,0.12)] dark:shadow-[0_-10px_28px_rgba(0,0,0,0.52)]"
             )}>
                 <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-white/35 dark:bg-white/10" />
 
@@ -263,11 +268,11 @@ function NavItem({ id, href, icon: Icon, label, isActive, onInteract, onWarmRout
                     <m.div
                         layoutId="nav-item-background"
                         className="
-                            absolute inset-0
-                            bg-black/5 dark:bg-white/10
-                            border border-black/5 dark:border-white/5
-                            rounded-lg
-                            shadow-inner dark:shadow-[inset_0_1px_4px_rgba(0,0,0,0.2)]
+                            absolute top-[7px] bottom-[7px] left-1/2 -ml-[18px] w-9
+                            bg-[#EAB308]/18 dark:bg-white/12
+                            border border-black/5 dark:border-white/10
+                            rounded-xl
+                            shadow-inner dark:shadow-[inset_0_1px_4px_rgba(0,0,0,0.2),0_0_18px_rgba(234,179,8,0.18)]
                         "
                         transition={{ type: "spring", stiffness: 500, damping: 30 }}
                     />

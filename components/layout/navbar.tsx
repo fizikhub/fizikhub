@@ -1,11 +1,8 @@
 "use client";
 
-import Link from "next/link";
 import { ViewTransitionLink } from "@/components/ui/view-transition-link";
 import { useState, useEffect } from "react";
 import { Search, Zap } from "lucide-react";
-import { AuthButton } from "@/components/auth/auth-button";
-import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { DankLogo } from "@/components/brand/dank-logo";
 import { MobileMenu } from "@/components/layout/mobile-menu";
@@ -27,20 +24,16 @@ const physicsTicker = [
 export function Navbar() {
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [isFactOpen, setIsFactOpen] = useState(false);
-    const [mounted, setMounted] = useState(false);
-    const pathname = usePathname();
 
     const [raindrops, setRaindrops] = useState<{ left: number; duration: number; delay: number; formula: string; scale: number; opacity?: number }[]>([]);
 
     useEffect(() => {
-        setMounted(true);
-
         const generateRain = () => {
             const isMobile = window.innerWidth < 768;
             const laneCount = isMobile ? 6 : 12;
             const dropCount = isMobile ? 12 : 30;
 
-            const drops = Array.from({ length: dropCount }).map((_, i) => {
+            const drops = Array.from({ length: dropCount }).map(() => {
                 const lane = Math.floor(Math.random() * laneCount);
                 const laneWidth = 80 / laneCount;
                 const left = 10 + (lane * laneWidth) + (Math.random() * (laneWidth * 0.8));
@@ -51,7 +44,7 @@ export function Navbar() {
                     delay: -1 * Math.random() * 20,
                     formula: physicsTicker[Math.floor(Math.random() * physicsTicker.length)],
                     scale: isMobile ? 0.6 + Math.random() * 0.3 : 0.7 + Math.random() * 0.4,
-                    opacity: 0.5 + Math.random() * 0.4
+                    opacity: 0.46 + Math.random() * 0.34
                 };
             });
             setRaindrops(drops);
@@ -59,18 +52,13 @@ export function Navbar() {
 
         // Defer rain generation to avoid blocking initial hydration
         if ('requestIdleCallback' in window) {
-            window.requestIdleCallback(generateRain, { timeout: 2000 });
-        } else {
-            setTimeout(generateRain, 500);
+            const idleId = window.requestIdleCallback(generateRain, { timeout: 2000 });
+            return () => window.cancelIdleCallback(idleId);
         }
-    }, []);
 
-    const navItems = [
-        { href: "/", label: "Ana" },
-        { href: "/makale", label: "Keşfet" },
-        { href: "/simulasyonlar", label: "Simülasyonlar" },
-        { href: "/siralamalar", label: "Lig" },
-    ];
+        const timeoutId = globalThis.setTimeout(generateRain, 500);
+        return () => globalThis.clearTimeout(timeoutId);
+    }, []);
 
     return (
         <>
@@ -84,22 +72,21 @@ export function Navbar() {
                     className={cn(
                         "h-full",
                         "flex items-center justify-between px-4 sm:px-6",
-                        "bg-[#09090b]/80 backdrop-blur-xl border-b border-white/10",
-                        "shadow-lg",
-                        "w-full relative"
+                        "bg-[#09090b]/82 backdrop-blur-xl border-b border-white/10",
+                        "shadow-[0_10px_28px_rgba(0,0,0,0.34)]",
+                        "w-full relative overflow-hidden"
                     )}
                 >
                     {/* PHYSICS RAIN BACKGROUND (FLOWING UP) - REDUCED OPACITY & CLIPPED */}
-                    <div className="absolute inset-0 overflow-hidden pointer-events-none select-none opacity-30 rounded-b-xl">
+                    <div aria-hidden="true" className="absolute inset-0 overflow-hidden pointer-events-none select-none opacity-30 rounded-b-xl">
                         {raindrops.map((drop, i) => (
                             <div
                                 key={i}
-                                className="absolute font-mono font-bold whitespace-nowrap will-change-transform"
+                                className="absolute font-mono font-bold whitespace-nowrap will-change-transform transform-gpu"
                                 style={{
                                     left: `${drop.left}%`,
                                     fontSize: `${13 * drop.scale}px`,
                                     color: `rgba(255,255,255,${drop.opacity || 0.3})`,
-                                    filter: 'blur(0.3px)',
                                     animation: `physicsRainUp ${drop.duration}s linear ${drop.delay}s infinite`,
                                 }}
                             >
@@ -109,11 +96,15 @@ export function Navbar() {
                     </div>
 
                     {/* RULER TICKS - SHARPER */}
-                    <div className="absolute bottom-0 left-0 right-0 h-1.5 flex justify-between px-1 pointer-events-none opacity-20 mix-blend-overlay">
-                        {[...Array(60)].map((_, i) => (
-                            <div key={i} className="w-[1px] bg-white h-full" style={{ height: i % 10 === 0 ? '100%' : '50%' }} />
-                        ))}
-                    </div>
+                    <div
+                        aria-hidden="true"
+                        className="absolute bottom-0 left-0 right-0 h-1.5 pointer-events-none opacity-20 mix-blend-overlay"
+                        style={{
+                            backgroundImage: "repeating-linear-gradient(90deg, rgba(255,255,255,0.95) 0 1px, transparent 1px 12px)",
+                            maskImage: "linear-gradient(to bottom, #000 0 55%, transparent 55% 100%)",
+                            WebkitMaskImage: "linear-gradient(to bottom, #000 0 55%, transparent 55% 100%)",
+                        }}
+                    />
 
                     {/* LEFT: BRAND */}
                     <div className="relative z-50 flex-shrink-0 pt-0.5 hover:scale-105 transition-transform duration-300">
@@ -125,30 +116,12 @@ export function Navbar() {
                     {/* RIGHT: COMPACT CONTROLS */}
                     <div className="relative z-50 flex items-center gap-2">
 
-                        {/* Desktop Links (Will be hidden anyway since parent is md:hidden, but kept for structural purity) */}
-                        <nav className="hidden md:flex items-center gap-2 mr-6" aria-label="Ana navigasyon">
-                            {navItems.map((item) => (
-                                <ViewTransitionLink
-                                    key={item.href}
-                                    id={`desktop-nav-${item.href === '/' ? 'home' : item.href.replace('/', '')}`}
-                                    href={item.href}
-                                    className={cn(
-                                        "px-4 py-1.5 text-xs font-black uppercase border border-white/10 transition-all bg-white/5 text-zinc-300 hover:bg-white hover:text-black rounded-lg",
-                                        "hover:shadow-[0px_0px_15px_rgba(255,255,255,0.2)]",
-                                        pathname === item.href && "bg-white text-black shadow-[0px_0px_10px_rgba(255,255,255,0.3)]"
-                                    )}
-                                >
-                                    {item.label}
-                                </ViewTransitionLink>
-                            ))}
-                        </nav>
-
                         {/* 1. SEARCH - OPTIMIZED (32px) */}
                         <button
                             id="desktop-search-trigger"
                             onClick={() => setIsSearchOpen(true)}
                             aria-label="Ara"
-                            className="no-min-size flex items-center justify-center w-8 h-8 box-border bg-white border-2 border-black rounded-lg shadow-[2px_2px_0px_0px_#000] cursor-pointer hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_0px_#000] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all p-0"
+                            className="no-min-size flex items-center justify-center w-8 h-8 box-border bg-white border-2 border-black rounded-lg shadow-[2px_2px_0px_0px_#000,0_0_0_1px_rgba(255,255,255,0.28)] cursor-pointer hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_0px_#000] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all p-0"
                         >
                             <Search className="w-4 h-4 text-black stroke-[3px]" />
                         </button>
@@ -158,7 +131,7 @@ export function Navbar() {
                             id="desktop-zap-trigger"
                             onClick={() => setIsFactOpen(true)}
                             aria-label="Günün Hap Bilgisi"
-                            className="no-min-size flex items-center justify-center w-8 h-8 box-border bg-[#FACC15] border-2 border-black rounded-lg shadow-[2px_2px_0px_0px_#000] cursor-pointer hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_0px_#000] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all mr-1 p-0"
+                            className="no-min-size flex items-center justify-center w-8 h-8 box-border bg-[#FACC15] border-2 border-black rounded-lg shadow-[2px_2px_0px_0px_#000,0_0_14px_rgba(250,204,21,0.18)] cursor-pointer hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_0px_#000] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all mr-1 p-0"
                         >
                             <Zap className="w-4 h-4 text-black fill-black stroke-[3px]" />
                         </button>
@@ -172,8 +145,8 @@ export function Navbar() {
             </header >
 
             <div className="h-[53px] sm:h-[64px] md:hidden" />
-            <CommandPalette isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
-            <PhysicsFactModal open={isFactOpen} onOpenChange={setIsFactOpen} />
+            {isSearchOpen && <CommandPalette isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />}
+            {isFactOpen && <PhysicsFactModal open={isFactOpen} onOpenChange={setIsFactOpen} />}
         </>
     );
 }
