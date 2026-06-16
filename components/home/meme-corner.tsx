@@ -2,7 +2,6 @@
 
 import { cn } from "@/lib/utils";
 import dynamic from "next/dynamic";
-import { useEffect, useState } from "react";
 
 // Dynamically import the heavy 3D canvas (loads cleanly in the background)
 const MemeCornerCanvas = dynamic(() => import("@/components/home/meme-corner-canvas"), {
@@ -10,22 +9,6 @@ const MemeCornerCanvas = dynamic(() => import("@/components/home/meme-corner-can
 });
 
 export function MemeCorner() {
-    const [load3D, setLoad3D] = useState(false);
-
-    useEffect(() => {
-        // Skip only for users who prefer reduced motion
-        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-
-        const enable3D = () => setLoad3D(true);
-
-        if ("requestIdleCallback" in window) {
-            const idleId = window.requestIdleCallback(enable3D, { timeout: 2500 });
-            return () => window.cancelIdleCallback(idleId);
-        }
-
-        const timeoutId = globalThis.setTimeout(enable3D, 1400);
-        return () => globalThis.clearTimeout(timeoutId);
-    }, []);
 
     return (
         <div className="w-full relative group min-h-[180px] sm:min-h-[240px]">
@@ -42,9 +25,9 @@ export function MemeCorner() {
                     "bg-[radial-gradient(circle_at_50%_120%,rgba(60,0,120,0.5),transparent)]"
                 )}
             >
-                {/* 3D Canvas is deferred on desktop and skipped on mobile for faster first load. */}
+                {/* 3D Canvas - Loaded automatically via dynamic import (ssr: false) */}
                 <div className="absolute inset-0 z-0">
-                    {load3D && <MemeCornerCanvas />}
+                    <MemeCornerCanvas />
                 </div>
 
                 {/* Vignette - Simple overlay */}
@@ -53,18 +36,18 @@ export function MemeCorner() {
                 {/* TEXT OVERLAY (Targeting this to be the fast LCP item) */}
                 <div className="absolute inset-0 z-20 flex flex-col items-center justify-center select-none pointer-events-none p-4 pb-8 sm:pb-12 text-center">
 
-                    <p className="font-head text-sm sm:text-lg font-bold tracking-[0.6em] text-blue-200/80 uppercase mb-0.5 sm:mb-1 drop-shadow-md">
+                    <h2 className="font-head text-sm sm:text-lg font-bold tracking-[0.6em] text-blue-200/80 uppercase mb-0.5 sm:mb-1 drop-shadow-md">
                         BİLİMİ
-                    </p>
+                    </h2>
 
-                    <p
+                    <h2
                         className="font-head text-4xl sm:text-7xl font-black tracking-tighter leading-none bg-gradient-to-r from-white via-blue-200 to-purple-300 bg-clip-text text-transparent"
                         style={{
                             filter: 'drop-shadow(0px 4px 12px rgba(0,0,0,0.9))'
                         }}
                     >
                         Tİ'YE ALIYORUZ
-                    </p>
+                    </h2>
 
                     <div className="mt-2 sm:mt-3 transform origin-center animate-[badge-wiggle_3s_ease-in-out_infinite]">
                         <span className="inline-block bg-[#FFC800] border-[2px] border-black text-black px-3 py-1 sm:px-4 sm:py-1.5 font-black text-[10px] sm:text-xs uppercase shadow-[2px_2px_0px_0px_#000]">

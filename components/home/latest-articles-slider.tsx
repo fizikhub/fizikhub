@@ -30,7 +30,7 @@ export function LatestArticlesSlider({ articles }: LatestArticlesSliderProps) {
                     <span className="w-1.5 h-5 bg-yellow-400 rounded-sm border border-yellow-500" />
                     Popüler Yazılar
                 </h2>
-                <Link href="/makale" className="text-[9px] sm:text-[10px] font-bold uppercase tracking-widest flex items-center gap-1 group text-muted-foreground hover:text-yellow-500 transition-colors">
+                <Link href="/blog" prefetch={false} className="text-[9px] sm:text-[10px] font-bold uppercase tracking-widest flex items-center gap-1 group text-muted-foreground hover:text-yellow-500 transition-colors">
                     Tümünü Gör
                     <ChevronRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
                 </Link>
@@ -38,7 +38,7 @@ export function LatestArticlesSlider({ articles }: LatestArticlesSliderProps) {
 
             {/* Horizontal Scroll */}
             <div className="flex overflow-x-auto gap-3 pb-3 scrollbar-hide snap-x snap-mandatory px-4 sm:px-0" role="region" aria-label="Popüler yazılar karusel">
-                {articles.slice(0, 6).map((article) => {
+                {articles.slice(0, 6).map((article, index) => {
                     const isNew = new Date().getTime() - new Date(article.created_at).getTime() < 3 * 24 * 60 * 60 * 1000;
 
                     return (
@@ -46,8 +46,8 @@ export function LatestArticlesSlider({ articles }: LatestArticlesSliderProps) {
                             key={article.id}
                             className="flex-shrink-0 w-[215px] sm:w-[275px] snap-start"
                         >
-                            <Link href={`/makale/${article.slug}`}>
-                                <div className="group relative bg-zinc-950 border-2 border-zinc-800 hover:border-yellow-400/60 shadow-[3px_3px_0px_0px_rgba(39,39,42,0.8)] hover:shadow-[4px_4px_0px_0px_rgba(250,204,21,0.4)] active:shadow-none active:translate-x-[2px] active:translate-y-[2px] transition-all duration-150 rounded-2xl overflow-hidden aspect-[16/10] flex flex-col">
+                            <Link href={`/blog/${article.slug}`} prefetch={false}>
+                                <div className="group relative bg-zinc-950 border-2 border-zinc-800 hover:border-yellow-400/60 shadow-[3px_3px_0px_0px_rgba(39,39,42,0.8)] hover:shadow-[4px_4px_0px_0px_rgba(250,204,21,0.4)] active:shadow-none active:translate-x-[2px] active:translate-y-[2px] transition-all duration-300 rounded-2xl overflow-hidden aspect-[16/10] flex flex-col">
                                     {/* Image Container */}
                                     <div className="absolute inset-0 z-0">
                                         {article.image ? (
@@ -56,8 +56,8 @@ export function LatestArticlesSlider({ articles }: LatestArticlesSliderProps) {
                                                 alt={article.title}
                                                 fill
                                                 sizes="(max-width: 640px) 215px, 275px"
-                                                className="object-cover group-hover:scale-[1.03] transition-transform duration-300 ease-out"
-                                                priority={false}
+                                                className="object-cover group-hover:scale-[1.04] transition-transform duration-700 ease-out"
+                                                priority={index < 3}
                                             />
                                         ) : (
                                             <div className="w-full h-full bg-zinc-900 flex items-center justify-center">

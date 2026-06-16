@@ -1,51 +1,18 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
-import dynamic from "next/dynamic";
-
-// Dynamic import for StoryViewer to defer framer-motion and supabase/ssr
-const StoryViewer = dynamic(() => import("./story-viewer").then(mod => mod.StoryViewer), {
-    ssr: false,
-});
-
+import { StoryViewer } from "./story-viewer";
 
 interface NexusStoriesProps {
-    initialStories?: StoryItem[];
-    initialGroups?: StoryGroup[];
-}
-
-interface StoryItem {
-    id: string | number;
-    name?: string;
-    title?: string;
-    image: string;
-    content?: string;
-    author?: string;
-    author_id?: string;
-    group_id?: string | number | null;
-}
-
-interface StoryGroup {
-    id: string | number;
-    name: string;
-    image: string;
-    ring_color?: string;
-}
-
-interface ViewerStory {
-    id: string;
-    title: string;
-    image: string;
-    content: string;
-    author: string;
-    author_id?: string;
+    initialStories?: any[];
+    initialGroups?: any[];
 }
 
 export function NexusStories({ initialStories = [], initialGroups = [] }: NexusStoriesProps) {
     const [viewerOpen, setViewerOpen] = useState(false);
-    const [activeStories, setActiveStories] = useState<ViewerStory[]>([]);
+    const [activeStories, setActiveStories] = useState<any[]>([]);
 
     const openGroup = (groupIndex: number) => {
         const group = groupsWithStories[groupIndex]; // Use the filtered array!
@@ -54,11 +21,11 @@ export function NexusStories({ initialStories = [], initialGroups = [] }: NexusS
         const groupStories = initialStories.filter(s =>
             String(s.group_id) === String(group.id)
         ).map(s => ({
-            id: String(s.id),
+            id: s.id,
             title: s.name || s.title || "Hikaye",
             image: s.image,
             content: s.content || "",
-            author: s.author || "FizikHub",
+            author: s.author,
             category: group.name,
             author_id: s.author_id
         }));
@@ -82,6 +49,11 @@ export function NexusStories({ initialStories = [], initialGroups = [] }: NexusS
         <section className="w-full pt-4 pb-0 mt-[-8px] mb-0 sm:mb-4">
             <div className="flex overflow-x-auto gap-3 sm:gap-6 px-4 sm:px-0 scrollbar-hide snap-x snap-mandatory touch-pan-x">
                 {groupsWithStories.map((group, index) => {
+                    // Check if this group has updates (stories)
+                    // If we want to show ring only for groups with stories?
+                    // Or strictly highlights that always exist.
+                    const hasStories = true; // Since we filtered, it always has stories
+
                     return (
                         <div
                             key={group.id}
@@ -106,9 +78,10 @@ export function NexusStories({ initialStories = [], initialGroups = [] }: NexusS
                                         fill
                                         sizes="82px"
                                         className="object-cover"
-                                        loading={index < 2 ? "eager" : "lazy"}
-                                        fetchPriority={index < 2 ? "low" : "auto"}
-                                        quality={50}
+                                        loading={index < 3 ? undefined : "lazy"}
+                                        priority={index < 3}
+                                        fetchPriority={index < 3 ? "high" : "auto"}
+                                        quality={index < 3 ? 60 : 50}
                                     />
                                 </div>
                             </div>
@@ -121,14 +94,12 @@ export function NexusStories({ initialStories = [], initialGroups = [] }: NexusS
                 })}
             </div>
 
-            {viewerOpen && (
-                <StoryViewer
-                    stories={activeStories}
-                    initialIndex={0}
-                    isOpen={viewerOpen}
-                    onClose={() => setViewerOpen(false)}
-                />
-            )}
+            <StoryViewer
+                stories={activeStories}
+                initialIndex={0}
+                isOpen={viewerOpen}
+                onClose={() => setViewerOpen(false)}
+            />
         </section>
     );
 }

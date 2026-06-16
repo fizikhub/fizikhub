@@ -2,15 +2,15 @@ import { unstable_cache } from "next/cache";
 import type { Metadata } from "next";
 import dynamic from "next/dynamic";
 
-import { FeedSkeleton } from "@/components/home/performance-skeletons";
+import { FeedSkeleton, SidebarSkeleton } from "@/components/home/performance-skeletons";
 import { HOME_FEED_ARTICLE_SELECT, processFeedData, formatSliderArticles } from "@/lib/feed-helpers";
 import type { FeedArticleData, FeedQuestionData } from "@/components/home/unified-feed";
 import { SEO_PRIORITY_SLUGS } from "@/lib/seo-priority";
-import { LazyDesktopSidebar } from "@/components/home/lazy-desktop-sidebar";
-import { DeferredHomeControls } from "@/components/home/deferred-home-controls";
 import { JsonLd } from "@/components/seo/json-ld";
 import { getSiteUrl, isLikelyIndexableArticle, toAbsoluteUrl } from "@/lib/seo-utils";
 import { createStaticClient, hasSupabasePublicConfig } from "@/lib/supabase-server";
+import { ScrollProgress } from "@/components/ui/scroll-progress";
+import { BackToTop } from "@/components/ui/back-to-top";
 
 // ─── Supabase Query Result Types ─────────────────────────────────
 interface FeedAuthorRow {
@@ -67,6 +67,10 @@ import { CompactHero } from "@/components/home/compact-hero";
 const UnifiedFeed = dynamic(() => import("@/components/home/unified-feed").then(mod => mod.UnifiedFeed), {
   loading: () => <FeedSkeleton />,
   ssr: true
+});
+
+const FeedSidebar = dynamic(() => import("@/components/home/feed-sidebar").then(mod => mod.FeedSidebar), {
+  loading: () => <SidebarSkeleton />,
 });
 
 // LCP Component is NO LONGER LatestArticlesSlider, CompactHero is the LCP component.
@@ -320,7 +324,8 @@ export default async function Home() {
   return (
     <main className="min-h-screen bg-background relative selection:bg-emerald-500/30">
       <JsonLd data={jsonLd} />
-      <DeferredHomeControls />
+      <ScrollProgress />
+      <BackToTop />
 
       <div className="container max-w-[1250px] mx-auto px-2 sm:px-4 md:px-6 relative z-10 pt-0 lg:pt-8 xl:pt-10">
 
@@ -346,7 +351,7 @@ export default async function Home() {
 
           {/* Sidebar Column */}
           <div className="hidden xl:block xl:col-span-5 relative">
-            <LazyDesktopSidebar suggestedUsers={suggestedUsers} />
+            <FeedSidebar suggestedUsers={suggestedUsers} />
           </div>
         </div>
       </div>
