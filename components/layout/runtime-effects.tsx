@@ -44,7 +44,7 @@ export function RuntimeEffects() {
    ██║     ██║███████╗██║██║  ██╗██║  ██║╚██████╔╝██████╔╝
    ╚═╝     ╚═╝╚══════╝╚═╝╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝ ╚═════╝ 
         
-      🪐 Bilimi Ti'ye Alıyoruz Ama Ciddili Şekilde!
+      🪐 Bilimi Tİ'ye Alıyoruz Ama Ciddili Şekilde!
       👨‍💻 Kodları incelemeyi seviyor musun? Aramıza katıl!
         `,
         "color: #EAB308; font-weight: bold; font-family: monospace; font-size: 12px;"

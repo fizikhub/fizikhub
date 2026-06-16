@@ -110,7 +110,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Fizikhub",
-    description: "BİLİMİ TI'YE ALIYORUZ AMA CİDDİ ŞEKİLDE. Evrenin sırlarını çözmeye çalışanların buluşma noktası.",
+    description: "BİLİMİ Tİ'YE ALIYORUZ AMA CİDDİ ŞEKİLDE. Evrenin sırlarını çözmeye çalışanların buluşma noktası.",
     creator: "@fizikhub",
     site: "@fizikhub",
     images: ["/og-image.jpg"],

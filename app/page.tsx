@@ -4,10 +4,10 @@ import dynamic from "next/dynamic";
 
 import { FeedSkeleton, SidebarSkeleton } from "@/components/home/performance-skeletons";
 import { HOME_FEED_ARTICLE_SELECT, processFeedData, formatSliderArticles } from "@/lib/feed-helpers";
-import type { FeedArticleData, FeedQuestionData } from "@/components/home/unified-feed";
+import type { FeedArticleData } from "@/components/home/unified-feed";
 import { SEO_PRIORITY_SLUGS } from "@/lib/seo-priority";
 import { JsonLd } from "@/components/seo/json-ld";
-import { getSiteUrl, isLikelyIndexableArticle, toAbsoluteUrl } from "@/lib/seo-utils";
+import { getSiteUrl, toAbsoluteUrl } from "@/lib/seo-utils";
 import { createStaticClient, hasSupabasePublicConfig } from "@/lib/supabase-server";
 import { ScrollProgress } from "@/components/ui/scroll-progress";
 import { BackToTop } from "@/components/ui/back-to-top";
@@ -35,6 +35,7 @@ interface FeedArticleRow {
   created_at: string;
   reading_time?: number | null;
   status?: string | null;
+  published?: boolean | null;
   author?: FeedAuthorRow | null;
 }
 
@@ -87,7 +88,7 @@ export const metadata: Metadata = {
     description: "Kuantum fiziği, kara delikler, entropi, karanlık madde ve temel fizik konularını sade makaleler, formüller ve örneklerle keşfet.",
     type: "website",
     url: "https://www.fizikhub.com",
-    images: [{ url: "/og-image.jpg", width: 1200, height: 630, alt: "Fizikhub — Bilimi Ti'ye Alıyoruz" }],
+    images: [{ url: "/og-image.jpg", width: 1200, height: 630, alt: "Fizikhub — Bilimi Tİ'ye Alıyoruz" }],
     locale: "tr_TR",
     siteName: "Fizikhub",
   },
@@ -122,22 +123,30 @@ const getCachedFeedData = unstable_cache(
     const supabase = createStaticClient();
 
     const articleSelect = HOME_FEED_ARTICLE_SELECT;
+    const fetchArticles = async (limit: number, slugs?: readonly string[]) => {
+      const buildQuery = () => {
+        let nextQuery = supabase.from('articles').select(articleSelect);
+        if (slugs?.length) {
+          nextQuery = nextQuery.in('slug', slugs);
+        }
+        return nextQuery.order('created_at', { ascending: false }).limit(limit);
+      };
+
+      const statusResult = await buildQuery().eq('status', 'published');
+      if (!statusResult.error) return statusResult;
+
+      const publishedResult = await buildQuery().eq('published', true);
+      if (!publishedResult.error) return publishedResult;
+
+      return buildQuery();
+    };
 
     const [articlesResult, priorityArticlesResult, questionsResult, profilesResult, storiesResult, groupsResult] = await Promise.all([
       // Fetch Articles & Blogs (using same table)
-      supabase
-        .from('articles')
-        .select(articleSelect)
-        .eq('status', 'published')
-        .order('created_at', { ascending: false })
-        .limit(12), // Optimized for mobile and performance
+      fetchArticles(12), // Optimized for mobile and performance
 
       // Keep proven Google Search Console opportunities linked from the homepage.
-      supabase
-        .from('articles')
-        .select(articleSelect)
-        .eq('status', 'published')
-        .in('slug', SEO_PRIORITY_SLUGS),
+      fetchArticles(SEO_PRIORITY_SLUGS.length, SEO_PRIORITY_SLUGS),
 
       // Fetch Questions
       supabase
@@ -170,8 +179,8 @@ const getCachedFeedData = unstable_cache(
         .limit(12)
     ]);
 
-    const latestArticles = ((articlesResult.data || []) as unknown as FeedArticleRow[]).filter((article) => isLikelyIndexableArticle(article));
-    const priorityArticles = ((priorityArticlesResult.data || []) as unknown as FeedArticleRow[]).filter((article) => isLikelyIndexableArticle(article));
+    const latestArticles = (articlesResult.data || []) as unknown as FeedArticleRow[];
+    const priorityArticles = (priorityArticlesResult.data || []) as unknown as FeedArticleRow[];
     const seenSlugs = new Set(priorityArticles.map((article) => article.slug));
 
     return {
@@ -206,16 +215,16 @@ const getCachedFeedData = unstable_cache(
       }))
     };
   },
-  ['feed-data-v10-homepage-content-preview-fallbacks'],
+  ['feed-data-v11-homepage-article-first-feed'],
   { revalidate: 60, tags: ['feed'] }
 );
 
 export default async function Home() {
-  const { articles, questions, suggestedUsers, stories, groups } = await getCachedFeedData();
+  const { articles, suggestedUsers, stories, groups } = await getCachedFeedData();
   const baseUrl = getSiteUrl();
 
   // Process and Merge Data
-  const feedItems = processFeedData(articles as unknown as FeedArticleData[], questions as unknown as FeedQuestionData[]);
+  const feedItems = processFeedData(articles as unknown as FeedArticleData[], []);
   const latestArticleDate = articles
     .map((article) => article.created_at)
     .filter(Boolean)

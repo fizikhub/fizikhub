@@ -41,12 +41,13 @@ export function MemeCorner() {
                     </h2>
 
                     <h2
-                        className="font-head text-4xl sm:text-7xl font-black tracking-tighter leading-none bg-gradient-to-r from-white via-blue-200 to-purple-300 bg-clip-text text-transparent"
+                        className="font-head text-4xl sm:text-7xl font-black tracking-normal leading-none text-white"
                         style={{
-                            filter: 'drop-shadow(0px 4px 12px rgba(0,0,0,0.9))'
+                            filter: 'drop-shadow(0px 4px 12px rgba(0,0,0,0.9))',
+                            textShadow: '0 0 18px rgba(190,200,255,0.45)'
                         }}
                     >
-                        TI'YE ALIYORUZ
+                        Tİ'YE ALIYORUZ
                     </h2>
 
                     <div className="mt-2 sm:mt-3 transform origin-center animate-[badge-wiggle_3s_ease-in-out_infinite]">

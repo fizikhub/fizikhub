@@ -8,16 +8,11 @@ export const HOME_FEED_ARTICLE_SELECT = [
     "title",
     "slug",
     "excerpt",
-    "summary",
     "content",
     "category",
-    "cover_url",
     "image_url",
     "created_at",
     "updated_at",
-    "status",
-    "likes_count",
-    "comments_count",
     `author:profiles!articles_author_id_fkey(${HOME_FEED_AUTHOR_SELECT})`,
 ].join(", ");
 
