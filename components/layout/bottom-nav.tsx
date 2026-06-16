@@ -112,14 +112,16 @@ export function BottomNav() {
             className="fixed bottom-0 left-0 right-0 z-[50] md:hidden font-sans transform-gpu will-change-transform"
         >
             <nav aria-label="Mobil navigasyon" className={cn(
-                "w-full transition-all duration-500 overflow-visible",
+                "w-full transition-[height,background-color,box-shadow,border-color] duration-300 overflow-visible",
                 isAtBottom
-                    ? "h-[70px] bg-black/72"
-                    : "h-[50px] bg-white/88 dark:bg-[#121212]/88",
-                "backdrop-blur-xl border-t border-black/10 dark:border-white/10 flex items-center justify-around px-2 pb-safe relative",
-                "shadow-[0_-6px_18px_rgba(0,0,0,0.12)] dark:shadow-[0_-10px_28px_rgba(0,0,0,0.52)]"
+                    ? "h-[70px] bg-zinc-950/88"
+                    : "h-[50px] bg-white/92 dark:bg-[#101012]/92",
+                "backdrop-blur-2xl border-t border-black/10 dark:border-white/12 flex items-center justify-around px-2 pb-safe relative",
+                "shadow-[0_-8px_22px_rgba(0,0,0,0.14)] dark:shadow-[0_-12px_28px_rgba(0,0,0,0.46)]"
             )}>
-                <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-white/35 dark:bg-white/10" />
+                <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-black/5 dark:bg-white/14" />
+                <div className="pointer-events-none absolute inset-x-0 top-0 h-7 bg-gradient-to-b from-white/55 to-transparent opacity-70 dark:from-white/8" />
+                <div className="pointer-events-none absolute inset-x-8 -top-px h-px bg-gradient-to-r from-transparent via-[#FACC15]/45 to-transparent" />
 
 
                 <AnimatePresence mode="wait">
@@ -152,6 +154,7 @@ export function BottomNav() {
                             />
 
                             <div className="relative -top-3.5 z-20">
+                                <div className="pointer-events-none absolute inset-[-4px] rounded-full bg-[#FACC15]/16 blur-sm dark:bg-[#FACC15]/18" />
                                 <ViewTransitionLink
                                     id="nav-item-share"
                                     href="/paylas"
@@ -169,16 +172,17 @@ export function BottomNav() {
                                         className="
                                             flex items-center justify-center
                                             w-11 h-11
-                                            bg-[#FACC15]
+                                            bg-gradient-to-b from-[#FFE26A] via-[#FACC15] to-[#EAB308]
                                             border-2 border-black dark:border-white
                                             rounded-full
-                                            shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]
-                                            dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.5)]
+                                            shadow-[2px_2px_0px_0px_rgba(0,0,0,1),0_0_0_4px_rgba(250,204,21,0.14)]
+                                            dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.42),0_0_0_4px_rgba(250,204,21,0.13)]
                                             group
                                             relative
                                             overflow-hidden
                                         "
                                     >
+                                        <span className="absolute inset-x-2 top-1 h-2 rounded-full bg-white/45 blur-[1px]" />
                                         <Plus className="w-5 h-5 text-black stroke-[3px] group-hover:rotate-90 group-hover:scale-110 transition-transform duration-300 relative z-10" />
                                     </m.div>
                                 </ViewTransitionLink>
@@ -255,7 +259,7 @@ function NavItem({ id, href, icon: Icon, label, isActive, onInteract, onWarmRout
             aria-label={label}
             aria-current={isActive ? 'page' : undefined}
             className={cn(
-                "flex flex-col items-center justify-center min-w-[55px] h-full relative group z-10",
+                "flex flex-col items-center justify-center min-w-[55px] h-full relative group z-10 touch-manipulation",
                 isActive ? "text-zinc-950 dark:text-white" : "text-zinc-500 dark:text-zinc-500"
             )}
         >
@@ -268,11 +272,12 @@ function NavItem({ id, href, icon: Icon, label, isActive, onInteract, onWarmRout
                     <m.div
                         layoutId="nav-item-background"
                         className="
-                            absolute top-[7px] bottom-[7px] left-1/2 -ml-[18px] w-9
-                            bg-[#EAB308]/18 dark:bg-white/12
-                            border border-black/5 dark:border-white/10
-                            rounded-xl
-                            shadow-inner dark:shadow-[inset_0_1px_4px_rgba(0,0,0,0.2),0_0_18px_rgba(234,179,8,0.18)]
+                            absolute left-1/2 top-1/2 h-9 w-11 -translate-x-1/2 -translate-y-1/2
+                            bg-gradient-to-b from-white to-zinc-100 dark:from-white/16 dark:to-white/7
+                            border border-black/10 dark:border-white/10
+                            rounded-[14px]
+                            shadow-[inset_0_1px_0_rgba(255,255,255,0.9),0_5px_14px_rgba(0,0,0,0.12)]
+                            dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.12),0_6px_16px_rgba(0,0,0,0.32)]
                         "
                         transition={{ type: "spring", stiffness: 500, damping: 30 }}
                     />
@@ -280,7 +285,7 @@ function NavItem({ id, href, icon: Icon, label, isActive, onInteract, onWarmRout
 
                 <div className={cn(
                     "p-1.5 rounded-lg transition-all duration-200 relative z-10",
-                    !isActive && "group-hover:bg-black/5 dark:group-hover:bg-white/5"
+                    !isActive && "group-hover:bg-black/5 dark:group-hover:bg-white/7 group-hover:text-zinc-800 dark:group-hover:text-zinc-200"
                 )}>
                     <m.div
                         initial={false}
