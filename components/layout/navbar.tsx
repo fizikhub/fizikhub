@@ -67,7 +67,7 @@ export function Navbar() {
                 - Height: h-14 (56px) - Optimized for Mobile
                 - Style: Dark Glass Neo-Brutalist
             */}
-            <header className="fixed top-0 left-0 right-0 z-50 h-14 sm:h-16 md:hidden" role="banner">
+            <header className="fixed top-0 left-0 right-0 z-50 h-[53px] sm:h-16 md:hidden" role="banner">
                 <div
                     className={cn(
                         "h-full",
@@ -94,6 +94,17 @@ export function Navbar() {
                             </div>
                         ))}
                     </div>
+
+                    {/* RULER TICKS - SHARPER */}
+                    <div
+                        aria-hidden="true"
+                        className="absolute bottom-0 left-0 right-0 h-1.5 pointer-events-none opacity-20 mix-blend-overlay"
+                        style={{
+                            backgroundImage: "repeating-linear-gradient(90deg, rgba(255,255,255,0.95) 0 1px, transparent 1px 12px)",
+                            maskImage: "linear-gradient(to bottom, #000 0 55%, transparent 55% 100%)",
+                            WebkitMaskImage: "linear-gradient(to bottom, #000 0 55%, transparent 55% 100%)",
+                        }}
+                    />
 
                     {/* LEFT: BRAND */}
                     <div className="relative z-50 flex-shrink-0 pt-0.5 hover:scale-105 transition-transform duration-300">
@@ -133,7 +144,7 @@ export function Navbar() {
                 </div>
             </header >
 
-            <div className="h-14 sm:h-16 md:hidden" />
+            <div className="h-[53px] sm:h-[64px] md:hidden" />
             {isSearchOpen && <CommandPalette isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />}
             {isFactOpen && <PhysicsFactModal open={isFactOpen} onOpenChange={setIsFactOpen} />}
         </>
