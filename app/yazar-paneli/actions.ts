@@ -271,6 +271,9 @@ export async function resolveNote(noteId: string) {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return { success: false, error: "Yetkisiz erişim" };
 
+    const isAdmin = await isAuthorAdmin(user.id);
+    if (!isAdmin) return { success: false, error: "Yetkiniz yok" };
+
     try {
         const { error } = await supabase
             .from("article_notes")

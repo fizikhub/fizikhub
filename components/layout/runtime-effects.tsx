@@ -27,6 +27,13 @@ type FizikhubWindow = Window & {
   _fizikhubHello?: boolean;
 };
 
+type NavigatorWithConnection = Navigator & {
+  connection?: {
+    saveData?: boolean;
+    effectiveType?: string;
+  };
+};
+
 export function RuntimeEffects() {
   const [loadIdleEffects, setLoadIdleEffects] = useState(false);
   const [loadDesktopEffects, setLoadDesktopEffects] = useState(false);
@@ -76,6 +83,11 @@ export function RuntimeEffects() {
   useEffect(() => {
     if (!loadIdleEffects || process.env.NODE_ENV !== "production") return;
     if (!("serviceWorker" in navigator)) return;
+
+    const connection = (navigator as NavigatorWithConnection).connection;
+    if (connection?.saveData || /^(slow-2g|2g|3g)$/.test(connection?.effectiveType || "")) {
+      return;
+    }
 
     const register = () => {
       navigator.serviceWorker.register("/sw.js").catch(() => {

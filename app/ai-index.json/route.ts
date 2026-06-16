@@ -4,6 +4,7 @@ import { getDictionaryTerms } from "@/lib/api";
 import { createStaticClient, hasSupabasePublicConfig } from "@/lib/supabase-server";
 import { slugify } from "@/lib/slug";
 import { getRelatedUrlsForCluster, getTopicClusterHref, getTopicClustersForText, SEO_TOPIC_CLUSTERS } from "@/lib/seo-topic-clusters";
+import { getSeoIntentForSlug } from "@/lib/seo-priority";
 import { getArticleCanonicalPath, getSiteUrl, hasUsefulIndexableText, isIndexableForumQuestion, isIndexableProfile, isLikelyIndexableArticle, isLikelyIndexableTitle, truncateForMeta } from "@/lib/seo-utils";
 import { getTopicStudyGuide } from "@/lib/topic-study-guides";
 
@@ -27,6 +28,11 @@ type AiIndexItem = {
     citationText: string;
     answerPriority: "high" | "standard";
     answerFormatHints: string[];
+    searchIntents?: string[];
+    serpTitle?: string;
+    serpDescription?: string;
+    answerSummary?: string;
+    contentQualitySignals?: string[];
 };
 
 type QueryResult<T> = {
@@ -222,6 +228,8 @@ export async function GET() {
             const isExperiment = article.category === "Deney";
             const canonicalPath = getArticleCanonicalPath(article);
             if (!canonicalPath) return [];
+            const intent = getSeoIntentForSlug(article.slug);
+            const clusterSlugs = clusterSlugsForResource("article", article.slug);
 
             return [{
                 type: "article",
@@ -236,11 +244,27 @@ export async function GET() {
                 updatedAt: new Date(article.updated_at || article.created_at || Date.now()).toISOString(),
                 language: "tr-TR",
                 schemaTypes: isExperiment ? ["BlogPosting", "WebPage"] : ["BlogPosting", "WebPage", "BreadcrumbList"],
-                clusterSlugs: clusterSlugsForResource("article", article.slug),
+                clusterSlugs,
                 relatedUrls: relatedUrlsFor("article", article.slug, baseUrl),
                 citationText: buildAiCitationText(article.title || article.slug, `${baseUrl}${canonicalPath}`),
-                answerPriority: clusterSlugsForResource("article", article.slug).length > 0 ? "high" : "standard",
+                answerPriority: clusterSlugs.length > 0 || intent ? "high" : "standard",
                 answerFormatHints: answerHintsFor("article"),
+                searchIntents: unique([
+                    ...(intent?.relatedQueries || []),
+                    ...(intent?.questions.map((q) => q.question) || []),
+                    ...intentQuestionsForResource("article", article.slug),
+                ]).slice(0, 12),
+                serpTitle: intent?.metadataTitle || article.title || article.slug,
+                serpDescription: intent?.metadataDescription || truncateForMeta(article.excerpt || article.content || `${article.title} hakkında Fizikhub makalesi.`, 155),
+                answerSummary: intent?.summary || truncateForMeta(article.summary || article.excerpt || article.content || "", 320),
+                contentQualitySignals: unique([
+                    "kanonik makale URL'si",
+                    "BlogPosting JSON-LD",
+                    article.updated_at ? "güncellenme tarihi" : "yayın tarihi",
+                    intent ? "kısa cevap ve FAQ niyeti" : null,
+                    clusterSlugs.length > 0 ? "konu hub bağlantısı" : null,
+                    article.category || null,
+                ]),
             }];
         });
 
@@ -381,6 +405,11 @@ export async function GET() {
             citationText: buildAiCitationText(`${cluster.title} konu rehberi`, `${baseUrl}${getTopicClusterHref(cluster)}`),
             answerPriority: "high",
             answerFormatHints: [...answerHintsFor("topic"), "kavram iskeletini ve sık hatayı koru"],
+            searchIntents: cluster.intentQuestions,
+            serpTitle: `${cluster.title} Rehberi | Fizikhub`,
+            serpDescription: truncateForMeta(studyGuide.summary, 155),
+            answerSummary: studyGuide.summary,
+            contentQualitySignals: ["topic cluster", "öğrenme rotası", "ilgili makale/sözlük/simülasyon bağlantıları"],
         };
     });
 
@@ -429,6 +458,7 @@ export async function GET() {
             citation: AI_CITATION_POLICY.citation,
             preferredFormat: AI_CITATION_POLICY.preferredFormat,
             answerGuidance: AI_CITATION_POLICY.answerGuidance,
+            snippetPolicy: "Indexlenebilir public sayfalarda max-snippet:-1 ve max-image-preview:large tercih edilir; özel alanlar noindex/no-store kalır.",
             note: "Google AI Mode ve AI Overviews normal Google Search indeksleme, snippet izni ve Googlebot erişiminden beslenir. Bu manifest sitemap yerine geçmeyen yardımcı bir AI keşif yüzeyidir.",
         },
         discovery: {

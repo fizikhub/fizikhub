@@ -1,6 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import { useEffect, useState } from "react";
 import { NeoArticleCard } from "@/components/articles/neo-article-card";
 
 export interface FeedAuthor {
@@ -84,6 +85,20 @@ interface UnifiedFeedProps {
 }
 
 export function UnifiedFeed({ items, suggestedUsers = [], showExtras = true }: UnifiedFeedProps) {
+    const [extrasReady, setExtrasReady] = useState(false);
+
+    useEffect(() => {
+        if (!showExtras) return;
+
+        if ("requestIdleCallback" in window) {
+            const idleId = window.requestIdleCallback(() => setExtrasReady(true), { timeout: 2800 });
+            return () => window.cancelIdleCallback(idleId);
+        }
+
+        const timeout = setTimeout(() => setExtrasReady(true), 1800);
+        return () => clearTimeout(timeout);
+    }, [showExtras]);
+
     return (
         <div className="flex flex-col gap-3 sm:gap-6">
             <div className="flex flex-col gap-5 sm:gap-6">
@@ -135,8 +150,8 @@ export function UnifiedFeed({ items, suggestedUsers = [], showExtras = true }: U
                             </div>
                         )}
 
-                        {showExtras && index === 2 && <div className="mt-6"><CommunityInviteBanner /></div>}
-                        {showExtras && index === 8 && (
+                        {showExtras && extrasReady && index === 2 && <div className="mt-6"><CommunityInviteBanner /></div>}
+                        {showExtras && extrasReady && index === 8 && (
                             <div className="mt-6 rounded-2xl bg-gradient-to-br from-amber-500/5 to-orange-500/5 p-6 border border-amber-500/10">
                                 <h3 className="font-bold text-xs uppercase tracking-widest text-amber-600 dark:text-amber-400 mb-4 text-center">
                                     Haftanın Sorusu
@@ -148,7 +163,7 @@ export function UnifiedFeed({ items, suggestedUsers = [], showExtras = true }: U
                 ))}
             </div>
 
-            {showExtras && (
+            {showExtras && extrasReady && (
                 <div className="mt-8 rounded-2xl bg-muted/20 border border-border/40 p-6">
                     <h3 className="font-bold text-xs uppercase tracking-widest text-muted-foreground mb-4 text-center">
                         Önerilen Araştırmacılar

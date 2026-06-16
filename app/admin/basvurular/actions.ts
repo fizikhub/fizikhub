@@ -1,10 +1,15 @@
 "use server";
 
-import { createClient } from "@/lib/supabase-server"; // Consistent with admin layout
 import { revalidatePath } from "next/cache";
+import { verifyAdmin } from "@/lib/admin";
 
 export async function approveApplication(applicationId: string, userId: string) {
-    const supabase = await createClient(); // Use lib/supabase-server which usually awaits
+    const adminCheck = await verifyAdmin();
+    if (!adminCheck.isAdmin || !adminCheck.supabase) {
+        return { error: adminCheck.error || "Bu işlem için admin yetkisi gereklidir." };
+    }
+
+    const supabase = adminCheck.supabase;
 
     // 1. Update application status
     const { error: appError } = await supabase
@@ -35,7 +40,12 @@ export async function approveApplication(applicationId: string, userId: string) 
 }
 
 export async function rejectApplication(applicationId: string) {
-    const supabase = await createClient();
+    const adminCheck = await verifyAdmin();
+    if (!adminCheck.isAdmin || !adminCheck.supabase) {
+        return { error: adminCheck.error || "Bu işlem için admin yetkisi gereklidir." };
+    }
+
+    const supabase = adminCheck.supabase;
 
     const { error } = await supabase
         .from("writer_applications")

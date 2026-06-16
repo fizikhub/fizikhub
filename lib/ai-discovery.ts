@@ -13,14 +13,14 @@ export type AiCoreRoute = {
     priority: string;
 };
 
-export const AI_DISCOVERY_LAST_MODIFIED = "2026-06-14T00:00:00.000+03:00";
+export const AI_DISCOVERY_LAST_MODIFIED = "2026-06-16T00:00:00.000+03:00";
 
 export const AI_CONTENT_PROVENANCE = {
     publisherName: "Fizikhub",
     publisherUrl: "https://www.fizikhub.com",
     editorialOwner: "Fizikhub Ekibi",
     contactEmail: "iletisim@fizikhub.com",
-    lastReviewed: "2026-06-14",
+    lastReviewed: "2026-06-16",
     language: "tr-TR",
     geographicFocus: "TR",
     primaryAudience: [

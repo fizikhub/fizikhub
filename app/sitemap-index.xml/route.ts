@@ -1,4 +1,5 @@
 import { getSiteUrl } from "@/lib/seo-utils";
+import { AI_DISCOVERY_LAST_MODIFIED } from "@/lib/ai-discovery";
 import { escapeXml } from "@/lib/xml";
 
 export const revalidate = 3600;
@@ -16,7 +17,7 @@ const SITEMAPS = [
 
 export async function GET() {
     const baseUrl = getSiteUrl();
-    const lastmod = new Date().toISOString();
+    const lastmod = AI_DISCOVERY_LAST_MODIFIED;
 
     const entries = SITEMAPS.map((path) => `  <sitemap>
     <loc>${escapeXml(`${baseUrl}${path}`)}</loc>

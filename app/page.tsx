@@ -5,12 +5,11 @@ import dynamic from "next/dynamic";
 import { FeedSkeleton, SidebarSkeleton } from "@/components/home/performance-skeletons";
 import { HOME_FEED_ARTICLE_SELECT, processFeedData, formatSliderArticles } from "@/lib/feed-helpers";
 import type { FeedArticleData } from "@/components/home/unified-feed";
-import { SEO_PRIORITY_SLUGS } from "@/lib/seo-priority";
+import { SEO_PRIORITY_ARTICLES, SEO_PRIORITY_SLUGS } from "@/lib/seo-priority";
 import { JsonLd } from "@/components/seo/json-ld";
 import { getSiteUrl, toAbsoluteUrl } from "@/lib/seo-utils";
 import { createStaticClient, hasSupabasePublicConfig } from "@/lib/supabase-server";
-import { ScrollProgress } from "@/components/ui/scroll-progress";
-import { BackToTop } from "@/components/ui/back-to-top";
+import { DesktopScrollEffects } from "@/components/home/desktop-scroll-effects";
 
 // ─── Supabase Query Result Types ─────────────────────────────────
 interface FeedAuthorRow {
@@ -230,6 +229,9 @@ export default async function Home() {
     .filter(Boolean)
     .sort()
     .at(-1);
+  const priorityIntentBySlug = new Map<string, (typeof SEO_PRIORITY_ARTICLES)[number]>(
+    SEO_PRIORITY_ARTICLES.map((article) => [article.slug, article])
+  );
 
   // JSON-LD Structured Data for Homepage (ItemList)
   const jsonLd = {
@@ -300,32 +302,52 @@ export default async function Home() {
           name: user.full_name || `@${user.username}`,
           url: `${baseUrl}/kullanici/${user.username}`,
           jobTitle: user.is_writer ? "Fizik ve Bilim Yazarı" : "Bilim Katkıcısı"
-        }))
+        })),
+        about: SEO_PRIORITY_ARTICLES.slice(0, 8).map((article) => ({
+          '@type': 'Thing',
+          name: article.title,
+          description: article.summary,
+        })),
+        significantLink: SEO_PRIORITY_ARTICLES.slice(0, 8).map((article) => `${baseUrl}/makale/${article.slug}`),
       },
       {
         '@type': 'ItemList',
         '@id': `${baseUrl}/#latest-articles`,
         name: 'Öne çıkan Fizikhub makaleleri',
-        itemListElement: articles.slice(0, 12).map((article, index) => ({
-          '@type': 'ListItem',
-          position: index + 1,
-          item: {
-            '@type': 'Article',
-            '@id': `${baseUrl}/makale/${article.slug}#article`,
-            url: `${baseUrl}/makale/${article.slug}`,
-            name: article.title,
-            headline: article.title,
-            description: article.excerpt || `${article.title} hakkında Fizikhub makalesi.`,
-            image: toAbsoluteUrl(article.cover_url || article.image_url, baseUrl) || `${baseUrl}/og-image.jpg`,
-            datePublished: article.created_at,
-            author: {
-              '@type': 'Person',
-              name: article.author?.full_name || article.author?.username || 'FizikHub Yazarı'
-            },
-            publisher: { '@id': `${baseUrl}/#organization` },
-            mainEntityOfPage: `${baseUrl}/makale/${article.slug}`,
-          }
-        }))
+        itemListElement: articles.slice(0, 12).map((article, index) => {
+          const intent = priorityIntentBySlug.get(article.slug);
+
+          return {
+            '@type': 'ListItem',
+            position: index + 1,
+            item: {
+              '@type': 'Article',
+              '@id': `${baseUrl}/makale/${article.slug}#article`,
+              url: `${baseUrl}/makale/${article.slug}`,
+              name: intent?.metadataTitle || article.title,
+              headline: intent?.h1 || article.title,
+              description: intent?.metadataDescription || article.excerpt || `${article.title} hakkında Fizikhub makalesi.`,
+              image: toAbsoluteUrl(article.cover_url || article.image_url, baseUrl) || `${baseUrl}/og-image.jpg`,
+              datePublished: article.created_at,
+              keywords: intent?.expandedKeywords?.join(', ') || article.category,
+              isAccessibleForFree: true,
+              about: (intent?.subtopics || [article.category]).filter(Boolean).map((topic) => ({
+                '@type': 'Thing',
+                name: topic,
+              })),
+              potentialAction: {
+                '@type': 'ReadAction',
+                target: `${baseUrl}/makale/${article.slug}`,
+              },
+              author: {
+                '@type': 'Person',
+                name: article.author?.full_name || article.author?.username || 'FizikHub Yazarı'
+              },
+              publisher: { '@id': `${baseUrl}/#organization` },
+              mainEntityOfPage: `${baseUrl}/makale/${article.slug}`,
+            }
+          };
+        })
       }
     ]
   };
@@ -333,8 +355,7 @@ export default async function Home() {
   return (
     <main className="min-h-screen bg-background relative selection:bg-emerald-500/30">
       <JsonLd data={jsonLd} />
-      <ScrollProgress />
-      <BackToTop />
+      <DesktopScrollEffects />
 
       <div className="container max-w-[1250px] mx-auto px-2 sm:px-4 md:px-6 relative z-10 pt-0 lg:pt-8 xl:pt-10">
 

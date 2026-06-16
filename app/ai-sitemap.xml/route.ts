@@ -129,17 +129,19 @@ export async function GET() {
         priority: route.priority,
     }));
 
-    const discoveryEntries = AI_DISCOVERY_ROUTES.map((route) => entry(baseUrl, route.path, {
-        lastmod: AI_DISCOVERY_LAST_MODIFIED,
-        changefreq: "weekly",
-        priority: "0.80",
-    }));
-
     const topicEntries = SEO_TOPIC_CLUSTERS.map((cluster) => entry(baseUrl, getTopicClusterHref(cluster), {
         lastmod: AI_DISCOVERY_LAST_MODIFIED,
         changefreq: "weekly",
         priority: "0.82",
     }));
+
+    const learningGraphEntries = AI_DISCOVERY_ROUTES
+        .filter((route) => route.path === "/simulation-learning.json")
+        .map((route) => entry(baseUrl, route.path, {
+            lastmod: AI_DISCOVERY_LAST_MODIFIED,
+            changefreq: "weekly",
+            priority: "0.76",
+        }));
 
     const simulationEntries = simulations.map((simulation) => entry(baseUrl, `/simulasyonlar/${simulation.slug}`, {
         lastmod: AI_DISCOVERY_LAST_MODIFIED,
@@ -150,8 +152,8 @@ export async function GET() {
     const dynamicEntries = await getDynamicEntries(baseUrl);
     const urls = uniqueEntries([
         ...coreEntries,
-        ...discoveryEntries,
         ...topicEntries,
+        ...learningGraphEntries,
         ...simulationEntries,
         ...dynamicEntries,
     ])

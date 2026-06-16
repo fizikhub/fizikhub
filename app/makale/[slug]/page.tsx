@@ -554,10 +554,14 @@ export default async function ArticlePage({ params }: PageProps) {
                 ...clusterUrls,
                 ...topicClusters.flatMap(getRelatedUrlsForCluster).map((link) => `${baseUrl}${link.href}`),
             ].filter((url, index, all) => all.indexOf(url) === index && url !== articleUrl).slice(0, 12),
+            mainEntity: {
+                '@id': `${articleUrl}#article`,
+            },
             ...(intentOverride && {
-                mainEntity: {
-                    '@id': `${articleUrl}#defined-term`,
-                },
+                hasPart: [
+                    { '@id': `${articleUrl}#defined-term` },
+                    { '@id': `${articleUrl}#faq` },
+                ],
             }),
             primaryImageOfPage: {
                 '@type': 'ImageObject',

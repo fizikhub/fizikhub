@@ -3,9 +3,12 @@ import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
 import { ensureUserProfile } from '@/lib/auth-profile'
 import { getSupabasePublicConfig } from '@/lib/supabase-server'
+import { getSiteUrl } from '@/lib/seo-utils'
 
 export async function GET(request: Request) {
     const { searchParams, origin } = new URL(request.url)
+    const isLocalEnv = process.env.NODE_ENV === 'development'
+    const redirectBase = isLocalEnv ? origin : getSiteUrl()
     const code = searchParams.get('code')
     // Validate 'next' parameter to prevent open redirect attacks
     const rawNext = searchParams.get('next') ?? '/'
@@ -16,7 +19,7 @@ export async function GET(request: Request) {
         const supabaseConfig = getSupabasePublicConfig()
         if (!supabaseConfig) {
             console.error('Auth callback missing Supabase public config')
-            return NextResponse.redirect(`${origin}/auth/auth-code-error?error=missing_supabase_config`)
+            return NextResponse.redirect(`${redirectBase}/auth/auth-code-error?error=missing_supabase_config`)
         }
 
         const cookieStore = await cookies()
@@ -51,27 +54,18 @@ export async function GET(request: Request) {
 
                 if (!profileResult.success) {
                     console.error('Profile ensure error:', profileResult.error)
-                    return NextResponse.redirect(`${origin}/auth/auth-code-error?error=profile_upsert_failed`)
+                    return NextResponse.redirect(`${redirectBase}/auth/auth-code-error?error=profile_upsert_failed`)
                 }
 
                 if (!isPasswordReset && !profileResult.profile?.onboardingCompleted) {
-                    return NextResponse.redirect(`${origin}/kurulum`)
+                    return NextResponse.redirect(`${redirectBase}/kurulum`)
                 }
             }
 
             // Success Redirect
-            const forwardedHost = request.headers.get('x-forwarded-host')
-            const isLocalEnv = process.env.NODE_ENV === 'development'
-
-            if (isLocalEnv) {
-                return NextResponse.redirect(`${origin}${next}`)
-            } else if (forwardedHost) {
-                return NextResponse.redirect(`https://${forwardedHost}${next}`)
-            } else {
-                return NextResponse.redirect(`${origin}${next}`)
-            }
+            return NextResponse.redirect(`${redirectBase}${next}`)
         }
     }
 
-    return NextResponse.redirect(`${origin}/auth/auth-code-error?error=no_code`)
+    return NextResponse.redirect(`${redirectBase}/auth/auth-code-error?error=no_code`)
 }

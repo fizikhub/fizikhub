@@ -1,13 +1,22 @@
 import { createClient } from "@/lib/supabase-server";
 import { NextRequest, NextResponse } from "next/server";
 
+const MAX_TIME_UPDATE_SECONDS = 15 * 60;
+
 export async function POST(request: NextRequest) {
     try {
         const body = await request.json();
-        const additionalSeconds = body.seconds || 0;
+        const additionalSeconds = Number(body?.seconds ?? 0);
 
         if (additionalSeconds <= 0) {
             return NextResponse.json({ success: true });
+        }
+
+        if (!Number.isInteger(additionalSeconds) || additionalSeconds > MAX_TIME_UPDATE_SECONDS) {
+            return NextResponse.json(
+                { success: false, error: "Invalid seconds" },
+                { status: 400 }
+            );
         }
 
         const supabase = await createClient();
