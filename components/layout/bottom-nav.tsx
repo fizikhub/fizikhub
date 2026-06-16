@@ -1,11 +1,10 @@
 "use client";
 
-import Link from "next/link";
 import { ViewTransitionLink } from "@/components/ui/view-transition-link";
 import { usePathname } from "next/navigation";
-import { Home, BookOpen, MessageCircle, User, Plus } from "lucide-react";
+import { Home, BookOpen, MessageCircle, User, Plus, type LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useEffect, useState, useRef } from "react";
+import { useState, useRef } from "react";
 import { m, AnimatePresence, useScroll, useVelocity, useMotionValueEvent, useMotionValue, animate } from "framer-motion";
 
 import { DankLogo } from "@/components/brand/dank-logo";
@@ -73,10 +72,15 @@ export function BottomNav() {
             className="fixed bottom-0 left-0 right-0 z-[50] md:hidden font-sans"
         >
             <nav aria-label="Mobil navigasyon" className={cn(
-                "w-full transition-all duration-500",
-                isAtBottom ? "h-[70px] bg-black/60" : "h-[50px] bg-white/80 dark:bg-[#121212]/80",
-                "backdrop-blur-xl border-t border-black/10 dark:border-white/10 flex items-center justify-around px-2 pb-safe relative shadow-[0_-4px_16px_rgba(0,0,0,0.05)]"
+                "w-full transition-all duration-500 overflow-visible",
+                isAtBottom
+                    ? "h-[70px] bg-zinc-950/78"
+                    : "h-[50px] bg-white/88 dark:bg-[#101013]/88",
+                "backdrop-blur-2xl border-t border-black/15 dark:border-white/12 flex items-center justify-around px-2 pb-safe relative",
+                "shadow-[0_-1px_0_rgba(255,255,255,0.45),0_-12px_32px_rgba(0,0,0,0.18)] dark:shadow-[0_-1px_0_rgba(255,255,255,0.08),0_-14px_38px_rgba(0,0,0,0.55)]"
             )}>
+                <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#FACC15]/65 to-transparent" />
+                <div className="pointer-events-none absolute inset-x-0 top-0 h-5 bg-gradient-to-b from-white/35 to-transparent dark:from-white/8" />
 
 
                 <AnimatePresence mode="wait">
@@ -107,6 +111,7 @@ export function BottomNav() {
                             />
 
                             <div className="relative -top-3.5 z-20">
+                                <div className="pointer-events-none absolute inset-[-6px] rounded-full bg-[#FACC15]/25 blur-md" />
                                 <ViewTransitionLink
                                     id="nav-item-share"
                                     href="/paylas"
@@ -123,16 +128,17 @@ export function BottomNav() {
                                         className="
                                             flex items-center justify-center
                                             w-11 h-11
-                                            bg-[#FACC15]
+                                            bg-gradient-to-b from-[#FFE46B] via-[#FACC15] to-[#EAB308]
                                             border-2 border-black dark:border-white
                                             rounded-full
-                                            shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]
-                                            dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.5)]
+                                            shadow-[2px_2px_0px_0px_rgba(0,0,0,1),0_0_0_5px_rgba(250,204,21,0.18)]
+                                            dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.5),0_0_0_5px_rgba(250,204,21,0.16)]
                                             group
                                             relative
                                             overflow-hidden
                                         "
                                     >
+                                        <span className="absolute inset-x-2 top-1 h-2 rounded-full bg-white/45 blur-[1px]" />
                                         <Plus className="w-5 h-5 text-black stroke-[3px] group-hover:rotate-90 group-hover:scale-110 transition-transform duration-300 relative z-10" />
                                     </m.div>
                                 </ViewTransitionLink>
@@ -189,7 +195,7 @@ export function BottomNav() {
     );
 }
 
-function NavItem({ id, href, icon: Icon, label, isActive, onInteract }: { id?: string; href: string; icon: any; label: string; isActive: boolean; onInteract: () => void }) {
+function NavItem({ id, href, icon: Icon, label, isActive, onInteract }: { id?: string; href: string; icon: LucideIcon; label: string; isActive: boolean; onInteract: () => void }) {
     const handleNavItemClick = (e: React.MouseEvent) => {
         onInteract();
         if (isActive) {
@@ -207,23 +213,24 @@ function NavItem({ id, href, icon: Icon, label, isActive, onInteract }: { id?: s
             aria-current={isActive ? 'page' : undefined}
             className={cn(
                 "flex flex-col items-center justify-center min-w-[55px] h-full relative group z-10",
-                isActive ? "text-black dark:text-white" : "text-zinc-500 dark:text-zinc-500"
+                isActive ? "text-zinc-950 dark:text-white" : "text-zinc-500 dark:text-zinc-500"
             )}
         >
             <m.div
                 whileTap={{ scaleX: 1.25, scaleY: 0.85 }}
                 transition={{ type: "spring", stiffness: 400, damping: 15 }}
-                className="flex flex-col items-center gap-0.5 relative"
+                className="flex flex-col items-center justify-center gap-0.5 relative h-full"
             >
                 {isActive && (
                     <m.div
                         layoutId="nav-item-background"
                         className="
-                            absolute inset-0 
-                            bg-black/5 dark:bg-white/10 
-                            border border-black/5 dark:border-white/5 
-                            rounded-lg
-                            shadow-inner dark:shadow-[inset_0_1px_4px_rgba(0,0,0,0.2)]
+                            absolute left-1/2 top-1/2 h-9 w-11 -translate-x-1/2 -translate-y-1/2
+                            bg-gradient-to-b from-white to-zinc-100 dark:from-white/16 dark:to-white/7
+                            border border-black/10 dark:border-white/10
+                            rounded-[12px]
+                            shadow-[inset_0_1px_0_rgba(255,255,255,0.9),0_5px_14px_rgba(0,0,0,0.12)]
+                            dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.12),0_6px_16px_rgba(0,0,0,0.35)]
                         "
                         transition={{ type: "spring", stiffness: 500, damping: 30 }}
                     />
@@ -231,7 +238,7 @@ function NavItem({ id, href, icon: Icon, label, isActive, onInteract }: { id?: s
 
                 <div className={cn(
                     "p-1.5 rounded-lg transition-all duration-200 relative z-10",
-                    !isActive && "group-hover:bg-black/5 dark:group-hover:bg-white/5"
+                    !isActive && "group-hover:bg-black/5 dark:group-hover:bg-white/7 group-hover:text-zinc-800 dark:group-hover:text-zinc-200"
                 )}>
                     <m.div
                         initial={false}
@@ -247,6 +254,14 @@ function NavItem({ id, href, icon: Icon, label, isActive, onInteract }: { id?: s
                         />
                     </m.div>
                 </div>
+                <span
+                    className={cn(
+                        "relative z-10 -mt-1 max-w-[52px] truncate text-[9px] font-black leading-none tracking-normal transition-colors",
+                        isActive ? "text-zinc-950 dark:text-white" : "text-zinc-500/80 dark:text-zinc-500/85"
+                    )}
+                >
+                    {label === "Ana Sayfa" ? "Ana" : label}
+                </span>
             </m.div>
         </ViewTransitionLink>
     );
