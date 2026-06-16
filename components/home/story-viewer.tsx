@@ -5,10 +5,10 @@ import { X, ChevronLeft, ChevronRight, Trash2, Loader2 } from "lucide-react";
 import Image from "next/image";
 import { useState, useEffect, useCallback } from "react";
 import { createPortal } from "react-dom";
+import { createBrowserClient } from "@supabase/ssr";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import { createClient } from "@/lib/supabase";
 
 interface Story {
     id: string;
@@ -38,7 +38,10 @@ export function StoryViewer({ stories: initialStories, initialIndex, isOpen, onC
 
     const STORY_DURATION = 5000; // 5 seconds per story
 
-    const [supabase] = useState(() => createClient());
+    const supabase = createBrowserClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    );
     const router = useRouter();
 
     useEffect(() => {
@@ -55,7 +58,7 @@ export function StoryViewer({ stories: initialStories, initialIndex, isOpen, onC
         getUser();
 
         return () => setMounted(false);
-    }, [supabase]);
+    }, []);
 
     useEffect(() => {
         if (isOpen) {

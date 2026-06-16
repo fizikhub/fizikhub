@@ -23,13 +23,13 @@ export function FeedSidebar({ suggestedUsers = [] }: { suggestedUsers?: SidebarU
     return (
         <div className="space-y-6 lg:sticky lg:top-24">
             {/* Premium Join/Write Box - Neo Brutalist Style */}
-            <div className="bg-[#f08a41] border-[3px] border-black rounded-[8px] p-6 shadow-[6px_6px_0px_0px_#000] relative overflow-hidden">
+            <div className="bg-[#f08a41] border-[3px] border-black rounded-xl p-6 shadow-[6px_6px_0px_0px_#000] relative overflow-hidden">
                 <div className="absolute inset-0 opacity-[0.05] pointer-events-none mix-blend-multiply"
                     style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 250 250' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }}
                 />
                 <div className="relative z-10">
                     <div className="flex items-center gap-3 mb-3">
-                        <div className="bg-[#EAB308] p-2 rounded-[8px] text-black border-[2px] border-black shadow-[2px_2px_0px_0px_#000]">
+                        <div className="bg-[#FFBD2E] p-2 rounded-lg text-black border-[2px] border-black shadow-[2px_2px_0px_0px_#000]">
                             <Sparkles className="w-5 h-5 fill-current" />
                         </div>
                         <h3 className="font-black text-xl text-black uppercase tracking-tight">Bilime Katkı Sağla</h3>
@@ -38,7 +38,7 @@ export function FeedSidebar({ suggestedUsers = [] }: { suggestedUsers?: SidebarU
                         Kendi makalelerini yaz, sorular sor ve bilim topluluğunun bir parçası ol.
                     </p>
                     <ViewTransitionLink href="/yazar" className="block outline-none">
-                        <Button className="w-full bg-[#f9f9f9] hover:bg-white text-black font-black border-[3px] border-black shadow-[4px_4px_0px_0px_#000] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all rounded-[8px] h-11 uppercase text-sm group">
+                        <Button className="w-full bg-[#f9f9f9] hover:bg-white text-black font-black border-[3px] border-black shadow-[4px_4px_0px_0px_#000] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all rounded-lg h-11 uppercase text-sm group">
                             <span className="group-hover:scale-105 transition-transform">İçerik Üretmeye Başla</span>
                         </Button>
                     </ViewTransitionLink>
@@ -47,7 +47,7 @@ export function FeedSidebar({ suggestedUsers = [] }: { suggestedUsers?: SidebarU
                     <Button
                         variant="outline"
                         onClick={() => setIsEditorOpen(true)}
-                        className="w-full mt-3 bg-black hover:bg-black/90 text-white font-black border-[3px] border-black shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all rounded-[8px] h-11 uppercase text-sm group"
+                        className="w-full mt-3 bg-black hover:bg-black/90 text-white font-black border-[3px] border-black shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all rounded-lg h-11 uppercase text-sm group"
                     >
                         <Sparkles className="w-4 h-4 mr-2 group-hover:rotate-12 transition-transform" />
                         Hızlı Bilim Paylaş
@@ -58,7 +58,7 @@ export function FeedSidebar({ suggestedUsers = [] }: { suggestedUsers?: SidebarU
             <RapidScienceEditorModal isOpen={isEditorOpen} onClose={() => setIsEditorOpen(false)} />
 
             {/* Suggested Writers */}
-            <div className="bg-card backdrop-blur-xl border-2 border-border rounded-[8px] p-5 shadow-sm">
+            <div className="bg-card backdrop-blur-xl border border-border rounded-xl p-5 shadow-sm">
                 <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
                     <UserPlus className="w-5 h-5 text-blue-500" />
                     Takip Önerileri
@@ -67,7 +67,7 @@ export function FeedSidebar({ suggestedUsers = [] }: { suggestedUsers?: SidebarU
                     {suggestedUsers && suggestedUsers.length > 0 ? (
                         suggestedUsers.map((user) => (
                             <div key={user.id} className="flex items-center gap-3 justify-between group">
-                                <Link href={`/kullanici/${user.username}`} className="flex min-h-11 items-center gap-3 overflow-hidden flex-1 relative z-10 rounded-[8px] outline-none focus-visible:ring-2 focus-visible:ring-[#EAB308]">
+                                <Link href={`/kullanici/${user.username}`} className="flex items-center gap-3 overflow-hidden flex-1 relative z-10 outline-none">
                                     <OptimizedAvatar
                                         src={user.avatar_url}
                                         alt={user.username || ""}
@@ -80,7 +80,7 @@ export function FeedSidebar({ suggestedUsers = [] }: { suggestedUsers?: SidebarU
                                     </div>
                                 </Link>
                                 <div className="shrink-0 relative z-20">
-                                    <FollowButton targetUserId={user.id} initialIsFollowing={false} className="min-h-11 rounded-[8px] text-xs font-bold px-3" />
+                                    <FollowButton targetUserId={user.id} initialIsFollowing={false} className="h-8 rounded-full text-xs font-semibold px-3" />
                                 </div>
                             </div>
                         ))

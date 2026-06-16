@@ -79,22 +79,20 @@ export function NexusStories({ initialStories = [], initialGroups = [] }: NexusS
     }
 
     return (
-        <section className="w-full pt-2 pb-0 mt-0 mb-0 sm:mb-3">
-            <div className="flex overflow-x-auto gap-3 sm:gap-5 -mx-3 px-3 sm:mx-0 sm:px-0 scrollbar-hide snap-x snap-mandatory touch-pan-x">
+        <section className="w-full pt-4 pb-0 mt-[-8px] mb-0 sm:mb-4">
+            <div className="flex overflow-x-auto gap-3 sm:gap-6 px-4 sm:px-0 scrollbar-hide snap-x snap-mandatory touch-pan-x">
                 {groupsWithStories.map((group, index) => {
                     return (
-                        <button
-                            type="button"
+                        <div
                             key={group.id}
-                            className="flex-shrink-0 snap-start min-w-[82px] min-h-[112px] flex flex-col items-center justify-center gap-2.5 group cursor-pointer story-item rounded-[8px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#EAB308] focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                            className="flex-shrink-0 snap-start flex flex-col items-center gap-3 group cursor-pointer story-item"
                             style={{ animationDelay: `${index * 50}ms` }}
                             onClick={() => openGroup(index)}
-                            aria-label={`${group.name} hikayelerini aç`}
                         >
                             {/* Outer Gradient Ring */}
                             <div
                                 className={cn(
-                                    "w-[78px] h-[78px] sm:w-[82px] sm:h-[82px] rounded-full p-[2px]",
+                                    "w-[82px] h-[82px] rounded-full p-[2px]",
                                     !group.ring_color && "bg-gradient-to-tr from-purple-500 via-pink-500 to-orange-500",
                                     "border-[1.5px] border-black shadow-[3px_3px_0px_0px_#000] sm:shadow-[4px_4px_0px_0px_#000] active:shadow-none transition-shadow duration-200"
                                 )}
@@ -115,10 +113,10 @@ export function NexusStories({ initialStories = [], initialGroups = [] }: NexusS
                                 </div>
                             </div>
 
-                            <span className="text-[11px] sm:text-[12px] font-black uppercase tracking-normal text-zinc-600 dark:text-zinc-400 max-w-[82px] truncate text-center">
+                            <span className="text-[11px] sm:text-[12px] font-black uppercase tracking-tighter text-zinc-600 dark:text-zinc-400 max-w-[80px] truncate text-center">
                                 {group.name}
                             </span>
-                        </button>
+                        </div>
                     );
                 })}
             </div>

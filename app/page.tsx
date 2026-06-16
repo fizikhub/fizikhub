@@ -212,9 +212,6 @@ export default async function Home() {
 
   // Process and Merge Data
   const feedItems = processFeedData(articles as unknown as FeedArticleData[], questions as unknown as FeedQuestionData[]);
-  const hasStoryRail = groups.some((group) =>
-    stories.some((story) => String(story.group_id) === String(group.id))
-  );
   const latestArticleDate = articles
     .map((article) => article.created_at)
     .filter(Boolean)
@@ -321,26 +318,24 @@ export default async function Home() {
   };
 
   return (
-    <main className="min-h-screen bg-background relative pb-[calc(5.75rem+env(safe-area-inset-bottom))] md:pb-0 overflow-x-clip">
+    <main className="min-h-screen bg-background relative selection:bg-emerald-500/30">
       <JsonLd data={jsonLd} />
       <DeferredHomeControls />
 
-      <div className="mx-auto w-full max-w-[1250px] px-3 sm:px-4 md:px-6 relative z-10 pt-0 lg:pt-8 xl:pt-10">
+      <div className="container max-w-[1250px] mx-auto px-2 sm:px-4 md:px-6 relative z-10 pt-0 lg:pt-8 xl:pt-10">
 
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 lg:gap-8 pt-3 sm:pt-4 lg:pt-0">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-0 lg:gap-8 pt-4 lg:pt-0">
 
-          <div className="lg:col-span-12 mt-0 min-w-0 sm:px-0">
+          <div className="lg:col-span-12 mt-0 sm:px-0">
             <CompactHero />
-            {hasStoryRail ? (
-              <div data-nosnippet>
-                <NexusStories initialStories={stories} initialGroups={groups} />
-              </div>
-            ) : null}
+            <div data-nosnippet>
+              <NexusStories initialStories={stories} initialGroups={groups} />
+            </div>
           </div>
 
           {/* Main Feed Column */}
-          <div className="lg:col-span-12 xl:col-span-7 flex min-w-0 flex-col gap-4 sm:gap-6 xl:min-h-screen border-r border-foreground/5 md:border-r-0 md:pr-0 w-full md:max-w-[680px] md:mx-auto xl:mx-0">
+          <div className="lg:col-span-12 xl:col-span-7 space-y-0 sm:space-y-6 xl:min-h-screen border-r border-foreground/5 md:border-r-0 md:pr-0 w-full md:max-w-[650px] md:mx-auto xl:mx-0">
             <LatestArticlesSlider
               articles={formatSliderArticles(articles as unknown as FeedArticleData[])}
             />

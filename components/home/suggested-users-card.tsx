@@ -37,20 +37,20 @@ export function SuggestedUsersCard({ users }: SuggestedUsersCardProps) {
     if (!users || users.length === 0) return null;
 
     return (
-        <div className="my-0">
-            <div className="flex items-center gap-2 mb-4 px-1">
+        <div className="my-8">
+            <div className="flex items-center gap-2 mb-4 px-2">
                 <Star className="w-5 h-5 text-amber-500 fill-amber-500" />
-                <h3 className="font-black text-base sm:text-lg text-foreground tracking-normal uppercase">Takip Önerileri</h3>
+                <h3 className="font-black text-lg text-foreground tracking-tight">Takip Önerileri</h3>
             </div>
 
-            <div className="flex gap-3 sm:gap-4 overflow-x-auto pb-2 px-1 scrollbar-hide snap-x snap-mandatory">
+            <div className="flex gap-4 overflow-x-auto pb-4 px-2 scrollbar-hide snap-x">
                 {users.map((user, i) => (
                     <div
                         key={user.id}
-                        className="flex-shrink-0 w-[168px] sm:w-48 snap-start animate-in fade-in duration-500 fill-mode-both"
+                        className="flex-shrink-0 w-48 snap-center animate-in fade-in duration-500 fill-mode-both"
                         style={{ animationDelay: `${i * 100}ms` }}
                     >
-                        <div className="flex flex-col items-center p-4 sm:p-5 bg-card border-2 border-black/10 dark:border-white/10 rounded-[8px] text-center hover:border-amber-500/40 hover:shadow-[2px_2px_0px_0px_#000] transition-all duration-300 group">
+                        <div className="flex flex-col items-center p-5 bg-card border border-border rounded-2xl text-center hover:border-amber-500/30 hover:shadow-lg transition-all duration-300 group">
                             <div className="relative mb-3">
                                 <OptimizedAvatar
                                     src={user.avatar_url}
@@ -67,7 +67,7 @@ export function SuggestedUsersCard({ users }: SuggestedUsersCardProps) {
                                 )}
                             </div>
 
-                            <Link prefetch={false} href={`/kullanici/${user.username}`} className="font-black text-sm text-foreground hover:text-primary truncate w-full mb-0.5 rounded-[6px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#EAB308]">
+                            <Link prefetch={false} href={`/kullanici/${user.username}`} className="font-bold text-foreground hover:text-primary truncate w-full mb-0.5">
                                 {user.full_name || user.username}
                             </Link>
                             <div className="text-xs text-muted-foreground mb-4 truncate w-full">
@@ -77,7 +77,7 @@ export function SuggestedUsersCard({ users }: SuggestedUsersCardProps) {
                             <Button
                                 size="sm"
                                 variant={following.includes(user.id) ? "secondary" : "default"}
-                                className={`w-full rounded-[8px] min-h-11 text-xs font-black ${following.includes(user.id) ? "" : "bg-foreground text-background hover:bg-foreground/90"}`}
+                                className={`w-full rounded-full h-8 text-xs font-bold ${following.includes(user.id) ? "" : "bg-foreground text-background hover:bg-foreground/90"}`}
                                 onClick={() => handleFollow(user.id)}
                             >
                                 {following.includes(user.id) ? "Takip Ediliyor" : "Takip Et"}

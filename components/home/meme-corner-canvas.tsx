@@ -5,15 +5,6 @@ import { Canvas, useFrame } from "@react-three/fiber";
 import { EffectComposer, Bloom } from "@react-three/postprocessing";
 import * as THREE from "three";
 
-// Pure deterministic PRNG for React Compiler compliance
-function createPureRandom(seed = 1) {
-    let s = seed;
-    return function() {
-        const x = Math.sin(s++) * 10000;
-        return x - Math.floor(x);
-    };
-}
-
 // --- TEXTURES ---
 
 // 1. STAR TEXTURE: Hard center for visibility
@@ -65,7 +56,7 @@ function getNebulaTexture() {
 }
 
 // --- GALAXY DUST ( The Haze ) ---
-function GalaxyDust({ count = 16000 }) {
+function GalaxyDust({ count = 30000 }) {
     const pointsRef = useRef<THREE.Points>(null!);
     const texture = useMemo(() => getStarTexture(), []); // Use same texture, just smaller
 
@@ -75,8 +66,6 @@ function GalaxyDust({ count = 16000 }) {
 
         const c_Inner = new THREE.Color('#66aaff'); // Dusty Blue
         const c_Outer = new THREE.Color('#3355aa'); // Deep Dust
-        const tempColor = new THREE.Color();
-        const random = createPureRandom(42);
 
         const arms = 2;
         const spin = 3.5;
@@ -84,7 +73,7 @@ function GalaxyDust({ count = 16000 }) {
         for (let i = 0; i < count; i++) {
             const i3 = i * 3;
             // Dust is mostly in the arms
-            const rRandom = Math.pow(random(), 1.5);
+            const rRandom = Math.pow(Math.random(), 1.5);
             const radius = 1.0 + rRandom * 10;
 
             const branchAngle = ((i % arms) / arms) * Math.PI * 2;
@@ -92,9 +81,9 @@ function GalaxyDust({ count = 16000 }) {
 
             // More scatter for dust = "Cloud/Haze" effect
             const scatterBase = 0.4 + (radius * 0.15);
-            const randomX = (random() - 0.5) * scatterBase * 2;
-            const randomY = (random() - 0.5) * (0.1 + radius * 0.02); // Flat
-            const randomZ = (random() - 0.5) * scatterBase * 2;
+            const randomX = (Math.random() - 0.5) * scatterBase * 2;
+            const randomY = (Math.random() - 0.5) * (0.1 + radius * 0.02); // Flat
+            const randomZ = (Math.random() - 0.5) * scatterBase * 2;
 
             const finalAngle = branchAngle + spinAngle;
             const x = Math.cos(finalAngle) * radius + randomX;
@@ -104,11 +93,13 @@ function GalaxyDust({ count = 16000 }) {
             positions[i3 + 1] = randomY;
             positions[i3 + 2] = z;
 
-            tempColor.copy(c_Inner).lerp(c_Outer, radius / 10).multiplyScalar(0.6); // Dimmer than stars
+            const color = new THREE.Color();
+            color.copy(c_Inner).lerp(c_Outer, radius / 10);
+            color.multiplyScalar(0.6); // Dimmer than stars
 
-            colors[i3] = tempColor.r;
-            colors[i3 + 1] = tempColor.g;
-            colors[i3 + 2] = tempColor.b;
+            colors[i3] = color.r;
+            colors[i3 + 1] = color.g;
+            colors[i3 + 2] = color.b;
         }
 
         const geo = new THREE.BufferGeometry();
@@ -139,7 +130,7 @@ function GalaxyDust({ count = 16000 }) {
 }
 
 // --- MAIN STARS ( Bright & Distinct ) ---
-function MainStars({ count = 6500 }) {
+function MainStars({ count = 10000 }) {
     const pointsRef = useRef<THREE.Points>(null!);
     const texture = useMemo(() => getStarTexture(), []);
 
@@ -150,21 +141,20 @@ function MainStars({ count = 6500 }) {
         const c_Core = new THREE.Color('#fff5c2');    // Golden Core
         const c_Inner = new THREE.Color('#d4f1ff');   // White-Blue
         const c_Outer = new THREE.Color('#5599ff');   // Electric Blue
-        const tempColor = new THREE.Color();
-        const random = createPureRandom(77);
 
         const arms = 2;
         const spin = 3.5;
-        const bulgeCount = Math.min(2600, Math.floor(count * 0.4));
+        const bulgeCount = 4000;
 
         for (let i = 0; i < count; i++) {
             const i3 = i * 3;
+            const color = new THREE.Color();
 
             if (i < bulgeCount) {
                 // Bulge
-                const r = Math.pow(random(), 3) * 3.0;
-                const theta = random() * Math.PI * 2;
-                const phi = Math.acos(2 * random() - 1);
+                const r = Math.pow(Math.random(), 3) * 3.0;
+                const theta = Math.random() * Math.PI * 2;
+                const phi = Math.acos(2 * Math.random() - 1);
 
                 const x = r * Math.sin(phi) * Math.cos(theta);
                 const y = (r * Math.sin(phi) * Math.sin(theta)) * 0.7;
@@ -174,13 +164,13 @@ function MainStars({ count = 6500 }) {
                 positions[i3 + 1] = y;
                 positions[i3 + 2] = z;
 
-                tempColor.copy(c_Core);
+                color.copy(c_Core);
                 // Core brilliance
-                if (random() > 0.7) tempColor.multiplyScalar(1.5);
+                if (Math.random() > 0.7) color.multiplyScalar(1.5);
 
             } else {
                 // Arms
-                const rRandom = Math.pow(random(), 1.5);
+                const rRandom = Math.pow(Math.random(), 1.5);
                 const radius = 2.5 + rRandom * 8;
 
                 const branchAngle = ((i % arms) / arms) * Math.PI * 2;
@@ -188,9 +178,9 @@ function MainStars({ count = 6500 }) {
 
                 // Tighter scatter for main stars = "Structure"
                 const scatterBase = 0.15 + (radius * 0.05);
-                const randomX = (random() - 0.5) * scatterBase * 2;
-                const randomY = (random() - 0.5) * (0.2 + radius * 0.05);
-                const randomZ = (random() - 0.5) * scatterBase * 2;
+                const randomX = (Math.random() - 0.5) * scatterBase * 2;
+                const randomY = (Math.random() - 0.5) * (0.2 + radius * 0.05);
+                const randomZ = (Math.random() - 0.5) * scatterBase * 2;
 
                 const finalAngle = branchAngle + spinAngle;
                 const x = Math.cos(finalAngle) * radius + randomX;
@@ -200,17 +190,17 @@ function MainStars({ count = 6500 }) {
                 positions[i3 + 1] = randomY;
                 positions[i3 + 2] = z;
 
-                tempColor.copy(c_Inner).lerp(c_Outer, (radius - 2.5) / 6);
+                color.copy(c_Inner).lerp(c_Outer, (radius - 2.5) / 6);
 
                 // Occasional Red Giants / Bright Stars
-                const rand = random();
-                if (rand > 0.95) tempColor.set('#ffffff').multiplyScalar(2.0); // Super bright
-                else if (rand > 0.90) tempColor.set('#ffccaa'); // Red/Orange giant
+                const rand = Math.random();
+                if (rand > 0.95) color.set('#ffffff').multiplyScalar(2.0); // Super bright
+                else if (rand > 0.90) color.set('#ffccaa'); // Red/Orange giant
             }
 
-            colors[i3] = tempColor.r;
-            colors[i3 + 1] = tempColor.g;
-            colors[i3 + 2] = tempColor.b;
+            colors[i3] = color.r;
+            colors[i3 + 1] = color.g;
+            colors[i3 + 2] = color.b;
         }
 
         const geo = new THREE.BufferGeometry();
@@ -241,7 +231,7 @@ function MainStars({ count = 6500 }) {
 }
 
 // --- VOLUMETRIC NEBULA (MAX VISIBILITY) ---
-function NebulaClouds({ count = 4200 }) {
+function NebulaClouds({ count = 8000 }) {
     const pointsRef = useRef<THREE.Points>(null!);
     const texture = useMemo(() => getNebulaTexture(), []);
 
@@ -253,33 +243,32 @@ function NebulaClouds({ count = 4200 }) {
         const c_Pink = new THREE.Color('#aa00ff');   // Violet highlights
         const c_Purple = new THREE.Color('#4400ff'); // Deep Indigo
         const c_Blue = new THREE.Color('#001155');   // Very Dark Navy
-        const tempColor = new THREE.Color();
-        const random = createPureRandom(999);
 
         for (let i = 0; i < count; i++) {
             const i3 = i * 3;
-            const radius = 1 + random() * 10;
-            const angle = random() * Math.PI * 2;
+            const radius = 1 + Math.random() * 10;
+            const angle = Math.random() * Math.PI * 2;
 
             const x = Math.cos(angle) * radius;
             const z = Math.sin(angle) * radius;
-            const y = (random() - 0.5) * 3.0; // Volume
+            const y = (Math.random() - 0.5) * 3.0; // Volume
 
             positions[i3] = x;
             positions[i3 + 1] = y;
             positions[i3 + 2] = z;
 
-            const mix = random();
-            if (mix < 0.33) tempColor.copy(c_Pink);
-            else if (mix < 0.66) tempColor.copy(c_Purple);
-            else tempColor.copy(c_Blue);
+            const color = new THREE.Color();
+            const mix = Math.random();
+            if (mix < 0.33) color.copy(c_Pink);
+            else if (mix < 0.66) color.copy(c_Purple);
+            else color.copy(c_Blue);
 
             // Boost brightness
-            tempColor.multiplyScalar(1.2);
+            color.multiplyScalar(1.2);
 
-            colors[i3] = tempColor.r;
-            colors[i3 + 1] = tempColor.g;
-            colors[i3 + 2] = tempColor.b;
+            colors[i3] = color.r;
+            colors[i3 + 1] = color.g;
+            colors[i3 + 2] = color.b;
         }
 
         const geo = new THREE.BufferGeometry();
@@ -310,7 +299,7 @@ function NebulaClouds({ count = 4200 }) {
 }
 
 // --- DISTANT BACKGROUND STARS ---
-function BackgroundStars({ count = 1200 }) {
+function BackgroundStars({ count = 2000 }) {
     const pointsRef = useRef<THREE.Points>(null!);
     const texture = useMemo(() => getStarTexture(), []);
 
@@ -319,15 +308,13 @@ function BackgroundStars({ count = 1200 }) {
         const colors = new Float32Array(count * 3);
         const c_White = new THREE.Color('#ffffff');
         const c_Blue = new THREE.Color('#aaaaff');
-        const tempColor = new THREE.Color();
-        const random = createPureRandom(888);
 
         for (let i = 0; i < count; i++) {
             const i3 = i * 3;
             // Distant Sphere
-            const r = 20 + random() * 20;
-            const theta = random() * Math.PI * 2;
-            const phi = Math.acos(2 * random() - 1);
+            const r = 20 + Math.random() * 20;
+            const theta = Math.random() * Math.PI * 2;
+            const phi = Math.acos(2 * Math.random() - 1);
 
             const x = r * Math.sin(phi) * Math.cos(theta);
             const y = r * Math.sin(phi) * Math.sin(theta);
@@ -337,11 +324,12 @@ function BackgroundStars({ count = 1200 }) {
             positions[i3 + 1] = y;
             positions[i3 + 2] = z;
 
-            tempColor.copy(random() > 0.5 ? c_White : c_Blue);
+            const color = new THREE.Color();
+            color.copy(Math.random() > 0.5 ? c_White : c_Blue);
 
-            colors[i3] = tempColor.r;
-            colors[i3 + 1] = tempColor.g;
-            colors[i3 + 2] = tempColor.b;
+            colors[i3] = color.r;
+            colors[i3 + 1] = color.g;
+            colors[i3 + 2] = color.b;
         }
 
         const geo = new THREE.BufferGeometry();
@@ -396,7 +384,7 @@ export default function MemeCornerCanvas() {
                 powerPreference: "high-performance",
                 alpha: true
             }}
-            dpr={[1, Math.min(window.devicePixelRatio, 1.5)]}
+            dpr={[1, Math.min(window.devicePixelRatio, 2)]}
         >
             <group>
                 <BackgroundStars />
@@ -405,7 +393,7 @@ export default function MemeCornerCanvas() {
                 <NebulaClouds />
             </group>
 
-            <EffectComposer enableNormalPass={false} multisampling={2}>
+            <EffectComposer enableNormalPass={false} multisampling={8}>
                 <Bloom
                     luminanceThreshold={0.6} // Higher threshold = Only brightest stars glow
                     intensity={1.0}
