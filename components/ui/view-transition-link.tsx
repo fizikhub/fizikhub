@@ -9,6 +9,7 @@ interface ViewTransitionLinkProps extends LinkProps {
     className?: string;
     href: string;
     onClick?: (e: React.MouseEvent<HTMLAnchorElement>) => void;
+    onPointerDown?: (e: React.PointerEvent<HTMLAnchorElement>) => void;
     id?: string;
 }
 

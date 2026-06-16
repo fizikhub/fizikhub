@@ -1,16 +1,19 @@
 "use client";
 
 import { ViewTransitionLink } from "@/components/ui/view-transition-link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Home, BookOpen, MessageCircle, User, Plus, type LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useState, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { m, AnimatePresence, useScroll, useVelocity, useMotionValueEvent, useMotionValue, animate } from "framer-motion";
 
 import { DankLogo } from "@/components/brand/dank-logo";
 
+const PRIMARY_ROUTES = ["/", "/makale", "/paylas", "/forum", "/profil"];
+
 export function BottomNav() {
     const pathname = usePathname();
+    const router = useRouter();
     const { scrollY, scrollYProgress } = useScroll();
     const scrollVelocity = useVelocity(scrollY);
 
@@ -18,41 +21,73 @@ export function BottomNav() {
     const [isAtBottom, setIsAtBottom] = useState(false);
     const navY = useMotionValue(0);
     const targetYRef = useRef(0);
+    const isAtBottomRef = useRef(false);
+    const animationRef = useRef<ReturnType<typeof animate> | null>(null);
+    const frameRef = useRef<number | null>(null);
+
+    const warmRoute = useCallback((href: string) => {
+        if (typeof href !== "string" || !href.startsWith("/")) return;
+        router.prefetch(href);
+    }, [router]);
+
+    useEffect(() => {
+        const prefetchRoutes = () => PRIMARY_ROUTES.forEach(warmRoute);
+
+        if ("requestIdleCallback" in window) {
+            const idleId = window.requestIdleCallback(prefetchRoutes, { timeout: 1500 });
+            return () => window.cancelIdleCallback(idleId);
+        }
+
+        const timeoutId = globalThis.setTimeout(prefetchRoutes, 450);
+        return () => globalThis.clearTimeout(timeoutId);
+    }, [warmRoute]);
+
+    useEffect(() => () => {
+        if (frameRef.current !== null) cancelAnimationFrame(frameRef.current);
+        animationRef.current?.stop();
+    }, []);
 
     useMotionValueEvent(scrollY, "change", (latest) => {
-        requestAnimationFrame(() => {
+        if (frameRef.current !== null) cancelAnimationFrame(frameRef.current);
+
+        frameRef.current = requestAnimationFrame(() => {
             const velocity = scrollVelocity.get();
             const previous = scrollY.getPrevious() || 0;
             const diff = latest - previous;
-            let targetY = navY.get();
-            let targetDuration = 0.4;
+            let targetY = targetYRef.current;
 
             // Detect if at bottom using scrollYProgress to avoid layout thrashing
             // (document.body.offsetHeight triggers forced reflow)
             const isNearBottom = scrollYProgress.get() > 0.95;
+            const shouldShowBottomState = isNearBottom;
+
+            if (isAtBottomRef.current !== shouldShowBottomState) {
+                isAtBottomRef.current = shouldShowBottomState;
+                setIsAtBottom(shouldShowBottomState);
+            }
 
             if (isNearBottom) {
-                if (!isAtBottom) setIsAtBottom(true);
                 targetY = 0;
             } else {
-                if (isAtBottom) setIsAtBottom(false);
                 if (latest < 50) {
                     targetY = 0;
-                } else if (diff > 5) {
+                } else if (diff > 7 && velocity > 180) {
                     targetY = 120;
-                } else if (diff < -5) {
+                } else if (diff < -5 || velocity < -120) {
                     targetY = 0;
                 }
             }
 
-            const absVelocity = Math.abs(velocity);
-            targetDuration = Math.max(0.15, Math.min(0.6, 800 / (absVelocity + 1)));
-
             if (targetYRef.current !== targetY) {
                 targetYRef.current = targetY;
-                animate(navY, targetY, {
-                    duration: targetDuration,
-                    ease: [0.32, 0.72, 0, 1]
+                animationRef.current?.stop();
+                animationRef.current = animate(navY, targetY, {
+                    type: "spring",
+                    stiffness: 420,
+                    damping: targetY === 0 ? 38 : 44,
+                    mass: 0.75,
+                    restDelta: 0.25,
+                    restSpeed: 18
                 });
             }
         });
@@ -69,7 +104,7 @@ export function BottomNav() {
         <m.div
             style={{ y: navY }}
 
-            className="fixed bottom-0 left-0 right-0 z-[50] md:hidden font-sans"
+            className="fixed bottom-0 left-0 right-0 z-[50] md:hidden font-sans transform-gpu will-change-transform"
         >
             <nav aria-label="Mobil navigasyon" className={cn(
                 "w-full transition-all duration-500 overflow-visible",
@@ -98,6 +133,7 @@ export function BottomNav() {
                                 label="Ana Sayfa"
                                 isActive={pathname === "/"}
                                 onInteract={vibrate}
+                                onWarmRoute={warmRoute}
                             />
 
                             <NavItem
@@ -107,6 +143,7 @@ export function BottomNav() {
                                 label="Keşfet"
                                 isActive={pathname.startsWith("/makale")}
                                 onInteract={vibrate}
+                                onWarmRoute={warmRoute}
                             />
 
                             <div className="relative -top-3.5 z-20">
@@ -115,6 +152,7 @@ export function BottomNav() {
                                     href="/paylas"
                                     className="relative block"
                                     onClick={vibrate}
+                                    onPointerDown={() => warmRoute("/paylas")}
                                 >
                                     <m.div
                                         animate={{ scale: 1 }}
@@ -148,6 +186,7 @@ export function BottomNav() {
                                 label="Forum"
                                 isActive={pathname.startsWith("/forum")}
                                 onInteract={vibrate}
+                                onWarmRoute={warmRoute}
                             />
 
                             <NavItem
@@ -157,6 +196,7 @@ export function BottomNav() {
                                 label="Profil"
                                 isActive={pathname.startsWith("/profil")}
                                 onInteract={vibrate}
+                                onWarmRoute={warmRoute}
                             />
                         </m.div>
                     ) : (
@@ -192,7 +232,7 @@ export function BottomNav() {
     );
 }
 
-function NavItem({ id, href, icon: Icon, label, isActive, onInteract }: { id?: string; href: string; icon: LucideIcon; label: string; isActive: boolean; onInteract: () => void }) {
+function NavItem({ id, href, icon: Icon, label, isActive, onInteract, onWarmRoute }: { id?: string; href: string; icon: LucideIcon; label: string; isActive: boolean; onInteract: () => void; onWarmRoute: (href: string) => void }) {
     const handleNavItemClick = (e: React.MouseEvent) => {
         onInteract();
         if (isActive) {
@@ -206,6 +246,7 @@ function NavItem({ id, href, icon: Icon, label, isActive, onInteract }: { id?: s
             id={id}
             href={href}
             onClick={handleNavItemClick}
+            onPointerDown={() => onWarmRoute(href)}
             aria-label={label}
             aria-current={isActive ? 'page' : undefined}
             className={cn(
