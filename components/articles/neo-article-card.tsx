@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { ViewTransitionLink } from "@/components/ui/view-transition-link"; // [NEW]
 import { OptimizedImage, OptimizedAvatar } from "@/components/ui/optimized-image";
 import { formatDistanceToNow } from "date-fns";
@@ -27,7 +26,6 @@ interface NeoArticleCardProps {
 export function NeoArticleCard({
     article,
     initialLikes = 0,
-    initialComments = 0,
     initialIsLiked = false,
     initialIsBookmarked = false,
     className,
@@ -65,7 +63,7 @@ export function NeoArticleCard({
                     toast.error("Giriş yapmalısınız!");
                 }
             }
-        } catch (error) {
+        } catch {
             setIsLiked(previousLiked);
             setLikeCount(previousCount);
         } finally {
@@ -87,7 +85,7 @@ export function NeoArticleCard({
             } else if (!previousBookmarked) {
                 toast.success("Kaydedildi!");
             }
-        } catch (error) {
+        } catch {
             setIsBookmarked(previousBookmarked);
         }
     };
@@ -105,7 +103,7 @@ export function NeoArticleCard({
             const plainText = htmlContent.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
             if (plainText.length > 20) return plainText;
         }
-        return summary || "Bu makale için içerik önizlemesi bulunmuyor.";
+        return summary || article.excerpt || article.title;
     };
 
     const previewText = getPreviewText(article.content, article.summary);
@@ -184,7 +182,8 @@ export function NeoArticleCard({
                                     src={authorAvatar}
                                     alt={authorName}
                                     size={40}
-                                    className="w-full h-full"
+                                    fillContainer
+                                    className="h-full w-full"
                                 />
                             </div>
                             <div className="flex flex-col leading-none gap-0.5 min-w-0">

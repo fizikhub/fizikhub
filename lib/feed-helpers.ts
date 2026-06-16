@@ -8,6 +8,8 @@ export const HOME_FEED_ARTICLE_SELECT = [
     "title",
     "slug",
     "excerpt",
+    "summary",
+    "content",
     "category",
     "cover_url",
     "image_url",
@@ -20,25 +22,26 @@ export const HOME_FEED_ARTICLE_SELECT = [
 ].join(", ");
 
 function buildArticlePreview(article: FeedArticleData): string {
-    const explicitPreview = article.excerpt || article.summary;
-    if (explicitPreview) return explicitPreview;
+    const stripPreview = (value: string | null | undefined): string => {
+        if (!value) return "";
 
-    if (!article.content) return "";
+        return value
+            .replace(/<style[\s\S]*?<\/style>/gi, " ")
+            .replace(/<script[\s\S]*?<\/script>/gi, " ")
+            .replace(/<[^>]+>/g, " ")
+            .replace(/!\[[^\]]*\]\([^)]*\)/g, " ")
+            .replace(/\[[^\]]+\]\([^)]*\)/g, (match: string) => match.match(/\[([^\]]+)\]/)?.[1] || " ")
+            .replace(/[#>*_`~-]+/g, " ")
+            .replace(/&nbsp;/g, " ")
+            .replace(/&amp;/g, "&")
+            .replace(/&lt;/g, "<")
+            .replace(/&gt;/g, ">")
+            .replace(/\s+/g, " ")
+            .trim()
+            .slice(0, 360);
+    };
 
-    return article.content
-        .replace(/<style[\s\S]*?<\/style>/gi, " ")
-        .replace(/<script[\s\S]*?<\/script>/gi, " ")
-        .replace(/<[^>]+>/g, " ")
-        .replace(/!\[[^\]]*\]\([^)]*\)/g, " ")
-        .replace(/\[[^\]]+\]\([^)]*\)/g, (match: string) => match.match(/\[([^\]]+)\]/)?.[1] || " ")
-        .replace(/[#>*_`~-]+/g, " ")
-        .replace(/&nbsp;/g, " ")
-        .replace(/&amp;/g, "&")
-        .replace(/&lt;/g, "<")
-        .replace(/&gt;/g, ">")
-        .replace(/\s+/g, " ")
-        .trim()
-        .slice(0, 360);
+    return stripPreview(article.excerpt) || stripPreview(article.summary) || stripPreview(article.content);
 }
 
 export function processFeedData(articles: FeedArticleData[], questions: FeedQuestionData[]): FeedItem[] {

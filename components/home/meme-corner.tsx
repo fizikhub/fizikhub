@@ -46,7 +46,7 @@ export function MemeCorner() {
                             filter: 'drop-shadow(0px 4px 12px rgba(0,0,0,0.9))'
                         }}
                     >
-                        Tİ'YE ALIYORUZ
+                        TI'YE ALIYORUZ
                     </h2>
 
                     <div className="mt-2 sm:mt-3 transform origin-center animate-[badge-wiggle_3s_ease-in-out_infinite]">

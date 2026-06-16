@@ -206,7 +206,7 @@ const getCachedFeedData = unstable_cache(
       }))
     };
   },
-  ['feed-data-v9-homepage-schema-safe-previews'], // Bump version to invalidate cached empty article feeds
+  ['feed-data-v10-homepage-content-preview-fallbacks'],
   { revalidate: 60, tags: ['feed'] }
 );
 
