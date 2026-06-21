@@ -98,7 +98,11 @@ const contentSecurityPolicy = [
 ];
 
 const reportOnlyContentSecurityPolicy = [
-  ...contentSecurityPolicy.filter((directive) => directive !== "upgrade-insecure-requests"),
+  ...contentSecurityPolicy
+    .filter((directive) => directive !== "upgrade-insecure-requests")
+    .map((directive) => directive.startsWith("script-src ")
+      ? `${directive.replace(" 'unsafe-inline'", "")} 'report-sample'`
+      : directive),
   "report-to csp-endpoint",
   "report-uri /api/security/csp-report",
 ];

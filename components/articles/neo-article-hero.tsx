@@ -46,6 +46,7 @@ export function NeoArticleHero({ article, readingTime, titleOverride, introOverr
                             className="object-cover group-hover:scale-[1.02] transition-transform duration-500"
                             priority
                             fetchPriority="high"
+                            data-lcp-candidate="article-cover"
                             sizes="(max-width: 768px) 100vw, (max-width: 1024px) 768px, 1200px"
                         />
                     </div>

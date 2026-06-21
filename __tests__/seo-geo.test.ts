@@ -8,7 +8,7 @@ import { GET as topicSitemap } from "@/app/topic-sitemap.xml/route";
 import { AI_CITATION_POLICY, AI_CONTENT_PROVENANCE, AI_CRAWLER_USER_AGENTS, AI_DISCOVERY_ROUTES, buildAiCitationText } from "@/lib/ai-discovery";
 import { buildSimulationCourseJsonLd, buildSimulationCourseListJsonLd, type SimulationCourseSource } from "@/lib/educational-schema";
 import { isKnownAiCrawlerUserAgent } from "@/lib/ai-discovery";
-import { buildForumDiscussionPostingItem } from "@/lib/forum-structured-data";
+import { buildForumDiscussionPostingItem, getForumAnswerUpvoteCount } from "@/lib/forum-structured-data";
 import { getVectorUrl } from "@/lib/search-results";
 import { serializeScriptJson } from "@/lib/script-json";
 import { safeExternalUrl, socialProfileUrl } from "@/lib/profile-links";
@@ -85,6 +85,15 @@ describe("SEO/GEO topic cluster helpers", () => {
             expect(guide.studySteps).toHaveLength(3);
             expect(guide.commonPitfall.length).toBeGreaterThan(60);
         }
+    });
+});
+
+describe("forum QAPage vote accuracy", () => {
+    it("prefers real answer-like counts over legacy placeholder votes", () => {
+        expect(getForumAnswerUpvoteCount({ likeCount: 7, votes: 0 })).toBe(7);
+        expect(getForumAnswerUpvoteCount({ votes: 3 })).toBe(3);
+        expect(getForumAnswerUpvoteCount({ likeCount: null, votes: 4 })).toBe(4);
+        expect(getForumAnswerUpvoteCount({ likeCount: -1, votes: -2 })).toBe(0);
     });
 });
 

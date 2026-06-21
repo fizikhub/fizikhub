@@ -21,6 +21,16 @@ export type ForumStructuredDataQuestion = {
     all_answers?: Array<{ count?: number | null }> | null;
 };
 
+export function getForumAnswerUpvoteCount(answer: { likeCount?: number | null; votes?: number | null }) {
+    if (typeof answer.likeCount === "number" && Number.isFinite(answer.likeCount) && answer.likeCount >= 0) {
+        return answer.likeCount;
+    }
+
+    return typeof answer.votes === "number" && Number.isFinite(answer.votes) && answer.votes >= 0
+        ? answer.votes
+        : 0;
+}
+
 function firstProfile(profile: ForumStructuredDataQuestion["profiles"]) {
     if (Array.isArray(profile)) return profile[0] || null;
     return profile || null;

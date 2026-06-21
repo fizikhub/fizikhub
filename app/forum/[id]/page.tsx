@@ -30,6 +30,7 @@ import { ShareDrawer } from "@/components/forum/share-drawer";
 import { BreadcrumbJsonLd } from "@/lib/breadcrumbs";
 import { getSiteUrl, isIndexableForumQuestion, stripMarkdownForMeta, truncateForMeta } from "@/lib/seo-utils";
 import { CitationBlock } from "@/components/forum/citation-block";
+import { getForumAnswerUpvoteCount } from "@/lib/forum-structured-data";
 
 import type { Metadata } from "next";
 
@@ -365,7 +366,7 @@ export default async function QuestionPage({ params }: PageProps) {
                     text: stripMarkdownForMeta(acceptedAnswer.content),
                     dateCreated: acceptedAnswer.created_at,
                     datePublished: acceptedAnswer.created_at,
-                    upvoteCount: acceptedAnswer.votes || 0,
+                    upvoteCount: getForumAnswerUpvoteCount(acceptedAnswer),
                     url: `${baseUrl}/forum/${question.id}#answer-${acceptedAnswer.id}`,
                     author: {
                         '@type': 'Person',
@@ -380,7 +381,7 @@ export default async function QuestionPage({ params }: PageProps) {
                     text: stripMarkdownForMeta(answer.content),
                     dateCreated: answer.created_at,
                     datePublished: answer.created_at,
-                    upvoteCount: answer.votes || 0,
+                    upvoteCount: getForumAnswerUpvoteCount(answer),
                     url: `${baseUrl}/forum/${question.id}#answer-${answer.id}`,
                     author: {
                         '@type': 'Person',

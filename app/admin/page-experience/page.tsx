@@ -24,6 +24,16 @@ type PageExperienceMetric = {
     good_count: number | null;
 };
 
+type LcpElementMetric = {
+    pathname: string | null;
+    lcp_element: string | null;
+    resource_url: string | null;
+    event_count: number | null;
+    p75_value: number | string | null;
+    poor_count: number | null;
+    needs_improvement_count: number | null;
+};
+
 const metricOrder = ["LCP", "INP", "CLS", "FCP", "TTFB"] as const;
 
 function metricPriority(row: PageExperienceMetric) {
@@ -40,11 +50,22 @@ export default async function PageExperienceDashboard() {
     const supabase = await createClient();
 
     // Fetch from our new view
-    const { data: metrics, error } = await supabase
-        .from("view_page_experience_metrics")
-        .select("*")
-        .order("poor_count", { ascending: false })
-        .order("event_count", { ascending: false });
+    const [metricsResult, lcpElementsResult] = await Promise.all([
+        supabase
+            .from("view_page_experience_metrics")
+            .select("*")
+            .order("poor_count", { ascending: false })
+            .order("event_count", { ascending: false }),
+        supabase
+            .from("view_lcp_element_metrics")
+            .select("*")
+            .order("poor_count", { ascending: false })
+            .order("p75_value", { ascending: false })
+            .limit(30),
+    ]);
+
+    const { data: metrics, error } = metricsResult;
+    const lcpElements = (lcpElementsResult.data || []) as LcpElementMetric[];
 
     const typedMetrics = (metrics || []) as PageExperienceMetric[];
     const sortedMetrics = [...typedMetrics].sort((a, b) =>
@@ -181,6 +202,59 @@ export default async function PageExperienceDashboard() {
                     ) : (
                         <div className="flex h-[200px] items-center justify-center text-muted-foreground border rounded-md">
                             Henüz web vitals verisi toplanmamış veya SQL View oluşturulmamış.
+                        </div>
+                    )}
+                </CardContent>
+            </Card>
+
+            <Card>
+                <CardHeader>
+                    <CardTitle>LCP Elemanı ve Görsel Kaynağı</CardTitle>
+                    <CardDescription>
+                        Priority/fetchPriority yalnızca burada gerçek LCP olarak doğrulanan, ilk ekrandaki görsellere verilmeli.
+                    </CardDescription>
+                </CardHeader>
+                <CardContent>
+                    {lcpElements.length > 0 ? (
+                        <div className="rounded-md border">
+                            <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead>Rota</TableHead>
+                                        <TableHead>LCP elemanı</TableHead>
+                                        <TableHead>Kaynak</TableHead>
+                                        <TableHead className="text-right">P75</TableHead>
+                                        <TableHead className="text-right">Örnek</TableHead>
+                                        <TableHead className="text-right">Sorunlu</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {lcpElements.map((row) => (
+                                        <TableRow key={`${row.pathname}-${row.lcp_element}-${row.resource_url}`}>
+                                            <TableCell className="max-w-[220px] truncate font-medium" title={row.pathname || undefined}>
+                                                {row.pathname || "-"}
+                                            </TableCell>
+                                            <TableCell className="max-w-[280px] truncate font-mono text-xs" title={row.lcp_element || undefined}>
+                                                {row.lcp_element || "(unknown)"}
+                                            </TableCell>
+                                            <TableCell className="max-w-[280px] truncate text-xs text-muted-foreground" title={row.resource_url || undefined}>
+                                                {row.resource_url || "metin / bilinmiyor"}
+                                            </TableCell>
+                                            <TableCell className="text-right font-mono">
+                                                {formatWebVitalValue("LCP", row.p75_value)}
+                                            </TableCell>
+                                            <TableCell className="text-right">{row.event_count || 0}</TableCell>
+                                            <TableCell className="text-right">
+                                                {Number(row.poor_count || 0) + Number(row.needs_improvement_count || 0)}
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </div>
+                    ) : (
+                        <div className="flex h-[140px] items-center justify-center rounded-md border px-6 text-center text-muted-foreground">
+                            Yeni attribution örnekleri henüz gelmedi. Migration sonrası production trafikle bu tablo dolacak.
                         </div>
                     )}
                 </CardContent>

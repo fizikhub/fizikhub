@@ -54,9 +54,9 @@ export function CollapsibleQuickAnswer({ override, relatedArticles }: QuickAnswe
                         </span>
                         <div>
                             <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-wider text-zinc-500 dark:text-zinc-400">HIZLI ÖZET VE KAVRAM REHBERİ</p>
-                            <p className="text-[15px] sm:text-lg font-black text-zinc-950 dark:text-white leading-tight mt-0.5">
+                            <h2 className="text-[15px] sm:text-lg font-black text-zinc-950 dark:text-white leading-tight mt-0.5">
                                 {override.summaryTitle}
-                            </p>
+                            </h2>
                         </div>
                     </div>
                     <ChevronDown

@@ -63,6 +63,53 @@ function getSanitizedHref() {
     return `${window.location.origin}${window.location.pathname}`;
 }
 
+function asRecord(value: unknown): Record<string, unknown> | null {
+    return value && typeof value === "object" ? value as Record<string, unknown> : null;
+}
+
+function lcpElementLabel(value: unknown) {
+    if (typeof value === "string") return value.slice(0, 512);
+    if (!(value instanceof Element)) return undefined;
+
+    const candidate = value.getAttribute("data-lcp-candidate");
+    const id = value.id ? `#${value.id}` : "";
+    const classes = Array.from(value.classList).slice(0, 3).map((name) => `.${name}`).join("");
+    return `${value.tagName.toLowerCase()}${candidate ? `[data-lcp-candidate="${candidate}"]` : ""}${id}${classes}`.slice(0, 512);
+}
+
+function getActionableAttribution(metric: unknown) {
+    const metricRecord = asRecord(metric);
+    const attribution = asRecord(metricRecord?.attribution);
+    if (!attribution) return undefined;
+
+    const entry = asRecord(attribution.lcpEntry);
+    const element = lcpElementLabel(attribution.element ?? entry?.element);
+    const resourceUrl = [attribution.url, attribution.resourceUrl, entry?.url]
+        .find((value): value is string => typeof value === "string")
+        ?.split(/[?#]/, 1)[0]
+        .slice(0, 1024);
+    const result: Record<string, string | number> = {};
+
+    if (element) result.element = element;
+    if (resourceUrl) result.resourceUrl = resourceUrl;
+
+    for (const key of [
+        "timeToFirstByte",
+        "resourceLoadDelay",
+        "resourceLoadDuration",
+        "elementRenderDelay",
+        "loadTime",
+        "renderTime",
+        "startTime",
+        "size",
+    ]) {
+        const value = attribution[key] ?? entry?.[key];
+        if (typeof value === "number" && Number.isFinite(value)) result[key] = Math.round(value * 100) / 100;
+    }
+
+    return Object.keys(result).length > 0 ? result : undefined;
+}
+
 export function WebVitalsReporter() {
     useReportWebVitals((metric) => {
         if (!TRACKED_METRICS.has(metric.name)) return;
@@ -78,7 +125,7 @@ export function WebVitalsReporter() {
             pathname: window.location.pathname,
             href: getSanitizedHref(),
             connection: getConnectionInfo(),
-            attribution: "attribution" in metric ? metric.attribution : undefined,
+            attribution: getActionableAttribution(metric),
         };
         const body = JSON.stringify(payload);
 

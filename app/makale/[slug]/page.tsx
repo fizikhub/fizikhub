@@ -73,9 +73,13 @@ function ArticleTopicClusterLinks({ slug }: { slug: string }) {
                 </h2>
                 <div className="mt-3 flex flex-wrap gap-2">
                     {clusters.map((cluster) => (
-                        <span key={cluster.slug} className="rounded-[7px] border border-foreground/15 px-3 py-2 text-xs font-black text-foreground">
+                        <Link
+                            key={cluster.slug}
+                            href={getTopicClusterHref(cluster)}
+                            className="rounded-[7px] border border-foreground/15 px-3 py-2 text-xs font-black text-foreground transition-colors hover:border-[#EAB308] hover:bg-[#EAB308]/10"
+                        >
                             {cluster.title}
-                        </span>
+                        </Link>
                     ))}
                 </div>
                 {links.length > 0 && (
