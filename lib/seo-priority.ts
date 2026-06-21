@@ -311,6 +311,70 @@ export const SEO_PRIORITY_ARTICLES = [
         ],
         termLinks: [{ label: "Kızıla kayma", href: "/sozluk/kizila-kayma" }],
     },
+    {
+        slug: "aristodan-batlamyusa-evreni-cozmeye-calisan-adamlar",
+        title: "Aristoteles ve Batlamyus'un Evren Modeli",
+        description: "Aristoteles ve Batlamyus'un Dünya merkezli evren modeli, episikl, deferent ve retrograd hareket.",
+        keywords: ["Batlamyus evren modeli", "Aristoteles evren modeli", "jeosantrik model"],
+        metadataTitle: "Batlamyus Evren Modeli: Jeosantrik Sistem Nedir?",
+        metadataDescription: "Batlamyus evren modeli nedir? Aristoteles'in Dünya merkezli evrenini; episikl, deferent, ekvant ve retrograd hareketle birlikte keşfet.",
+        h1: "Aristoteles ve Batlamyus'un Evren Modeli: Jeosantrik Sistem",
+        expandedKeywords: [
+            "Batlamyus evren modeli",
+            "Aristoteles evren modeli",
+            "jeosantrik model",
+            "Dünya merkezli evren modeli",
+            "Ptolemaios sistemi",
+            "episikl",
+            "deferent",
+            "ekvant",
+            "retrograd hareket",
+            "Almagest",
+            "astronomi tarihi",
+        ],
+        summaryTitle: "Batlamyus evren modeli nedir?",
+        summary: "Batlamyus'un jeosantrik modeli, hareketsiz Dünya'yı merkeze alır; Güneş, Ay ve gezegenlerin görünür hareketlerini episikl, deferent, dış merkezli çember ve ekvant gibi geometrik araçlarla hesaplar. Sistem, Aristoteles'in küresel ve sonlu evren anlayışını güçlü bir matematiksel tahmin modeline dönüştürmüştür.",
+        formulaTitle: "Modelin geometrik özeti",
+        formula: "gezegen hareketi = deferent + episikl + ekvant",
+        formulaExplanation: "Gezegen episikl adlı küçük çemberde dönerken episiklin merkezi deferent adlı büyük çember boyunca ilerler. Dış merkez ve ekvant, gözlenen hız değişimlerini daha iyi temsil eder.",
+        exampleTitle: "Mars neden geri gidiyor gibi görünür?",
+        example: "Batlamyus bu görünür geri hareketi episikllerle açıkladı. Modern Güneş merkezli modeldeyse Dünya, Mars'ı yörüngesinde geçerken Mars arka plandaki yıldızlara göre kısa süreliğine geriye gidiyormuş gibi görünür.",
+        subtopics: ["Jeosantrik model", "Episikl ve deferent", "Ekvant", "Retrograd hareket", "Almagest", "Heliosentrik modele geçiş"],
+        questions: [
+            {
+                question: "Batlamyus evren modeli nedir?",
+                answer: "Dünya'nın hareketsiz biçimde merkezde bulunduğunu; Güneş, Ay, gezegenler ve yıldızların onun çevresinde dairesel hareketlerle döndüğünü varsayan matematiksel jeosantrik modeldir.",
+            },
+            {
+                question: "Aristoteles ve Batlamyus'un evren modelleri arasındaki fark nedir?",
+                answer: "Aristoteles daha çok evrenin fiziksel ve felsefi yapısını açıklarken Batlamyus, gözlenen gök hareketlerini hesaplamak ve tahmin etmek için ayrıntılı geometrik araçlar geliştirdi.",
+            },
+            {
+                question: "Episikl ve deferent ne demektir?",
+                answer: "Episikl gezegenin üzerinde hareket ettiği küçük çemberdir; deferent ise bu küçük çemberin merkezinin Dünya çevresinde izlediği daha büyük çemberdir.",
+            },
+            {
+                question: "Batlamyus modeli neden uzun süre kullanıldı?",
+                answer: "Çünkü çıplak gözle yapılan gözlemlerle uyumlu tahminler üretiyor, tutulmaları ve gezegen konumlarını dönemi için işe yarar doğrulukta hesaplayabiliyordu.",
+            },
+        ],
+        relatedQueries: ["Jeosantrik model nedir?", "Episikl ve deferent nedir?", "Retrograd hareket neden olur?", "Almagest nedir?"],
+        relatedSlugs: [
+            "evrenin-derinliklerine-bakis-james-webb-uzay-teleskobu",
+            "saatler-yalan-soyler-evren-dev-bir-zaman-makinesidir-1766154361647",
+            "sessiz-bir-varsayim-yercekimi-1766294899545",
+        ],
+        termLinks: [
+            { label: "Kozmoloji", href: "/sozluk/kozmoloji" },
+            { label: "Güneş sistemi", href: "/sozluk/gunes-sistemi" },
+        ],
+        sources: [
+            { label: "Encyclopaedia Britannica — Ptolemaic system", href: "https://www.britannica.com/science/Ptolemaic-system" },
+            { label: "Encyclopaedia Britannica — Almagest", href: "https://www.britannica.com/topic/Almagest" },
+            { label: "Stanford Encyclopedia of Philosophy — Aristotle on space and motion", href: "https://plato.stanford.edu/entries/spacetime-theories-classical/#Aris" },
+            { label: "NASA — Retrograde motion", href: "https://starchild.gsfc.nasa.gov/docs/StarChild/questions/question46.html" },
+        ],
+    },
 ] as const;
 
 export const SEO_PRIORITY_SLUGS = SEO_PRIORITY_ARTICLES.map((article) => article.slug);

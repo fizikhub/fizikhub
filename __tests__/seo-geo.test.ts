@@ -12,10 +12,11 @@ import { buildForumDiscussionPostingItem } from "@/lib/forum-structured-data";
 import { getVectorUrl } from "@/lib/search-results";
 import { serializeScriptJson } from "@/lib/script-json";
 import { safeExternalUrl, socialProfileUrl } from "@/lib/profile-links";
-import { getClusterResourceLinks, getPrimaryClusterHref, getTopicClusterBySlug, getTopicClusterHref, getTopicClustersForText, normalizeTopicSearchText, SEO_TOPIC_CLUSTERS } from "@/lib/seo-topic-clusters";
+import { getClusterResourceLinks, getClustersForArticleSlug, getPrimaryClusterHref, getTopicClusterBySlug, getTopicClusterHref, getTopicClustersForText, normalizeTopicSearchText, SEO_TOPIC_CLUSTERS } from "@/lib/seo-topic-clusters";
 import { getTopicStudyGuide, isThinTopicCluster, weakTopicGuideCoverage } from "@/lib/topic-study-guides";
 import { isForbiddenSitemapUrl, isPrivateSeoPath } from "@/lib/seo-utils";
 import { decodeCategorySlug, isLowValueSeoQuery, shouldBypassSession } from "@/proxy";
+import { getSeoIntentForSlug } from "@/lib/seo-priority";
 
 function xmlLocs(xml: string) {
     return Array.from(xml.matchAll(/<loc>([^<]+)<\/loc>/g)).map((match) => match[1]);
@@ -30,6 +31,15 @@ function robotsValues(text: string, directive: string) {
 }
 
 describe("SEO/GEO topic cluster helpers", () => {
+    it("publishes a source-backed search intent for the Aristotle-Ptolemy article", () => {
+        const intent = getSeoIntentForSlug("aristodan-batlamyusa-evreni-cozmeye-calisan-adamlar");
+
+        expect(intent?.metadataTitle).toContain("Batlamyus Evren Modeli");
+        expect(intent?.expandedKeywords).toContain("jeosantrik model");
+        expect(intent && 'sources' in intent ? intent.sources.length : 0).toBeGreaterThanOrEqual(4);
+        expect(getClustersForArticleSlug("aristodan-batlamyusa-evreni-cozmeye-calisan-adamlar").map((cluster) => cluster.slug)).toContain("kozmoloji");
+    });
+
     it("uses canonical topic hub URLs as primary cluster targets", () => {
         const cluster = getTopicClusterBySlug("basit-harmonik-hareket");
 

@@ -18,12 +18,13 @@ interface QuickAnswerProps {
         questions: readonly { question: string; answer: string }[];
         termLinks: readonly { href: string; label: string }[];
         relatedQueries: readonly string[];
+        sources?: readonly { href: string; label: string }[];
     };
     relatedArticles: { slug: string; title: string }[];
 }
 
 export function CollapsibleQuickAnswer({ override, relatedArticles }: QuickAnswerProps) {
-    const [isOpen, setIsOpen] = useState(false);
+    const [isOpen, setIsOpen] = useState(true);
 
     return (
         <section className="container mx-auto max-w-3xl px-4 mt-5 sm:mt-8 mb-7 sm:mb-10 z-10 relative">
@@ -44,6 +45,7 @@ export function CollapsibleQuickAnswer({ override, relatedArticles }: QuickAnswe
                         isOpen ? "border-b-2 border-black bg-zinc-50/40 dark:bg-[#202024] rounded-t-[12px]" : "rounded-[12px] hover:bg-zinc-50 dark:hover:bg-[#242427]"
                     )}
                     aria-expanded={isOpen}
+                    aria-controls="quick-answer-content"
                     id="quick-answer-toggle"
                 >
                     <div className="flex items-center gap-3">
@@ -51,7 +53,7 @@ export function CollapsibleQuickAnswer({ override, relatedArticles }: QuickAnswe
                             ⚡
                         </span>
                         <div>
-                            <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-wider text-zinc-500 dark:text-zinc-400">HIZLI ÖZET & GEO CEVAP</p>
+                            <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-wider text-zinc-500 dark:text-zinc-400">HIZLI ÖZET VE KAVRAM REHBERİ</p>
                             <p className="text-[15px] sm:text-lg font-black text-zinc-950 dark:text-white leading-tight mt-0.5">
                                 {override.summaryTitle}
                             </p>
@@ -67,6 +69,8 @@ export function CollapsibleQuickAnswer({ override, relatedArticles }: QuickAnswe
 
                 {/* Collapsible Content */}
                 <div
+                    id="quick-answer-content"
+                    aria-labelledby="quick-answer-toggle"
                     className={cn(
                         "overflow-hidden transition-all duration-300 ease-in-out",
                         isOpen ? "max-h-[3500px] opacity-100" : "max-h-0 opacity-0"
@@ -194,6 +198,29 @@ export function CollapsibleQuickAnswer({ override, relatedArticles }: QuickAnswe
                                 </div>
                             </div>
                         </div>
+
+                        {override.sources && override.sources.length > 0 && (
+                            <div className="border-t border-zinc-800/15 pt-5 dark:border-zinc-800/80">
+                                <h3 className="mb-3 flex items-center gap-2 text-sm font-black uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+                                    <BookOpen className="h-4 w-4 stroke-[2.5px]" />
+                                    Güvenilir kaynaklar
+                                </h3>
+                                <ul className="grid gap-2 sm:grid-cols-2">
+                                    {override.sources.map((source) => (
+                                        <li key={source.href}>
+                                            <a
+                                                href={source.href}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="text-sm font-bold text-zinc-700 underline decoration-[#FFE500] decoration-2 underline-offset-4 hover:text-black dark:text-zinc-300 dark:hover:text-white"
+                                            >
+                                                {source.label}
+                                            </a>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        )}
 
                     </div>
                 </div>

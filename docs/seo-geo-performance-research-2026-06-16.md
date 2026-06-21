@@ -27,3 +27,13 @@ Tarih: 2026-06-16
 - Forum detayinda gercek cevap oylarini QAPage `upvoteCount` alanina tasimak.
 - LCP gorselleri icin production verisiyle hangi sayfalarda priority/fetchPriority sinyali gerektigini netlestirmek.
 - CSP'deki `unsafe-inline` bagimliligini nonce/hash tabanli yaklasima kademeli tasimak.
+
+## 2026-06-21 Aristoteles-Batlamyus makalesi odak calismasi
+
+- Canli sayfa denetiminde canonical ve robots sinyalleri dogruydu; ancak meta aciklamasi giristeki kurgu hikayeden uretiliyor, anahtar kelimeler genel kaliyor, gorunur makale metni H2 icermiyor ve gizli SEO kopyasi ikinci bir H1 olusturuyordu.
+- Makale `Batlamyus evren modeli`, `Aristoteles evren modeli`, `jeosantrik model`, `episikl`, `deferent`, `ekvant`, `retrograd hareket` ve `Almagest` arama niyetleriyle yuksek oncelikli icerik listesine alindi.
+- Arama basligi, meta aciklamasi, H1, dogrudan cevap ozeti, kavram rehberi ve dort gorunur soru-cevap eklendi. Hizli cevap paneli ilk render'da acik tutularak kritik metnin kullanici ve tarayici icin gorunur olmasi saglandi.
+- Britannica, Stanford Encyclopedia of Philosophy ve NASA kaynaklari gorunur kaynak listesine ve Article `citation` alanina baglandi.
+- Makale kozmoloji konu kumesine eklendi; ana sayfa, makale arsivi, konu hub'i, `llms.txt` ve `ai-index.json` tarafindaki mevcut oncelikli-icerik akisi bu makaleyi otomatik olarak tasiyacak.
+- Genel makale sablonundaki `aria-hidden` gizli makale kopyasi kaldirildi. Gorunur SSR icerigi korunurken yinelenen H1 ve gizli metin riski temizlendi.
+- Dogrulama: TypeScript basarili, ilgili SEO/GEO testleri 22/22 basarili, ESLint 0 hata (repo genelinde onceden bulunan 239 uyari). Uretim derlemesi compile ve TypeScript adimlarini gecti; statik veri toplama yerel ortamda Supabase DNS erisimi olmadigi icin tamamlanamadi.

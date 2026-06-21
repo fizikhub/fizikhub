@@ -10,7 +10,6 @@ import { BookReviewDetail } from "@/components/book-review/book-review-detail";
 import { TermDetail } from "@/components/term/term-detail";
 import { ArticleErrorBoundary } from "@/components/blog/article-error-boundary";
 import { MarkdownRenderer } from "@/components/markdown-renderer";
-import { ServerMarkdownRenderer } from "@/components/server-markdown-renderer";
 import { CollapsibleQuickAnswer } from "@/components/articles/collapsible-quick-answer";
 import { JsonLd } from "@/components/seo/json-ld";
 import { getSeoIntentForSlug, SEO_PRIORITY_ARTICLES, SEO_PRIORITY_SLUGS, type SeoIntentArticle } from "@/lib/seo-priority";
@@ -118,6 +117,13 @@ const ENTITY_WIKIPEDIA_MAPPINGS: Record<string, string> = {
     'büyük patlama': 'https://tr.wikipedia.org/wiki/B%C3%BCy%C3%BCk_Patlama',
     'astrofizik': 'https://tr.wikipedia.org/wiki/Astrofizik',
     'kozmoloji': 'https://tr.wikipedia.org/wiki/Fiziksel_kozmoloji',
+    'batlamyus evren modeli': 'https://tr.wikipedia.org/wiki/Batlamyus',
+    'aristoteles evren modeli': 'https://tr.wikipedia.org/wiki/Aristoteles',
+    'jeosantrik model': 'https://tr.wikipedia.org/wiki/Yer_merkezli_model',
+    'dünya merkezli evren modeli': 'https://tr.wikipedia.org/wiki/Yer_merkezli_model',
+    'ptolemaios sistemi': 'https://tr.wikipedia.org/wiki/Batlamyus',
+    'retrograd hareket': 'https://tr.wikipedia.org/wiki/Geri_hareket',
+    'almagest': 'https://tr.wikipedia.org/wiki/Almagest',
 };
 
 function resolveEntity(name: string): string | null {
@@ -331,8 +337,11 @@ export default async function ArticlePage({ params }: PageProps) {
         ...semanticTopics,
     ].filter(Boolean)));
     const displayTitle = intentOverride?.h1 || article.title;
-    const citations = references
-        .map((reference: any) => reference.url || reference.title)
+    const intentSources = intentOverride && 'sources' in intentOverride ? intentOverride.sources : [];
+    const citations = [
+        ...references.map((reference: any) => reference.url || reference.title),
+        ...intentSources.map((source) => source.href),
+    ]
         .filter(Boolean);
     const video = getFirstYoutubeVideo(article.content);
 
@@ -642,18 +651,6 @@ export default async function ArticlePage({ params }: PageProps) {
             <ReadingProgress />
 
             <div className="min-h-screen overflow-x-hidden bg-background pb-20">
-            {/* 
-              SEO: Server-rendered article content for search engine crawlers.
-              This is the full article text rendered as static HTML on the server,
-              ensuring Google can read it without executing JavaScript.
-              Hidden from visual users via sr-only but fully crawlable.
-            */}
-            <article className="sr-only" aria-hidden="true" data-seo-content="true">
-                <h1>{article.title}</h1>
-                {article.excerpt && <p>{article.excerpt}</p>}
-                <ServerMarkdownRenderer content={article.content || ""} />
-            </article>
-
             {article.category === 'Kitap İncelemesi' ? (
                     <ArticleErrorBoundary fallback={
                         <div className="container max-w-4xl mx-auto px-4 py-10">

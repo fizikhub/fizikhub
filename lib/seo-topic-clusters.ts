@@ -281,7 +281,10 @@ export const SEO_TOPIC_CLUSTERS: SeoTopicCluster[] = [
         title: "Kozmoloji",
         aliases: ["Büyük Patlama", "evrenin genişlemesi", "kızıl kayma"],
         intentQuestions: ["Evren nasıl genişliyor?", "Kızıl kayma neyi gösterir?"],
-        articleSlugs: ["evrenin-derinliklerine-bakis-james-webb-uzay-teleskobu"],
+        articleSlugs: [
+            "evrenin-derinliklerine-bakis-james-webb-uzay-teleskobu",
+            "aristodan-batlamyusa-evreni-cozmeye-calisan-adamlar",
+        ],
         termSlugs: ["kozmoloji", "buyuk-patlama", "kizila-kayma"],
         quizSlugs: [],
         simulationSlugs: ["gunes-sistemi"],
