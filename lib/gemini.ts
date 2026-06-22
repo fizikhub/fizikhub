@@ -1,3 +1,5 @@
+import "server-only";
+
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 export const GEMINI_EMBEDDING_MODEL = "gemini-embedding-001";
@@ -18,7 +20,6 @@ export function getGeminiApiKey(): string {
     return (
         process.env.GEMINI_API_KEY ||
         process.env.GOOGLE_GENERATIVE_AI_API_KEY ||
-        process.env.NEXT_PUBLIC_GEMINI_API_KEY ||
         process.env.GOOGLE_AI_API_KEY ||
         ""
     );
@@ -43,7 +44,27 @@ const MAX_RETRIES = 4;
 const BASE_DELAY = 1000; // 1 second
 const MAX_DELAY = 10000; // 10 seconds
 
-export async function generateEmbedding(text: string): Promise<number[] | null> {
+type EmbeddingOptions = {
+    maxRetries?: number;
+    timeoutMs?: number;
+};
+
+async function withTimeout<T>(promise: Promise<T>, timeoutMs: number): Promise<T> {
+    let timeoutId: ReturnType<typeof setTimeout> | undefined;
+
+    try {
+        return await Promise.race([
+            promise,
+            new Promise<never>((_, reject) => {
+                timeoutId = setTimeout(() => reject(new Error("Embedding request timed out")), timeoutMs);
+            }),
+        ]);
+    } finally {
+        if (timeoutId) clearTimeout(timeoutId);
+    }
+}
+
+export async function generateEmbedding(text: string, options: EmbeddingOptions = {}): Promise<number[] | null> {
     const genAI = getGeminiClient();
 
     if (!genAI) {
@@ -58,10 +79,15 @@ export async function generateEmbedding(text: string): Promise<number[] | null> 
             outputDimensionality: GEMINI_EMBEDDING_DIMENSIONS,
         };
 
+        const maxRetries = Math.max(0, Math.min(options.maxRetries ?? MAX_RETRIES, MAX_RETRIES));
+        const timeoutMs = Math.max(500, options.timeoutMs ?? 12_000);
         let lastError: unknown = null;
-        for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+        for (let attempt = 0; attempt <= maxRetries; attempt++) {
             try {
-                const result = await model.embedContent(embeddingRequest as unknown as Parameters<typeof model.embedContent>[0]);
+                const result = await withTimeout(
+                    model.embedContent(embeddingRequest as unknown as Parameters<typeof model.embedContent>[0]),
+                    timeoutMs,
+                );
                 const embedding = result.embedding;
                 if (embedding && Array.isArray(embedding.values)) {
                     return embedding.values;
@@ -72,9 +98,9 @@ export async function generateEmbedding(text: string): Promise<number[] | null> 
                 const isRateLimit = error instanceof Error && 
                     (error.message.includes("429") || error.message.toLowerCase().includes("rate limit"));
                 const isTransient = error instanceof Error && 
-                    (error.message.includes("503") || error.message.includes("500") || error.message.toLowerCase().includes("fetch failed"));
+                    (error.message.includes("503") || error.message.includes("500") || error.message.toLowerCase().includes("fetch failed") || error.message.includes("timed out"));
 
-                if (attempt < MAX_RETRIES) {
+                if (attempt < maxRetries && (isRateLimit || isTransient)) {
                     const expDelay = Math.min(MAX_DELAY, BASE_DELAY * Math.pow(2, attempt));
                     const jitter = expDelay * 0.25 * Math.random();
                     const totalDelay = expDelay + jitter;
@@ -86,11 +112,13 @@ export async function generateEmbedding(text: string): Promise<number[] | null> 
                     );
                     
                     await new Promise((resolve) => setTimeout(resolve, totalDelay));
+                } else {
+                    break;
                 }
             }
         }
 
-        console.error(`[Gemini Embedding] Failed all ${MAX_RETRIES + 1} attempts. Last Error:`, lastError);
+        console.error(`[Gemini Embedding] Failed after ${maxRetries + 1} attempt(s). Last Error:`, lastError);
         return null;
     } catch (error) {
         console.error("Error generating embedding:", error);

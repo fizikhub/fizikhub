@@ -123,31 +123,11 @@ export async function searchGlobal(rawQuery: string): Promise<SearchResult[]> {
     const supabase = await createClient();
     const results: SearchResult[] = [];
 
-    const embedding = await generateEmbedding(query);
-    if (embedding) {
-        const vectorRows = await fetchVectorRows(supabase, query, embedding);
-        for (const item of vectorRows) {
-            const type = item.source_type as SearchResultType | undefined;
-            const id = item.source_id ?? item.id;
-            const url = getVectorUrl(item);
-
-            if (!type || !id || !item.title || !url) continue;
-
-            addResult(results, {
-                type,
-                id,
-                title: item.title,
-                description: toSnippet(item.content),
-                url,
-                image: item.cover_image || item.image_url || undefined,
-                similarity: item.hybrid_score || item.similarity,
-            });
-        }
-    }
-
+    // Start lexical DB work immediately. Embedding is an external network call;
+    // serializing these two paths made every search pay both latency costs.
+    const embeddingPromise = generateEmbedding(query, { maxRetries: 0, timeoutMs: 2_500 });
     const searchTerm = buildSearchTerm(query);
-
-    const [questionsRes, articlesRes, profilesRes, dictionaryRes, quizzesRes] = await Promise.all([
+    const lexicalResultsPromise = Promise.all([
         supabase
             .from("questions")
             .select("id, title, content, category")
@@ -180,6 +160,30 @@ export async function searchGlobal(rawQuery: string): Promise<SearchResult[]> {
             .order("created_at", { ascending: false })
             .limit(4),
     ]);
+
+    const embedding = await embeddingPromise;
+    if (embedding) {
+        const vectorRows = await fetchVectorRows(supabase, query, embedding);
+        for (const item of vectorRows) {
+            const type = item.source_type as SearchResultType | undefined;
+            const id = item.source_id ?? item.id;
+            const url = getVectorUrl(item);
+
+            if (!type || !id || !item.title || !url) continue;
+
+            addResult(results, {
+                type,
+                id,
+                title: item.title,
+                description: toSnippet(item.content),
+                url,
+                image: item.cover_image || item.image_url || undefined,
+                similarity: item.hybrid_score || item.similarity,
+            });
+        }
+    }
+
+    const [questionsRes, articlesRes, profilesRes, dictionaryRes, quizzesRes] = await lexicalResultsPromise;
 
     for (const question of (questionsRes.data || []) as QuestionSearchRow[]) {
         addResult(results, {

@@ -443,6 +443,7 @@ export default async function ArticlePage({ params }: PageProps) {
             headline: displayTitle,
             alternativeHeadline: intentOverride ? article.title : undefined,
             description: articleDescription,
+            abstract: intentOverride?.summary,
             image: {
                 '@type': 'ImageObject',
                 url: articleImageUrl,
@@ -458,6 +459,10 @@ export default async function ArticlePage({ params }: PageProps) {
             articleSection: article.category || 'Fizik',
             keywords: intentOverride?.expandedKeywords.join(', ') || (articleTags && articleTags.length > 0 ? articleTags.join(', ') : 'fizik, bilim, fizikhub'),
             citation: citations.length > 0 ? citations : undefined,
+            hasPart: intentOverride ? [
+                { '@id': `${articleUrl}#defined-term` },
+                { '@id': `${articleUrl}#faq` },
+            ] : undefined,
             isAccessibleForFree: true,
             // GEO Entity Resolution using Wikipedia SameAs mapping for AI Engine Authority
             about: semanticTopics.map((topic) => {
@@ -537,6 +542,7 @@ export default async function ArticlePage({ params }: PageProps) {
             educationalLevel: 'Lise ve lisans başlangıç',
             teaches: learningTopics,
             keywords: learningTopics.join(', '),
+            citation: citations.length > 0 ? citations : undefined,
             about: learningTopics.map((topic) => ({
                 '@type': 'Thing',
                 name: topic,

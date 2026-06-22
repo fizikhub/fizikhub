@@ -112,7 +112,6 @@ const getCachedFeedData = unstable_cache(
     if (!hasSupabasePublicConfig()) {
       return {
         articles: [],
-        questions: [],
         suggestedUsers: [],
         stories: [],
         groups: [],
@@ -140,19 +139,12 @@ const getCachedFeedData = unstable_cache(
       return buildQuery();
     };
 
-    const [articlesResult, priorityArticlesResult, questionsResult, profilesResult, storiesResult, groupsResult] = await Promise.all([
+    const [articlesResult, priorityArticlesResult, profilesResult, storiesResult, groupsResult] = await Promise.all([
       // Fetch Articles & Blogs (using same table)
       fetchArticles(12), // Optimized for mobile and performance
 
       // Keep proven Google Search Console opportunities linked from the homepage.
       fetchArticles(SEO_PRIORITY_SLUGS.length, SEO_PRIORITY_SLUGS),
-
-      // Fetch Questions
-      supabase
-        .from('questions')
-        .select('id, title, content, created_at, category, votes, tags, author:profiles(username, full_name, avatar_url, is_verified), answers(count)')
-        .order('created_at', { ascending: false })
-        .limit(12),
 
       // Fetch Suggested Users (Top writers by reputation)
       supabase
@@ -187,7 +179,6 @@ const getCachedFeedData = unstable_cache(
         ...priorityArticles.sort((a, b) => SEO_PRIORITY_SLUGS.indexOf(a.slug as typeof SEO_PRIORITY_SLUGS[number]) - SEO_PRIORITY_SLUGS.indexOf(b.slug as typeof SEO_PRIORITY_SLUGS[number])),
         ...latestArticles.filter((article) => !seenSlugs.has(article.slug)),
       ],
-      questions: questionsResult.data || [],
       suggestedUsers: profilesResult.data || [],
       // Map stories to match NexusStories expected format temporarily or update component to handle both
       stories: ((storiesResult?.data || []) as FeedStoryRow[]).map((s) => ({
@@ -248,67 +239,6 @@ export default async function Home() {
         mainEntity: { '@id': `${baseUrl}/#latest-articles` },
         publisher: { '@id': `${baseUrl}/#organization` },
         dateModified: latestArticleDate,
-      },
-      {
-        '@type': 'WebSite',
-        '@id': `${baseUrl}/#website`,
-        url: baseUrl,
-        name: 'Fizikhub',
-        description: 'Fizik, uzay, kuantum ve bilim içerikleri için Türkçe başvuru kaynağı.',
-        inLanguage: 'tr-TR',
-        publisher: { '@id': `${baseUrl}/#organization` },
-        potentialAction: {
-          '@type': 'SearchAction',
-          target: {
-            '@type': 'EntryPoint',
-            urlTemplate: `${baseUrl}/ara?q={search_term_string}`
-          },
-          'query-input': 'required name=search_term_string'
-        }
-      },
-      {
-        '@type': 'Organization',
-        '@id': `${baseUrl}/#organization`,
-        name: 'Fizikhub',
-        url: baseUrl,
-        logo: {
-          '@type': 'ImageObject',
-          url: `${baseUrl}/favicon.ico`
-        },
-        contactPoint: {
-          '@type': 'ContactPoint',
-          contactType: 'customer support',
-          email: 'iletisim@fizikhub.com',
-          availableLanguage: ['Turkish', 'English']
-        },
-        address: {
-          '@type': 'PostalAddress',
-          addressCountry: 'TR',
-          addressLocality: 'Istanbul'
-        },
-        sameAs: [
-          'https://twitter.com/fizikhub',
-          'https://github.com/fizikhub'
-        ]
-      },
-      {
-        '@type': 'WebPage',
-        '@id': `${baseUrl}/#webpage`,
-        url: baseUrl,
-        name: 'Fizikhub Ana Sayfa',
-        isPartOf: { '@id': `${baseUrl}/#website` },
-        contributor: suggestedUsers.map((user) => ({
-          '@type': 'Person',
-          name: user.full_name || `@${user.username}`,
-          url: `${baseUrl}/kullanici/${user.username}`,
-          jobTitle: user.is_writer ? "Fizik ve Bilim Yazarı" : "Bilim Katkıcısı"
-        })),
-        about: SEO_PRIORITY_ARTICLES.slice(0, 8).map((article) => ({
-          '@type': 'Thing',
-          name: article.title,
-          description: article.summary,
-        })),
-        significantLink: SEO_PRIORITY_ARTICLES.slice(0, 8).map((article) => `${baseUrl}/makale/${article.slug}`),
       },
       {
         '@type': 'ItemList',

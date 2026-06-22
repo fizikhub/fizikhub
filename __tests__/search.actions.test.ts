@@ -66,5 +66,9 @@ describe("global search topic results", () => {
         await searchGlobal("momentum korunumu");
 
         expect(questionsQuery.eq).toHaveBeenCalledWith("status", "published");
+        expect(mockGenerateEmbedding).toHaveBeenCalledWith("momentum korunumu", {
+            maxRetries: 0,
+            timeoutMs: 2_500,
+        });
     });
 });

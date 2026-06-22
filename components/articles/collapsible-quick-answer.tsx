@@ -1,8 +1,4 @@
-"use client";
-
-import { useState } from "react";
 import { ChevronDown, MessageSquareQuote, Compass, HelpCircle, Link as LinkIcon, BookOpen } from "lucide-react";
-import { cn } from "@/lib/utils";
 import Link from "next/link";
 
 interface QuickAnswerProps {
@@ -24,30 +20,11 @@ interface QuickAnswerProps {
 }
 
 export function CollapsibleQuickAnswer({ override, relatedArticles }: QuickAnswerProps) {
-    const [isOpen, setIsOpen] = useState(true);
-
     return (
         <section className="container mx-auto max-w-3xl px-4 mt-5 sm:mt-8 mb-7 sm:mb-10 z-10 relative">
-            <div 
-                className={cn(
-                    "border-2 border-black bg-white dark:bg-[#18181b]",
-                    "shadow-[3px_3px_0px_0px_#000] dark:shadow-[3px_3px_0px_0px_rgba(0,0,0,0.55)]",
-                    "rounded-[14px] transition-all duration-300"
-                )}
-            >
+            <details className="group rounded-[14px] border-2 border-black bg-white shadow-[3px_3px_0px_0px_#000] dark:bg-[#18181b] dark:shadow-[3px_3px_0px_0px_rgba(0,0,0,0.55)]">
                 {/* Accordion Toggle Header */}
-                <button
-                    onClick={() => setIsOpen(!isOpen)}
-                    className={cn(
-                        "w-full flex items-center justify-between gap-3",
-                        "px-4 py-3.5 sm:px-5 sm:py-4",
-                        "transition-colors duration-200 text-left select-none",
-                        isOpen ? "border-b-2 border-black bg-zinc-50/40 dark:bg-[#202024] rounded-t-[12px]" : "rounded-[12px] hover:bg-zinc-50 dark:hover:bg-[#242427]"
-                    )}
-                    aria-expanded={isOpen}
-                    aria-controls="quick-answer-content"
-                    id="quick-answer-toggle"
-                >
+                <summary className="flex w-full cursor-pointer list-none select-none items-center justify-between gap-3 rounded-[12px] px-4 py-3.5 text-left transition-colors duration-200 hover:bg-zinc-50 group-open:rounded-b-none group-open:rounded-t-[12px] group-open:border-b-2 group-open:border-black group-open:bg-zinc-50/40 dark:hover:bg-[#242427] dark:group-open:bg-[#202024] sm:px-5 sm:py-4 [&::-webkit-details-marker]:hidden">
                     <div className="flex items-center gap-3">
                         <span className="flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 rounded-[8px] bg-[#FFE500] border-2 border-black text-black font-black text-sm shadow-[1.5px_1.5px_0px_0px_#000] transform hover:rotate-12 transition-transform">
                             ⚡
@@ -60,22 +37,13 @@ export function CollapsibleQuickAnswer({ override, relatedArticles }: QuickAnswe
                         </div>
                     </div>
                     <ChevronDown
-                        className={cn(
-                            "w-5 h-5 sm:w-6 sm:h-6 text-zinc-500 transition-transform duration-300 flex-shrink-0 stroke-[3px]",
-                            isOpen && "rotate-180 text-black dark:text-[#FFE500]"
-                        )}
+                        aria-hidden="true"
+                        className="h-5 w-5 flex-shrink-0 stroke-[3px] text-zinc-500 transition-transform duration-300 group-open:rotate-180 group-open:text-black dark:group-open:text-[#FFE500] sm:h-6 sm:w-6"
                     />
-                </button>
+                </summary>
 
                 {/* Collapsible Content */}
-                <div
-                    id="quick-answer-content"
-                    aria-labelledby="quick-answer-toggle"
-                    className={cn(
-                        "overflow-hidden transition-all duration-300 ease-in-out",
-                        isOpen ? "max-h-[3500px] opacity-100" : "max-h-0 opacity-0"
-                    )}
-                >
+                <div>
                     <div className="px-4 py-5 sm:px-6 sm:py-6 space-y-6 rounded-b-[14px]">
                         
                         {/* Summary Block */}
@@ -224,7 +192,7 @@ export function CollapsibleQuickAnswer({ override, relatedArticles }: QuickAnswe
 
                     </div>
                 </div>
-            </div>
+            </details>
         </section>
     );
 }

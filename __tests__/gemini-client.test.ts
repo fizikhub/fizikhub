@@ -41,14 +41,14 @@ describe('Gemini Client (Centralized)', () => {
         expect(getGeminiApiKey()).toBe('secondary-key');
     });
 
-    it('getGeminiApiKey() should fall back to NEXT_PUBLIC_GEMINI_API_KEY', async () => {
+    it('getGeminiApiKey() should reject public-prefixed API keys', async () => {
         delete process.env.GEMINI_API_KEY;
         delete process.env.GOOGLE_GENERATIVE_AI_API_KEY;
         process.env.NEXT_PUBLIC_GEMINI_API_KEY = 'public-key';
         delete process.env.GOOGLE_AI_API_KEY;
 
         const { getGeminiApiKey } = await import('@/lib/gemini');
-        expect(getGeminiApiKey()).toBe('public-key');
+        expect(getGeminiApiKey()).toBe('');
     });
 
     it('getGeminiApiKey() should fall back to GOOGLE_AI_API_KEY as last resort', async () => {

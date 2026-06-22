@@ -93,7 +93,7 @@ const contentSecurityPolicy = [
   "object-src 'none'",
   "base-uri 'self'",
   "form-action 'self'",
-  "frame-ancestors 'self' https://*.instagram.com https://*.facebook.com",
+  "frame-ancestors 'self'",
   ...(isProduction && isVercelRuntime ? ["upgrade-insecure-requests"] : []),
 ];
 
@@ -271,13 +271,14 @@ const nextConfig: NextConfig = {
         source: '/:all*(woff|woff2)',
         headers: noindexHeader,
       },
-      // Immutable static assets (fonts, images, etc.)
+      // Public filenames are not content-hashed. Keep them cacheable without
+      // making updates invisible to returning visitors for a full year.
       {
         source: '/:all*(svg|jpg|png|gif|ico|webp|avif|woff|woff2)',
         headers: [
           {
             key: 'Cache-Control',
-            value: 'public, max-age=31536000, immutable', // 1 year cache
+            value: 'public, max-age=86400, stale-while-revalidate=604800',
           },
         ],
       },

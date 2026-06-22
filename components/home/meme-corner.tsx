@@ -36,19 +36,23 @@ export function MemeCorner() {
                 {/* TEXT OVERLAY (Targeting this to be the fast LCP item) */}
                 <div className="absolute inset-0 z-20 flex flex-col items-center justify-center select-none pointer-events-none p-4 pb-8 sm:pb-12 text-center">
 
-                    <h2 className="font-head text-sm sm:text-lg font-bold tracking-[0.6em] text-blue-200/80 uppercase mb-0.5 sm:mb-1 drop-shadow-md">
-                        BİLİMİ
-                    </h2>
-
-                    <h2
-                        className="font-head text-4xl sm:text-7xl font-black tracking-normal leading-none text-white"
-                        style={{
-                            filter: 'drop-shadow(0px 4px 12px rgba(0,0,0,0.9))',
-                            textShadow: '0 0 18px rgba(190,200,255,0.45)'
-                        }}
-                    >
-                        Tİ'YE ALIYORUZ
-                    </h2>
+                    <h1 className="flex flex-col items-center font-head uppercase drop-shadow-md">
+                        <span className="mb-0.5 text-sm font-bold tracking-[0.6em] text-blue-200/80 sm:mb-1 sm:text-lg">
+                            BİLİMİ
+                        </span>
+                        <span
+                            className="text-4xl font-black leading-none tracking-normal text-white sm:text-7xl"
+                            style={{
+                                filter: 'drop-shadow(0px 4px 12px rgba(0,0,0,0.9))',
+                                textShadow: '0 0 18px rgba(190,200,255,0.45)'
+                            }}
+                        >
+                            Tİ'YE ALIYORUZ
+                        </span>
+                        <span className="mt-2 text-[9px] font-bold tracking-[0.18em] text-blue-100/75 sm:text-xs">
+                            Türkçe fizik, uzay ve bilim platformu
+                        </span>
+                    </h1>
 
                     <div className="mt-2 sm:mt-3 transform origin-center animate-[badge-wiggle_3s_ease-in-out_infinite]">
                         <span className="inline-block bg-[#FFC800] border-[2px] border-black text-black px-3 py-1 sm:px-4 sm:py-1.5 font-black text-[10px] sm:text-xs uppercase shadow-[2px_2px_0px_0px_#000]">
