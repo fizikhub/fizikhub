@@ -57,6 +57,19 @@ export function buildAiCitationText(title: string, url: string) {
     return `${title} - Fizikhub (${url})`;
 }
 
+export function buildAiArticleSchemaTypes(isExperiment: boolean, hasIntent: boolean) {
+    if (isExperiment) return ["BlogPosting", "WebPage"];
+
+    return [
+        "Article",
+        "BlogPosting",
+        "WebPage",
+        "BreadcrumbList",
+        "LearningResource",
+        ...(hasIntent ? ["FAQPage", "DefinedTerm"] : []),
+    ];
+}
+
 export const AI_CRAWLER_USER_AGENTS = [
     "GPTBot",
     "OAI-SearchBot",

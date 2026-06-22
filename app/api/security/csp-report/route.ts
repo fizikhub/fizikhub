@@ -26,6 +26,7 @@ type ReportingApiEnvelope = Array<{
 }>;
 
 const MAX_REPORT_CHARS = 64 * 1024;
+const loggedProductionFingerprints = new Set<string>();
 
 type NormalizedCspReport = {
     document?: string;
@@ -37,7 +38,19 @@ type NormalizedCspReport = {
 };
 
 function warnReport(report: NormalizedCspReport) {
-    if (process.env.NODE_ENV === "production") return;
+    if (process.env.NODE_ENV === "production") {
+        const fingerprint = createHash("sha256").update(JSON.stringify(report)).digest("hex");
+        if (loggedProductionFingerprints.has(fingerprint)) return;
+        if (loggedProductionFingerprints.size >= 500) loggedProductionFingerprints.clear();
+        loggedProductionFingerprints.add(fingerprint);
+        console.warn(JSON.stringify({
+            level: "warn",
+            message: "csp-report-only-violation",
+            fingerprint,
+            ...report,
+        }));
+        return;
+    }
     console.warn("[csp-report]", report);
 }
 

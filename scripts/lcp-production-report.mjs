@@ -65,7 +65,7 @@ const lines = [
     "",
     "- Article detail covers remain priority candidates because they are above the fold and the slowest sampled routes are article pages.",
     "- No additional route receives image priority yet: historical attribution is empty.",
-    "- Enhanced attribution now records the LCP selector, resource URL, TTFB, load delay/duration, and render delay. Re-run this report after sufficient new traffic.",
+    "- Enhanced attribution now uses both Next.js attribution and a native LargestContentfulPaint PerformanceObserver fallback to record selector, resource URL, timing, and size. Re-run this report after sufficient new traffic.",
     "",
 ];
 

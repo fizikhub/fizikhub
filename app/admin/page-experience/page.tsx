@@ -66,6 +66,7 @@ export default async function PageExperienceDashboard() {
 
     const { data: metrics, error } = metricsResult;
     const lcpElements = (lcpElementsResult.data || []) as LcpElementMetric[];
+    const lcpAttributionError = lcpElementsResult.error;
 
     const typedMetrics = (metrics || []) as PageExperienceMetric[];
     const sortedMetrics = [...typedMetrics].sort((a, b) =>
@@ -215,6 +216,11 @@ export default async function PageExperienceDashboard() {
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
+                    {lcpAttributionError && (
+                        <div className="mb-4 rounded-md border border-yellow-500/40 bg-yellow-500/10 p-3 text-sm text-yellow-700 dark:text-yellow-300">
+                            LCP attribution view henüz production veritabanında yok: ilgili Supabase migration uygulanmalı.
+                        </div>
+                    )}
                     {lcpElements.length > 0 ? (
                         <div className="rounded-md border">
                             <Table>

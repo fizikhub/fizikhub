@@ -1,6 +1,6 @@
 # GSC Structured Data and Topic Cluster Monitoring
 
-Generated: 2026-06-21T19:44:24.079Z
+Generated: 2026-06-22T21:54:44.939Z
 Performance export: `/Users/baran/Downloads/https___www.fizikhub.com_-Performance-on-Search-2026-05-09 (1)/Sayfa sayısı.csv`
 
 This report maps canonical article performance to the four template signals: Article, FAQPage, BreadcrumbList, and topic-cluster internal links.

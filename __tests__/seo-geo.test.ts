@@ -5,7 +5,7 @@ import { GET as authorSitemap } from "@/app/author-sitemap.xml/route";
 import { GET as openSearchDescriptor } from "@/app/opensearch.xml/route";
 import { GET as sitemapIndex } from "@/app/sitemap-index.xml/route";
 import { GET as topicSitemap } from "@/app/topic-sitemap.xml/route";
-import { AI_CITATION_POLICY, AI_CONTENT_PROVENANCE, AI_CRAWLER_USER_AGENTS, AI_DISCOVERY_ROUTES, buildAiCitationText } from "@/lib/ai-discovery";
+import { AI_CITATION_POLICY, AI_CONTENT_PROVENANCE, AI_CRAWLER_USER_AGENTS, AI_DISCOVERY_ROUTES, buildAiArticleSchemaTypes, buildAiCitationText } from "@/lib/ai-discovery";
 import { buildSimulationCourseJsonLd, buildSimulationCourseListJsonLd, type SimulationCourseSource } from "@/lib/educational-schema";
 import { isKnownAiCrawlerUserAgent } from "@/lib/ai-discovery";
 import { buildForumDiscussionPostingItem, getForumAnswerUpvoteCount } from "@/lib/forum-structured-data";
@@ -31,6 +31,16 @@ function robotsValues(text: string, directive: string) {
 }
 
 describe("SEO/GEO topic cluster helpers", () => {
+    it("uses concise GSC-driven titles for first-page low-CTR articles", () => {
+        const blackBody = getSeoIntentForSlug("kuantum-fiziginin-baslangici-kara-cisim-isimasi-1766099948990");
+        const periodic = getSeoIntentForSlug("fizikte-ritmi-yakalamak-basit-harmonik-hareket-nedir-mk9qw6u9gcj");
+
+        expect(blackBody?.metadataTitle).toBe("Siyah Cisim Işıması Nedir? Planck Yasası");
+        expect(periodic?.metadataTitle).toBe("Periyodik Hareket Nedir? BHH Formülleri");
+        expect(blackBody?.metadataTitle.length).toBeLessThanOrEqual(50);
+        expect(periodic?.metadataTitle.length).toBeLessThanOrEqual(50);
+    });
+
     it("publishes a source-backed search intent for the Aristotle-Ptolemy article", () => {
         const intent = getSeoIntentForSlug("aristodan-batlamyusa-evreni-cozmeye-calisan-adamlar");
 
@@ -211,6 +221,19 @@ describe("SEO robots and canonical boundaries", () => {
         expect(buildAiCitationText("Entropi Nedir?", "https://www.fizikhub.com/makale/entropi")).toBe(
             "Entropi Nedir? - Fizikhub (https://www.fizikhub.com/makale/entropi)",
         );
+    });
+
+    it("keeps AI article schema hints aligned with visible priority-article markup", () => {
+        expect(buildAiArticleSchemaTypes(false, true)).toEqual([
+            "Article",
+            "BlogPosting",
+            "WebPage",
+            "BreadcrumbList",
+            "LearningResource",
+            "FAQPage",
+            "DefinedTerm",
+        ]);
+        expect(buildAiArticleSchemaTypes(true, false)).toEqual(["BlogPosting", "WebPage"]);
     });
 
     it("builds course structured data for interactive simulation learning modules", () => {

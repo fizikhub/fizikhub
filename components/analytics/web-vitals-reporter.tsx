@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { useReportWebVitals } from "next/web-vitals";
 
 type ConnectionInfo = {
@@ -15,6 +16,7 @@ type NavigatorWithConnection = Navigator & {
 
 const TRACKED_METRICS = new Set(["CLS", "FCP", "INP", "LCP", "TTFB"]);
 const PRODUCTION_SAMPLE_RATE = 0.1;
+let latestNativeLcpEntry: Record<string, unknown> | null = null;
 
 function shouldSampleVitals(): boolean {
     if (process.env.NODE_ENV !== "production") return true;
@@ -79,7 +81,7 @@ function lcpElementLabel(value: unknown) {
 
 function getActionableAttribution(metric: unknown) {
     const metricRecord = asRecord(metric);
-    const attribution = asRecord(metricRecord?.attribution);
+    const attribution = asRecord(metricRecord?.attribution) || (metricRecord?.name === "LCP" ? latestNativeLcpEntry : null);
     if (!attribution) return undefined;
 
     const entry = asRecord(attribution.lcpEntry);
@@ -111,6 +113,40 @@ function getActionableAttribution(metric: unknown) {
 }
 
 export function WebVitalsReporter() {
+    useEffect(() => {
+        if (!("PerformanceObserver" in window)) return;
+
+        let observer: PerformanceObserver | null = null;
+        try {
+            observer = new PerformanceObserver((list) => {
+                const entries = list.getEntries();
+                const entry = entries[entries.length - 1] as PerformanceEntry & {
+                    element?: Element;
+                    url?: string;
+                    loadTime?: number;
+                    renderTime?: number;
+                    size?: number;
+                };
+                if (!entry) return;
+
+                latestNativeLcpEntry = {
+                    element: entry.element,
+                    url: entry.url,
+                    loadTime: entry.loadTime,
+                    renderTime: entry.renderTime,
+                    startTime: entry.startTime,
+                    size: entry.size,
+                };
+            });
+            observer.observe({ type: "largest-contentful-paint", buffered: true });
+        } catch {
+            observer?.disconnect();
+            return;
+        }
+
+        return () => observer?.disconnect();
+    }, []);
+
     useReportWebVitals((metric) => {
         if (!TRACKED_METRICS.has(metric.name)) return;
         if (!shouldSampleVitals()) return;

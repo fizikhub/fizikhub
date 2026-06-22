@@ -1,5 +1,5 @@
 import { simulations } from "@/components/simulations/data";
-import { AI_CITATION_POLICY, AI_CONTENT_PROVENANCE, AI_CRAWLER_USER_AGENTS, AI_DISCOVERY_LAST_MODIFIED, AI_DISCOVERY_ROUTES, AI_PUBLIC_CONTENT_PREFIXES, buildAiCitationText } from "@/lib/ai-discovery";
+import { AI_CITATION_POLICY, AI_CONTENT_PROVENANCE, AI_CRAWLER_USER_AGENTS, AI_DISCOVERY_LAST_MODIFIED, AI_DISCOVERY_ROUTES, AI_PUBLIC_CONTENT_PREFIXES, buildAiArticleSchemaTypes, buildAiCitationText } from "@/lib/ai-discovery";
 import { getDictionaryTerms } from "@/lib/api";
 import { createStaticClient, hasSupabasePublicConfig } from "@/lib/supabase-server";
 import { slugify } from "@/lib/slug";
@@ -243,7 +243,7 @@ export async function GET() {
                 contentFreshness: contentFreshnessFor(article.updated_at || article.created_at),
                 updatedAt: new Date(article.updated_at || article.created_at || Date.now()).toISOString(),
                 language: "tr-TR",
-                schemaTypes: isExperiment ? ["BlogPosting", "WebPage"] : ["BlogPosting", "WebPage", "BreadcrumbList"],
+                schemaTypes: buildAiArticleSchemaTypes(isExperiment, Boolean(intent)),
                 clusterSlugs,
                 relatedUrls: relatedUrlsFor("article", article.slug, baseUrl),
                 citationText: buildAiCitationText(article.title || article.slug, `${baseUrl}${canonicalPath}`),
@@ -260,8 +260,9 @@ export async function GET() {
                 contentQualitySignals: unique([
                     "kanonik makale URL'si",
                     "BlogPosting JSON-LD",
+                    "Article ve LearningResource varlık eşlemesi",
                     article.updated_at ? "güncellenme tarihi" : "yayın tarihi",
-                    intent ? "kısa cevap ve FAQ niyeti" : null,
+                    intent ? "görünür kısa cevap, FAQPage ve DefinedTerm" : null,
                     clusterSlugs.length > 0 ? "konu hub bağlantısı" : null,
                     article.category || null,
                 ]),

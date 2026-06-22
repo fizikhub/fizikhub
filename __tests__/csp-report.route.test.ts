@@ -88,4 +88,33 @@ describe("CSP report route", () => {
         expect(invalid.status).toBe(400);
         expect(oversized.status).toBe(413);
     });
+
+    it("keeps production CSP telemetry observable when the audit table is unavailable", async () => {
+        vi.resetModules();
+        vi.stubEnv("NODE_ENV", "production");
+        const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+        const { POST } = await import("@/app/api/security/csp-report/route");
+        const report = {
+            "csp-report": {
+                "document-uri": "https://www.fizikhub.com/makale",
+                "violated-directive": "script-src-elem",
+                "blocked-uri": "inline",
+            },
+        };
+
+        await POST(makeRequest(report));
+        await POST(makeRequest(report));
+
+        expect(warn).toHaveBeenCalledTimes(1);
+        expect(JSON.parse(String(warn.mock.calls[0]?.[0]))).toEqual(expect.objectContaining({
+            level: "warn",
+            message: "csp-report-only-violation",
+            directive: "script-src-elem",
+            blocked: "inline",
+        }));
+
+        warn.mockRestore();
+        vi.unstubAllEnvs();
+        vi.resetModules();
+    });
 });
