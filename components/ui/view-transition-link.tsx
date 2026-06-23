@@ -39,7 +39,7 @@ export function ViewTransitionLink({
 
     return (
         <Link
-            prefetch={prefetch ?? true}
+            prefetch={prefetch ?? false}
             {...props}
             href={href}
             onClick={handleTransition}

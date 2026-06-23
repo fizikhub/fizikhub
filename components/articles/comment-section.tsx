@@ -26,11 +26,10 @@ interface CommentSectionProps {
     comments: Comment[];
     isLoggedIn: boolean;
     isAdmin: boolean;
-    userAvatar?: string | null;
     currentUsername?: string | null;
 }
 
-export function CommentSection({ articleId, comments, isLoggedIn, isAdmin, userAvatar, currentUsername }: CommentSectionProps) {
+export function CommentSection({ articleId, comments, isLoggedIn, isAdmin, currentUsername }: CommentSectionProps) {
     const [content, setContent] = useState("");
     const [replyingTo, setReplyingTo] = useState<number | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);

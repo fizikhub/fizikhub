@@ -1,7 +1,7 @@
 "use client";
 
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { X, Sparkles, Zap, Image as ImageIcon, AlignLeft, Hash, Save, Trophy } from "lucide-react";
+import { X, Sparkles, Zap, Image as ImageIcon, AlignLeft, Trophy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { m as motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";

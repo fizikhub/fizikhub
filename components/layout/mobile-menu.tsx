@@ -4,12 +4,15 @@ import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription } from 
 import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
-import { Menu, X, Home, BookOpen, Trophy, User, Zap, ChevronRight, Github, Twitter, Instagram, Atom, Compass, Book, Mail } from "lucide-react";
+import { Menu, X, Home, Trophy, User, Zap, ChevronRight, Github, Twitter, Instagram, Atom, Book, Mail } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { m as motion } from "framer-motion";
+import dynamic from "next/dynamic";
 
-import { PhysicsFactModal } from "@/components/ui/physics-fact-modal";
+const PhysicsFactModal = dynamic(() => import("@/components/ui/physics-fact-modal").then((mod) => mod.PhysicsFactModal), {
+    ssr: false,
+});
 
 const menuItems = [
     { href: '/', label: 'Ana Sayfa', icon: Home, color: 'group-hover:text-[#FFC800]', iconColor: 'text-[#FFC800]' },

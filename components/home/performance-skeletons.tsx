@@ -1,7 +1,5 @@
 "use client";
 
-import { cn } from "@/lib/utils";
-
 export function FeedSkeleton() {
     return (
         <div className="flex flex-col gap-6 w-full max-w-[650px] mx-auto xl:mx-0">

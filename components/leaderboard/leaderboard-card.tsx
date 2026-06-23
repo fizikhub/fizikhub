@@ -78,6 +78,7 @@ export function LeaderboardCard({ user, currentUserId }: LeaderboardCardProps) {
                         // Hover State (Vivid Color Shift)
                         hoverColorClass,
                         "hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]",
+                        isCurrentUser && "ring-2 ring-[#EAB308] ring-offset-2 ring-offset-background",
 
                         // Backgrounds & Text Colors
                         isSilginim ? "bg-gradient-to-r from-pink-200 via-pink-300 to-rose-200 text-pink-950" :

@@ -29,9 +29,15 @@ export function Navbar() {
 
     useEffect(() => {
         const generateRain = () => {
+            const connection = (navigator as Navigator & {
+                connection?: { saveData?: boolean; effectiveType?: string };
+            }).connection;
+            if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+            if (connection?.saveData || /^(slow-2g|2g|3g)$/.test(connection?.effectiveType || "")) return;
+
             const isMobile = window.innerWidth < 768;
             const laneCount = isMobile ? 6 : 12;
-            const dropCount = isMobile ? 12 : 30;
+            const dropCount = isMobile ? 8 : 18;
 
             const drops = Array.from({ length: dropCount }).map(() => {
                 const lane = Math.floor(Math.random() * laneCount);

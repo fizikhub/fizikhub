@@ -9,8 +9,6 @@ import { m, AnimatePresence, useScroll, useVelocity, useMotionValueEvent, useMot
 
 import { DankLogo } from "@/components/brand/dank-logo";
 
-const PRIMARY_ROUTES = ["/", "/makale", "/paylas", "/forum", "/profil"];
-
 export function BottomNav() {
     const pathname = usePathname();
     const router = useRouter();
@@ -33,18 +31,6 @@ export function BottomNav() {
         prefetchedRoutesRef.current.add(href);
         router.prefetch(href);
     }, [router]);
-
-    useEffect(() => {
-        const prefetchRoutes = () => PRIMARY_ROUTES.forEach(warmRoute);
-
-        if ("requestIdleCallback" in window) {
-            const idleId = window.requestIdleCallback(prefetchRoutes, { timeout: 1500 });
-            return () => window.cancelIdleCallback(idleId);
-        }
-
-        const timeoutId = globalThis.setTimeout(prefetchRoutes, 450);
-        return () => globalThis.clearTimeout(timeoutId);
-    }, [warmRoute]);
 
     useEffect(() => () => {
         if (frameRef.current !== null) cancelAnimationFrame(frameRef.current);

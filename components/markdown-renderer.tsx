@@ -186,6 +186,7 @@ export function MarkdownRenderer({
                         </blockquote>
                     ),
                     h1: ({ node, ...props }) => {
+                        void node;
                         if (demoteH1) {
                             return <h2 {...props} />;
                         }
@@ -211,7 +212,8 @@ export function MarkdownRenderer({
 
                         return <p {...props}>{processedChildren}</p>;
                     },
-                    li: ({ node: _node, children, ...props }) => {
+                    li: ({ node, children, ...props }) => {
+                        void node;
                         const processedChildren = React.Children.map(children, (child) => {
                             if (typeof child === "string") {
                                 return highlightDictionaryTerms(child);
@@ -222,13 +224,14 @@ export function MarkdownRenderer({
                         return <li {...props}>{processedChildren}</li>;
                     },
                     // External links open in new tab, internal links use Next.js routing
-                    a: ({ node: _node, ...props }) => {
+                    a: ({ node, ...props }) => {
+                        void node;
                         const href = props.href || '';
                         const isExternal = href.startsWith('http') && !href.includes('fizikhub.com');
                         
                         if (!isExternal && href) {
                             return (
-                                <Link href={href} prefetch={true} {...props} />
+                                <Link href={href} prefetch={false} {...props} />
                             );
                         }
                         
@@ -241,7 +244,8 @@ export function MarkdownRenderer({
                         );
                     },
                     // Wrap KaTeX block math in overflow-x-auto container for mobile
-                    div: ({ node: _node, children, className: divClassName, ...props }: React.ComponentPropsWithoutRef<'div'> & { node?: unknown }) => {
+                    div: ({ node, children, className: divClassName, ...props }: React.ComponentPropsWithoutRef<'div'> & { node?: unknown }) => {
+                        void node;
                         if (divClassName?.includes('math-display')) {
                             return (
                                 <div className="overflow-x-auto my-6 sm:my-8 py-4 px-3 sm:px-5 bg-zinc-50 dark:bg-zinc-900/60 border-2 border-black dark:border-zinc-700 rounded-xl shadow-[4px_4px_0px_0px_#000] dark:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.4)]" style={{ maxWidth: '100%' }} {...props}>
@@ -252,7 +256,8 @@ export function MarkdownRenderer({
                         return <div className={divClassName} {...props}>{children}</div>;
                     },
                     // Image with Dialog zoom
-                    img: ({ node: _node, ...props }: React.ComponentPropsWithoutRef<'img'> & { node?: unknown }) => {
+                    img: ({ node, ...props }: React.ComponentPropsWithoutRef<'img'> & { node?: unknown }) => {
+                        void node;
                         const src = props.src as string;
                         if (src?.endsWith(".mp4") || src?.endsWith(".webm")) {
                             return (
@@ -303,7 +308,8 @@ export function MarkdownRenderer({
                         );
                     },
                     // Iframe responsive embed
-                    iframe: ({ node: _node, ...props }: React.ComponentPropsWithoutRef<'iframe'> & { node?: unknown }) => {
+                    iframe: ({ node, ...props }: React.ComponentPropsWithoutRef<'iframe'> & { node?: unknown }) => {
+                        void node;
                         const src = typeof props.src === "string" ? props.src : "";
                         if (!isAllowedMarkdownEmbedUrl(src)) return null;
 

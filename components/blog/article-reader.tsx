@@ -570,7 +570,6 @@ export function ArticleReader({
                                         comments={comments || []}
                                         isLoggedIn={userContext.isLoggedIn}
                                         isAdmin={userContext.isAdmin}
-                                        userAvatar={userContext.userAvatar}
                                         currentUsername={userContext.currentUsername}
                                     />
                                 </div>

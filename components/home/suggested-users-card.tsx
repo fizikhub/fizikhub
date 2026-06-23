@@ -1,7 +1,7 @@
 "use client";
 
 import { m as motion } from "framer-motion";
-import { UserPlus, Star } from "lucide-react";
+import { Star } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
