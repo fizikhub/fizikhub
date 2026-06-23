@@ -9,9 +9,10 @@ import { Article } from "@/lib/api";
 
 interface ModernArticleCardProps {
     article: Article;
+    index?: number;
 }
 
-export function ModernArticleCard({ article }: ModernArticleCardProps) {
+export function ModernArticleCard({ article, index = 0 }: ModernArticleCardProps) {
     // Determine card background color based on "featured" status or random rotation for fun
     const isFeatured = article.is_featured;
 

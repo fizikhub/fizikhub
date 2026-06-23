@@ -12,20 +12,12 @@ import dynamic from "next/dynamic";
 const StarBackground = dynamic(() => import("@/components/background/star-background").then(mod => mod.StarBackground), { ssr: false });
 import { trackGrowthEvent } from "@/lib/growth-client";
 
-interface OnboardingProfile {
-    username?: string | null;
-    full_name?: string | null;
-    bio?: string | null;
-    avatar_url?: string | null;
-    cover_url?: string | null;
-}
-
 interface OnboardingProfileSetupProps {
-    user: unknown;
-    profile: OnboardingProfile | null;
+    user: any;
+    profile: any;
 }
 
-export function OnboardingProfileSetup({ profile }: OnboardingProfileSetupProps) {
+export function OnboardingProfileSetup({ user, profile }: OnboardingProfileSetupProps) {
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(false);
 
@@ -111,9 +103,8 @@ export function OnboardingProfileSetup({ profile }: OnboardingProfileSetupProps)
                 router.push('/');
             }, 1000);
 
-        } catch (error) {
-            const message = error instanceof Error ? error.message : "Bir hata oluştu.";
-            toast.error(message, { id: toastId });
+        } catch (error: any) {
+            toast.error(error.message || "Bir hata oluştu.", { id: toastId });
         } finally {
             setIsLoading(false);
         }

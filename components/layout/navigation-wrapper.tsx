@@ -2,6 +2,10 @@
 
 import { usePathname } from "next/navigation";
 import { Navbar } from "@/components/layout/navbar";
+
+
+
+
 import dynamic from "next/dynamic";
 
 // Lazy load components for better initial page load performance
@@ -39,12 +43,12 @@ export function NavigationWrapper({ children }: { children: React.ReactNode }) {
             <GlobalAdminNotification />
             <Navbar />
             <DesktopSidebar />
-
+            
             <div className="md:pl-[80px] lg:pl-[260px] flex flex-col min-h-[100dvh] transition-all duration-300">
                 {children}
                 <Footer />
             </div>
-
+            
             <BottomNav />
         </>
     );

@@ -16,7 +16,7 @@ export function MaintenanceAudioPlayer() {
                         document.removeEventListener('touchstart', playAudio);
                         document.removeEventListener('keydown', playAudio);
                     })
-                    .catch(() => {
+                    .catch((err) => {
                         // Audio play failed (waiting for interaction)
                     });
             }

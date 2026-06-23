@@ -24,7 +24,7 @@ export function StartChatButton({ otherUserId }: StartChatButtonProps) {
             } else if (result?.success && result?.conversationId) {
                 router.push(`/mesajlar/${result.conversationId}`);
             }
-        } catch {
+        } catch (error) {
             toast.error("Bir hata oluştu.");
         } finally {
             setLoading(false);

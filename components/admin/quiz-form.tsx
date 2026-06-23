@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { createQuiz } from "@/app/actions/quiz";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import { Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2, GripVertical } from "lucide-react";
 
 interface Question {
     question_text: string;
@@ -36,7 +36,7 @@ export function QuizForm() {
         setQuestions(questions.filter((_, i) => i !== index));
     };
 
-    const handleQuestionChange = (index: number, field: keyof Question, value: string | number) => {
+    const handleQuestionChange = (index: number, field: keyof Question, value: any) => {
         const newQuestions = [...questions];
         newQuestions[index] = { ...newQuestions[index], [field]: value };
         setQuestions(newQuestions);
@@ -67,7 +67,7 @@ export function QuizForm() {
                 toast.success("Quiz başarıyla oluşturuldu!");
                 router.push("/admin/quizzes");
             }
-        } catch {
+        } catch (error) {
             toast.error("Bir hata oluştu.");
         } finally {
             setLoading(false);

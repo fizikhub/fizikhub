@@ -6,8 +6,9 @@ import { formatDistanceToNow } from "date-fns";
 import { tr } from "date-fns/locale";
 import { Heart, MessageCircle, Bookmark, Share, Zap } from "lucide-react";
 import { Article } from "@/lib/api";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
+import { useTheme } from "next-themes";
 import { toggleArticleLike, toggleArticleBookmark } from "@/app/makale/actions";
 import { toast } from "sonner";
 import { useHaptic } from "@/hooks/use-haptic";
@@ -34,6 +35,13 @@ export function SocialArticleCard({
     className,
     variant = "default", // Default to standard size
 }: SocialArticleCardProps) {
+    const { theme } = useTheme();
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
     const isFeatured = article.is_featured;
     // Compact variant requires smaller text and padding
     const isCompact = variant === "compact";
@@ -77,7 +85,7 @@ export function SocialArticleCard({
                     toast.error("Giriş yapmalısınız!");
                 }
             }
-        } catch {
+        } catch (error) {
             setIsLiked(previousLiked);
             setLikeCount(previousCount);
         } finally {
@@ -101,7 +109,7 @@ export function SocialArticleCard({
             } else {
                 if (!previousBookmarked) toast.success("Kaydedildi!");
             }
-        } catch {
+        } catch (error) {
             setIsBookmarked(previousBookmarked);
         }
     };

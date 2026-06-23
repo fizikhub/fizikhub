@@ -1,45 +1,18 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import { StoryViewer } from "./story-viewer";
 
 interface NexusStoriesProps {
-    initialStories?: NexusStory[];
-    initialGroups?: NexusStoryGroup[];
+    initialStories?: any[];
+    initialGroups?: any[];
 }
-
-type NexusStory = {
-    id: string | number;
-    name?: string;
-    title?: string;
-    image?: string;
-    content?: string;
-    author?: string;
-    author_id?: string;
-    group_id?: string | number | null;
-};
-
-type NexusStoryGroup = {
-    id: string | number;
-    name: string;
-    image: string;
-    ring_color?: string;
-};
-
-type ActiveStory = {
-    id: string;
-    title: string;
-    image: string;
-    content: string;
-    author: string;
-    author_id?: string;
-};
 
 export function NexusStories({ initialStories = [], initialGroups = [] }: NexusStoriesProps) {
     const [viewerOpen, setViewerOpen] = useState(false);
-    const [activeStories, setActiveStories] = useState<ActiveStory[]>([]);
+    const [activeStories, setActiveStories] = useState<any[]>([]);
 
     const openGroup = (groupIndex: number) => {
         const group = groupsWithStories[groupIndex]; // Use the filtered array!
@@ -48,11 +21,11 @@ export function NexusStories({ initialStories = [], initialGroups = [] }: NexusS
         const groupStories = initialStories.filter(s =>
             String(s.group_id) === String(group.id)
         ).map(s => ({
-            id: String(s.id),
+            id: s.id,
             title: s.name || s.title || "Hikaye",
-            image: s.image || "/placeholder.png",
+            image: s.image,
             content: s.content || "",
-            author: s.author || "FizikHub",
+            author: s.author,
             category: group.name,
             author_id: s.author_id
         }));
@@ -76,6 +49,11 @@ export function NexusStories({ initialStories = [], initialGroups = [] }: NexusS
         <section className="w-full pt-4 pb-0 mt-[-8px] mb-0 sm:mb-4">
             <div className="flex overflow-x-auto gap-3 sm:gap-6 px-4 sm:px-0 scrollbar-hide snap-x snap-mandatory touch-pan-x">
                 {groupsWithStories.map((group, index) => {
+                    // Check if this group has updates (stories)
+                    // If we want to show ring only for groups with stories?
+                    // Or strictly highlights that always exist.
+                    const hasStories = true; // Since we filtered, it always has stories
+
                     return (
                         <div
                             key={group.id}
