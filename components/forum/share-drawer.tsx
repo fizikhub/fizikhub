@@ -5,6 +5,8 @@ import { Copy, Twitter, MessageCircle, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { buildTrackedShareUrl } from "@/lib/growth-attribution";
+import { trackGrowthEvent } from "@/lib/growth-client";
 
 interface ShareDrawerProps {
     url: string;
@@ -36,19 +38,26 @@ export function ShareDrawer({ url, title, children }: ShareDrawerProps) {
         };
     }, [isOpen]);
 
-    const handleCopy = () => {
-        navigator.clipboard.writeText(url);
+    const recordShare = (method: string) => trackGrowthEvent("share", { method, content_type: "forum", item_id: url });
+
+    const handleCopy = async () => {
+        await navigator.clipboard.writeText(buildTrackedShareUrl(url, "copy_link", "forum"));
+        recordShare("copy_link");
         toast.success("Bağlantı kopyalandı!");
         setIsOpen(false);
     };
 
     const handleTwitterShare = () => {
-        window.open(`https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(title)}`, '_blank');
+        const trackedUrl = buildTrackedShareUrl(url, "x", "forum");
+        recordShare("x");
+        window.open(`https://twitter.com/intent/tweet?url=${encodeURIComponent(trackedUrl)}&text=${encodeURIComponent(title)}`, '_blank', 'noopener,noreferrer');
         setIsOpen(false);
     };
 
     const handleWhatsAppShare = () => {
-        window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(title + " " + url)}`, '_blank');
+        const trackedUrl = buildTrackedShareUrl(url, "whatsapp", "forum");
+        recordShare("whatsapp");
+        window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(title + " " + trackedUrl)}`, '_blank', 'noopener,noreferrer');
         setIsOpen(false);
     };
 

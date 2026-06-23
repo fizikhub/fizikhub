@@ -1,8 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Twitter, Link as LinkIcon, Facebook, Linkedin, Share2 } from "lucide-react";
-import { toast } from "sonner"; // Assuming sonner or similar toast lib is used, or we can use simple alert for now
+import { Twitter, Link as LinkIcon, Linkedin, MessageCircle, Share2 } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import {
@@ -11,6 +10,8 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { buildTrackedShareUrl } from "@/lib/growth-attribution";
+import { trackGrowthEvent } from "@/lib/growth-client";
 
 interface ShareButtonsProps {
     title: string;
@@ -21,20 +22,42 @@ interface ShareButtonsProps {
 
 export function ShareButtons({ title, slug, variant = 'default', className }: ShareButtonsProps) {
     const [copied, setCopied] = useState(false);
-    const url = typeof window !== 'undefined' ? `${window.location.origin}/makale/${slug}` : '';
+    const getShareUrl = (channel: string) => buildTrackedShareUrl(`${window.location.origin}/makale/${slug}`, channel, "article");
 
-    const handleCopy = () => {
-        navigator.clipboard.writeText(url);
+    const recordShare = (method: string) => {
+        trackGrowthEvent("share", { method, content_type: "article", item_id: slug });
+    };
+
+    const handleCopy = async () => {
+        await navigator.clipboard.writeText(getShareUrl("copy_link"));
+        recordShare("copy_link");
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
     };
 
     const shareTwitter = () => {
-        window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(url)}`, '_blank');
+        const url = getShareUrl("x");
+        recordShare("x");
+        window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(url)}`, '_blank', 'noopener,noreferrer');
     };
 
     const shareLinkedin = () => {
-        window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`, '_blank');
+        const url = getShareUrl("linkedin");
+        recordShare("linkedin");
+        window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`, '_blank', 'noopener,noreferrer');
+    };
+
+    const shareWhatsApp = () => {
+        const url = getShareUrl("whatsapp");
+        recordShare("whatsapp");
+        window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(`${title} ${url}`)}`, '_blank', 'noopener,noreferrer');
+    };
+
+    const shareNative = async () => {
+        if (!navigator.share) return handleCopy();
+        const url = getShareUrl("native_share");
+        await navigator.share({ title, url });
+        recordShare("native_share");
     };
 
     const isMinimal = variant === 'minimal';
@@ -56,6 +79,14 @@ export function ShareButtons({ title, slug, variant = 'default', className }: Sh
                         <Linkedin className="mr-2 h-4 w-4 group-hover:text-blue-700" />
                         <span>LinkedIn'de Paylaş</span>
                     </DropdownMenuItem>
+                    <DropdownMenuItem onClick={shareWhatsApp} className="group cursor-pointer rounded-lg py-2.5">
+                        <MessageCircle className="mr-2 h-4 w-4 group-hover:text-emerald-500" />
+                        <span>WhatsApp'ta Gönder</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={shareNative} className="group cursor-pointer rounded-lg py-2.5">
+                        <Share2 className="mr-2 h-4 w-4" />
+                        <span>Cihazdan Paylaş</span>
+                    </DropdownMenuItem>
                     <DropdownMenuItem onClick={handleCopy} className="group cursor-pointer rounded-lg py-2.5">
                         <LinkIcon className="mr-2 h-4 w-4" />
                         <span>{copied ? 'Kopyalandı!' : 'Bağlantıyı Kopyala'}</span>
@@ -76,6 +107,12 @@ export function ShareButtons({ title, slug, variant = 'default', className }: Sh
             </Button>
             <Button variant="outline" size="icon" onClick={shareLinkedin} className="hover:text-blue-700 hover:border-blue-700">
                 <Linkedin className="h-4 w-4" />
+            </Button>
+            <Button variant="outline" size="icon" onClick={shareWhatsApp} className="hover:border-emerald-500 hover:text-emerald-500" aria-label="WhatsApp'ta paylaş">
+                <MessageCircle className="h-4 w-4" />
+            </Button>
+            <Button variant="outline" size="icon" onClick={shareNative} aria-label="Cihazdan paylaş">
+                <Share2 className="h-4 w-4" />
             </Button>
             <Button variant="outline" size="icon" onClick={handleCopy} className="relative">
                 <LinkIcon className="h-4 w-4" />

@@ -1,7 +1,9 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
+import { GrowthAttributionTracker } from "@/components/analytics/growth-attribution-tracker";
+import { PwaInstallPrompt } from "@/components/pwa-install-prompt";
 
 const UserActivityTracker = dynamic(
   () => import("@/components/analytics/user-activity-tracker").then((mod) => mod.UserActivityTracker),
@@ -106,6 +108,10 @@ export function RuntimeEffects() {
 
   return (
     <>
+      <Suspense fallback={null}>
+        <GrowthAttributionTracker />
+      </Suspense>
+      <PwaInstallPrompt />
       <WebVitalsReporter />
       {loadIdleEffects && (
         <>

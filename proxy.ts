@@ -1,6 +1,7 @@
 import { type NextRequest, NextResponse } from 'next/server'
 import { updateSession } from '@/lib/middleware'
 import { isKnownAiCrawlerUserAgent } from '@/lib/ai-discovery'
+import { GROWTH_ATTRIBUTION_COOKIE, serializeGrowthTrackingParams } from '@/lib/growth-attribution'
 
 // Sliding window rate limiting with automatic cleanup
 const rateLimitMap = new Map<string, { count: number; timestamp: number }>();
@@ -355,7 +356,20 @@ export async function proxy(request: NextRequest) {
     }
 
     const normalizedUrl = normalizeSeoUrl(request);
-    if (normalizedUrl) return NextResponse.redirect(normalizedUrl, 301);
+    if (normalizedUrl) {
+        const response = NextResponse.redirect(normalizedUrl, 301);
+        const trackingCookie = serializeGrowthTrackingParams(request.nextUrl.searchParams);
+        if (trackingCookie) {
+            response.cookies.set(GROWTH_ATTRIBUTION_COOKIE, trackingCookie, {
+                path: '/',
+                maxAge: 60 * 10,
+                sameSite: 'lax',
+                secure: request.nextUrl.protocol === 'https:',
+                httpOnly: false,
+            });
+        }
+        return response;
+    }
 
     if (GONE_SEO_PATHS.has(pathname) || pathname.includes('*')) {
         return goneNoindexResponse();

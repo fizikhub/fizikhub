@@ -14,6 +14,7 @@ import { toast } from "sonner";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { signupWithEmailOtp } from "@/app/auth/actions";
+import { getStoredGrowthAttribution, trackGrowthEvent } from "@/lib/growth-client";
 
 const turnstileSiteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || "0x4AAAAAACI_a8NNCjdtVnjC";
 
@@ -161,6 +162,7 @@ export function ModernLogin({ nextPath }: ModernLoginProps) {
 
     const handleOAuthLogin = async (provider: 'github' | 'google') => {
         setLoading(true);
+        trackGrowthEvent("login_started", { method: provider });
         try {
             const { error } = await supabase.auth.signInWithOAuth({
                 provider,
@@ -194,6 +196,7 @@ export function ModernLogin({ nextPath }: ModernLoginProps) {
 
         try {
             if (isSignUp) {
+                const attribution = getStoredGrowthAttribution();
                 // ── Client-side validations (no server call needed) ──
                 if (username.length < 3) {
                     toast.error("Kullanıcı adı en az 3 karakter olmalı. [ERR_SIGNUP_USERNAME_SHORT]", { id: toastId });
@@ -250,6 +253,7 @@ export function ModernLogin({ nextPath }: ModernLoginProps) {
                     fullName,
                     captchaToken: turnstileToken,
                     redirectTo: `${location.origin}/auth/callback`,
+                    attribution,
                 });
 
                 if (!result.success) {
@@ -262,6 +266,11 @@ export function ModernLogin({ nextPath }: ModernLoginProps) {
                 }
 
                 toast.success("Kayıt başarılı! Yönlendiriliyorsunuz...", { id: toastId });
+                trackGrowthEvent("sign_up", {
+                    method: "email_otp",
+                    acquisition_source: attribution?.source,
+                    acquisition_medium: attribution?.medium,
+                });
                 setTimeout(() => {
                     window.location.href = `/auth/verify?email=${encodeURIComponent(email)}`;
                 }, 1000);
@@ -298,6 +307,7 @@ export function ModernLogin({ nextPath }: ModernLoginProps) {
                 }
 
                 toast.success("Giriş başarılı! Yönlendiriliyorsunuz...", { id: toastId });
+                trackGrowthEvent("login", { method: "email_password" });
                 setTimeout(() => {
                     window.location.href = safeNextPath;
                 }, 1000);

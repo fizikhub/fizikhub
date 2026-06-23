@@ -6,6 +6,12 @@ export const SEO_ANALYTICS_EVENTS = {
     landingSimulation: "landing_simulation",
     sourceAiReferral: "source_ai_referral",
     brandQueryLanding: "brand_query_landing",
+    acquisitionLanding: "acquisition_landing",
+    share: "share",
+    signUp: "sign_up",
+    login: "login",
+    tutorialBegin: "tutorial_begin",
+    tutorialComplete: "tutorial_complete",
 } as const;
 
 export type SeoAnalyticsEvent = typeof SEO_ANALYTICS_EVENTS[keyof typeof SEO_ANALYTICS_EVENTS];

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { uploadAvatar, uploadCover, updateProfile, updateUsername } from "@/app/profil/actions";
@@ -10,6 +10,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DankLogo } from "@/components/brand/dank-logo";
 import dynamic from "next/dynamic";
 const StarBackground = dynamic(() => import("@/components/background/star-background").then(mod => mod.StarBackground), { ssr: false });
+import { trackGrowthEvent } from "@/lib/growth-client";
 
 interface OnboardingProfileSetupProps {
     user: any;
@@ -19,6 +20,10 @@ interface OnboardingProfileSetupProps {
 export function OnboardingProfileSetup({ user, profile }: OnboardingProfileSetupProps) {
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(false);
+
+    useEffect(() => {
+        trackGrowthEvent("tutorial_begin", { tutorial_name: "profile_onboarding" });
+    }, []);
 
     // Form States
     const [fullName, setFullName] = useState(profile?.full_name || "");
@@ -92,6 +97,7 @@ export function OnboardingProfileSetup({ user, profile }: OnboardingProfileSetup
             if (!updateRes.success) throw new Error(updateRes.error);
 
             toast.success("Profilin hazır! Yönlendiriliyorsun...", { id: toastId });
+            trackGrowthEvent("tutorial_complete", { tutorial_name: "profile_onboarding" });
             router.refresh();
             setTimeout(() => {
                 router.push('/');

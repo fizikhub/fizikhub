@@ -8,6 +8,7 @@ import { ensureUserProfile } from "@/lib/auth-profile";
 import { validatePasswordStrength } from "@/lib/security";
 import { Resend } from "resend";
 import { buildConfirmationTemplate } from "../../scripts/auth-email-templates.mjs";
+import { normalizeGrowthAttribution, type GrowthAttribution } from "@/lib/growth-attribution";
 
 export async function login(formData: FormData) {
     const supabase = await createClient();
@@ -60,6 +61,7 @@ type SignupWithEmailOtpInput = {
     username: string;
     captchaToken: string;
     redirectTo?: string;
+    attribution?: GrowthAttribution | null;
 };
 
 async function verifyTurnstileToken(token: string) {
@@ -104,6 +106,7 @@ export async function signupWithEmailOtp(input: SignupWithEmailOtpInput) {
         const email = input.email.trim().toLowerCase();
         const username = input.username.trim();
         const fullName = input.fullName.trim();
+        const attribution = normalizeGrowthAttribution(input.attribution);
 
         // ── 1. Basic validation ──
         if (!email || !input.password || !username || !fullName) {
@@ -170,6 +173,7 @@ export async function signupWithEmailOtp(input: SignupWithEmailOtpInput) {
                     username,
                     full_name: fullName,
                     onboarding_completed: false,
+                    ...(attribution ? { acquisition: attribution } : {}),
                 },
             },
         });
